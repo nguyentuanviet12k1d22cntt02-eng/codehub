@@ -1,0 +1,74 @@
+---
+lessonId: "LS-01.03"
+title: "Chương trình Python đầu tiên"
+difficulty: "EASY"
+estimatedDuration: 10
+keywords: ["first program", "comment", "syntax", "syntax error", "indentation"]
+prerequisites: ["LS-01.02"]
+---
+
+## 1. Lý thuyết cốt lõi
+
+| Thuật ngữ | Định nghĩa |
+| :--- | :--- |
+| **Chú thích (Comment)** | Đoạn văn bản bắt đầu bằng ký tự `#`, được lập trình viên viết để giải thích mã nguồn. Trình thông dịch Python sẽ bỏ qua hoàn toàn phần này khi chạy chương trình. |
+| **Thứ tự thực thi** | Trình thông dịch Python đọc và chạy mã nguồn từ trên xuống dưới, từng dòng một. |
+| **Lỗi cú pháp (SyntaxError)** | Lỗi xảy ra khi viết mã vi phạm các quy tắc ngữ pháp của Python, khiến chương trình không thể khởi chạy. |
+| **Lỗi thụt lề (IndentationError)** | Lỗi xảy ra khi thụt đầu dòng (khoảng trắng thụt lề) không hợp lý. Python bắt buộc các lệnh ở cùng cấp độ thực thi phải thẳng hàng nhau. |
+
+---
+
+## 2. Cú pháp & Code mẫu
+
+Một chương trình Python hoàn chỉnh kết hợp giữa các dòng lệnh thực thi và các dòng chú thích giải thích mã nguồn.
+
+```python
+# Đây là chú thích: Chương trình đầu tiên hiển thị thông tin giới thiệu bản thân
+print("Tên tôi là: Nguyễn Văn A")
+print("Tôi bắt đầu học lập trình Python từ hôm nay!") # Chú thích ở cuối dòng code
+```
+
+Khi chạy chương trình trên, kết quả hiển thị ra màn hình là:
+```text
+Tên tôi là: Nguyễn Văn A
+Tôi bắt đầu học lập trình Python từ hôm nay!
+```
+
+---
+
+## 3. Lỗi thường gặp & Thực hành tốt
+
+* **Lỗi thụt đầu dòng không hợp lệ**:
+  * Lỗi: Thêm khoảng trắng bừa bãi ở đầu câu lệnh.
+    ```python
+     print("Xin chào") # Báo lỗi IndentationError vì dư khoảng trắng đầu dòng
+    ```
+  * Thực hành tốt: Luôn viết các dòng lệnh tuần tự sát lề bên trái (ngoại trừ khi nằm trong các khối lệnh điều kiện, vòng lặp hay hàm sau này).
+* **Lỗi quên đóng ngoặc hoặc nháy kép**:
+  * Lỗi: `print("Hello"` hoặc `print(Hello")`.
+  * Thực hành tốt: Khi mở ngoặc đơn `(` hay nháy kép `"`, hãy lập tức gõ ký tự đóng tương ứng `)` hay `"` trước khi viết nội dung bên trong.
+
+---
+
+## 4. Chốt kiến thức
+
+> [!TIP]
+> **Đoạn mã nào sau đây sẽ bị báo lỗi thụt đầu dòng (IndentationError) khi chạy?**
+> * **A)** 
+>   ```python
+>   print("Dòng 1")
+>   print("Dòng 2")
+>   ```
+> * **B)** 
+>   ```python
+>   print("Dòng 1")
+>    print("Dòng 2")
+>   ```
+> * **C)** 
+>   ```python
+>   # print("Dòng 1")
+>   print("Dòng 2")
+>   ```
+> 
+> Đáp án đúng: **B**
+> *(Giải thích: Ở đáp án B, dòng lệnh thứ hai có dư một khoảng trắng thụt lề ở đầu dòng so với dòng lệnh thứ nhất, vi phạm quy tắc thụt lề của Python).*

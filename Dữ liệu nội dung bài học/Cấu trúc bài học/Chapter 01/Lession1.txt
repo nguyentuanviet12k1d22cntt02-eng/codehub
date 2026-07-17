@@ -1,0 +1,53 @@
+---
+lessonId: "LS-01.01"
+title: "Máy tính và Ngôn ngữ lập trình"
+difficulty: "EASY"
+estimatedDuration: 5
+keywords: ["machine code", "high-level language", "interpreter", "algorithm"]
+prerequisites: []
+---
+
+## 1. Lý thuyết cốt lõi
+
+| Thuật ngữ | Định nghĩa |
+| :--- | :--- |
+| **Lập trình** | Quá trình ra lệnh và hướng dẫn máy tính thực hiện công việc. |
+| **Ngôn ngữ lập trình** | Cầu nối giao tiếp giữa con người và máy tính (VD: Python, C++). |
+| **Thuật toán** | Tập hợp các bước tuần tự, logic và chính xác để giải quyết một vấn đề. |
+| **Trình thông dịch (Interpreter)** | Phần mềm đọc code Python và dịch sang mã máy (0 và 1) từng dòng một để máy tính chạy ngay lập tức. |
+
+---
+
+## 2. Cú pháp & Code mẫu
+
+Để yêu cầu máy tính hiển thị một dòng chữ ra màn hình, Python sử dụng lệnh `print`.
+
+```python
+# Lệnh hiển thị văn bản ra màn hình
+print("Chào mừng bạn đến với lập trình Python!")
+```
+
+### Giải thích cú pháp:
+* `print`: Tên lệnh bắt buộc (viết thường 100%).
+* `( )`: Cặp ngoặc đơn chứa nội dung mà lệnh cần xử lý.
+* `" "`: Cặp nháy kép báo cho máy tính biết nội dung bên trong là văn bản thuần túy (Chuỗi ký tự - String).
+
+---
+
+## 3. Lỗi thường gặp & Thực hành tốt
+
+* **Sai chữ hoa/chữ thường**: Gõ `Print("Hello")` hoặc `PRINT("Hello")`. Python phân biệt rất rõ chữ hoa và chữ thường. Lệnh đúng phải là `print`.
+* **Thiếu dấu ngoặc hoặc nháy kép**: Gõ `print("Hello)` (thiếu nháy kép cuối). Máy tính rất cứng nhắc, thiếu một dấu ngoặc chương trình cũng sẽ dừng hoạt động và báo lỗi cú pháp (`SyntaxError`).
+
+---
+
+## 4. Chốt kiến thức
+
+> [!TIP]
+> **Đoạn code nào sau đây sẽ chạy thành công và in ra màn hình mà không báo lỗi?**
+> * **A)** `Print("Xin chào Python!")`
+> * **B)** `print("Xin chào Python!)`
+> * **C)** `print("Xin chào Python!")`
+> 
+> Đáp án đúng: **C**
+> *(Giải thích: Đáp án A sai vì chữ "P" viết hoa, đáp án B thiếu dấu nháy kép đóng ở cuối câu).*

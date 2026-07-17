@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+  
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  
+  --color-border-custom: var(--border-color);
+  
+  --color-accent-custom: var(--accent-color);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-bg: var(--accent-bg);
+  --color-accent-border: var(--accent-border);
+  
+  --color-pre-bg: var(--pre-bg);
+}
+
+:root {
+  --bg-primary: #f8fafc;        /* slate-50 */
+  --bg-secondary: #ffffff;      /* white */
+  --bg-tertiary: #f1f5f9;       /* slate-100 */
+  
+  --text-primary: #0f172a;      /* slate-900 */
+  --text-secondary: #334155;    /* slate-700 */
+  --text-tertiary: #64748b;     /* slate-500 */
+  
+  --border-color: rgba(15, 23, 42, 0.08);
+  
+  --accent-color: #8b5cf6;      /* violet-500 */
+  --accent-hover: #7c3aed;      /* violet-600 */
+  --accent-bg: rgba(139, 92, 246, 0.08);
+  --accent-border: rgba(139, 92, 246, 0.15);
+  
+  --pre-bg: #e2e8f0;            /* slate-200 */
+}
+
+.dark {
+  --bg-primary: #030303;
+  --bg-secondary: #0b0b0e;
+  --bg-tertiary: #16161a;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;    /* gray-300 */
+  --text-tertiary: #8e8e93;     /* gray-500 */
+  
+  --border-color: rgba(255, 255, 255, 0.05);
+  
+  --accent-color: #c084fc;      /* violet-400 */
+  --accent-hover: #b074ec;
+  --accent-bg: rgba(192, 132, 252, 0.15);
+  --accent-border: rgba(192, 132, 252, 0.2);
+  
+  --pre-bg: #050507;
+}
+
+/* Custom styling for markdown elements to look gorgeous in both modes */
+.prose {
+  color: var(--text-secondary);
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  color: var(--text-primary);
+}
+
+.prose strong {
+  color: var(--text-primary);
+}
+
+.prose code {
+  color: var(--accent-color);
+  background-color: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+}

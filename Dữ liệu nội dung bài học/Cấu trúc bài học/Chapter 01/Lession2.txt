@@ -1,0 +1,59 @@
+---
+lessonId: "LS-01.02"
+title: "Môi trường lập trình Python"
+difficulty: "EASY"
+estimatedDuration: 5
+keywords: ["python environment", "IDE", "IDLE", "interpreter", "interactive mode", "script mode"]
+prerequisites: ["LS-01.01"]
+---
+
+## 1. Lý thuyết cốt lõi
+
+| Thuật ngữ | Định nghĩa |
+| :--- | :--- |
+| **Môi trường lập trình** | Nơi cung cấp đầy đủ các công cụ (như trình biên dịch/thông dịch, trình soạn thảo mã nguồn) để lập trình viên viết và chạy chương trình. |
+| **IDE (Integrated Development Environment)** | Môi trường phát triển tích hợp - phần mềm kết hợp giữa soạn thảo mã nguồn, kiểm tra lỗi và chạy code (Ví dụ: VS Code, PyCharm, IDLE). |
+| **Interactive Mode (Chế độ tương tác)** | Chế độ chạy Python trực tiếp trên cửa sổ Terminal/Command Prompt. Nhập dòng lệnh nào, máy tính trả kết quả ngay lập tức của dòng đó. |
+| **Script Mode (Chế độ soạn thảo)** | Chế độ viết toàn bộ mã nguồn vào một file văn bản có đuôi mở rộng là `.py`, sau đó chạy toàn bộ file cùng một lúc. |
+
+---
+
+## 2. Cú pháp & Code mẫu
+
+Khi sử dụng Chế độ soạn thảo (Script Mode), toàn bộ mã nguồn sẽ được lưu trong file `.py` và thực thi tuần tự từ trên xuống dưới.
+
+```python
+# File: hello.py
+print("Xin chào!")
+print("Đây là dòng code chạy trong Chế độ soạn thảo (Script Mode).")
+```
+
+Khi chạy file `hello.py` bằng Python:
+```text
+Xin chào!
+Đây là dòng code chạy trong Chế độ soạn thảo (Script Mode).
+```
+
+---
+
+## 3. Lỗi thường gặp & Thực hành tốt
+
+* **Nhầm lẫn giữa Terminal của hệ thống và Terminal của Python**: 
+  * Lỗi: Gõ lệnh Python trực tiếp vào Command Prompt/PowerShell của máy tính khi chưa khởi động môi trường Python (chưa gõ `python`).
+  * Thực hành tốt: Phân biệt rõ dấu nhắc của hệ thống (như `C:\>`) và dấu nhắc của Python (luôn có ký hiệu `>>>`).
+* **Quên lưu file trước khi chạy**:
+  * Lỗi: Chỉnh sửa mã nguồn trong IDE nhưng quên không lưu (Ctrl + S) dẫn đến khi chạy chương trình vẫn nhận kết quả cũ.
+  * Thực hành tốt: Bật tính năng Auto Save (Tự động lưu) trên các công cụ như VS Code.
+
+---
+
+## 4. Chốt kiến thức
+
+> [!TIP]
+> **Đặc điểm nào dưới đây là của Chế độ tương tác (Interactive Mode)?**
+> * **A)** Cho phép viết hàng trăm dòng code rồi lưu lại thành file `.py` để chạy sau.
+> * **B)** Cho phép gõ từng dòng lệnh, máy tính sẽ dịch và phản hồi kết quả ngay lập tức sau khi nhấn Enter.
+> * **C)** Không cần cài đặt trình thông dịch Python vẫn có thể chạy được mã nguồn.
+> 
+> Đáp án đúng: **B**
+> *(Giải thích: Chế độ tương tác hoạt động theo cơ chế nhận lệnh - phản hồi trực tiếp, rất thích hợp để thử nghiệm các câu lệnh ngắn. Đáp án A là đặc điểm của Chế độ soạn thảo).*

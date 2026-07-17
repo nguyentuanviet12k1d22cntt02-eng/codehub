@@ -1,0 +1,369 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum CourseLevel {
+  BASIC
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum ExerciseDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum SubmissionStatus {
+  PENDING
+  PASSED
+  FAILED
+}
+
+enum ProgrammingLanguage {
+  PYTHON
+  JAVASCRIPT
+  CPP
+  C
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  username  String   @unique
+  email     String   @unique
+  password  String
+  role      UserRole @default(STUDENT)
+  gender    Gender?
+  avatarUrl String?  @map("avatar_url")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  createdCourses Course[] @relation("CourseCreator")
+
+  enrollments    Enrollment[]
+  lessonProgress LessonProgress[]
+  submissions    Submission[]
+  aiReviews      AIReview[]
+  certificates   Certificate[]
+  practiceSubmissions PracticeSubmission[]
+
+  @@map("users")
+}
+
+model Course {
+  id String @id @default(uuid()) @db.Uuid
+
+  title       String
+  description String?
+
+  level        CourseLevel
+  thumbnailUrl String?     @map("thumbnail_url")
+
+  status CourseStatus @default(DRAFT)
+
+  createdBy String @map("created_by") @db.Uuid
+  creator   User   @relation("CourseCreator", fields: [createdBy], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  modules      Module[]
+  enrollments  Enrollment[]
+  certificates Certificate[]
+
+  @@map("courses")
+}
+
+model Module {
+  id             String   @id @default(uuid()) @db.Uuid
+  moduleId       String   @unique @map("module_id") // Ví dụ: MOD-01, MOD-02
+  courseId       String   @map("course_id") @db.Uuid
+  course         Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  title          String
+  objective      String?
+  keyKnowledge   String?  @map("key_knowledge")
+  prerequisite   String?
+  skillsAcquired String?  @map("skills_acquired")
+  duration       String?
+  orderIndex     Int      @map("order_index")
+
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  chapters       Chapter[]
+
+  @@map("modules")
+}
+
+model Chapter {
+  id String @id @default(uuid()) @db.Uuid
+  chapterId String? @map("chapter_id") // Ví dụ: CH-01
+
+  moduleId String @map("module_id") @db.Uuid
+  module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  title          String
+  objective      String?
+  coreKnowledge  String? @map("core_knowledge")
+  skillsAcquired String? @map("skills_acquired")
+  orderIndex     Int     @map("order_index")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  lessons Lesson[]
+
+  @@map("chapters")
+}
+
+model Lesson {
+  id String @id @default(uuid()) @db.Uuid
+  lessonId String? @map("lesson_id") // Ví dụ: LS-01.01
+
+  chapterId String  @map("chapter_id") @db.Uuid
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  title           String
+  objective       String?
+  keyKnowledge    String? @map("key_knowledge")
+  difficulty      String?
+
+  videoUrl String? @map("video_url")
+  content  String?
+
+  orderIndex      Int  @map("order_index")
+  durationMinutes Int? @map("duration_minutes")
+
+  isFree Boolean @default(false) @map("is_free")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  codingExercises CodingExercise[]
+  lessonProgress  LessonProgress[]
+  aiReviews       AIReview[]
+
+  @@map("lessons")
+}
+
+model CodingExercise {
+  id String @id @default(uuid()) @db.Uuid
+
+  lessonId String @map("lesson_id") @db.Uuid
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  title String
+
+  difficulty ExerciseDifficulty
+
+  problemDescription String @map("problem_description")
+
+  starterCode  String? @map("starter_code")
+  solutionCode String? @map("solution_code")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  testCases   TestCase[]
+  submissions Submission[]
+
+  @@map("coding_exercises")
+}
+
+model TestCase {
+  id String @id @default(uuid()) @db.Uuid
+
+  exerciseId String         @map("exercise_id") @db.Uuid
+  exercise   CodingExercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  input          String
+  expectedOutput String @map("expected_output")
+
+  isHidden Boolean @default(false) @map("is_hidden")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("test_cases")
+}
+
+model Enrollment {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId   String @map("user_id") @db.Uuid
+  courseId String @map("course_id") @db.Uuid
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  enrolledAt DateTime @default(now()) @map("enrolled_at")
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+model LessonProgress {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId   String @map("user_id") @db.Uuid
+  lessonId String @map("lesson_id") @db.Uuid
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  isCompleted Boolean @default(false) @map("is_completed")
+
+  score Int?
+
+  lastCode String? @map("last_code")
+
+  completedAt DateTime? @map("completed_at")
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, lessonId])
+  @@map("lesson_progress")
+}
+
+model Submission {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId     String @map("user_id") @db.Uuid
+  exerciseId String @map("exercise_id") @db.Uuid
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise CodingExercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  language ProgrammingLanguage
+
+  code String
+
+  status SubmissionStatus @default(PENDING)
+
+  runtime Float?
+
+  submittedAt DateTime @default(now()) @map("submitted_at")
+
+  @@map("submissions")
+}
+
+model AIReview {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId   String @map("user_id") @db.Uuid
+  lessonId String @map("lesson_id") @db.Uuid
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  submittedCode String @map("submitted_code")
+
+  feedback String
+
+  score Int?
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("ai_reviews")
+}
+
+model Certificate {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId   String @map("user_id") @db.Uuid
+  courseId String @map("course_id") @db.Uuid
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  certificateUrl String @map("certificate_url")
+
+  issuedAt DateTime @default(now()) @map("issued_at")
+
+  @@unique([userId, courseId])
+  @@map("certificates")
+}
+
+model PracticeProblem {
+  id           String             @id @default(uuid()) @db.Uuid
+  title        String
+  slug         String             @unique
+  difficulty   ExerciseDifficulty
+  description  String             @db.Text
+  
+  // Starter codes and solution codes in JSON format { "PYTHON": "...", "JAVASCRIPT": "...", "CPP": "...", "C": "..." }
+  starterCodes Json               @map("starter_codes")
+  solutionCodes Json?             @map("solution_codes")
+
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+
+  testCases    PracticeTestCase[]
+  submissions  PracticeSubmission[]
+  tags         ProblemTag[]       @relation("ProblemToTag")
+
+  @@map("practice_problems")
+}
+
+model PracticeTestCase {
+  id             String          @id @default(uuid()) @db.Uuid
+  problemId      String          @map("problem_id") @db.Uuid
+  problem        PracticeProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  input          String          @db.Text
+  expectedOutput String          @map("expected_output") @db.Text
+  isHidden       Boolean         @default(false) @map("is_hidden")
+
+  createdAt      DateTime        @default(now()) @map("created_at")
+
+  @@map("practice_test_cases")
+}
+
+model PracticeSubmission {
+  id          String              @id @default(uuid()) @db.Uuid
+  userId      String              @map("user_id") @db.Uuid
+  problemId   String              @map("problem_id") @db.Uuid
+
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem     PracticeProblem     @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  language    ProgrammingLanguage
+  code        String              @db.Text
+  status      SubmissionStatus    @default(PENDING)
+  runtime     Float?              // Thời gian chạy (ms)
+
+  submittedAt DateTime            @default(now()) @map("submitted_at")
+
+  @@map("practice_submissions")
+}
+
+model ProblemTag {
+  id       String            @id @default(uuid()) @db.Uuid
+  name     String            @unique
+  slug     String            @unique
+  problems PracticeProblem[] @relation("ProblemToTag")
+
+  @@map("problem_tags")
+}

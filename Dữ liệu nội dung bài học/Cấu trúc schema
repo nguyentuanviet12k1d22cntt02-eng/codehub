@@ -1,0 +1,156 @@
+# CẤU TRÚC SCHEMA DATABASE (PRISMA SCHEMA)
+
+Tài liệu này định nghĩa chi tiết cấu trúc Database (Schema) mới của hệ thống học lập trình Python, được thiết kế nhằm đáp ứng trọn vẹn và tối ưu cấu trúc khóa học 4 cấp độ: **Course (Khóa học) -> Module (Phân mô) -> Chapter (Chương) -> Lesson (Bài học)** được mô tả trong tài liệu "Cấu trúc của khóa học python".
+
+---
+
+## 1. Sơ đồ Quan hệ Thực thể (ER Diagram)
+
+Dưới đây là sơ đồ quan hệ thực thể giữa các thực thể cốt lõi trong hệ thống quản lý bài học:
+
+```mermaid
+erDiagram
+    Course ||--o{ Module : "chứa"
+    Module ||--o{ Chapter : "chứa"
+    Chapter ||--o{ Lesson : "chứa"
+    Lesson ||--o{ CodingExercise : "có"
+    CodingExercise ||--o{ TestCase : "có"
+    
+    User ||--o{ Enrollment : "đăng ký"
+    Course ||--o{ Enrollment : "được đăng ký"
+    
+    User ||--o{ LessonProgress : "tiến độ"
+    Lesson ||--o{ LessonProgress : "được học"
+    
+    User ||--o{ Submission : "nộp bài"
+    CodingExercise ||--o{ Submission : "có bài nộp"
+    
+    User ||--o{ AIReview : "nhận nhận xét"
+    Lesson ||--o{ AIReview : "thuộc bài học"
+```
+
+---
+
+## 2. Chi tiết các Model Prisma cập nhật
+
+### 2.1. Model `Course` (Khóa học)
+Quản lý thông tin chung của khóa học (Ví dụ: Khóa học Lập trình Python Nền tảng).
+```prisma
+model Course {
+  id           String         @id @default(uuid()) @db.Uuid
+  title        String
+  description  String?
+  level        CourseLevel    // BASIC, INTERMEDIATE, ADVANCED
+  thumbnailUrl String?        @map("thumbnail_url")
+  status       CourseStatus   @default(DRAFT) // DRAFT, PUBLISHED
+  createdBy    String         @map("created_by") @db.Uuid
+  creator      User           @relation("CourseCreator", fields: [createdBy], references: [id])
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  // Quan hệ mới: Một khóa học chứa nhiều Module
+  modules      Module[]
+  enrollments  Enrollment[]
+  certificates Certificate[]
+
+  @@map("courses")
+}
+```
+
+### 2.2. Model `Module` (Phân mô - MỚI)
+Mỗi module đại diện cho một phần kiến thức lớn trong lộ trình khóa học (Ví dụ: Nhập môn Lập trình, Luồng điều khiển, Cấu trúc dữ liệu...).
+```prisma
+model Module {
+  id             String      @id @default(uuid()) @db.Uuid
+  moduleId       String      @unique @map("module_id") // Ví dụ: MOD-01, MOD-02
+  courseId       String      @map("course_id") @db.Uuid
+  course         Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  title          String      // Tên Module
+  objective      String?     // Mục tiêu Module
+  keyKnowledge   String?     @map("key_knowledge") // Kiến thức chính
+  prerequisite   String?     // Điều kiện tiên quyết
+  skillsAcquired String?     @map("skills_acquired") // Kỹ năng đạt được
+  duration       String?     // Thời lượng học đề xuất (Ví dụ: "5 Giờ")
+  orderIndex     Int         @map("order_index") // Thứ tự sắp xếp module trong course
+
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  // Quan hệ: Một Module chứa nhiều Chapter
+  chapters       Chapter[]
+
+  @@map("modules")
+}
+```
+
+### 2.3. Model `Chapter` (Chương - CẬP NHẬT)
+Chương học phân chia nhỏ kiến thức trong Module và trực tiếp chứa các bài học cụ thể.
+```prisma
+model Chapter {
+  id             String      @id @default(uuid()) @db.Uuid
+  chapterId      String      @map("chapter_id") // Ví dụ: CH-01, CH-02 (Không bắt buộc unique toàn cục, chỉ phân biệt trong module)
+  
+  // Thay đổi quan hệ: Liên kết tới Module thay vì trực tiếp tới Course
+  moduleId       String      @map("module_id") @db.Uuid
+  module         Module      @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  title          String      // Tên Chapter
+  objective      String?     // Mục tiêu chương
+  coreKnowledge  String?     @map("core_knowledge") // Kiến thức trọng tâm
+  skillsAcquired String?     @map("skills_acquired") // Kỹ năng đạt được
+  orderIndex     Int         @map("order_index") // Thứ tự chương trong module
+
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  lessons        Lesson[]
+
+  @@map("chapters")
+}
+```
+
+### 2.4. Model `Lesson` (Bài học - CẬP NHẬT)
+Lớp bài học cuối cùng chứa nội dung lý thuyết, video và các bài tập thực hành.
+```prisma
+model Lesson {
+  id              String           @id @default(uuid()) @db.Uuid
+  lessonId        String           @map("lesson_id") // Ví dụ: LS-01.01, LS-01.02
+  chapterId       String           @map("chapter_id") @db.Uuid
+  chapter         Chapter          @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  title           String           // Tên Lesson
+  objective       String?          // Mục tiêu Lesson
+  keyKnowledge    String?          @map("key_knowledge") // Kiến thức chính của bài
+  difficulty      String?          // Độ khó bài học (Ví dụ: "Dễ", "Cơ bản", "Trung bình", "Khó")
+  
+  videoUrl        String?          @map("video_url")
+  content         String?          @db.Text // Nội dung lý thuyết chi tiết
+  orderIndex      Int              @map("order_index") // Thứ tự bài học trong chapter
+  durationMinutes Int?             @map("duration_minutes") // Thời lượng học (phút)
+  isFree          Boolean          @default(false) @map("is_free")
+
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  codingExercises CodingExercise[]
+  lessonProgress  LessonProgress[]
+  aiReviews       AIReview[]
+
+  @@map("lessons")
+}
+```
+
+### 2.5. Các Model liên quan khác (Giữ nguyên cấu trúc nhưng ánh xạ chuẩn hóa)
+- `CodingExercise`: Bài tập lập trình thực hành liên kết với `Lesson`.
+- `TestCase`: Dữ liệu đầu vào và đầu ra kỳ vọng để chấm bài tự động.
+- `LessonProgress`: Lưu trữ trạng thái hoàn thành bài học, điểm số, và đoạn code lưu trữ gần nhất của từng học viên.
+- `Submission`: Lịch sử nộp bài chạy thử / chấm điểm của học viên.
+- `AIReview`: Chứa nhận xét, điểm số và gợi ý cải thiện code từ AI cho bài học.
+
+---
+
+## 3. Lợi ích của Schema thiết kế mới
+1. **Quản lý dữ liệu phân cấp rõ ràng**: Giúp hiển thị cây thư mục khóa học đa cấp dễ dàng trên Frontend.
+2. **Lưu trữ siêu dữ liệu đầy đủ**: Các thông tin mục tiêu học tập (`objective`), kiến thức trọng tâm (`keyKnowledge`, `coreKnowledge`), điều kiện tiên quyết (`prerequisite`) và kỹ năng đạt được (`skillsAcquired`) giúp tăng tính học thuật và cá nhân hóa lộ trình học tập bằng AI.
+3. **Mềm dẻo và mở rộng**: Hỗ trợ việc thêm mới hoặc điều chỉnh cấu trúc nội dung các Module học nhanh chóng mà không làm xáo trộn luồng đăng ký học của học viên.
