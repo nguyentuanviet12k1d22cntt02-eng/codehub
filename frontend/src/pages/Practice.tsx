@@ -73,6 +73,8 @@ const Practice: React.FC = () => {
 
     // 1. Các State quản trị dữ liệu bài học & bài tập từ API
     const [lesson, setLesson] = useState<any>(null);
+    const [exercises, setExercises] = useState<any[]>([]);
+    const [currentExerciseIdx, setCurrentExerciseIdx] = useState<number>(0);
     const [exercise, setExercise] = useState<ExerciseMock | null>(null);
     const [code, setCode] = useState<string>('');
     const [customInput, setCustomInput] = useState<string>('');
@@ -89,6 +91,8 @@ const Practice: React.FC = () => {
     const [consoleOutput, setConsoleOutput] = useState<string>('Bấm "Chạy thử" để xem kết quả đầu ra tại đây...');
     const [testcaseResults, setTestCaseResults] = useState<TestCaseMock[]>([]);
     const [isCompleted, setIsCompleted] = useState<boolean>(false);
+    const [userCodes, setUserCodes] = useState<Record<string, string>>({});
+    const [completedExercises, setCompletedExercises] = useState<Record<string, boolean>>({});
 
     // State thống kê xếp hạng & lịch sử nộp bài
     const [submitStats, setSubmitStats] = useState<{
@@ -109,12 +113,22 @@ const Practice: React.FC = () => {
             setConsoleOutput('Bấm "Chạy thử" để xem kết quả đầu ra tại đây...');
             setSubmitStats(null);
             setSubmissions([]);
+            setCompletedExercises({});
 
             try {
                 const data = await authService.getLessonDetail(id);
                 setLesson(data);
                 
                 if (data.codingExercises && data.codingExercises.length > 0) {
+                    setExercises(data.codingExercises);
+                    setCurrentExerciseIdx(0);
+
+                    const initialCodes: Record<string, string> = {};
+                    data.codingExercises.forEach((ex: any) => {
+                        initialCodes[ex.id] = ex.starterCode || '# Viết code Python của bạn ở đây\n';
+                    });
+                    setUserCodes(initialCodes);
+
                     const firstEx = data.codingExercises[0];
                     setExercise({
                         id: firstEx.id,
@@ -131,7 +145,35 @@ const Practice: React.FC = () => {
                     } else {
                         setCustomInput('');
                     }
+
+                    // Tải trạng thái hoàn thành (nếu có lịch sử nộp bài thành công)
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        const compStatus: Record<string, boolean> = {};
+                        await Promise.all(
+                            data.codingExercises.map(async (ex: any) => {
+                                try {
+                                    const resSub = await axios.get(`http://localhost:3000/api/auth/exercises/${ex.id}/submissions`, {
+                                        headers: { Authorization: `Bearer ${token}` }
+                                    });
+                                    const hasPassed = resSub.data.some((sub: any) => sub.status === 'PASSED');
+                                    compStatus[ex.id] = hasPassed;
+                                } catch (e) {
+                                    console.error('Lỗi khi lấy lịch sử bài nộp cho bài tập:', ex.id, e);
+                                }
+                            })
+                        );
+                        setCompletedExercises(compStatus);
+
+                        // Nếu tất cả các bài tập đã được hoàn thành trước đó, đánh dấu hoàn thành
+                        const allExPassed = data.codingExercises.every((ex: any) => compStatus[ex.id]);
+                        if (allExPassed) {
+                            setIsCompleted(true);
+                        }
+                    }
                 } else {
+                    setExercises([]);
+                    setCurrentExerciseIdx(0);
                     setExercise(null);
                     setCode('');
                     setCustomInput('');
@@ -149,6 +191,51 @@ const Practice: React.FC = () => {
 
         fetchLessonData();
     }, [id]);
+
+    const selectExercise = (idx: number) => {
+        if (idx < 0 || idx >= exercises.length) return;
+        
+        // Lưu code hiện tại
+        if (exercise) {
+            setUserCodes(prev => ({ ...prev, [exercise.id]: code }));
+        }
+
+        const nextEx = exercises[idx];
+        setCurrentExerciseIdx(idx);
+        setExercise({
+            id: nextEx.id,
+            title: nextEx.title,
+            difficulty: nextEx.difficulty,
+            problemDescription: nextEx.problemDescription,
+            starterCode: nextEx.starterCode || '# Viết code Python của bạn ở đây\n',
+            testCases: nextEx.testCases || []
+        });
+
+        const savedCode = userCodes[nextEx.id] !== undefined
+            ? userCodes[nextEx.id]
+            : (nextEx.starterCode || '# Viết code Python của bạn ở đây\n');
+        setCode(savedCode);
+
+        // Reset terminal states
+        setConsoleOutput('Bấm "Chạy thử" để xem kết quả đầu ra tại đây...');
+        setTestCaseResults([]);
+        setSubmitStats(null);
+        setActiveLeftTab('desc');
+        setActiveTerminalTab('console');
+
+        if (nextEx.testCases && nextEx.testCases.length > 0) {
+            setCustomInput(nextEx.testCases[0].input || '');
+        } else {
+            setCustomInput('');
+        }
+    };
+
+    const handleCodeChange = (newVal: string) => {
+        setCode(newVal);
+        if (exercise) {
+            setUserCodes(prev => ({ ...prev, [exercise.id]: newVal }));
+        }
+    };
 
     const fetchSubmissions = async () => {
         if (!exercise) return;
@@ -225,9 +312,20 @@ const Practice: React.FC = () => {
                 setTestCaseResults(results);
 
                 if (allPassed) {
-                    setIsCompleted(true);
+                    const updatedCompleted = { ...completedExercises, [exercise.id]: true };
+                    setCompletedExercises(updatedCompleted);
+                    
                     setSubmitStats({ runtimeMs, runtimeBeats, distribution });
-                    setConsoleOutput(`🎉 Tuyệt vời! Bạn đã vượt qua tất cả ${results.length}/${results.length} testcases.\nTrạng thái bài học: HOÀN THÀNH`);
+
+                    // Kiểm tra xem đã vượt qua hết tất cả các bài tập chưa
+                    const allPassedLesson = exercises.every(ex => updatedCompleted[ex.id]);
+                    if (allPassedLesson) {
+                        setIsCompleted(true);
+                        setConsoleOutput(`🎉 Tuyệt vời! Bạn đã vượt qua tất cả các bài tập trong bài học này.\nTrạng thái bài học: HOÀN THÀNH`);
+                    } else {
+                        setConsoleOutput(`🎉 Tuyệt vời! Bạn đã vượt qua tất cả ${results.length}/${results.length} testcases của bài tập này.\nHãy tiếp tục hoàn thành các bài tập còn lại!`);
+                    }
+
                     // Cập nhật lại lịch sử nộp bài nếu đang ở tab đó
                     if (activeLeftTab === 'submissions') {
                         fetchSubmissions();
@@ -354,6 +452,28 @@ const Practice: React.FC = () => {
                         <div className="flex-1 overflow-y-auto p-5 text-sm leading-relaxed text-left select-text">
                             {activeLeftTab === 'desc' && exercise ? (
                                 <div className="flex flex-col gap-4">
+                                    {exercises.length > 1 && (
+                                        <div className="flex flex-wrap gap-1.5 p-1 bg-bg-tertiary border border-border-custom rounded-xl select-none mb-1">
+                                            {exercises.map((ex, index) => {
+                                                const isSelected = index === currentExerciseIdx;
+                                                const isExCompleted = completedExercises[ex.id];
+                                                return (
+                                                    <button
+                                                        key={ex.id}
+                                                        className={`flex-1 min-w-[75px] py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all border-none cursor-pointer text-center flex items-center justify-center gap-1 ${
+                                                            isSelected
+                                                                ? 'bg-accent-custom text-white dark:text-[#030303] shadow'
+                                                                : 'bg-transparent text-text-tertiary hover:text-text-primary'
+                                                        }`}
+                                                        onClick={() => selectExercise(index)}
+                                                    >
+                                                        <span>Bài {index + 1}</span>
+                                                        {isExCompleted && <span className="text-emerald-500 font-extrabold text-xs">✓</span>}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
                                     <div className="flex justify-between items-center">
                                         <h2 className="text-lg font-bold text-text-primary m-0">{exercise.title}</h2>
                                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase ${
@@ -478,7 +598,7 @@ const Practice: React.FC = () => {
                                         language="python"
                                         theme={currentTheme === 'dark' ? 'vs-dark' : 'light'}
                                         value={code}
-                                        onChange={(val) => setCode(val || '')}
+                                        onChange={(val) => handleCodeChange(val || '')}
                                         options={{
                                             fontSize: 14,
                                             minimap: { enabled: false },
@@ -656,6 +776,14 @@ const Practice: React.FC = () => {
                                                  disabled={isRunning || isSubmitting}
                                              >
                                                  {isRunning ? 'Đang chạy...' : 'Chạy thử'}
+                                             </button>
+                                         )}
+                                         {completedExercises[exercise.id] && currentExerciseIdx < exercises.length - 1 && (
+                                             <button 
+                                                 className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
+                                                 onClick={() => selectExercise(currentExerciseIdx + 1)}
+                                             >
+                                                 Bài tập tiếp theo →
                                              </button>
                                          )}
                                          {isCompleted && lesson?.nextLessonId ? (

@@ -1,4 +1,5 @@
 import { prisma } from '../config/prisma';
+import { exercisesData } from './exercises_data';
 import * as bcrypt from 'bcryptjs';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -213,26 +214,20 @@ async function main() {
 
                                                 // Tạo bài tập thực hành (CodingExercises) lồng bên trong Lesson 1
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Chương trình Hello World',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Viết chương trình Python in ra dòng chữ "Hello, World!"',
-                                                            starterCode: '# Hãy viết câu lệnh print ở đây\n',
-                                                            solutionCode: 'print("Hello, World!")',
-
-                                                            // Tạo các Test Cases cho bài tập
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Hello, World!\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-01.01'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -246,24 +241,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson2Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Sử dụng lệnh in cơ bản',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Viết chương trình in ra dòng chữ "Học Python thật thú vị!"',
-                                                            starterCode: '# Viết lệnh in của bạn ở đây\n',
-                                                            solutionCode: 'print("Học Python thật thú vị!")',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Học Python thật thú vị!\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-01.02'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -277,24 +268,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson3Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Viết chú thích và in nhiều dòng',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy viết một chú thích bất kỳ bắt đầu bằng dấu #, sau đó dùng 2 lệnh print để in ra 2 dòng chữ lần lượt là "Xin chào" và "Tên tôi là Python".',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: '# Chú thích dòng lệnh\nprint("Xin chào")\nprint("Tên tôi là Python")',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Xin chào\nTên tôi là Python\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-01.03'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             }
                                         ]
@@ -320,40 +307,20 @@ async function main() {
                                                 durationMinutes: 25,
                                                 content: lesson4Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Khai báo biến cơ bản',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy tạo một biến tên là `course_title` và gán cho nó giá trị chuỗi là `"Học Python cùng MCODE"`. Sau đó dùng lệnh `print()` để in giá trị của biến đó ra màn hình.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'course_title = "Học Python cùng MCODE"\nprint(course_title)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Học Python cùng MCODE\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
-                                                        },
-                                                        {
-                                                            title: 'Tính toán hóa đơn áo thun',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Khai báo biến `so_ao_thun` gán giá trị `5`, `gia_moi_ao` gán giá trị `120000`. Khai báo biến `tong_tien` lưu kết quả tích của hai biến trên và in `tong_tien` ra màn hình.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'so_ao_thun = 5\ngia_moi_ao = 120000\ntong_tien = so_ao_thun * gia_moi_ao\nprint(tong_tien)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '600000\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-01.04'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -367,40 +334,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson5Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Khai báo kiểu dữ liệu nguyên thủy',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy khai báo 3 biến: `tuoi` gán giá trị số nguyên `15`, `diem_so` gán giá trị số thực `8.5`, và `is_student` gán giá trị logic `True`. Sau đó in ra giá trị của từng biến này trên 3 dòng riêng biệt.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'tuoi = 15\ndiem_so = 8.5\nis_student = True\nprint(tuoi)\nprint(diem_so)\nprint(is_student)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '15\n8.5\nTrue\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
-                                                        },
-                                                        {
-                                                            title: 'Kiểm tra kiểu dữ liệu với type()',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Khai báo biến `chieu_cao` gán giá trị `1.75`. Sử dụng hàm `type()` kết hợp với `print()` để in ra kiểu dữ liệu của biến này.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'chieu_cao = 1.75\nprint(type(chieu_cao))',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: "<class 'float'>\n",
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-01.05'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -414,24 +361,20 @@ async function main() {
                                                 durationMinutes: 30,
                                                 content: lesson6Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Tính toán chia chia lấy dư pizza',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Một nhóm bạn gồm `4` người đi ăn pizza hết tổng cộng `350000` đồng. Hãy tính số tiền mỗi người phải trả khi chia đều và gán vào biến `so_tien_moi_nguoi`. Tính số tiền dư không thể chia đều và gán vào biến `so_tien_du`. In cả hai biến ra màn hình lần lượt trên 2 dòng.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'so_tien_moi_nguoi = 350000 / 4\nso_tien_du = 350000 % 4\nprint(so_tien_moi_nguoi)\nprint(so_tien_du)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '87500.0\n0\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-01.06'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -445,24 +388,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson7Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Cập nhật ví tiết kiệm',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Khởi tạo biến `tien_tiet_kiem = 100000`. Dùng toán tử gán rút gọn để cộng thêm `50000`, sau đó tiếp tục dùng toán tử gán rút gọn nhân đôi số tiền tiết kiệm hiện tại. In giá trị biến `tien_tiet_kiem` cuối cùng ra màn hình.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'tien_tiet_kiem = 100000\ntien_tiet_kiem += 50000\ntien_tiet_kiem *= 2\nprint(tien_tiet_kiem)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '300000\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-01.07'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             }
                                         ]
@@ -488,24 +427,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson12Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Định dạng ngày xuất bản',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy khai báo 3 biến chứa ngày tháng năm: `ngay = 16`, `thang = 7`, `nam = 2026`. Sử dụng một câu lệnh `print()` duy nhất với tham số `sep` để in ra màn hình chuỗi ngày tháng năm có dạng `16/7/2026`.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'ngay = 16\nthang = 7\nnam = 2026\nprint(ngay, thang, nam, sep="/")',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '16/7/2026\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-01.08'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -519,24 +454,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson13Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Nhập món ăn yêu thích',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy viết một chương trình yêu cầu người dùng nhập vào món ăn yêu thích của họ bằng câu lệnh `input()` (không ghi prompt text bên trong). Sau đó in ra màn hình dòng chữ `"Món ăn yêu thích của bạn là: [tên món ăn]"`.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'mon_an = input()\nprint("Món ăn yêu thích của bạn là:", mon_an)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: 'Phở bò\n',
-                                                                        expectedOutput: 'Món ăn yêu thích của bạn là: Phở bò\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-01.09'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -550,24 +481,20 @@ async function main() {
                                                 durationMinutes: 25,
                                                 content: lesson14Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Cộng thêm 100',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy viết một chương trình yêu cầu người dùng nhập vào một số nguyên từ bàn phím bằng câu lệnh `input()` (không ghi prompt text bên trong). Hãy cộng số đó với `100` rồi in kết quả ra màn hình.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'so_nhap = int(input())\nprint(so_nhap + 100)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '50\n',
-                                                                        expectedOutput: '150\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-01.10'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             }
                                         ]
@@ -607,24 +534,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson8Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Kiểm tra sốt',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Khai báo hai biến `nhiet_do = 38.5` và `nhiet_do_binh_thuong = 37.0`. Hãy tạo một biểu thức so sánh kiểm tra xem `nhiet_do` có lớn hơn `nhiet_do_binh_thuong` hay không và lưu kết quả vào biến `is_sot`. In kết quả của `is_sot` ra màn hình.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'nhiet_do = 38.5\nnhiet_do_binh_thuong = 37.0\nis_sot = nhiet_do > nhiet_do_binh_thuong\nprint(is_sot)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'True\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-02.01'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -638,24 +561,20 @@ async function main() {
                                                 durationMinutes: 25,
                                                 content: lesson9Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Kiểm tra ví mua vé phim',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy khai báo hai biến `so_tien_hien_co = 15000` và `gia_ve_xem_phim = 45000`. Viết một câu lệnh `if` kiểm tra xem `so_tien_hien_co` có nhỏ hơn `gia_ve_xem_phim` hay không. Nếu đúng, hãy in ra màn hình dòng chữ `"Bạn không đủ tiền mua vé xem phim!"`.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'so_tien_hien_co = 15000\ngia_ve_xem_phim = 45000\nif so_tien_hien_co < gia_ve_xem_phim:\n    print("Bạn không đủ tiền mua vé xem phim!")',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Bạn không đủ tiền mua vé xem phim!\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-02.02'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -669,24 +588,20 @@ async function main() {
                                                 durationMinutes: 35,
                                                 content: lesson10Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Phân loại độ tuổi',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Khai báo biến `so_tuoi = 15`. Viết cấu trúc `if-elif-else` để phân loại độ tuổi: nếu `so_tuoi >= 18` in ra `"Người lớn"`, ngược lại nếu `so_tuoi >= 12` in ra `"Thiếu niên"`, ngược lại in ra `"Trẻ em"`.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'so_tuoi = 15\nif so_tuoi >= 18:\n    print("Người lớn")\nelif so_tuoi >= 12:\n    print("Thiếu niên")\nelse:\n    print("Trẻ em")',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Thiếu niên\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-02.03'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -700,24 +615,20 @@ async function main() {
                                                 durationMinutes: 30,
                                                 content: lesson11Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Xét duyệt giảm giá',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Khai báo 3 biến: `co_the_thanh_vien = True`, `la_cuoi_tuan = True`, và `hoa_don = 250000`. Viết câu lệnh `if` kiểm tra xem khách hàng có thẻ thành viên **và** hóa đơn lớn hơn `200000` đồng, **hoặc** khách hàng có thẻ thành viên nhưng đi mua sắm vào ngày cuối tuần. Nếu thỏa mãn điều kiện, hãy in ra dòng chữ `"Được giảm giá 10%!"`.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'co_the_thanh_vien = True\nla_cuoi_tuan = True\nhoa_don = 250000\nif (co_the_thanh_vien and hoa_don > 200000) or (co_the_thanh_vien and la_cuoi_tuan):\n    print("Được giảm giá 10%!")',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Được giảm giá 10%!\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-02.04'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             }
                                         ]
@@ -743,24 +654,20 @@ async function main() {
                                                 durationMinutes: 35,
                                                 content: lesson15Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Vòng lặp while cơ bản',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy khởi tạo biến `so_du = 3`. Hãy viết một vòng lặp `while` kiểm tra điều kiện `so_du > 0`. Bên trong vòng lặp, hãy in ra màn hình dòng chữ `"Đang hoạt động"` và giảm `so_du` đi 1 đơn vị sau mỗi lần lặp.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'so_du = 3\nwhile so_du > 0:\n    print("Đang hoạt động")\n    so_du -= 1',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Đang hoạt động\nĐang hoạt động\nĐang hoạt động\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-02.05'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -774,24 +681,20 @@ async function main() {
                                                 durationMinutes: 25,
                                                 content: lesson16Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Sinh dãy số chia hết cho 5',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy dùng hàm `range()` kết hợp với hàm `list()` để tạo ra và in ra màn hình danh sách các số chia hết cho 5 trong khoảng từ 5 đến 30 (bao gồm cả số 30). Kết quả mong muốn hiển thị là: `[5, 10, 15, 20, 25, 30]`.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'day_so = list(range(5, 31, 5))\nprint(day_so)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '[5, 10, 15, 20, 25, 30]\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-02.06'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -805,24 +708,20 @@ async function main() {
                                                 durationMinutes: 35,
                                                 content: lesson17Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'In số lẻ tuần tự',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy viết chương trình sử dụng vòng lặp `for` kết hợp với hàm `range()` để in ra màn hình các số lẻ từ 1 đến 7 (bao gồm cả số 7), mỗi số được in trên một dòng riêng biệt.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'for i in range(1, 8, 2):\n    print(i)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '1\n3\n5\n7\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-02.07'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -836,24 +735,20 @@ async function main() {
                                                 durationMinutes: 30,
                                                 content: lesson18Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Ngắt vòng lặp khẩn cấp',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy viết chương trình sử dụng vòng lặp `for` duyệt qua các số trong `range(1, 6)`. Nếu gặp số `4`, hãy dùng lệnh `break` để thoát vòng lặp. Với các số khác, hãy in giá trị của số đó ra màn hình (mỗi số trên một dòng).',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'for i in range(1, 6):\n    if i == 4:\n        break\n    print(i)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '1\n2\n3\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-02.08'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             }
                                         ]
@@ -893,24 +788,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson19Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Lấy ký tự đặc trưng',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Khai báo biến `s = "MCODE"`. Hãy in ra màn hình ký tự đầu tiên và ký tự cuối cùng của chuỗi `s` trên 2 dòng riêng biệt.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 's = "MCODE"\nprint(s[0])\nprint(s[-1])',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'M\nE\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-03.01'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -924,24 +815,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson20Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Cắt ghép tên file',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Khai báo biến `file_name = "report_2026.pdf"`. Hãy cắt chuỗi để lấy ra chuỗi `"2026"` (gán vào biến `year`) và chuỗi `"pdf"` (gán vào biến `ext`). Sau đó in ra màn hình hai biến này cách nhau bởi dấu gạch ngang (ví dụ: `"2026-pdf"`).',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'file_name = "report_2026.pdf"\nyear = file_name[7:11]\next = file_name[-3:]\nprint(f"{year}-{ext}")',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '2026-pdf\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-03.02'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -955,24 +842,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson21Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Chuẩn hóa tên đăng nhập',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Khai báo biến `raw_username = "  STUDENT_01  "`. Hãy thực hiện loại bỏ khoảng trắng dư thừa ở hai đầu và chuyển toàn bộ chuỗi thành chữ thường. In kết quả cuối cùng ra màn hình.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'raw_username = "  STUDENT_01  "\nclean_username = raw_username.strip().lower()\nprint(clean_username)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'student_01\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-03.03'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -986,24 +869,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson22Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Tạo câu chào tự động',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Khai báo 3 biến: `name = "Duy"`, `math_score = 9`, và `english_score = 8`. Sử dụng F-string để in ra màn hình câu thông báo: `"Học sinh Duy có điểm trung bình là 8.5"` (trong đó 8.5 là kết quả tính toán trực tiếp điểm trung bình của hai môn trong f-string).',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'name = "Duy"\nmath_score = 9\nenglish_score = 8\nprint(f"Học sinh {name} có điểm trung bình là {(math_score + english_score) / 2}")',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Học sinh Duy có điểm trung bình là 8.5\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-03.04'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             }
                                         ]
@@ -1029,24 +908,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson23Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Truy xuất điểm thi',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Khởi tạo danh sách `diem_so = [8.5, 7.0, 9.5, 6.0]`. Hãy in ra màn hình phần tử có giá trị lớn nhất trong danh sách (sử dụng chỉ số index tương ứng) và độ dài của danh sách này trên 2 dòng riêng biệt.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'diem_so = [8.5, 7.0, 9.5, 6.0]\nprint(diem_so[2])\nprint(len(diem_so))',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '9.5\n4\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-03.05'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1060,24 +935,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson24Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Quản lý giỏ hàng',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Cho danh sách `shopping = ["Táo", "Bột mì"]`. Thực hiện lần lượt:\n1. Thêm `"Sữa"` vào cuối danh sách.\n2. Thay thế phần tử thứ hai `"Bột mì"` bằng `"Bơ"`.\n3. Xóa phần tử đầu tiên khỏi danh sách.\nIn danh sách kết quả cuối cùng ra màn hình.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'shopping = ["Táo", "Bột mì"]\nshopping.append("Sữa")\nshopping[1] = "Bơ"\nshopping.pop(0)\nprint(shopping)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: "['Bơ', 'Sữa']\n",
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-03.06'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1091,24 +962,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson25Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Tính tổng điểm giỏi',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Cho danh sách điểm `scores = [6.5, 8.0, 5.5, 9.0, 7.5]`. Viết chương trình sử dụng vòng lặp duyệt qua danh sách và tính tổng các điểm số lớn hơn hoặc bằng 7.0. In tổng đó ra màn hình.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'scores = [6.5, 8.0, 5.5, 9.0, 7.5]\ntong = 0.0\nfor s in scores:\n    if s >= 7.0:\n        tong += s\nprint(tong)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '24.5\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-03.07'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1122,24 +989,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson26Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Sắp xếp điểm số',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Cho danh sách điểm học viên `scores = [8, 5, 9, 7]`. Hãy sắp xếp danh sách này theo thứ tự giảm dần và in kết quả ra màn hình.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'scores = [8, 5, 9, 7]\nscores.sort(reverse=True)\nprint(scores)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '[9, 8, 7, 5]\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-03.08'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1153,24 +1016,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson27Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Khởi tạo tọa độ',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy khởi tạo một Tuple tên là `point` chứa hai số 15 và 30 đại diện cho tọa độ x và y. Hãy in ra màn hình phần tử y (tọa độ thứ hai) của Tuple đó.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'point = (15, 30)\nprint(point[1])',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '30\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-03.09'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             }
                                         ]
@@ -1196,24 +1055,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson28Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Lọc trùng số điện thoại',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Cho danh sách số điện thoại trùng lặp `phones = ["090", "091", "090", "098", "091"]`. Hãy loại bỏ các phần tử trùng lặp, sắp xếp tăng dần và in kết quả ra màn hình dưới dạng một List (sử dụng: `list(sorted(set(phones)))`).',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'phones = ["090", "091", "090", "098", "091"]\nunique_phones = list(sorted(set(phones)))\nprint(unique_phones)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: "['090', '091', '098']\n",
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-03.10'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1227,24 +1082,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson29Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Thông tin sản phẩm',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy khởi tạo một Dictionary tên là `product` lưu trữ thông tin gồm: `"name"` là `"Laptop"`, `"price"` là `15000000`. Hãy in ra màn hình giá bán (`"price"`) của sản phẩm đó.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'product = {\n    "name": "Laptop",\n    "price": 15000000\n}\nprint(product["price"])',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '15000000\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-03.11'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1258,24 +1109,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson30Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Quản lý tồn kho',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Cho từ điển kho hàng `stock = {"táo": 10, "cam": 5}`. Hãy thực hiện:\n1. Thêm mặt hàng `"chuối"` với số lượng là `20`.\n2. Cập nhật số lượng mặt hàng `"cam"` lên thành `12`.\n3. Xóa mặt hàng `"táo"` khỏi kho hàng.\nIn từ điển `stock` ra màn hình.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'stock = {"táo": 10, "cam": 5}\nstock["chuối"] = 20\nstock["cam"] = 12\ndel stock["táo"]\nprint(stock)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: "{'cam': 12, 'chuối': 20}\n",
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-03.12'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             }
                                         ]
@@ -1315,24 +1162,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson31Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Hàm in khẩu hiệu',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy định nghĩa một hàm tên là `show_slogan` không nhận tham số đầu vào. Hàm sẽ in ra màn hình chuỗi: `"Học Python thật thú vị!"`. Đừng quên viết câu lệnh gọi hàm này hoạt động ở dòng cuối cùng.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'def show_slogan():\n    print("Học Python thật thú vị!")\n\nshow_slogan()',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Học Python thật thú vị!\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-04.01'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1346,24 +1189,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson32Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Hàm chào tên riêng',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Định nghĩa một hàm tên là `say_hello` nhận vào một tham số `name`. Hàm sẽ in ra màn hình chuỗi: `"Xin chào, {name}!"`. Gọi hàm này với đối số truyền vào là `"MCode"`.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'def say_hello(name):\n    print(f"Xin chào, {name}!")\n\nsay_hello("MCode")',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Xin chào, MCode!\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-04.02'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1377,24 +1216,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson33Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Hàm tính diện tích',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Định nghĩa hàm `calc_area` nhận vào tham số là chiều rộng `width` và chiều cao `height` của hình chữ nhật. Hàm sẽ tính toán và **trả về** (bằng lệnh `return`) diện tích hình chữ nhật đó. Gọi hàm này với kích thước `5` và `10`, lưu kết quả vào biến `area` và in giá trị biến đó ra màn hình.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'def calc_area(width, height):\n    return width * height\n\narea = calc_area(5, 10)\nprint(area)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '50\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-04.03'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1408,24 +1243,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson34Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Tăng biến toàn cục',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Khai báo biến toàn cục `score = 10`. Hãy định nghĩa hàm `add_score()` sử dụng từ khóa `global` để cộng thêm `5` điểm vào biến toàn cục `score`. Gọi hàm này và in ra màn hình giá trị của biến `score` sau khi gọi.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'score = 10\ndef add_score():\n    global score\n    score += 5\n\nadd_score()\nprint(score)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '15\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-04.04'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             }
                                         ]
@@ -1451,24 +1282,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson35Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Lấy mẫu chia cho 0',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy viết chương trình thực hiện phép tính chia `10 / 0` nằm trong khối `try-except`, bắt ngoại lệ `ZeroDivisionError` và in ra dòng chữ `"Lỗi chia cho 0"`.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'try:\n    10 / 0\nexcept ZeroDivisionError:\n    print("Lỗi chia cho 0")',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Lỗi chia cho 0\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-04.05'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1482,29 +1309,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson36Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Ép kiểu an toàn',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy viết chương trình nhận vào một chuỗi từ câu lệnh `input()`. Thử ép kiểu chuỗi đó sang số nguyên bằng `int()`. Nếu thành công, hãy in số nguyên đó ra màn hình. Nếu xảy ra lỗi `ValueError`, hãy bắt lỗi và in ra màn hình dòng chữ `"Không phải số nguyên"`.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 's = input()\ntry:\n    n = int(s)\n    print(n)\nexcept ValueError:\n    print("Không phải số nguyên")',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '123\n',
-                                                                        expectedOutput: '123\n',
-                                                                        isHidden: false
-                                                                    },
-                                                                    {
-                                                                        input: 'abc\n',
-                                                                        expectedOutput: 'Không phải số nguyên\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-04.06'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1518,29 +1336,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson37Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Kiểm tra số âm',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy định nghĩa hàm `check_positive` nhận vào tham số `n`. Nếu `n` nhỏ hơn `0`, hãy dùng lệnh `raise ValueError("Số âm")`. Hãy viết chương trình gọi hàm này với giá trị nhập từ `input()` (được ép kiểu sang số nguyên). Sử dụng `try-except` để bắt `ValueError` và in ra thông báo lỗi đó ra màn hình, và trong khối `finally` hãy luôn in ra chữ `"Xong"`.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'def check_positive(n):\n    if n < 0:\n        raise ValueError("Số âm")\n\ntry:\n    val = int(input())\n    check_positive(val)\nexcept ValueError as e:\n    print(e)\nfinally:\n    print("Xong")',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '5\n',
-                                                                        expectedOutput: 'Xong\n',
-                                                                        isHidden: false
-                                                                    },
-                                                                    {
-                                                                        input: '-2\n',
-                                                                        expectedOutput: 'Số âm\nXong\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-04.07'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             }
                                         ]
@@ -1566,29 +1375,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson38Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Sử dụng hàm math.floor',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy import thư viện `math` và dùng hàm `math.floor(x)` để làm tròn xuống một số thực nhập từ bàn phím bằng `float(input())`. In kết quả đã làm tròn đó ra màn hình.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'import math\nval = float(input())\nprint(math.floor(val))',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '5.7\n',
-                                                                        expectedOutput: '5\n',
-                                                                        isHidden: false
-                                                                    },
-                                                                    {
-                                                                        input: '2.1\n',
-                                                                        expectedOutput: '2\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-04.08'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1602,24 +1402,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson39Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Chọn phần tử ngẫu nhiên cố định',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy import thư viện `random`. Để kết quả ngẫu nhiên luôn cố định cho việc kiểm tra testcase, chương trình đã đặt sẵn hạt giống `random.seed(42)` cho bạn. Bạn chỉ cần viết lệnh dùng hàm `random.choice(items)` để lấy ra một phần tử ngẫu nhiên từ danh sách `items = ["Táo", "Cam", "Bưởi"]` và in phần tử đó ra màn hình.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'import random\nrandom.seed(42)\nitems = ["Táo", "Cam", "Bưởi"]\nprint(random.choice(items))',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Bưởi\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-04.09'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             }
                                         ]
@@ -1659,24 +1455,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson40Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Mở file cấu hình',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy viết một dòng lệnh sử dụng hàm `open()` để mở một tập tin tên là `"config.txt"` ở chế độ ghi tiếp dữ liệu (`"a"`) có mã hóa `"utf-8"`. Lưu đối tượng file này vào biến `f`, sau đó đóng file bằng lệnh `f.close()`.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'f = open("config.txt", "a", encoding="utf-8")\nf.close()',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-05.01'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1690,24 +1482,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson41Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Ghi điểm số',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy viết chương trình mở tập tin tên là `"scores.txt"` ở chế độ ghi mới (`"w"`), mã hóa `"utf-8"`. Hãy ghi hai dòng chữ sau vào tập tin, mỗi dòng kết thúc bằng ký tự xuống dòng `\\n`:\n1. `"Math: 9.5"\\n`\n2. `"English: 8.0"\\n`\nĐóng tập tin lại sau khi ghi xong. Sau khi đóng tập tin, hãy mở lại tập tin đó ở chế độ đọc, đọc toàn bộ nội dung của nó và in ra màn hình để kiểm tra.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'f = open("scores.txt", "w", encoding="utf-8")\nf.write("Math: 9.5\\n")\nf.write("English: 8.0\\n")\nf.close()\n\nf = open("scores.txt", "r", encoding="utf-8")\nprint(f.read(), end="")\nf.close()',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Math: 9.5\nEnglish: 8.0\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-05.02'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1721,24 +1509,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson42Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Đọc ghi an toàn',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Sử dụng cấu trúc `with open(...)` để mở tập tin `"log.txt"` ở chế độ ghi mới (`"w"`), mã hóa `"utf-8"`. Ghi vào tập tin chuỗi `"System: Active"`. Sau đó, tiếp tục dùng cấu trúc `with open(...)` để mở lại tập tin đó ở chế độ đọc, đọc nội dung và in ra màn hình.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'with open("log.txt", "w", encoding="utf-8") as f:\n    f.write("System: Active")\n\nwith open("log.txt", "r", encoding="utf-8") as f:\n    print(f.read())',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'System: Active\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-05.03'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             }
                                         ]
@@ -1764,24 +1548,20 @@ async function main() {
                                                 durationMinutes: 15,
                                                 content: lesson43Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Khởi tạo đối tượng Xe',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy định nghĩa một lớp trống tên là `Car` (dùng từ khóa `pass`). Sau đó khởi tạo một đối tượng cụ thể từ lớp này và gán vào biến `my_car`. In kiểu dữ liệu của biến `my_car` ra màn hình (sử dụng hàm `type(my_car)`).',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'class Car:\n    pass\n\nmy_car = Car()\nprint(type(my_car))',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: "<class '__main__.Car'>\n",
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-05.04'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1795,24 +1575,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson44Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Phương thức của Mèo',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Định nghĩa lớp `Cat` có thuộc tính lớp `legs = 4`. Định nghĩa thêm một phương thức tên là `meow(self)` in ra màn hình chuỗi `"Meo meo!"`. Khởi tạo đối tượng `my_cat = Cat()`, in ra thuộc tính `legs` của nó và gọi phương thức `meow()`.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'class Cat:\n    legs = 4\n    def meow(self):\n        print("Meo meo!")\n\nmy_cat = Cat()\nprint(my_cat.legs)\nmy_cat.meow()',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: '4\nMeo meo!\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-05.05'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1826,24 +1602,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson45Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Thiết lập Học sinh',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy định nghĩa lớp `Student` có phương thức khởi tạo `__init__(self, name, age)`. Trong phương thức khởi tạo, hãy gán các giá trị tham số này cho các thuộc tính đối tượng `self.name` và `self.age`. Khởi tạo đối tượng `s = Student("Minh", 16)`, in ra màn hình thuộc tính `name` và `age` của đối tượng cách nhau bởi một khoảng trắng.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'class Student:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\ns = Student("Minh", 16)\nprint(s.name, s.age)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Minh 16\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-05.06'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             },
                                             {
@@ -1857,24 +1629,20 @@ async function main() {
                                                 durationMinutes: 20,
                                                 content: lesson46Content,
                                                 codingExercises: {
-                                                    create: [
-                                                        {
-                                                            title: 'Lớp con kế thừa Xe điện',
-                                                            difficulty: 'EASY',
-                                                            problemDescription: 'Hãy định nghĩa lớp cha `Vehicle` có phương thức khởi tạo `__init__(self, brand)` gán thuộc tính `self.brand = brand`. Định nghĩa lớp con `ElectricCar` kế thừa từ `Vehicle`. Trong lớp con `ElectricCar`, định nghĩa phương thức `__init__(self, brand, battery_capacity)` sử dụng hàm `super().__init__(brand)` để kế thừa thuộc tính `brand`, và tự gán thuộc tính `self.battery_capacity = battery_capacity`. Khởi tạo đối tượng `ev = ElectricCar("Tesla", 85)`. In thương hiệu và dung lượng pin của xe ra màn hình cách nhau bởi khoảng trắng.',
-                                                            starterCode: '# Viết code của bạn ở đây\n',
-                                                            solutionCode: 'class Vehicle:\n    def __init__(self, brand):\n        self.brand = brand\n\nclass ElectricCar(Vehicle):\n    def __init__(self, brand, battery_capacity):\n        super().__init__(brand)\n        self.battery_capacity = battery_capacity\n\nev = ElectricCar("Tesla", 85)\nprint(ev.brand, ev.battery_capacity)',
-                                                            testCases: {
-                                                                create: [
-                                                                    {
-                                                                        input: '',
-                                                                        expectedOutput: 'Tesla 85\n',
-                                                                        isHidden: false
-                                                                    }
-                                                                ]
-                                                            }
+                                                    create: (exercisesData['LS-05.07'] || []).map(ex => ({
+                                                        title: ex.title,
+                                                        difficulty: ex.difficulty,
+                                                        problemDescription: ex.problemDescription,
+                                                        starterCode: ex.starterCode,
+                                                        solutionCode: ex.solutionCode,
+                                                        testCases: {
+                                                            create: ex.testCases.map(tc => ({
+                                                                input: tc.input,
+                                                                expectedOutput: tc.expectedOutput,
+                                                                isHidden: tc.isHidden
+                                                            }))
                                                         }
-                                                    ]
+                                                    }))
                                                 }
                                             }
                                         ]
