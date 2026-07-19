@@ -48,13 +48,19 @@ interface DBCourse {
     modules: DBModule[];
 }
 
+import { useQuery } from '@tanstack/react-query';
+
 const CourseDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [username, setUsername] = useState<string>('Học viên');
-    const [course, setCourse] = useState<DBCourse | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+
+    // Sử dụng useQuery để quản lý nạp dữ liệu và cache thông tin chi tiết khóa học
+    const { data: course, isLoading, error } = useQuery<DBCourse>({
+        queryKey: ['course', id],
+        queryFn: () => authService.getCourseDetail(id!),
+        enabled: !!id, // Chỉ chạy query khi có id khóa học
+    });
 
     useEffect(() => {
         // Đồng bộ người dùng từ Token
@@ -65,27 +71,6 @@ const CourseDetail: React.FC = () => {
                 setUsername(decoded.username);
             }
         }
-
-        // Gọi API lấy chi tiết khóa học bằng ID
-        const fetchCourseDetail = async () => {
-            try {
-                setLoading(true);
-                setError('');
-                if (!id) return;
-                
-                const data = await authService.getCourseDetail(id);
-                setCourse(data);
-            } catch (err: any) {
-                console.error("Lỗi tải chi tiết khóa học:", err);
-                setError(err.response?.data?.message || 'Không thể tải thông tin khóa học');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (id) {
-            fetchCourseDetail();
-        }
     }, [id, navigate]);
 
     const handleLogout = () => {
@@ -93,7 +78,7 @@ const CourseDetail: React.FC = () => {
         navigate('/');
     };
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="text-text-primary text-center py-24 bg-bg-primary min-h-screen flex items-center justify-center">
                 <span className="text-lg">Đang tải thông tin khóa học...</span>
@@ -104,7 +89,7 @@ const CourseDetail: React.FC = () => {
     if (error || !course) {
         return (
             <div className="text-text-primary text-center py-24 bg-bg-primary min-h-screen flex flex-col justify-center items-center gap-4">
-                <p className="text-rose-400">⚠️ {error || 'Không tìm thấy khóa học yêu cầu'}</p>
+                <p className="text-rose-400">⚠️ {error ? (error as any).response?.data?.message || error.message : 'Không tìm thấy khóa học yêu cầu'}</p>
                 <button 
                     className="bg-accent-custom hover:bg-accent-hover text-white dark:bg-white dark:text-black px-5 py-2 rounded-lg text-sm font-semibold cursor-pointer active:scale-95 transition-transform"
                     onClick={() => navigate('/dashboard')}

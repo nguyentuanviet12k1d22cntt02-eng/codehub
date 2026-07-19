@@ -31,10 +31,17 @@ interface DBLocationCourse {
 }
 
 
+import { useQuery } from '@tanstack/react-query';
+
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
     const [username, setUsername] = useState<string>('Học viên');
-    const [courses, setCourses] = useState<DBLocationCourse[]>([]);
+
+    // Sử dụng useQuery để tự động gọi API, lưu cache và phục hồi dữ liệu tức thì
+    const { data: courses = [], isLoading } = useQuery<DBLocationCourse[]>({
+        queryKey: ['courses'],
+        queryFn: authService.getCourses,
+    });
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -46,19 +53,6 @@ const Dashboard: React.FC = () => {
         } else {
             navigate('/login');
         }
-
-        const dataCourses = async () => {
-            try {
-                const dataCourses = await authService.getCourses();
-                if (dataCourses) {
-                    setCourses(dataCourses)
-                }
-            } catch (error) {
-                console.error("Lỗi khi gọi API lấy khóa học:", error);
-            }
-
-        }
-        dataCourses()
     }, [navigate]);
 
 
@@ -145,14 +139,23 @@ const Dashboard: React.FC = () => {
                 <section>
                     <h3 className="text-lg font-bold text-text-primary text-left mb-5">Dành cho bạn</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {courses && courses.map((course) => (
-                            <CourseCard
-                                key={course.id}
-                                course={course}
-                                onClick={() => navigate(`/course/${course.id}`)}
-                            />
-                        ))
-                        }
+                        {isLoading ? (
+                            <div className="col-span-full text-center py-12 text-text-tertiary">
+                                <span className="animate-pulse">Đang tải danh sách khóa học...</span>
+                            </div>
+                        ) : courses.length > 0 ? (
+                            courses.map((course) => (
+                                <CourseCard
+                                    key={course.id}
+                                    course={course}
+                                    onClick={() => navigate(`/course/${course.id}`)}
+                                />
+                            ))
+                        ) : (
+                            <div className="col-span-full text-center py-12 text-text-tertiary">
+                                Không tìm thấy khóa học nào.
+                            </div>
+                        )}
                     </div>
                 </section>
 

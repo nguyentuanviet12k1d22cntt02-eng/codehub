@@ -1,3 +1,0 @@
-cd backend
-npx prisma studio
-http://localhost:5555

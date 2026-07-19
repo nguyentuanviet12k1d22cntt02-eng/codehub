@@ -42,40 +42,20 @@ const cleanAlertPrefix = (node: any): any => {
     return node;
 };
 
+import { useQuery } from '@tanstack/react-query';
+
 const Lesson: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
 
-    const [lesson, setLesson] = useState<any>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string>('');
-    const [hasExercise, setHasExercise] = useState<boolean>(false);
+    // Sử dụng useQuery để quản lý nạp dữ liệu bài học lý thuyết
+    const { data: lesson, isLoading, error } = useQuery({
+        queryKey: ['lesson', id],
+        queryFn: () => authService.getLessonDetail(id!),
+        enabled: !!id,
+    });
 
-    useEffect(() => {
-        const fetchLessonData = async () => {
-            if (!id) return;
-            setLoading(true);
-            setError('');
-
-            try {
-                const data = await authService.getLessonDetail(id);
-                setLesson(data);
-                
-                if (data.codingExercises && data.codingExercises.length > 0) {
-                    setHasExercise(true);
-                } else {
-                    setHasExercise(false);
-                }
-            } catch (err: any) {
-                console.error('Lỗi khi fetch thông tin bài học:', err);
-                setError('Không thể tải dữ liệu bài học. Vui lòng thử lại sau.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchLessonData();
-    }, [id]);
+    const hasExercise = !!(lesson?.codingExercises && lesson.codingExercises.length > 0);
 
     const handleCompleteWithoutExercise = async () => {
         if (!lesson) return;
@@ -102,7 +82,7 @@ const Lesson: React.FC = () => {
         }
     };
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="bg-bg-primary text-text-primary min-h-screen flex items-center justify-center">
                 <span className="text-sm text-text-tertiary">Đang tải lý thuyết bài học...</span>
@@ -113,7 +93,7 @@ const Lesson: React.FC = () => {
     if (error || !lesson) {
         return (
             <div className="bg-bg-primary text-text-primary min-h-screen flex flex-col items-center justify-center gap-4">
-                <span className="text-sm text-rose-400">⚠️ {error || 'Không tìm thấy thông tin bài học'}</span>
+                <span className="text-sm text-rose-400">⚠️ {error ? (error as any).response?.data?.message || error.message : 'Không tìm thấy thông tin bài học'}</span>
                 <Link to="/dashboard" className="text-xs text-accent-custom hover:underline">
                     Quay lại Dashboard
                 </Link>
