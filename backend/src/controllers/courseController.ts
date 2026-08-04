@@ -54,8 +54,38 @@ export const getCourseById = async (req: Request, res: Response, next: NextFunct
             res.status(404).json({ message: "Không tìm thấy khóa học" })
             return
         }
-        res.status(200).json(course)
-        console.log(course)
+
+        // Lấy tiến độ hoàn thành bài học của học viên nếu đã đăng nhập
+        let completedLessonIds: Set<string> = new Set();
+        const userId = (req as any).user?.id;
+        if (userId) {
+            const progressList = await prisma.lessonProgress.findMany({
+                where: {
+                    userId: userId,
+                    isCompleted: true
+                },
+                select: {
+                    lessonId: true
+                }
+            });
+            completedLessonIds = new Set(progressList.map(p => p.lessonId));
+        }
+
+        const formattedModules = course.modules.map(mod => ({
+            ...mod,
+            chapters: mod.chapters.map(ch => ({
+                ...ch,
+                lessons: ch.lessons.map(l => ({
+                    ...l,
+                    isCompleted: completedLessonIds.has(l.id)
+                }))
+            }))
+        }));
+
+        res.status(200).json({
+            ...course,
+            modules: formattedModules
+        });
 
     } catch (error) {
         next(error);

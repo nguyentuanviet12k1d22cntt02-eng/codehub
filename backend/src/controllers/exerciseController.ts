@@ -189,9 +189,23 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
                         };
                     }
 
-                    const clean = (val: string) => val.replace(/\r\n/g, '\n').trim();
+                    const matchOutput = (act: string, exp: string): boolean => {
+                        const cleanActual = act.replace(/\r\n/g, '\n').trim();
+                        const cleanExpected = exp.replace(/\r\n/g, '\n').trim();
+                        if (cleanActual === cleanExpected) return true;
+                        if (cleanActual.endsWith(cleanExpected)) {
+                            const prefixLen = cleanActual.length - cleanExpected.length;
+                            if (prefixLen > 0) {
+                                const boundary = cleanActual[prefixLen - 1];
+                                if (/\s|:|：|>|\)|\]/.test(boundary)) {
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    };
                     const actual = result.stdout || '';
-                    const passed = clean(actual) === clean(tc.expectedOutput);
+                    const passed = matchOutput(actual, tc.expectedOutput);
 
                     return {
                         id: tc.id,
@@ -219,7 +233,7 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
         }
 
         const allPassed = results.every((r: any) => r.passed);
-        
+
         // Đo lường thời gian chạy trung bình thực tế cho 1 testcase
         const avgRuntime = (exercise.testCases || []).length > 0 ? totalRuntime / exercise.testCases.length : 15;
         const normalizedRuntime = Math.max(5, avgRuntime);
