@@ -29,14 +29,8 @@ async function main() {
     });
     console.log('   ✅ Đã đồng bộ tài khoản Admin: admin@mcode.com / admin123');
 
-    // Xóa các module cũ để tránh lỗi trùng lặp module_id khi nạp dữ liệu lại
-    await prisma.module.deleteMany({
-        where: {
-            moduleId: {
-                in: ['MOD-01', 'MOD-02', 'MOD-03', 'MOD-04', 'MOD-05']
-            }
-        }
-    });
+    // Không xóa module cũ để bảo vệ dữ liệu tiến độ và lịch sử bài nộp của học viên.
+    // Lệnh upsert bên dưới sẽ tự động cập nhật mọi thông tin mà không ảnh hưởng đến dữ liệu cũ.
 
     // 3. TẠO/CẬP NHẬT KHÓA HỌC CHÍNH
     console.log('2️⃣ Thiết lập khóa học...');
