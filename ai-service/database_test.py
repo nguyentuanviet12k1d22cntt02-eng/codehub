@@ -1,6 +1,10 @@
 import os
+import sys
 import psycopg2
 from dotenv import load_dotenv
+
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
 
 # Đọc cấu hình từ file .env của Express Backend
 backend_env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend", ".env"))

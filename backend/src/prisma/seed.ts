@@ -159,12 +159,23 @@ async function main() {
         }
     })
 
-    // Xóa các khóa học cũ do author này tạo để nạp lại sạch sẽ tránh trùng lặp
-    await prisma.course.deleteMany({
+    // Xóa các module và khóa học cũ để tránh lỗi trùng lặp module_id (MOD-01 -> MOD-05) khi seed lại
+    await prisma.module.deleteMany({
         where: {
-            createdBy: author.id
+            moduleId: {
+                in: ['MOD-01', 'MOD-02', 'MOD-03', 'MOD-04', 'MOD-05']
+            }
         }
     });
+    await prisma.course.deleteMany({
+        where: {
+            OR: [
+                { createdBy: author.id },
+                { title: 'Lập trình Python cơ bản cho người mới bắt đầu' }
+            ]
+        }
+    });
+
 
     const pythonCourse = await prisma.course.create({
         data: {

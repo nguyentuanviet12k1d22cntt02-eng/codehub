@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+*.pem
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Agent transient artifacts (Eurus Agent backbone)
+.agent/scratchpad.md
+.agent/specs/current-task.md
+.agent/specs/archive/
