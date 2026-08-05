@@ -1,14 +1,15 @@
 {
   "project_name": "LearnPython - VIBECODE AI Learning System",
-  "active_milestone": "MVP implementation & Documentation Alignment",
-  "current_task": "README.md updated with complete 3-service setup guide (Backend :3000, Frontend :5173, AI-Service :8000, Docker Sandbox).",
+  "active_milestone": "MVP implementation & Git Merge Resolution",
+  "current_task": "Merged remote changes, resolved conflicts in ai-service/main.py and backend/src/prisma/seed.ts, committed clean merge.",
   "session_progress": [
     "- [x] /init onboarding: hydrated ARCHITECTURE.md, FEATURES.md, hot_memory.json, cold_memory.md ADRs 010-014",
     "- [x] Configured backend/.env with Supabase PostgreSQL connection string",
     "- [x] Fixed P2002 unique constraint module_id seed issue in seed.ts and executed prisma db seed",
-    "- [x] Created ai-service/main.py (FastAPI microservice with /health and /api/recommend)",
+    "- [x] Created & merged remote ai-service/main.py with complete PAL-Net, BKT, DKT recommendation engine",
     "- [x] Fixed Windows charmap encoding issue in ai-service/database_test.py",
     "- [x] Updated README.md with accurate setup steps for Backend, Frontend, Docker Sandbox, and AI Service",
+    "- [x] Resolved Git merge conflicts and created commit 1a3e811",
     "- [x] Synced hot_memory.json and cold_memory.md"
   ],
   "modified_files": [
@@ -21,16 +22,16 @@
     ".agent/memory/cold_memory.md",
     ".agent/docs/FEATURES.md"
   ],
-  "git_commit_hash": "99e1757455258499759e9375f4e54fdd13067444",
-  "git_dirty_status": "M README.md M ai-service/database_test.py M backend/src/prisma/seed.ts M frontend/package-lock.json ?? ai-service/main.py",
-  "last_successful_checkpoint": "99e1757 feat: implement frontend course detail architecture with TanStack Query and React Router routing",
+  "git_commit_hash": "1a3e8113709b1f72e39de32f22b7a9561bd0840b",
+  "git_dirty_status": "M README.md M ai-service/database_test.py M frontend/package-lock.json",
+  "last_successful_checkpoint": "1a3e811 fix: resolve merge conflicts in ai-service/main.py and backend/seed.ts",
   "active_blockers": [],
   "learnings": [
     "Code execution is funneled through a single CodeExecutionQueue singleton (maxConcurrency=4) to bound Docker container load.",
     "Runtime is measured inside the container via an __RUNTIME__ marker to exclude Docker/interpreter overhead.",
     "Seed idempotency requires deleting existing modules matching module_id list (MOD-01..MOD-05) before creating pythonCourse to avoid P2002 errors on Supabase DB.",
     "Windows terminal charmap codec requires sys.stdout.reconfigure(encoding='utf-8') for printing Vietnamese characters in Python scripts.",
-    "README.md must reflect all 3 execution layers: Node Backend (:3000), Vite Frontend (:5173), Python FastAPI AI-Service (:8000), plus Docker Desktop requirement."
+    "Git pull conflicts on main.py and seed.ts resolved by favoring the remote PAL-Net implementation and upsert-based seed logic."
   ],
   "installed_dynamic_skills": [
     "fetch-skill"
