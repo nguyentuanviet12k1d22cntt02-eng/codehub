@@ -26,6 +26,7 @@ interface DBLesson {
     title: string;
     durationMinutes: number | null;
     isFree: boolean;
+    isCompleted?: boolean;
 }
 
 interface DBChapter {
@@ -90,7 +91,7 @@ const CourseDetail: React.FC = () => {
         return (
             <div className="text-text-primary text-center py-24 bg-bg-primary min-h-screen flex flex-col justify-center items-center gap-4">
                 <p className="text-rose-400">⚠️ {error ? (error as any).response?.data?.message || error.message : 'Không tìm thấy khóa học yêu cầu'}</p>
-                <button 
+                <button
                     className="bg-accent-custom hover:bg-accent-hover text-white dark:bg-white dark:text-black px-5 py-2 rounded-lg text-sm font-semibold cursor-pointer active:scale-95 transition-transform"
                     onClick={() => navigate('/dashboard')}
                 >
@@ -101,14 +102,14 @@ const CourseDetail: React.FC = () => {
     }
 
     // Tính tổng số bài học và tổng thời lượng thực tế từ các modules & chapters & lessons
-    const totalLessons = course.modules.reduce((sum, mod) => 
+    const totalLessons = course.modules.reduce((sum, mod) =>
         sum + mod.chapters.reduce((cSum, ch) => cSum + ch.lessons.length, 0)
-    , 0);
-    const totalDuration = course.modules.reduce((sum, mod) => 
-        sum + mod.chapters.reduce((cSum, ch) => 
+        , 0);
+    const totalDuration = course.modules.reduce((sum, mod) =>
+        sum + mod.chapters.reduce((cSum, ch) =>
             cSum + ch.lessons.reduce((lSum, l) => lSum + (l.durationMinutes || 0), 0)
-        , 0)
-    , 0);
+            , 0)
+        , 0);
 
     // Một số mục tiêu mặc định nếu chưa có cấu hình trong db
     const defaultObjectives = [
@@ -123,7 +124,7 @@ const CourseDetail: React.FC = () => {
             {/* Header đồng bộ */}
             <header className="flex justify-between items-center px-6 py-4 md:px-10 border-b border-border-custom bg-bg-secondary/80 backdrop-blur-md sticky top-0 z-50 transition-colors duration-200">
                 <div className="flex items-center gap-2">
-                    <span 
+                    <span
                         className="text-2xl font-bold tracking-tight text-text-primary cursor-pointer no-underline"
                         onClick={() => navigate('/dashboard')}
                     >
@@ -154,7 +155,7 @@ const CourseDetail: React.FC = () => {
                             {username.substring(0, 1).toUpperCase()}
                         </div>
                         <span className="text-sm font-semibold text-text-primary hidden sm:inline">{username}</span>
-                        <button 
+                        <button
                             className="text-xs text-text-tertiary hover:text-text-primary bg-transparent border border-border-custom hover:border-text-tertiary rounded-full px-3 py-1.5 cursor-pointer transition-colors"
                             onClick={handleLogout}
                         >
@@ -234,34 +235,86 @@ const CourseDetail: React.FC = () => {
 
                                     {/* Danh sách các Chương trong Module */}
                                     <div className="flex flex-col gap-4 pl-2 md:pl-4 border-l border-border-custom">
-                                        {module.chapters.map((chapter, cIndex) => (
-                                            <div key={chapter.id} className="border border-border-custom rounded-xl overflow-hidden bg-bg-secondary">
-                                                <div className="bg-bg-tertiary px-5 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-border-custom">
-                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                                                        <span className="text-[10px] font-extrabold text-text-tertiary uppercase tracking-wider">Chương {mIndex + 1}.{cIndex + 1}</span>
-                                                        <span className="font-bold text-sm text-text-primary">{chapter.title}</span>
-                                                    </div>
-                                                    <span className="text-[10px] text-text-tertiary font-medium">{chapter.lessons.length} bài học</span>
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    {chapter.lessons.map((lesson) => (
-                                                        <div 
-                                                            key={lesson.id} 
-                                                            className="px-5 py-3.5 flex justify-between items-center hover:bg-bg-tertiary/50 cursor-pointer transition-colors border-b border-border-custom last:border-b-0" 
-                                                            onClick={() => navigate(`/lesson/${lesson.id}`)}
-                                                        >
-                                                            <div className="flex items-center gap-3">
-                                                                <span className="text-text-tertiary text-xs">💻</span>
-                                                                <span className="text-xs md:text-sm text-text-secondary hover:text-text-primary transition-colors">{lesson.title}</span>
-                                                            </div>
-                                                            <span className="text-[10px] md:text-xs text-text-tertiary">
-                                                                {lesson.durationMinutes ? `${lesson.durationMinutes} phút` : 'Chưa đặt thời lượng'}
-                                                            </span>
+                                        {module.chapters.map((chapter, cIndex) => {
+                                            const normalLessons = chapter.lessons.filter(l => l.lessonId && !l.lessonId.includes('.MP'));
+                                            return (
+                                                <div key={chapter.id} className="border border-border-custom rounded-xl overflow-hidden bg-bg-secondary">
+                                                    <div className="bg-bg-tertiary px-5 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-border-custom">
+                                                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                                                            <span className="text-[10px] font-extrabold text-text-tertiary uppercase tracking-wider">Chương {mIndex + 1}.{cIndex + 1}</span>
+                                                            <span className="font-bold text-sm text-text-primary">{chapter.title}</span>
                                                         </div>
-                                                    ))}
+                                                        <span className="text-[10px] text-text-tertiary font-medium">{normalLessons.length} bài học</span>
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        {normalLessons.map((lesson) => (
+                                                            <div
+                                                                key={lesson.id}
+                                                                className="px-5 py-3.5 flex justify-between items-center hover:bg-bg-tertiary/50 cursor-pointer transition-colors border-b border-border-custom last:border-b-0"
+                                                                onClick={() => navigate(`/lesson/${lesson.id}`)}
+                                                            >
+                                                                <div className="flex items-center gap-3">
+                                                                    {lesson.isCompleted ? (
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-[18px] h-[18px] text-[#30d158] shrink-0">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                                                        </svg>
+                                                                    ) : (
+                                                                        <span className="text-text-tertiary text-xs">💻</span>
+                                                                    )}
+                                                                    <span className="text-xs md:text-sm text-text-secondary hover:text-text-primary transition-colors">{lesson.title}</span>
+                                                                </div>
+                                                                <span className="text-[10px] md:text-xs text-text-tertiary">
+                                                                    {lesson.durationMinutes ? `${lesson.durationMinutes} phút` : 'Chưa đặt thời lượng'}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
+
+                                        {/* Nút Làm bài tập ôn luyện của Module nếu có */}
+                                        {(() => {
+                                            const practiceLessons = module.chapters
+                                                .flatMap((ch) => ch.lessons)
+                                                .filter((l) => l.lessonId && l.lessonId.includes('.MP'));
+                                            if (practiceLessons.length === 0) return null;
+                                            const modName = module.title.split(':')[0] || 'Module';
+                                            return (
+                                                <div className="mt-4 flex flex-col gap-4">
+                                                    {practiceLessons.map((practiceLesson) => {
+                                                        const isFor = practiceLesson.title.includes("For");
+                                                        const isWhile = practiceLesson.title.includes("While");
+                                                        const topicLabel = isFor ? "For" : isWhile ? "While" : modName;
+                                                        return (
+                                                            <div
+                                                                key={practiceLesson.id}
+                                                                className="p-5 bg-gradient-to-r from-accent-custom/10 to-indigo-500/10 border border-accent-custom/20 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all hover:border-accent-custom/40 duration-200"
+                                                            >
+                                                                <div className="flex flex-col gap-1 select-text">
+                                                                    <span className="text-[10px] font-extrabold text-accent-custom uppercase tracking-wider bg-accent-bg px-2 py-0.5 rounded border border-accent-border self-start">
+                                                                        Luyện tập tổng hợp: {topicLabel}
+                                                                    </span>
+                                                                    <h5 className="text-sm md:text-base font-extrabold text-[#9896f1] dark:text-[#a5b4fc] m-0 mt-1.5">
+                                                                        {practiceLesson.title}
+                                                                    </h5>
+                                                                    <p className="text-xs text-text-tertiary m-0 mt-1 max-w-[500px] leading-relaxed">
+                                                                        {practiceLesson.objective || `Kiểm tra và củng cố toàn bộ kiến thức đã học trong ${modName}.`}
+                                                                    </p>
+                                                                </div>
+                                                                <button
+                                                                    onClick={() => navigate(`/module-practice/${module.id}/${practiceLesson.id}`)}
+                                                                    className="bg-accent-custom hover:bg-accent-hover text-white dark:text-[#030303] px-5 py-3 rounded-xl text-xs font-bold cursor-pointer transition-all duration-200 active:scale-95 border-none shadow-lg shadow-accent-custom/10 flex items-center gap-2 whitespace-nowrap self-stretch md:self-auto justify-center"
+                                                                >
+                                                                    <span>Làm bài tập ôn luyện {topicLabel}</span>
+                                                                    <span>&rarr;</span>
+                                                                </button>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            );
+                                        })()}
                                     </div>
                                 </div>
                             ))}
@@ -277,8 +330,8 @@ const CourseDetail: React.FC = () => {
                             <span className="text-xl font-bold text-[#ff9f0a]">Miễn phí</span>
                         </div>
 
-                        <button 
-                            className="bg-accent-custom hover:bg-accent-hover text-white dark:bg-white dark:text-black font-bold py-3.5 rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.98] text-sm text-center flex items-center justify-center gap-2 border-none w-full" 
+                        <button
+                            className="bg-accent-custom hover:bg-accent-hover text-white dark:bg-white dark:text-black font-bold py-3.5 rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.98] text-sm text-center flex items-center justify-center gap-2 border-none w-full"
                             onClick={() => {
                                 const firstLessonId = course?.modules?.[0]?.chapters?.[0]?.lessons?.[0]?.id;
                                 if (firstLessonId) {

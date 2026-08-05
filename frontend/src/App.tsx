@@ -10,6 +10,17 @@ import Practice from "./pages/Practice";
 import Lesson from "./pages/Lesson";
 import PracticeList from "./pages/PracticeList";
 import PracticeWorkspace from "./pages/PracticeWorkspace";
+import AdaptivePractice from "./pages/AdaptivePractice";
+import Profile from "./pages/Profile";
+import ModulePracticeSelect from "./pages/ModulePracticeSelect";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import UserManagement from "./pages/admin/UserManagement";
+import UserDetail from "./pages/admin/UserDetail";
+import CourseManagement from "./pages/admin/CourseManagement";
+import SubmissionManagement from "./pages/admin/SubmissionManagement";
+import PracticeProblemManagement from "./pages/admin/PracticeProblemManagement";
+import Analytics from "./pages/admin/Analytics";
 import { getInitialTheme, applyTheme } from "./utils/themeHelper";
 
 // Khởi tạo QueryClient cho TanStack Query với các cấu hình mặc định (cache 5 phút)
@@ -44,6 +55,20 @@ function App() {
           <Route path="/practice/:id" element={<Practice />} />
           <Route path="/practice-arena" element={<PracticeList />} />
           <Route path="/practice-arena/:slug" element={<PracticeWorkspace />} />
+          <Route path="/adaptive-practice" element={<AdaptivePractice />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/module-practice/:moduleId/:lessonId" element={<ModulePracticeSelect />} />
+
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="users/:id" element={<UserDetail />} />
+            <Route path="courses" element={<CourseManagement />} />
+            <Route path="submissions" element={<SubmissionManagement />} />
+            <Route path="practice-problems" element={<PracticeProblemManagement />} />
+          </Route>
         </Routes>
       </Router>
     </QueryClientProvider>

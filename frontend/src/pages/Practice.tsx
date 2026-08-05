@@ -8,6 +8,7 @@ import axios from 'axios';
 import { authService } from '../services/authService';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { getInitialTheme } from '../utils/themeHelper';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface TestCaseMock {
     id: string;
@@ -61,6 +62,7 @@ const cleanAlertPrefix = (node: any): any => {
 const Practice: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(getInitialTheme());
 
     useEffect(() => {
@@ -84,7 +86,7 @@ const Practice: React.FC = () => {
     // 2. Các State quản trị UI
     const [activeLeftTab, setActiveLeftTab] = useState<'desc' | 'submissions'>('desc');
     const [activeTerminalTab, setActiveTerminalTab] = useState<'console' | 'testcase'>('console');
-    
+
     // State chạy/nộp bài
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -118,7 +120,7 @@ const Practice: React.FC = () => {
             try {
                 const data = await authService.getLessonDetail(id);
                 setLesson(data);
-                
+
                 if (data.codingExercises && data.codingExercises.length > 0) {
                     setExercises(data.codingExercises);
                     setCurrentExerciseIdx(0);
@@ -139,7 +141,7 @@ const Practice: React.FC = () => {
                         testCases: firstEx.testCases || []
                     });
                     setCode(firstEx.starterCode || '# Viết code Python của bạn ở đây\n');
-                    
+
                     if (firstEx.testCases && firstEx.testCases.length > 0) {
                         setCustomInput(firstEx.testCases[0].input || '');
                     } else {
@@ -178,7 +180,7 @@ const Practice: React.FC = () => {
                     setCode('');
                     setCustomInput('');
                 }
-                
+
                 // Mặc định luôn cho học thuyết trước
                 setActiveLeftTab('desc');
             } catch (err: any) {
@@ -194,7 +196,7 @@ const Practice: React.FC = () => {
 
     const selectExercise = (idx: number) => {
         if (idx < 0 || idx >= exercises.length) return;
-        
+
         // Lưu code hiện tại
         if (exercise) {
             setUserCodes(prev => ({ ...prev, [exercise.id]: code }));
@@ -312,9 +314,10 @@ const Practice: React.FC = () => {
                 setTestCaseResults(results);
 
                 if (allPassed) {
+                    queryClient.invalidateQueries();
                     const updatedCompleted = { ...completedExercises, [exercise.id]: true };
                     setCompletedExercises(updatedCompleted);
-                    
+
                     setSubmitStats({ runtimeMs, runtimeBeats, distribution });
 
                     // Kiểm tra xem đã vượt qua hết tất cả các bài tập chưa
@@ -370,8 +373,8 @@ const Practice: React.FC = () => {
             <div className="bg-bg-primary text-text-primary min-h-screen flex items-center justify-center font-sans">
                 <div className="text-center flex flex-col gap-4">
                     <span className="text-sm text-rose-400">{error || 'Không tìm thấy thông tin bài học.'}</span>
-                    <button 
-                        onClick={() => navigate('/dashboard')} 
+                    <button
+                        onClick={() => navigate('/dashboard')}
                         className="bg-bg-tertiary hover:bg-bg-tertiary/80 text-text-primary px-4 py-2 rounded-lg text-xs font-semibold border border-border-custom"
                     >
                         Quay lại Dashboard
@@ -386,7 +389,7 @@ const Practice: React.FC = () => {
             {/* Header */}
             <header className="flex justify-between items-center px-6 py-3 border-b border-border-custom bg-bg-secondary shrink-0 transition-colors duration-200">
                 <div className="flex items-center gap-4">
-                    <span 
+                    <span
                         className="text-xl font-bold tracking-tight text-text-primary cursor-pointer"
                         onClick={() => navigate('/dashboard')}
                     >
@@ -397,11 +400,11 @@ const Practice: React.FC = () => {
                         Bài học: <span className="text-text-primary font-semibold">{lesson.title}</span>
                     </span>
                 </div>
-                
+
                 <div className="flex items-center gap-4">
                     <ThemeToggle />
-                    <Link 
-                        to="/dashboard" 
+                    <Link
+                        to="/dashboard"
                         className="text-xs text-text-secondary hover:text-text-primary no-underline transition-colors px-3 py-1.5 rounded-lg hover:bg-bg-tertiary border border-border-custom"
                     >
                         Quay lại Dashboard
@@ -416,32 +419,30 @@ const Practice: React.FC = () => {
                     <Panel defaultSize={35} minSize={25} className="bg-bg-secondary rounded-xl border border-border-custom flex flex-col overflow-hidden mr-1 transition-colors duration-200">
                         {/* Tabs cột trái */}
                         <div className="flex justify-between items-center border-b border-border-custom bg-bg-tertiary shrink-0 px-2 transition-colors duration-200">
-                            <button 
+                            <button
                                 className="text-xs text-accent-custom hover:text-accent-hover bg-transparent border-none cursor-pointer py-2.5 px-2 font-semibold flex items-center gap-1 transition-colors"
                                 onClick={() => navigate(`/lesson/${id}`)}
                             >
                                 <span>←</span> Quay lại học lý thuyết
                             </button>
-                            
+
                             <div className="flex gap-1">
                                 {exercise && (
-                                    <button 
-                                        className={`px-3 py-2.5 text-xs font-semibold border-b-2 transition-all ${
-                                            activeLeftTab === 'desc' 
-                                                ? 'border-accent-custom text-text-primary bg-bg-secondary/10' 
-                                                : 'border-transparent text-text-tertiary hover:text-text-primary'
-                                        }`}
+                                    <button
+                                        className={`px-3 py-2.5 text-xs font-semibold border-b-2 transition-all ${activeLeftTab === 'desc'
+                                            ? 'border-accent-custom text-text-primary bg-bg-secondary/10'
+                                            : 'border-transparent text-text-tertiary hover:text-text-primary'
+                                            }`}
                                         onClick={() => setActiveLeftTab('desc')}
                                     >
                                         Đề bài bài tập
                                     </button>
                                 )}
-                                <button 
-                                    className={`px-3 py-2.5 text-xs font-semibold border-b-2 transition-all ${
-                                        activeLeftTab === 'submissions' 
-                                            ? 'border-accent-custom text-text-primary bg-bg-secondary/10' 
-                                            : 'border-transparent text-text-tertiary hover:text-text-primary'
-                                    }`}
+                                <button
+                                    className={`px-3 py-2.5 text-xs font-semibold border-b-2 transition-all ${activeLeftTab === 'submissions'
+                                        ? 'border-accent-custom text-text-primary bg-bg-secondary/10'
+                                        : 'border-transparent text-text-tertiary hover:text-text-primary'
+                                        }`}
                                     onClick={() => setActiveLeftTab('submissions')}
                                 >
                                     Lịch sử nộp bài
@@ -460,11 +461,10 @@ const Practice: React.FC = () => {
                                                 return (
                                                     <button
                                                         key={ex.id}
-                                                        className={`flex-1 min-w-[75px] py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all border-none cursor-pointer text-center flex items-center justify-center gap-1 ${
-                                                            isSelected
-                                                                ? 'bg-accent-custom text-white dark:text-[#030303] shadow'
-                                                                : 'bg-transparent text-text-tertiary hover:text-text-primary'
-                                                        }`}
+                                                        className={`flex-1 min-w-[75px] py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all border-none cursor-pointer text-center flex items-center justify-center gap-1 ${isSelected
+                                                            ? 'bg-accent-custom text-white dark:text-[#030303] shadow'
+                                                            : 'bg-transparent text-text-tertiary hover:text-text-primary'
+                                                            }`}
                                                         onClick={() => selectExercise(index)}
                                                     >
                                                         <span>Bài {index + 1}</span>
@@ -476,57 +476,56 @@ const Practice: React.FC = () => {
                                     )}
                                     <div className="flex justify-between items-center">
                                         <h2 className="text-lg font-bold text-text-primary m-0">{exercise.title}</h2>
-                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase ${
-                                            exercise.difficulty === 'EASY' 
-                                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
-                                                : exercise.difficulty === 'MEDIUM'
+                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase ${exercise.difficulty === 'EASY'
+                                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                            : exercise.difficulty === 'MEDIUM'
                                                 ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
                                                 : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
-                                        }`}>
+                                            }`}>
                                             {exercise.difficulty}
                                         </span>
                                     </div>
                                     <hr className="border-border-custom my-1" />
                                     <div className="select-text">
                                         <ReactMarkdown
-                                             remarkPlugins={[remarkGfm]}
+                                            remarkPlugins={[remarkGfm]}
                                             components={{
                                                 h3: ({ node, ...props }) => <h3 className="text-sm font-bold text-text-primary mt-4 mb-2" {...props} />,
-                                                 p: ({ node, ...props }) => <p className="text-xs md:text-sm text-text-secondary mb-2.5 leading-relaxed" {...props} />,
-                                                 ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-3 text-xs md:text-sm text-text-secondary flex flex-col gap-1" {...props} />,
-                                                 li: ({ node, ...props }) => <li className="mb-0.5" {...props} />,
-                                                 code: ({ node, className, children, ...props }) => {
-                                                     const contentStr = String(children || '');
-                                                     const hasNewline = contentStr.includes('\n');
-                                                     const match = /language-(\w+)/.exec(className || '');
-                                                     const isInline = !match && !hasNewline;
+                                                p: ({ node, ...props }) => <p className="text-xs md:text-sm text-text-secondary mb-2.5 leading-relaxed" {...props} />,
+                                                ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-3 text-xs md:text-sm text-text-secondary flex flex-col gap-1" {...props} />,
+                                                li: ({ node, ...props }) => <li className="mb-0.5" {...props} />,
+                                                code: ({ node, className, children, ...props }) => {
+                                                    const contentStr = String(children || '');
+                                                    const hasNewline = contentStr.includes('\n');
+                                                    const match = /language-(\w+)/.exec(className || '');
+                                                    const isInline = !match && !hasNewline;
 
-                                                     return isInline ? (
-                                                         <code className="bg-accent-bg text-accent-custom border border-accent-border px-1.5 py-0.5 rounded font-mono text-[11px] md:text-xs" {...props}>
-                                                             {children}
-                                                         </code>
-                                                     ) : (
-                                                         <pre className="bg-pre-bg border border-border-custom p-3 rounded-lg overflow-x-auto text-[11px] md:text-xs font-mono my-3 text-text-secondary select-text">
-                                                             <code className={className} {...props}>
-                                                                 {children}
-                                                             </code>
-                                                         </pre>
-                                                     );
-                                                 },
-                                                 table: ({ node, ...props }) => (
-                                                     <div className="overflow-x-auto w-full border border-border-custom rounded-xl my-4">
-                                                         <table className="w-full text-xs text-left border-collapse" {...props} />
-                                                     </div>
-                                                 ),
-                                                 thead: ({ node, ...props }) => <thead className="bg-bg-tertiary border-b border-border-custom" {...props} />,
-                                                 tbody: ({ node, ...props }) => <tbody className="divide-y divide-border-custom" {...props} />,
-                                                 tr: ({ node, ...props }) => <tr className="hover:bg-bg-tertiary/30" {...props} />,
-                                                 th: ({ node, ...props }) => <th className="p-2.5 font-semibold text-text-primary border-r border-border-custom last:border-r-0" {...props} />,
-                                                 td: ({ node, ...props }) => <td className="p-2.5 text-text-secondary border-r border-border-custom/50 last:border-r-0" {...props} />
-                                             }}
-                                         >
-                                             {exercise.problemDescription}
-                                         </ReactMarkdown>
+                                                    return isInline ? (
+                                                        <code className="bg-accent-bg text-accent-custom border border-accent-border px-1.5 py-0.5 rounded font-mono text-[11px] md:text-xs" {...props}>
+                                                            {children}
+                                                        </code>
+                                                    ) : (
+                                                        <pre className="bg-pre-bg border border-border-custom p-3 rounded-lg overflow-x-auto text-[11px] md:text-xs font-mono my-3 text-text-secondary select-text">
+                                                            <code className={className} {...props}>
+                                                                {children}
+                                                            </code>
+                                                        </pre>
+                                                    );
+                                                },
+                                                table: ({ node, ...props }) => (
+                                                    <div className="overflow-x-auto w-full border border-border-custom rounded-xl my-4">
+                                                        <table className="w-full text-xs text-left border-collapse" {...props} />
+                                                    </div>
+                                                ),
+                                                thead: ({ node, ...props }) => <thead className="bg-bg-tertiary border-b border-border-custom" {...props} />,
+                                                tbody: ({ node, ...props }) => <tbody className="divide-y divide-border-custom" {...props} />,
+                                                tr: ({ node, ...props }) => <tr className="hover:bg-bg-tertiary/30" {...props} />,
+                                                th: ({ node, ...props }) => <th className="p-2.5 font-semibold text-text-primary border-r border-border-custom last:border-r-0" {...props} />,
+                                                td: ({ node, ...props }) => <td className="p-2.5 text-text-secondary border-r border-border-custom/50 last:border-r-0" {...props} />
+                                            }}
+                                        >
+                                            {exercise.problemDescription}
+                                        </ReactMarkdown>
                                     </div>
                                 </div>
                             ) : (
@@ -541,9 +540,8 @@ const Practice: React.FC = () => {
                                             {submissions.map((sub: any) => (
                                                 <div key={sub.id} className="bg-bg-tertiary border border-border-custom p-3 rounded-xl flex flex-col gap-2 transition-colors duration-200 hover:border-accent-custom/40">
                                                     <div className="flex justify-between items-center">
-                                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                                                            sub.status === 'PASSED' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
-                                                        }`}>
+                                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${sub.status === 'PASSED' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
+                                                            }`}>
                                                             {sub.status === 'PASSED' ? 'THÀNH CÔNG' : 'THẤT BẠI'}
                                                         </span>
                                                         <span className="text-[10px] text-text-tertiary">
@@ -552,7 +550,7 @@ const Practice: React.FC = () => {
                                                     </div>
                                                     <div className="text-xs text-text-secondary flex justify-between items-center">
                                                         <span>Thời gian chạy: <span className="font-semibold text-text-primary">{sub.runtime ? `${sub.runtime}ms` : 'N/A'}</span></span>
-                                                        <button 
+                                                        <button
                                                             onClick={() => setCode(sub.code)}
                                                             className="text-[10px] bg-bg-secondary hover:bg-border-custom text-accent-custom hover:text-accent-hover px-2.5 py-1 rounded border border-border-custom transition-all"
                                                         >
@@ -583,7 +581,7 @@ const Practice: React.FC = () => {
                                         </span>
                                     </div>
                                     {exercise && (
-                                        <button 
+                                        <button
                                             className="text-xs text-text-tertiary hover:text-text-primary bg-transparent border-none cursor-pointer"
                                             onClick={() => setCode(exercise.starterCode)}
                                         >
@@ -591,7 +589,7 @@ const Practice: React.FC = () => {
                                         </button>
                                     )}
                                 </div>
-                                
+
                                 <div className="flex-1 w-full overflow-hidden pt-2 bg-bg-primary">
                                     <Editor
                                         height="100%"
@@ -620,22 +618,20 @@ const Practice: React.FC = () => {
                                 {/* Tabs Terminal */}
                                 <div className="flex justify-between items-center border-b border-border-custom bg-bg-tertiary px-4 shrink-0 transition-colors duration-200">
                                     <div className="flex">
-                                        <button 
-                                            className={`py-2 px-3 text-xs font-semibold border-b-2 transition-all ${
-                                                activeTerminalTab === 'console' 
-                                                    ? 'border-accent-custom text-text-primary bg-bg-secondary/10' 
-                                                    : 'border-transparent text-text-tertiary hover:text-text-primary'
-                                            }`}
+                                        <button
+                                            className={`py-2 px-3 text-xs font-semibold border-b-2 transition-all ${activeTerminalTab === 'console'
+                                                ? 'border-accent-custom text-text-primary bg-bg-secondary/10'
+                                                : 'border-transparent text-text-tertiary hover:text-text-primary'
+                                                }`}
                                             onClick={() => setActiveTerminalTab('console')}
                                         >
                                             Bảng điều khiển
                                         </button>
-                                        <button 
-                                            className={`py-2 px-3 text-xs font-semibold border-b-2 transition-all ${
-                                                activeTerminalTab === 'testcase' 
-                                                    ? 'border-accent-custom text-text-primary bg-bg-secondary/10' 
-                                                    : 'border-transparent text-text-tertiary hover:text-text-primary'
-                                            }`}
+                                        <button
+                                            className={`py-2 px-3 text-xs font-semibold border-b-2 transition-all ${activeTerminalTab === 'testcase'
+                                                ? 'border-accent-custom text-text-primary bg-bg-secondary/10'
+                                                : 'border-transparent text-text-tertiary hover:text-text-primary'
+                                                }`}
                                             onClick={() => setActiveTerminalTab('testcase')}
                                         >
                                             Dữ liệu Testcase
@@ -649,8 +645,8 @@ const Practice: React.FC = () => {
                                         <div className="flex flex-col gap-2">
                                             {/* Hiển thị stdout / lỗi */}
                                             <pre className="whitespace-pre-wrap leading-relaxed text-text-secondary m-0 select-text">
-                                                 {consoleOutput}
-                                             </pre>
+                                                {consoleOutput}
+                                            </pre>
 
                                             {/* Hiển thị biểu đồ phân phối Leetcode Beats */}
                                             {submitStats && (
@@ -676,7 +672,7 @@ const Practice: React.FC = () => {
                                                             {submitStats.distribution.map((bar) => {
                                                                 const maxCount = Math.max(...submitStats.distribution.map(d => d.count)) || 1;
                                                                 const heightPercent = (bar.count / maxCount) * 100;
-                                                                
+
                                                                 const isUserBucket = (
                                                                     (submitStats.runtimeMs <= 20 && bar.range === '10-20ms') ||
                                                                     (submitStats.runtimeMs > 20 && submitStats.runtimeMs <= 30 && bar.range === '20-30ms') ||
@@ -690,13 +686,12 @@ const Practice: React.FC = () => {
 
                                                                 return (
                                                                     <div key={bar.range} className="flex-1 flex flex-col items-center gap-0.5 group relative h-full justify-end">
-                                                                        <div 
-                                                                            style={{ height: `${Math.max(10, heightPercent)}%` }} 
-                                                                            className={`w-full rounded-t transition-all duration-300 ${
-                                                                                isUserBucket 
-                                                                                    ? 'bg-accent-custom shadow-lg shadow-accent-custom/30' 
-                                                                                    : 'bg-text-tertiary/10 group-hover:bg-text-tertiary/30'
-                                                                            }`}
+                                                                        <div
+                                                                            style={{ height: `${Math.max(10, heightPercent)}%` }}
+                                                                            className={`w-full rounded-t transition-all duration-300 ${isUserBucket
+                                                                                ? 'bg-accent-custom shadow-lg shadow-accent-custom/30'
+                                                                                : 'bg-text-tertiary/10 group-hover:bg-text-tertiary/30'
+                                                                                }`}
                                                                         />
                                                                         {/* Tooltip */}
                                                                         <div className="absolute bottom-full mb-1 bg-bg-primary border border-border-custom px-2 py-0.5 rounded text-[8px] text-text-primary opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
@@ -729,9 +724,8 @@ const Practice: React.FC = () => {
                                                         <div key={tc.id} className="bg-bg-secondary border border-border-custom p-2 rounded-lg flex flex-col gap-1.5">
                                                             <div className="flex justify-between items-center">
                                                                 <span className="text-text-primary font-semibold">Testcase {index + 1}</span>
-                                                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                                                                    tc.passed ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
-                                                                }`}>
+                                                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${tc.passed ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
+                                                                    }`}>
                                                                     {tc.passed ? 'PASSED' : 'FAILED'}
                                                                 </span>
                                                             </div>
@@ -746,77 +740,77 @@ const Practice: React.FC = () => {
                                             )}
                                         </div>
                                     ) : (
-                                         <div className="flex flex-col gap-3 font-sans">
-                                             <div className="flex flex-col gap-1">
-                                                 <span className="text-text-tertiary">Custom Input (Nhập dữ liệu kiểm thử):</span>
-                                                 <textarea 
-                                                     className="bg-bg-secondary border border-border-custom rounded-lg p-2.5 text-text-primary outline-none focus:border-accent-custom/50 resize-none font-mono"
-                                                     rows={3}
-                                                     value={customInput}
-                                                     onChange={(e) => setCustomInput(e.target.value)}
-                                                 />
-                                             </div>
-                                             <div className="text-[11px] text-text-tertiary/80 leading-normal">
-                                                 * Dữ liệu Custom Input sẽ được cấp vào hàm <code>input()</code> của chương trình khi bấm nút "Chạy thử".
-                                             </div>
-                                         </div>
-                                     )}
+                                        <div className="flex flex-col gap-3 font-sans">
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-text-tertiary">Custom Input (Nhập dữ liệu kiểm thử):</span>
+                                                <textarea
+                                                    className="bg-bg-secondary border border-border-custom rounded-lg p-2.5 text-text-primary outline-none focus:border-accent-custom/50 resize-none font-mono"
+                                                    rows={3}
+                                                    value={customInput}
+                                                    onChange={(e) => setCustomInput(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="text-[11px] text-text-tertiary/80 leading-normal">
+                                                * Dữ liệu Custom Input sẽ được cấp vào hàm <code>input()</code> của chương trình khi bấm nút "Chạy thử".
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Bottom action buttons */}
                                 <div className="border-t border-border-custom bg-bg-secondary px-4 py-3 flex justify-between items-center shrink-0 transition-colors duration-200">
                                     <span className="text-[10px] text-text-tertiary font-sans">
-                                         Nhấn Nộp bài để kiểm tra toàn bộ testcases
-                                     </span>
+                                        Nhấn Nộp bài để kiểm tra toàn bộ testcases
+                                    </span>
                                     <div className="flex gap-2">
-                                         {exercise && (
-                                             <button 
-                                                 className="bg-bg-tertiary hover:bg-bg-tertiary/85 text-text-primary border border-border-custom px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer active:scale-95 transition-all disabled:opacity-50 font-sans"
-                                                 onClick={handleRunCode}
-                                                 disabled={isRunning || isSubmitting}
-                                             >
-                                                 {isRunning ? 'Đang chạy...' : 'Chạy thử'}
-                                             </button>
-                                         )}
-                                         {completedExercises[exercise.id] && currentExerciseIdx < exercises.length - 1 && (
-                                             <button 
-                                                 className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
-                                                 onClick={() => selectExercise(currentExerciseIdx + 1)}
-                                             >
-                                                 Bài tập tiếp theo →
-                                             </button>
-                                         )}
-                                         {isCompleted && lesson?.nextLessonId ? (
-                                             <button 
-                                                 className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all animate-pulse border-none font-sans"
-                                                 onClick={() => navigate(`/lesson/${lesson.nextLessonId}`)}
-                                             >
-                                                 Bài học tiếp theo →
-                                             </button>
-                                         ) : isCompleted ? (
-                                             <button 
-                                                 className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
-                                                 onClick={() => navigate('/dashboard')}
-                                             >
-                                                 Quay lại Dashboard 🎉
-                                             </button>
-                                         ) : exercise ? (
-                                             <button 
-                                                 className="bg-accent-custom hover:bg-accent-hover text-white dark:text-[#030303] px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all disabled:opacity-50 border-none font-sans"
-                                                 onClick={handleSubmitCode}
-                                                 disabled={isRunning || isSubmitting}
-                                             >
-                                                 {isSubmitting ? 'Đang nộp...' : 'Nộp bài'}
-                                             </button>
-                                         ) : (
-                                             <button 
-                                                 className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
-                                                 onClick={handleCompleteWithoutExercise}
-                                             >
-                                                 Hoàn thành
-                                             </button>
-                                         )}
-                                     </div>
+                                        {exercise && (
+                                            <button
+                                                className="bg-bg-tertiary hover:bg-bg-tertiary/85 text-text-primary border border-border-custom px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer active:scale-95 transition-all disabled:opacity-50 font-sans"
+                                                onClick={handleRunCode}
+                                                disabled={isRunning || isSubmitting}
+                                            >
+                                                {isRunning ? 'Đang chạy...' : 'Chạy thử'}
+                                            </button>
+                                        )}
+                                        {completedExercises[exercise.id] && currentExerciseIdx < exercises.length - 1 && (
+                                            <button
+                                                className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
+                                                onClick={() => selectExercise(currentExerciseIdx + 1)}
+                                            >
+                                                Bài tập tiếp theo →
+                                            </button>
+                                        )}
+                                        {isCompleted && lesson?.nextLessonId ? (
+                                            <button
+                                                className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all animate-pulse border-none font-sans"
+                                                onClick={() => navigate(`/lesson/${lesson.nextLessonId}`)}
+                                            >
+                                                Bài học tiếp theo →
+                                            </button>
+                                        ) : isCompleted ? (
+                                            <button
+                                                className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
+                                                onClick={() => navigate('/dashboard')}
+                                            >
+                                                Quay lại Dashboard 🎉
+                                            </button>
+                                        ) : exercise ? (
+                                            <button
+                                                className="bg-accent-custom hover:bg-accent-hover text-white dark:text-[#030303] px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all disabled:opacity-50 border-none font-sans"
+                                                onClick={handleSubmitCode}
+                                                disabled={isRunning || isSubmitting}
+                                            >
+                                                {isSubmitting ? 'Đang nộp...' : 'Nộp bài'}
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
+                                                onClick={handleCompleteWithoutExercise}
+                                            >
+                                                Hoàn thành
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </Panel>
                         </PanelGroup>

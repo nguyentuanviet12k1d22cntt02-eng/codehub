@@ -10,8 +10,12 @@ export const getPracticeProblems = async (req: Request, res: Response, next: Nex
         const { difficulty, tag, status, search } = req.query;
         const userId = (req as any).user?.id as string | undefined;
 
-        // Build query conditions
-        const whereClause: any = {};
+        // Build query conditions (Limit Practice Arena to only show the 3 original problems from GitHub)
+        const whereClause: any = {
+            slug: {
+                in: ['two-sum', 'add-two-numbers', 'longest-substring-without-repeating-characters']
+            }
+        };
 
         if (difficulty) {
             whereClause.difficulty = difficulty as ExerciseDifficulty;
@@ -215,9 +219,23 @@ export const submitPracticeCode = async (req: AuthenticatedRequest, res: Respons
                         };
                     }
 
-                    const clean = (val: string) => val.replace(/\r\n/g, '\n').trim();
+                    const matchOutput = (act: string, exp: string): boolean => {
+                        const cleanActual = act.replace(/\r\n/g, '\n').trim();
+                        const cleanExpected = exp.replace(/\r\n/g, '\n').trim();
+                        if (cleanActual === cleanExpected) return true;
+                        if (cleanActual.endsWith(cleanExpected)) {
+                            const prefixLen = cleanActual.length - cleanExpected.length;
+                            if (prefixLen > 0) {
+                                const boundary = cleanActual[prefixLen - 1];
+                                if (/\s|:|：|>|\)|\]/.test(boundary)) {
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    };
                     const actual = result.stdout || '';
-                    const passed = clean(actual) === clean(tc.expectedOutput);
+                    const passed = matchOutput(actual, tc.expectedOutput);
 
                     return {
                         id: tc.id,
@@ -247,7 +265,7 @@ export const submitPracticeCode = async (req: AuthenticatedRequest, res: Respons
         }
 
         const allPassed = results.every(r => r.passed);
-        
+
         // Tính toán thời gian chạy thực tế trung bình cho các testcase
         const avgRuntime = problem.testCases.length > 0 ? totalRuntime / problem.testCases.length : 15;
         const normalizedRuntime = Math.max(5, avgRuntime);
@@ -361,7 +379,7 @@ export const getLeaderboard = async (req: Request, res: Response, next: NextFunc
 
         passedSubmissions.forEach(sub => {
             const { userId, problemId, problem, submittedAt } = sub;
-            
+
             if (!userStats[userId]) {
                 userStats[userId] = {
                     score: 0,
@@ -373,7 +391,7 @@ export const getLeaderboard = async (req: Request, res: Response, next: NextFunc
             // Nếu đây là lần đầu tiên user giải bài tập này
             if (!userStats[userId].solvedProblems.has(problemId)) {
                 userStats[userId].solvedProblems.add(problemId);
-                
+
                 // Quy tắc cộng điểm: Easy = 10, Medium = 30, Hard = 50
                 let points = 10;
                 if (problem.difficulty === 'MEDIUM') points = 30;

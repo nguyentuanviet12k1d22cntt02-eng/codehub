@@ -58,13 +58,13 @@ export const register = async (req: Request, res: Response, next: NextFunction):
 
         res.status(201).json({ message: "Tạo tài khoản thành công" });
     } catch (error) {
+        console.error("DEBUG REGISTER ERROR:", error);
         if (error instanceof z.ZodError) {
             // Trả về chi tiết lỗi validate cho Client
             res.status(400).json({ message: error.issues[0].message });
             return;
         }
-        // Chuyển lỗi sang Middleware xử lý lỗi tập trung
-        next(error);
+        res.status(500).json({ message: (error as any).message || 'Có lỗi xảy ra trong quá trình đăng ký' });
     }
 };
 

@@ -124,7 +124,7 @@ const PracticeList: React.FC = () => {
     };
 
     return (
-        <div className="bg-bg-primary text-text-primary min-h-screen w-full relative overflow-hidden flex flex-col font-sans select-none transition-colors duration-200">
+        <div data-theme={currentTheme} className="bg-bg-primary text-text-primary min-h-screen w-full relative overflow-hidden flex flex-col font-sans select-none transition-colors duration-200">
             {/* Header */}
             <header className="flex justify-between items-center px-6 py-4 md:px-10 border-b border-border-custom bg-bg-secondary/80 backdrop-blur-md sticky top-0 z-50 transition-colors duration-200">
                 <div className="flex items-center gap-2">
@@ -139,20 +139,36 @@ const PracticeList: React.FC = () => {
                     </span>
                 </div>
                 <nav className="hidden md:flex gap-8">
-                    <Link to="/dashboard" className="text-text-tertiary hover:text-text-primary no-underline text-[13px] font-medium tracking-[0.8px] transition-colors duration-200">
+                    <Link to="/dashboard" className="text-text-tertiary hover:text-text-primary no-underline text-[13px] font-semibold tracking-[0.8px] transition-colors duration-200">
                         Dashboard
+                    </Link>
+                    <Link to="/adaptive-practice" className="text-text-tertiary hover:text-text-primary no-underline text-[13px] font-semibold tracking-[0.8px] transition-colors duration-200">
+                        Rèn luyện thích ứng
                     </Link>
                     <Link to="/practice-arena" className="text-accent-custom font-semibold no-underline text-[13px] tracking-[0.8px]">
                         Đấu trường Luyện tập
+                    </Link>
+                    <Link to="/profile" className="text-text-tertiary hover:text-text-primary no-underline text-[13px] font-semibold tracking-[0.8px] transition-colors duration-200">
+                        Tri thức cá nhân
                     </Link>
                 </nav>
                 <div className="flex items-center gap-4">
                     <ThemeToggle />
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-accent-bg border border-accent-border flex items-center justify-center text-[13px] font-bold text-accent-custom uppercase">
+                        <div
+                            title="Xem thông tin cá nhân"
+                            className="w-8 h-8 rounded-full bg-accent-bg border border-accent-border flex items-center justify-center text-[13px] font-bold text-accent-custom uppercase cursor-pointer hover:opacity-85 transition-opacity"
+                            onClick={() => navigate('/profile')}
+                        >
                             {username.substring(0, 2)}
                         </div>
-                        <span className="hidden sm:inline text-xs font-semibold text-text-secondary">{username}</span>
+                        <span
+                            title="Xem thông tin cá nhân"
+                            className="hidden sm:inline text-xs font-semibold text-text-secondary cursor-pointer hover:text-accent-custom transition-colors"
+                            onClick={() => navigate('/profile')}
+                        >
+                            {username}
+                        </span>
                         <button
                             onClick={handleLogout}
                             className="bg-bg-tertiary hover:bg-red-500 hover:text-white px-3 py-1.5 rounded border border-border-custom text-[11px] font-bold text-text-secondary transition-all duration-200 cursor-pointer"
@@ -177,21 +193,19 @@ const PracticeList: React.FC = () => {
                     <div className="flex bg-bg-primary p-1 rounded-lg border border-border-custom self-start md:self-auto">
                         <button
                             onClick={() => setActiveView('problems')}
-                            className={`px-4 py-2 rounded-md text-xs font-bold transition-all duration-200 cursor-pointer ${
-                                activeView === 'problems'
-                                    ? 'bg-bg-secondary text-accent-custom shadow-sm border border-border-custom'
-                                    : 'text-text-tertiary hover:text-text-primary'
-                            }`}
+                            className={`px-4 py-2 rounded-md text-xs font-bold transition-all duration-200 cursor-pointer ${activeView === 'problems'
+                                ? 'bg-bg-secondary text-accent-custom shadow-sm border border-border-custom'
+                                : 'text-text-tertiary hover:text-text-primary'
+                                }`}
                         >
                             Thử thách (Problems)
                         </button>
                         <button
                             onClick={() => setActiveView('leaderboard')}
-                            className={`px-4 py-2 rounded-md text-xs font-bold transition-all duration-200 cursor-pointer ${
-                                activeView === 'leaderboard'
-                                    ? 'bg-bg-secondary text-accent-custom shadow-sm border border-border-custom'
-                                    : 'text-text-tertiary hover:text-text-primary'
-                            }`}
+                            className={`px-4 py-2 rounded-md text-xs font-bold transition-all duration-200 cursor-pointer ${activeView === 'leaderboard'
+                                ? 'bg-bg-secondary text-accent-custom shadow-sm border border-border-custom'
+                                : 'text-text-tertiary hover:text-text-primary'
+                                }`}
                         >
                             Bảng xếp hạng (Leaderboard)
                         </button>
@@ -223,11 +237,10 @@ const PracticeList: React.FC = () => {
                                         <button
                                             key={diff}
                                             onClick={() => setDifficulty(diff)}
-                                            className={`text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                                                difficulty === diff
-                                                    ? 'bg-accent-bg text-accent-custom border border-accent-border/30'
-                                                    : 'hover:bg-bg-tertiary text-text-secondary'
-                                            }`}
+                                            className={`text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${difficulty === diff
+                                                ? 'bg-accent-bg text-accent-custom border border-accent-border/30'
+                                                : 'hover:bg-bg-tertiary text-text-secondary'
+                                                }`}
                                         >
                                             {diff === '' ? 'Tất cả độ khó' : diff === 'EASY' ? 'Dễ (Easy)' : diff === 'MEDIUM' ? 'Trung bình (Medium)' : 'Khó (Hard)'}
                                         </button>
@@ -242,11 +255,10 @@ const PracticeList: React.FC = () => {
                                         <button
                                             key={st}
                                             onClick={() => setStatus(st)}
-                                            className={`text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                                                status === st
-                                                    ? 'bg-accent-bg text-accent-custom border border-accent-border/30'
-                                                    : 'hover:bg-bg-tertiary text-text-secondary'
-                                            }`}
+                                            className={`text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${status === st
+                                                ? 'bg-accent-bg text-accent-custom border border-accent-border/30'
+                                                : 'hover:bg-bg-tertiary text-text-secondary'
+                                                }`}
                                         >
                                             {st === '' ? 'Tất cả trạng thái' : st === 'PASSED' ? 'Đã giải thành công' : st === 'FAILED' ? 'Nộp bài bị lỗi' : 'Chưa thử sức'}
                                         </button>
@@ -259,11 +271,10 @@ const PracticeList: React.FC = () => {
                                 <div className="flex flex-wrap gap-1.5">
                                     <button
                                         onClick={() => setSelectedTag('')}
-                                        className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border transition-all ${
-                                            selectedTag === ''
-                                                ? 'bg-accent-custom text-white border-accent-custom'
-                                                : 'bg-bg-primary text-text-secondary border-border-custom hover:border-text-tertiary'
-                                        }`}
+                                        className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border transition-all ${selectedTag === ''
+                                            ? 'bg-accent-custom text-white border-accent-custom'
+                                            : 'bg-bg-primary text-text-secondary border-border-custom hover:border-text-tertiary'
+                                            }`}
                                     >
                                         Tất cả
                                     </button>
@@ -271,11 +282,10 @@ const PracticeList: React.FC = () => {
                                         <button
                                             key={tag.id}
                                             onClick={() => setSelectedTag(tag.slug)}
-                                            className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border transition-all ${
-                                                selectedTag === tag.slug
-                                                    ? 'bg-accent-custom text-white border-accent-custom'
-                                                    : 'bg-bg-primary text-text-secondary border-border-custom hover:border-text-tertiary'
-                                            }`}
+                                            className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border transition-all ${selectedTag === tag.slug
+                                                ? 'bg-accent-custom text-white border-accent-custom'
+                                                : 'bg-bg-primary text-text-secondary border-border-custom hover:border-text-tertiary'
+                                                }`}
                                         >
                                             {tag.name}
                                         </button>
@@ -315,13 +325,12 @@ const PracticeList: React.FC = () => {
                                                         ✗ Thử sức lỗi
                                                     </span>
                                                 )}
-                                                <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded border ${
-                                                    problem.difficulty === 'EASY'
-                                                        ? 'bg-green-500/10 text-green-500 border-green-500/20'
-                                                        : problem.difficulty === 'MEDIUM'
+                                                <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded border ${problem.difficulty === 'EASY'
+                                                    ? 'bg-green-500/10 text-green-500 border-green-500/20'
+                                                    : problem.difficulty === 'MEDIUM'
                                                         ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
                                                         : 'bg-red-500/10 text-red-500 border-red-500/20'
-                                                }`}>
+                                                    }`}>
                                                     {problem.difficulty}
                                                 </span>
                                             </div>
@@ -390,15 +399,14 @@ const PracticeList: React.FC = () => {
                                         {leaderboard.map((entry) => (
                                             <tr
                                                 key={entry.rank}
-                                                className={`border-b border-border-custom text-sm font-medium hover:bg-bg-tertiary/20 transition-all ${
-                                                    entry.rank === 1
-                                                        ? 'bg-yellow-500/5'
-                                                        : entry.rank === 2
+                                                className={`border-b border-border-custom text-sm font-medium hover:bg-bg-tertiary/20 transition-all ${entry.rank === 1
+                                                    ? 'bg-yellow-500/5'
+                                                    : entry.rank === 2
                                                         ? 'bg-slate-400/5'
                                                         : entry.rank === 3
-                                                        ? 'bg-amber-600/5'
-                                                        : ''
-                                                }`}
+                                                            ? 'bg-amber-600/5'
+                                                            : ''
+                                                    }`}
                                             >
                                                 <td className="py-4 px-6 text-center font-bold">
                                                     {entry.rank === 1 ? (

@@ -1,70 +1,305 @@
-Cấu trúc tuân thủ nghiêm ngặt nguyên tắc: Mỗi bài học (Lesson) giải quyết một khái niệm duy nhất, ưu tiên tư duy logic trước khi đi vào cú pháp, và mở đường cho hàng nghìn bài tập (Exercise) thực hành kèm theo.MODULE 01: NHẬP MÔN LẬP TRÌNH & PYTHON CƠ BẢN1. Thông tin ModuleThuộc tínhChi tiếtModule IDMOD-01Tên ModuleNhập môn Lập trình & Python cơ bảnMục tiêu ModuleXây dựng tư duy giao tiếp với máy tính, nắm vững cách lưu trữ và thao tác với dữ liệu đơn lẻ.Kiến thức chínhCài đặt môi trường, Biến, Kiểu dữ liệu nguyên thủy, Toán tử, Input/Output.Điều kiện tiên quyếtKhông có (Dành cho người mới bắt đầu tuyệt đối).Kỹ năng đạt đượcViết được các kịch bản tính toán toán học đơn giản, biết cách nhập xuất dữ liệu với người dùng.Số Chapter đề xuất03 ChaptersTổng số Lesson đề xuất10 LessonsTổng số Exercise đề xuất~100 Exercises (Trắc nghiệm khái niệm & Code tính toán đơn giản)Thời lượng học5 Giờ2. Danh sách Chapter (MOD-01)Chapter IDTên ChapterMục tiêuCác Lesson thuộc ChapterKiến thức trọng tâmKỹ năng đạt đượcCH-01Bắt đầu hành trìnhHiểu ngôn ngữ lập trình là gì và cách chạy code.LS-01.01 đến LS-01.03Môi trường Python, Compiler/Interpreter cơ bản.Cài đặt và chạy được file code Python đầu tiên.CH-02Dữ liệu và Toán tửNắm vững cách máy tính lưu trữ và tính toán.LS-01.04 đến LS-01.07Biến, Kiểu dữ liệu cơ bản, Toán tử số học & gán.Thực hiện các phép tính toán học qua code.CH-03Tương tác cơ bảnBiết cách giao tiếp hai chiều với chương trình.LS-01.08 đến LS-01.10Hàm print(), input(), ép kiểu dữ liệu.Tạo chương trình tính toán có sự tham gia của người dùng.3. Danh sách Lesson (MOD-01)Lesson IDTên LessonMục tiêu LessonKiến thức chínhĐộ khóThời lượngLS-01.01Máy tính và Ngôn ngữ lập trìnhHiểu cơ chế giao tiếp với máy tính.Thuật toán cơ bản, Mã máy vs Ngôn ngữ bậc cao.Dễ15 phútLS-01.02Môi trường lập trình PythonThiết lập không gian làm việc.Cài đặt Python, IDE/Text Editor.Dễ20 phútLS-01.03Chương trình Python đầu tiênLàm quen với cú pháp cơ bản nhất.Viết và thực thi file .py.Dễ15 phútLS-01.04Khái niệm Biến và Cách đặt tênHiểu cách cấp phát bộ nhớ để lưu dữ liệu.Định nghĩa biến, Quy tắc đặt tên PEP8.Dễ25 phútLS-01.05Các kiểu dữ liệu nguyên thủyPhân biệt các loại dữ liệu cơ bản.int, float, boolean.Dễ20 phútLS-01.06Toán tử số họcBiết cách ra lệnh tính toán.+, -, *, /, //, %, **.Cơ bản30 phútLS-01.07Toán tử gán và Cập nhật biếnNắm được luồng thay đổi giá trị của biến.=, +=, -=, *=, /=.Cơ bản20 phútLS-01.08Hàm xuất dữ liệu (Print)Gửi thông điệp ra màn hình.Cú pháp print(), tham số sep, end.Dễ20 phútLS-01.09Hàm nhập dữ liệu (Input)Nhận dữ liệu từ bàn phím.Cú pháp input(), bản chất dữ liệu đầu vào.Cơ bản20 phútLS-01.10Ép kiểu dữ liệu (Type Casting)Đồng nhất kiểu dữ liệu để tính toán.Các hàm int(), float(), str().Cơ bản25 phútMODULE 02: LUỒNG ĐIỀU KHIỂN CHƯƠNG TRÌNH1. Thông tin ModuleThuộc tínhChi tiếtModule IDMOD-02Tên ModuleLuồng điều khiển chương trìnhMục tiêu ModulePhá vỡ luồng code tuần tự, cung cấp khả năng ra quyết định và lặp lại công việc cho chương trình.Kiến thức chínhBoolean logic, Toán tử so sánh/logic, Điều kiện (if/else), Vòng lặp (while/for).Điều kiện tiên quyếtHoàn thành MOD-01 (Cần hiểu Biến và Input/Output).Kỹ năng đạt đượcXây dựng các kịch bản phân loại, xử lý các bài toán có tính chu kỳ (tính tổng dãy số, kiểm tra tính chẵn lẻ...).Số Chapter đề xuất02 ChaptersTổng số Lesson đề xuất08 LessonsTổng số Exercise đề xuất~150 Exercises (Code rẽ nhánh logic, Code vòng lặp)Thời lượng học6 Giờ2. Danh sách Chapter (MOD-02)Chapter IDTên ChapterMục tiêuCác Lesson thuộc ChapterKiến thức trọng tâmKỹ năng đạt đượcCH-04Cấu trúc rẽ nhánhXây dựng tư duy "Nếu - Thì".LS-02.01 đến LS-02.04Luồng điều kiện if, elif, else, Logic kết hợp.Kiểm soát chương trình hành động theo ngữ cảnh.CH-05Cấu trúc lặpTự động hóa các tác vụ lặp lại.LS-02.05 đến LS-02.08Vòng lặp while, for, điều hướng break/continue.Rút gọn code, giải quyết bài toán chu kỳ/dãy số.3. Danh sách Lesson (MOD-02)Lesson IDTên LessonMục tiêu LessonKiến thức chínhĐộ khóThời lượngLS-02.01Biểu thức Logic & Toán tử so sánhĐịnh hình điều kiện đúng/sai.>, <, ==, !=, >=, <=.Cơ bản20 phútLS-02.02Khái niệm rẽ nhánh và Lệnh ifChạy code theo điều kiện đơn.Block code (Indentation), cú pháp if.Cơ bản25 phútLS-02.03Lệnh if-else và if-elif-elseXử lý đa luồng kịch bản.Cú pháp else, elif và thứ tự ưu tiên.Trung bình35 phútLS-02.04Toán tử Logic kết hợpĐánh giá nhiều điều kiện cùng lúc.and, or, not và Điều kiện lồng (Nested if).Trung bình30 phútLS-02.05Tư duy lặp và Vòng lặp whileLặp dựa trên điều kiện chưa xác định trước.Cú pháp while, nhận diện vòng lặp vô tận.Trung bình35 phútLS-02.06Dãy số với hàm range()Tạo một tập hợp số nguyên có quy luật.Hàm range(start, stop, step).Cơ bản25 phútLS-02.07Vòng lặp forLặp qua một số lần biết trước.Cú pháp for ... in range().Trung bình35 phútLS-02.08Điều hướng lặp: break & continueKiểm soát và can thiệp sâu vào vòng lặp.Lệnh break, continue.Trung bình30 phútMODULE 03: CẤU TRÚC DỮ LIỆU CỐT LÕI1. Thông tin ModuleThuộc tínhChi tiếtModule IDMOD-03Tên ModuleCấu trúc dữ liệu cốt lõiMục tiêu ModuleQuản lý và xử lý tập hợp chứa nhiều điểm dữ liệu cùng lúc thay vì các biến đơn lẻ.Kiến thức chínhString manipulations, List, Tuple, Set, Dictionary.Điều kiện tiên quyếtHoàn thành MOD-02 (Cần vòng lặp để duyệt qua Cấu trúc dữ liệu).Kỹ năng đạt đượcPhân tích chuỗi, quản lý danh sách học sinh, sản phẩm; gom nhóm và tra cứu dữ liệu phức tạp.Số Chapter đề xuất03 ChaptersTổng số Lesson đề xuất12 LessonsTổng số Exercise đề xuất~250 Exercises (Thao tác mảng, Tìm kiếm, Xử lý chuỗi)Thời lượng học8 Giờ2. Danh sách Chapter (MOD-03)Chapter IDTên ChapterMục tiêuCác Lesson thuộc ChapterKiến thức trọng tâmKỹ năng đạt đượcCH-06Xử lý Chuỗi (String)Nắm vững thao tác với văn bản.LS-03.01 đến LS-03.04Indexing, Slicing, String Methods, F-string.Bóc tách, tìm kiếm và định dạng văn bản.CH-07Cấu trúc Tuần tự (List & Tuple)Quản lý tập hợp dữ liệu có thứ tự.LS-03.05 đến LS-03.09List CRUD, Duyệt mảng, Tính chất bất biến của Tuple.Quản lý mảng dữ liệu đa chiều, thực hiện thống kê.CH-08Tập hợp và Ánh xạ (Set & Dict)Quản lý dữ liệu không thứ tự và tra cứu siêu tốc.LS-03.10 đến LS-03.12Set (tính duy nhất), Dictionary (Key-Value).Xử lý dữ liệu trùng lặp, xây dựng mô hình dữ liệu thực tế.3. Danh sách Lesson (MOD-03)Lesson IDTên LessonMục tiêu LessonKiến thức chínhĐộ khóThời lượngLS-03.01Chuỗi như một Mảng: IndexingHiểu bản chất chuỗi trong bộ nhớ.Cấu trúc chuỗi, Truy xuất qua Index (Positive/Negative).Cơ bản20 phútLS-03.02Cắt chuỗi (Slicing)Lấy ra một đoạn văn bản con.Cú pháp [start:stop:step] trên String.Cơ bản25 phútLS-03.03Các phương thức chuỗi phổ biếnBiến đổi văn bản tự động.upper(), lower(), replace(), split(), join().Trung bình35 phútLS-03.04Định dạng chuỗi (F-string)Chèn biến động vào văn bản tĩnh.Cú pháp f"{var}".Cơ bản20 phútLS-03.05Khái niệm List & Khởi tạoTạo thùng chứa đa năng.Cú pháp [], List chứa nhiều kiểu dữ liệu khác nhau.Cơ bản20 phútLS-03.06Cập nhật & Sửa đổi ListThêm, xóa, sửa phần tử.append(), insert(), remove(), pop().Trung bình30 phútLS-03.07Duyệt mảng bằng Vòng lặpXử lý hàng loạt phần tử.Kết hợp for item in list và for i in range(len()).Trung bình35 phútLS-03.08Sắp xếp và Tìm kiếm cơ bảnTổ chức lại dữ liệu trong List.sort(), sorted(), toán tử in.Trung bình30 phútLS-03.09Tuple: Danh sách bất biếnBảo vệ toàn vẹn dữ liệu.Cú pháp (), Khác biệt bộ nhớ giữa List và Tuple.Cơ bản20 phútLS-03.10Set: Tập hợp toán họcLoại bỏ trùng lặp dữ liệu.Cú pháp {}, các phép toán Giao, Hợp, Hiệu.Trung bình30 phútLS-03.11Dictionary: Cấu trúc Key-ValueLưu trữ dữ liệu có định danh.Cú pháp {key: value}, nguyên tắc của Key.Khó35 phútLS-03.12Thao tác trên DictionaryTruy xuất, thêm mới và duyệt Dict.get(), keys(), values(), items().Khó40 phútMODULE 04: TÁI SỬ DỤNG & TỔ CHỨC MÃ NGUỒN1. Thông tin ModuleThuộc tínhChi tiếtModule IDMOD-04Tên ModuleTái sử dụng & Tổ chức mã nguồnMục tiêu ModuleTránh lặp code (DRY - Don't Repeat Yourself), cấu trúc chương trình chuyên nghiệp và an toàn hơn.Kiến thức chínhFunctions (Hàm), Parameters/Arguments, Scope, Modules chuẩn, Cấu trúc Try-Except.Điều kiện tiên quyếtHoàn thành MOD-03.Kỹ năng đạt đượcViết code module hóa, phân tách vấn đề lớn thành hàm nhỏ, chương trình không bị "crash" khi gặp lỗi bất ngờ.Số Chapter đề xuất03 ChaptersTổng số Lesson đề xuất09 LessonsTổng số Exercise đề xuất~100 Exercises (Viết hàm chuẩn hóa, Import logic)Thời lượng học7 Giờ2. Danh sách Chapter (MOD-04)Chapter IDTên ChapterMục tiêuCác Lesson thuộc ChapterKiến thức trọng tâmKỹ năng đạt đượcCH-09Hàm (Function)Đóng gói logic để tái sử dụng nhiều lần.LS-04.01 đến LS-04.04Định nghĩa hàm def, Tham số, Khái niệm return, Biến toàn cục/cục bộ.Xây dựng thư viện tính toán/logic cá nhân.CH-10Xử lý Ngoại lệ (Exception)Giữ chương trình chạy ổn định khi lỗi xảy ra.LS-04.05 đến LS-04.07Phân biệt Error vs Exception, Cấu trúc try-except-finally.Quản trị rủi ro luồng dữ liệu đầu vào.CH-11Module và Thư việnTái sử dụng code từ cộng đồng.LS-04.08 đến LS-04.09Cú pháp import, module chuẩn (math, random).Tích hợp công cụ có sẵn vào dự án.3. Danh sách Lesson (MOD-04)Lesson IDTên LessonMục tiêu LessonKiến thức chínhĐộ khóThời lượngLS-04.01Tư duy đóng gói và Lệnh defKhởi tạo hộp đen chức năng.Cú pháp định nghĩa hàm cơ bản không tham số.Cơ bản20 phútLS-04.02Tham số và Đối sốĐưa dữ liệu đầu vào cho Hàm xử lý.Khác biệt Parameter vs Argument, Default/Keyword Arguments.Trung bình35 phútLS-04.03Trả về kết quả (Return)Lấy kết quả từ hộp đen chức năng.Cú pháp return, ngắt luồng thực thi trong hàm.Trung bình30 phútLS-04.04Phạm vi của Biến (Scope)Hiểu vòng đời của dữ liệu trong bộ nhớ.Local scope vs Global scope, từ khóa global.Khó30 phútLS-04.05Nhận diện Ngoại lệ (Exceptions)Phân biệt Lỗi cú pháp và Lỗi thực thi.SyntaxError, TypeError, ValueError, ZeroDivisionError.Cơ bản20 phútLS-04.06Bắt lỗi với Try-ExceptNgăn chương trình bị ngắt đột ngột.Cú pháp try, except.Trung bình30 phútLS-04.07Luồng Finally và Ném lỗi chủ độngĐảm bảo giải phóng tài nguyên.Khối lệnh finally và từ khóa raise.Khó30 phútLS-04.08Khái niệm Module và Lệnh ImportMượn code từ file khác.Bản chất .py là module, import, from ... import.Cơ bản25 phútLS-04.09Khám phá Standard LibrarySử dụng công cụ phổ biến có sẵn.Module math, random, datetime cơ bản.Cơ bản25 phútMODULE 05: LƯU TRỮ DỮ LIỆU & LẬP TRÌNH HƯỚNG ĐỐI TƯỢNG (OOP)1. Thông tin ModuleThuộc tínhChi tiếtModule IDMOD-05Tên ModuleLưu trữ và Trừu tượng hóa (File & Basic OOP)Mục tiêu ModuleGiữ lại dữ liệu sau khi tắt chương trình và nâng cấp tư duy mô hình hóa thực tế vào code.Kiến thức chínhFile IO (Text), Tư duy OOP, Class, Object, Attributes, Methods, Constructor.Điều kiện tiên quyếtHoàn thành MOD-04 (Cần vững khái niệm Hàm trước khi học Phương thức OOP).Kỹ năng đạt đượcLưu file báo cáo/log, tạo ra các đối tượng (như HocSinh, NhanVien) có tính chất và hành vi riêng biệt.Số Chapter đề xuất02 ChaptersTổng số Lesson đề xuất07 LessonsTổng số Exercise đề xuất~50 Exercises (Đọc/ghi file thực tế, Xây dựng Class thiết thực)Thời lượng học7.5 Giờ2. Danh sách Chapter (MOD-05)Chapter IDTên ChapterMục tiêuCác Lesson thuộc ChapterKiến thức trọng tâmKỹ năng đạt đượcCH-12Xử lý Tập tin (File I/O)Tương tác với Ổ cứng thay vì RAM.LS-05.01 đến LS-05.03Hàm open(), các mode r, w, a, Context Manager with.Lưu trữ dữ liệu vĩnh viễn (Text data).CH-13OOP Cơ bảnMô phỏng thế giới thực thông qua Code.LS-05.04 đến LS-05.07Lớp (Class), Đối tượng (Object), Thuộc tính, Phương thức, Kế thừa đơn giản.Phân tích bài toán thành các thực thể độc lập giao tiếp với nhau.3. Danh sách Lesson (MOD-05)Lesson IDTên LessonMục tiêu LessonKiến thức chínhĐộ khóThời lượngLS-05.01Cấu trúc bộ nhớ và Hàm open()Nắm vững cách kết nối với File.RAM vs Disk, Đường dẫn (Path), Hàm open(), .close().Trung bình25 phútLS-05.02Đọc và Ghi File TextChuyển dữ liệu ra/vào chương trình.Mode r, w, a, các hàm .read(), .write().Trung bình30 phútLS-05.03Context Manager với từ khóa 'with'Tự động hóa quản lý tài nguyên.Cú pháp with open(...) as file:, tránh rò rỉ bộ nhớ.Cơ bản20 phútLS-05.04Tư duy Hướng đối tượng (Class vs Object)Chuyển đổi góc nhìn lập trình.Khái niệm Bản thiết kế (Class) và Thực thể (Object/Instance).Khó30 phútLS-05.05Thuộc tính và Phương thứcKhai báo Đặc điểm và Hành động cho Đối tượng.Cấu trúc Class, tham số self bắt buộc.Khó35 phútLS-05.06Phương thức Khởi tạo (init)Tự động hóa quá trình sinh ra đối tượng.Hàm magic __init__, gán thuộc tính ban đầu.Khó35 phútLS-05.07Khái quát về Kế thừa (Inheritance)Tái sử dụng thiết kế Class cũ.Cú pháp kế thừa Class cha, mô hình hóa Parent-Child (Mức cơ bản).Khó40 phútSƠ ĐỒ CÂY CẤU TRÚC KHÓA HỌC (TREE STRUCTURE)PlaintextCourse: Khóa học Lập trình Python Nền tảng (Python Fundamentals)
- ├── Module 01: Nhập môn Lập trình & Python cơ bản
- │    ├── Chapter 01: Bắt đầu hành trình
- │    │    ├── Lesson 01.01: Máy tính và Ngôn ngữ lập trình
- │    │    ├── Lesson 01.02: Môi trường lập trình Python
- │    │    └── Lesson 01.03: Chương trình Python đầu tiên
- │    ├── Chapter 02: Dữ liệu và Toán tử
- │    │    ├── Lesson 01.04: Khái niệm Biến và Cách đặt tên
- │    │    ├── Lesson 01.05: Các kiểu dữ liệu nguyên thủy
- │    │    ├── Lesson 01.06: Toán tử số học
- │    │    └── Lesson 01.07: Toán tử gán và Cập nhật biến
- │    └── Chapter 03: Tương tác cơ bản
- │         ├── Lesson 01.08: Hàm xuất dữ liệu (Print)
- │         ├── Lesson 01.09: Hàm nhập dữ liệu (Input)
- │         └── Lesson 01.10: Ép kiểu dữ liệu (Type Casting)
- │
- ├── Module 02: Luồng điều khiển chương trình
- │    ├── Chapter 04: Cấu trúc rẽ nhánh
- │    │    ├── Lesson 02.01: Biểu thức Logic & Toán tử so sánh
- │    │    ├── Lesson 02.02: Khái niệm rẽ nhánh và Lệnh if
- │    │    ├── Lesson 02.03: Lệnh if-else và if-elif-else
- │    │    └── Lesson 02.04: Toán tử Logic kết hợp
- │    └── Chapter 05: Cấu trúc lặp
- │         ├── Lesson 02.05: Tư duy lặp và Vòng lặp while
- │         ├── Lesson 02.06: Dãy số với hàm range()
- │         ├── Lesson 02.07: Vòng lặp for
- │         └── Lesson 02.08: Điều hướng lặp: break & continue
- │
- ├── Module 03: Cấu trúc dữ liệu cốt lõi
- │    ├── Chapter 06: Xử lý Chuỗi (String)
- │    │    ├── Lesson 03.01: Chuỗi như một Mảng: Indexing
- │    │    ├── Lesson 03.02: Cắt chuỗi (Slicing)
- │    │    ├── Lesson 03.03: Các phương thức chuỗi phổ biến
- │    │    └── Lesson 03.04: Định dạng chuỗi (F-string)
- │    ├── Chapter 07: Cấu trúc Tuần tự (List & Tuple)
- │    │    ├── Lesson 03.05: Khái niệm List & Khởi tạo
- │    │    ├── Lesson 03.06: Cập nhật & Sửa đổi List
- │    │    ├── Lesson 03.07: Duyệt mảng bằng Vòng lặp
- │    │    ├── Lesson 03.08: Sắp xếp và Tìm kiếm cơ bản
- │    │    └── Lesson 03.09: Tuple: Danh sách bất biến
- │    └── Chapter 08: Tập hợp và Ánh xạ (Set & Dict)
- │         ├── Lesson 03.10: Set: Tập hợp toán học
- │         ├── Lesson 03.11: Dictionary: Cấu trúc Key-Value
- │         └── Lesson 03.12: Thao tác trên Dictionary
- │
- ├── Module 04: Tái sử dụng & Tổ chức mã nguồn
- │    ├── Chapter 09: Hàm (Function)
- │    │    ├── Lesson 04.01: Tư duy đóng gói và Lệnh def
- │    │    ├── Lesson 04.02: Tham số và Đối số
- │    │    ├── Lesson 04.03: Trả về kết quả (Return)
- │    │    └── Lesson 04.04: Phạm vi của Biến (Scope)
- │    ├── Chapter 10: Xử lý Ngoại lệ (Exception)
- │    │    ├── Lesson 04.05: Nhận diện Ngoại lệ (Exceptions)
- │    │    ├── Lesson 04.06: Bắt lỗi với Try-Except
- │    │    └── Lesson 04.07: Luồng Finally và Ném lỗi chủ động
- │    └── Chapter 11: Module và Thư viện
- │         ├── Lesson 04.08: Khái niệm Module và Lệnh Import
- │         └── Lesson 04.09: Khám phá Standard Library
- │
- └── Module 05: Lưu trữ và Trừu tượng hóa (File & Basic OOP)
-      ├── Chapter 12: Xử lý Tập tin (File I/O)
-      │    ├── Lesson 05.01: Cấu trúc bộ nhớ và Hàm open()
-      │    ├── Lesson 05.02: Đọc và Ghi File Text
-      │    └── Lesson 05.03: Context Manager với từ khóa 'with'
-      └── Chapter 13: OOP Cơ bản
-           ├── Lesson 05.04: Tư duy Hướng đối tượng (Class vs Object)
-           ├── Lesson 05.05: Thuộc tính và Phương thức
-           ├── Lesson 05.06: Phương thức Khởi tạo (__init__)
-           └── Lesson 05.07: Khái quát về Kế thừa (Inheritance)
+Cấu trúc tuân thủ nghiêm ngặt nguyên tắc: Mỗi bài học (Lesson) giải quyết một khái niệm duy nhất, ưu tiên tư duy logic trước khi đi vào cú pháp, và mở đường cho hàng nghìn bài tập (Exercise) thực hành kèm theo.
 
+MODULE 01: NHẬP MÔN LẬP TRÌNH & PYTHON CƠ BẢN
+1. Thông tin Module
+Thuộc tính	Chi tiết
+Module ID	MOD-01
+Tên Module	Nhập môn Lập trình & Python cơ bản
+Mục tiêu Module	Xây dựng tư duy giao tiếp với máy tính, nắm vững cách lưu trữ và thao tác với dữ liệu đơn lẻ.
+Kiến thức chính	Cài đặt môi trường, Biến, Kiểu dữ liệu nguyên thủy, Toán tử, Input/Output.
+Điều kiện tiên quyết	Không có (Dành cho người mới bắt đầu tuyệt đối).
+Kỹ năng đạt được	Viết được các kịch bản tính toán toán học đơn giản, biết cách nhập xuất dữ liệu với người dùng.
+Số Chapter đề xuất	03 Chapters
+Tổng số Lesson đề xuất	10 Lessons
+Tổng số Exercise đề xuất	~100 Exercises (Trắc nghiệm khái niệm & Code tính toán đơn giản)
+Thời lượng học	5 Giờ
+
+2. Danh sách Chapter (MOD-01)
+Chapter ID	Tên Chapter	Mục tiêu	Các Lesson thuộc Chapter	Kiến thức trọng tâm	Kỹ năng đạt được
+CH-01	Bắt đầu hành trình	Hiểu ngôn ngữ lập trình là gì và cách chạy code.	LS-01.01 đến LS-01.03	Môi trường Python, Compiler/Interpreter cơ bản.	Cài đặt và chạy được file code Python đầu tiên.
+CH-02	Dữ liệu và Toán tử	Nắm vững cách máy tính lưu trữ và tính toán.	LS-01.04 đến LS-01.07	Biến, Kiểu dữ liệu cơ bản, Toán tử số học & gán.	Thực hiện các phép tính toán học qua code.
+CH-03	Tương tác cơ bản	Biết cách giao tiếp hai chiều với chương trình.	LS-01.08 đến LS-01.10	Hàm print(), input(), ép kiểu dữ liệu.	Tạo chương trình tính toán có sự tham gia của người dùng.
+
+3. Danh sách Lesson (MOD-01)
+Lesson ID	Tên Lesson	Mục tiêu Lesson	Kiến thức chính	Độ khó	Thời lượng
+LS-01.01	Máy tính và Ngôn ngữ lập trình	Hiểu cơ chế giao tiếp với máy tính.	Thuật toán cơ bản, Mã máy vs Ngôn ngữ bậc cao.	Dễ	15 phút
+LS-01.02	Môi trường lập trình Python	Thiết lập không gian làm việc.	Cài đặt Python, IDE/Text Editor.	Dễ	20 phút
+LS-01.03	Chương trình Python đầu tiên	Làm quen với cú pháp cơ bản nhất.	Viết và thực thi file .py.	Dễ	15 phút
+LS-01.04	Khái niệm Biến và Cách đặt tên	Hiểu cách cấp phát bộ nhớ để lưu dữ liệu.	Định nghĩa biến, Quy tắc đặt tên PEP8.	Dễ	25 phút
+LS-01.05	Các kiểu dữ liệu nguyên thủy	Phân biệt các loại dữ liệu cơ bản.	int, float, boolean.	Dễ	20 phút
+LS-01.06	Toán tử số học	Biết cách ra lệnh tính toán.	+, -, *, /, //, %, **.	Cơ bản	30 phút
+LS-01.07	Toán tử gán và Cập nhật biến	Nắm được luồng thay đổi giá trị của biến.	=, +=, -=, *=, /=.	Cơ bản	20 phút
+LS-01.08	Hàm xuất dữ liệu (Print)	Gửi thông điệp ra màn hình.	Cú pháp print(), tham số sep, end.	Dễ	20 phút
+LS-01.09	Hàm nhập dữ liệu (Input)	Nhận dữ liệu từ bàn phím.	Cú pháp input(), bản chất dữ liệu đầu vào.	Cơ bản	20 phút
+LS-01.10	Ép kiểu dữ liệu (Type Casting)	Đồng nhất kiểu dữ liệu để tính toán.	Các hàm int(), float(), str().	Cơ bản	25 phút
+
+
+MODULE 02: CẤU TRÚC RẼ NHÁNH
+1. Thông tin Module
+Thuộc tính	Chi tiết
+Module ID	MOD-02
+Tên Module	Cấu trúc rẽ nhánh
+Mục tiêu Module	Xây dựng tư duy "Nếu - Thì" và ra quyết định trong lập trình.
+Kiến thức chính	Boolean logic, Toán tử so sánh, cấu trúc rẽ nhánh (if, if-else, if-elif-else), toán tử logic kết hợp.
+Điều kiện tiên quyết	Hoàn thành MOD-01 (Cần hiểu Biến và Input/Output).
+Kỹ năng đạt được	Kiểm soát chương trình hành động theo ngữ cảnh, phân loại và xử lý bài toán rẽ nhánh đa luồng.
+Số Chapter đề xuất	01 Chapter
+Tổng số Lesson đề xuất	04 Lessons
+Tổng số Exercise đề xuất	~75 Exercises (Code rẽ nhánh logic)
+Thời lượng học	3 Giờ
+
+2. Danh sách Chapter (MOD-02)
+Chapter ID	Tên Chapter	Mục tiêu	Các Lesson thuộc Chapter	Kiến thức trọng tâm	Kỹ năng đạt được
+CH-04	Cấu trúc rẽ nhánh	Xây dựng tư duy "Nếu - Thì".	LS-02.01 đến LS-02.04	Luồng điều kiện if, elif, else, Logic kết hợp.	Kiểm soát chương trình hành động theo ngữ cảnh.
+
+3. Danh sách Lesson (MOD-02)
+Lesson ID	Tên Lesson	Mục tiêu Lesson	Kiến thức chính	Độ khó	Thời lượng
+LS-02.01	Biểu thức Logic & Toán tử so sánh	Định hình điều kiện đúng/sai.	>, <, ==, !=, >=, <=.	Cơ bản	20 phút
+LS-02.02	Khái niệm rẽ nhánh và Lệnh if	Chạy code theo điều kiện đơn.	Block code (Indentation), cú pháp if.	Cơ bản	25 phút
+LS-02.03	Lệnh if-else và if-elif-else	Xử lý đa luồng kịch bản.	Cú pháp else, elif và thứ tự ưu tiên.	Trung bình	35 phút
+LS-02.04	Toán tử Logic kết hợp	Đánh giá nhiều điều kiện cùng lúc.	and, or, not và Điều kiện lồng (Nested if).	Trung bình	30 phút
+
+
+MODULE 03: CẤU TRÚC LẶP
+1. Thông tin Module
+Thuộc tính	Chi tiết
+Module ID	MOD-03
+Tên Module	Cấu trúc lặp
+Mục tiêu Module	Tự động hóa các tác vụ lặp lại và tối ưu hóa số lượng dòng code.
+Kiến thức chính	Vòng lặp while, hàm range(), vòng lặp for, điều hướng lặp break & continue.
+Điều kiện tiên quyết	Hoàn thành MOD-02 (Cấu trúc rẽ nhánh).
+Kỹ năng đạt được	Tạo các chương trình xử lý bài toán có tính chu kỳ, tính tổng dãy số, kiểm tra điều kiện lặp.
+Số Chapter đề xuất	01 Chapter
+Tổng số Lesson đề xuất	04 Lessons
+Tổng số Exercise đề xuất	~75 Exercises (Code vòng lặp)
+Thời lượng học	3 Giờ
+
+2. Danh sách Chapter (MOD-03)
+Chapter ID	Tên Chapter	Mục tiêu	Các Lesson thuộc Chapter	Kiến thức trọng tâm	Kỹ năng đạt được
+CH-05	Cấu trúc lặp	Tự động hóa các tác vụ lặp lại.	LS-03.01 đến LS-03.04	Vòng lặp while, for, điều hướng break/continue.	Rút gọn code, giải quyết bài toán chu kỳ/dãy số.
+
+3. Danh sách Lesson (MOD-03)
+Lesson ID	Tên Lesson	Mục tiêu Lesson	Kiến thức chính	Độ khó	Thời lượng
+LS-03.01	Tư duy lặp và Vòng lặp while	Lặp dựa trên điều kiện chưa xác định trước.	Cú pháp while, nhận diện vòng lặp vô tận.	Trung bình	35 phút
+LS-03.02	Dãy số với hàm range()	Tạo một tập hợp số nguyên có quy luật.	Hàm range(start, stop, step).	Cơ bản	25 phút
+LS-03.03	Vòng lặp for	Lặp qua một số lần biết trước.	Cú pháp for ... in range().	Trung bình	35 phút
+LS-03.04	Điều hướng lặp: break & continue	Kiểm soát và can thiệp sâu vào vòng lặp.	Lệnh break, continue.	Trung bình	30 phút
+
+
+MODULE 04: XỬ LÝ CHUỖI (STRING)
+1. Thông tin Module
+Thuộc tính	Chi tiết
+Module ID	MOD-04
+Tên Module	Xử lý Chuỗi (String)
+Mục tiêu Module	Hiểu và sử dụng thành thạo các kỹ thuật xử lý văn bản, chuỗi ký tự trong Python.
+Kiến thức chính	Index, Slicing, String Methods, F-string.
+Điều kiện tiên quyết	Hoàn thành MOD-03 (Cấu trúc lặp).
+Kỹ năng đạt được	Bóc tách, tìm kiếm, chuẩn hóa và định dạng văn bản thuần thục.
+Số Chapter đề xuất	01 Chapter
+Tổng số Lesson đề xuất	04 Lessons
+Tổng số Exercise đề xuất	~80 Exercises
+Thời lượng học	2 Giờ
+
+2. Danh sách Chapter (MOD-04)
+Chapter ID	Tên Chapter	Mục tiêu	Các Lesson thuộc Chapter	Kiến thức trọng tâm	Kỹ năng đạt được
+CH-06	Xử lý Chuỗi (String)	Nắm vững thao tác với văn bản.	LS-04.01 đến LS-04.04	Indexing, Slicing, String Methods, F-string.	Bóc tách, tìm kiếm và định dạng văn bản.
+
+3. Danh sách Lesson (MOD-04)
+Lesson ID	Tên Lesson	Mục tiêu Lesson	Kiến thức chính	Độ khó	Thời lượng
+LS-04.01	Chuỗi như một Mảng: Indexing	Hiểu bản chất chuỗi trong bộ nhớ.	Cấu trúc chuỗi, Truy xuất qua Index (Positive/Negative).	Cơ bản	20 phút
+LS-04.02	Cắt chuỗi (Slicing)	Lấy ra một đoạn văn bản con.	Cú pháp [start:stop:step] trên String.	Cơ bản	25 phút
+LS-04.03	Các phương thức chuỗi phổ biến	Biến đổi văn bản tự động.	upper(), lower(), replace(), split(), join().	Trung bình	35 phút
+LS-04.04	Định dạng chuỗi (F-string)	Chèn biến động vào văn bản tĩnh.	Cú pháp f"{var}".	Cơ bản	20 phút
+
+
+MODULE 05: CẤU TRÚC TUẦN TỰ (LIST & TUPLE)
+1. Thông tin Module
+Thuộc tính	Chi tiết
+Module ID	MOD-05
+Tên Module	Cấu trúc Tuần tự (List & Tuple)
+Mục tiêu Module	Hiểu cách lưu trữ và quản lý tập hợp nhiều dữ liệu có thứ tự trong Python.
+Kiến thức chính	List CRUD, Duyệt mảng, Sắp xếp & tìm kiếm cơ bản, Tính chất bất biến của Tuple.
+Điều kiện tiên quyết	Hoàn thành MOD-04 (Xử lý Chuỗi).
+Kỹ năng đạt được	Quản lý mảng dữ liệu đa chiều, thực hiện thống kê và xử lý chuỗi danh sách.
+Số Chapter đề xuất	01 Chapter
+Tổng số Lesson đề xuất	05 Lessons
+Tổng số Exercise đề xuất	~100 Exercises
+Thời lượng học	3 Giờ
+
+2. Danh sách Chapter (MOD-05)
+Chapter ID	Tên Chapter	Mục tiêu	Các Lesson thuộc Chapter	Kiến thức trọng tâm	Kỹ năng đạt được
+CH-07	Cấu trúc Tuần tự (List & Tuple)	Quản lý tập hợp dữ liệu có thứ tự.	LS-05.01 đến LS-05.05	List CRUD, Duyệt mảng, Tính chất bất biến của Tuple.	Quản lý mảng dữ liệu đa chiều, thực hiện thống kê.
+
+3. Danh sách Lesson (MOD-05)
+Lesson ID	Tên Lesson	Mục tiêu Lesson	Kiến thức chính	Độ khó	Thời lượng
+LS-05.01	Khái niệm List & Khởi tạo	Tạo thùng chứa đa năng.	Cú pháp [], List chứa nhiều kiểu dữ liệu khác nhau.	Cơ bản	20 phút
+LS-05.02	Cập nhật & Sửa đổi List	Thêm, xóa, sửa phần tử.	append(), insert(), remove(), pop().	Trung bình	30 phút
+LS-05.03	Duyệt mảng bằng Vòng lặp	Xử lý hàng loạt phần tử.	Kết hợp for item in list và for i in range(len()).	Trung bình	35 phút
+LS-05.04	Sắp xếp và Tìm kiếm cơ bản	Tổ chức lại dữ liệu trong List.	sort(), sorted(), toán tử in.	Trung bình	30 phút
+LS-05.05	Tuple: Danh sách bất biến	Bảo vệ toàn vẹn dữ liệu.	Cú pháp (), Khác biệt bộ nhớ giữa List và Tuple.	Cơ bản	20 phút
+
+
+MODULE 06: TẬP HỢP & ÁNH XẠ (SET & DICTIONARY)
+1. Thông tin Module
+Thuộc tính	Chi tiết
+Module ID	MOD-06
+Tên Module	Tập hợp và Ánh xạ (Set & Dictionary)
+Mục tiêu Module	Quản lý dữ liệu không thứ tự và tối ưu hóa tốc độ tra cứu khóa-giá trị.
+Kiến thức chính	Set (tính duy nhất), Dictionary (Key-Value), CRUD Dictionary.
+Điều kiện tiên quyết	Hoàn thành MOD-05 (Cấu trúc Tuần tự).
+Kỹ năng đạt được	Xử lý dữ liệu trùng lặp siêu tốc, xây dựng cấu trúc mô hình dữ liệu thực tế (bản ghi, từ điển).
+Số Chapter đề xuất	01 Chapter
+Tổng số Lesson đề xuất	03 Lessons
+Tổng số Exercise đề xuất	~70 Exercises
+Thời lượng học	3 Giờ
+
+2. Danh sách Chapter (MOD-06)
+Chapter ID	Tên Chapter	Mục tiêu	Các Lesson thuộc Chapter	Kiến thức trọng tâm	Kỹ năng đạt được
+CH-08	Tập hợp và Ánh xạ (Set & Dict)	Quản lý dữ liệu không thứ tự và tra cứu siêu tốc.	LS-06.01 đến LS-06.03	Set (tính duy nhất), Dictionary (Key-Value).	Xử lý dữ liệu trùng lặp, xây dựng mô hình dữ liệu thực tế.
+
+3. Danh sách Lesson (MOD-06)
+Lesson ID	Tên Lesson	Mục tiêu Lesson	Kiến thức chính	Độ khó	Thời lượng
+LS-06.01	Set: Tập hợp toán học	Loại bỏ trùng lặp dữ liệu.	Cú pháp {}, các phép toán Giao, Hợp, Hiệu.	Trung bình	30 phút
+LS-06.02	Dictionary: Cấu trúc Key-Value	Lưu trữ dữ liệu có định danh.	Cú pháp {key: value}, nguyên tắc của Key.	Khó	35 phút
+LS-06.03	Thao tác trên Dictionary	Truy xuất, thêm mới và duyệt Dict.	get(), keys(), values(), items().	Khó	40 phút
+
+
+MODULE 07: TÁI SỬ DỤNG & TỔ CHỨC MÃ NGUỒN
+1. Thông tin Module
+Thuộc tính	Chi tiết
+Module ID	MOD-07
+Tên Module	Tái sử dụng & Tổ chức mã nguồn
+Mục tiêu Module	Tránh lặp code (DRY - Don't Repeat Yourself), cấu trúc chương trình chuyên nghiệp và an toàn hơn.
+Kiến thức chính	Functions (Hàm), Parameters/Arguments, Scope, Modules chuẩn, Cấu trúc Try-Except.
+Điều kiện tiên quyết	Hoàn thành MOD-06 (Tập hợp và Ánh xạ).
+Kỹ năng đạt được	Viết code module hóa, phân tách vấn đề lớn thành hàm nhỏ, chương trình không bị "crash" khi gặp lỗi bất ngờ.
+Số Chapter đề xuất	03 Chapters
+Tổng số Lesson đề xuất	09 Lessons
+Tổng số Exercise đề xuất	~100 Exercises (Viết hàm chuẩn hóa, Import logic)
+Thời lượng học	7 Giờ
+
+2. Danh sách Chapter (MOD-07)
+Chapter ID	Tên Chapter	Mục tiêu	Các Lesson thuộc Chapter	Kiến thức trọng tâm	Kỹ năng đạt được
+CH-09	Hàm (Function)	Đóng gói logic để tái sử dụng nhiều lần.	LS-07.01 đến LS-07.04	Định nghĩa hàm def, Tham số, Khái niệm return, Biến toàn cục/cục bộ.	Xây dựng thư viện tính toán/logic cá nhân.
+CH-10	Xử lý Ngoại lệ (Exception)	Giữ chương trình chạy ổn định khi lỗi xảy ra.	LS-07.05 đến LS-07.07	Phân biệt Error vs Exception, Cấu trúc try-except-finally.	Quản trị rủi ro luồng dữ liệu đầu vào.
+CH-11	Module và Thư viện	Tái sử dụng code từ cộng đồng.	LS-07.08 đến LS-07.09	Cú pháp import, module chuẩn (math, random).	Tích hợp công cụ có sẵn vào dự án.
+
+3. Danh sách Lesson (MOD-07)
+Lesson ID	Tên Lesson	Mục tiêu Lesson	Kiến thức chính	Độ khó	Thời lượng
+LS-07.01	Tư duy đóng gói và Lệnh def	Khởi tạo hộp đen chức năng.	Cú pháp định nghĩa hàm cơ bản không tham số.	Cơ bản	20 phút
+LS-07.02	Tham số và Đối số	Đưa dữ liệu đầu vào cho Hàm xử lý.	Khác biệt Parameter vs Argument, Default/Keyword Arguments.	Trung bình	35 phút
+LS-07.03	Trả về kết quả (Return)	Lấy kết quả từ hộp đen chức năng.	Cú pháp return, ngắt luồng thực thi trong hàm.	Trung bình	30 phút
+LS-07.04	Phạm vi của Biến (Scope)	Hiểu vòng đời của dữ liệu trong bộ nhớ.	Local scope vs Global scope, từ khóa global.	Khó	30 phút
+LS-07.05	Nhận diện Ngoại lệ (Exceptions)	Phân biệt Lỗi cú pháp và Lỗi thực thi.	SyntaxError, TypeError, ValueError, ZeroDivisionError.	Cơ bản	20 phút
+LS-07.06	Bắt lỗi với Try-Except	Ngăn chương trình bị ngắt đột ngột.	Cú pháp try, except.	Trung bình	30 phút
+LS-07.07	Luồng Finally và Ném lỗi chủ động	Đảm bảo giải phóng tài nguyên.	Khối lệnh finally và từ khóa raise.	Khó	30 phút
+LS-07.08	Khái niệm Module và Lệnh Import	Mượn code từ file khác.	Bản chất .py là module, import, from ... import.	Cơ bản	25 phút
+LS-07.09	Khám phá Standard Library	Sử dụng công cụ phổ biến có sẵn.	Module math, random, datetime cơ bản.	Cơ bản	25 phút
+
+
+MODULE 08: LƯU TRỮ DỮ LIỆU & LẬP TRÌNH HƯỚNG ĐỐI TƯỢNG (OOP)
+1. Thông tin Module
+Thuộc tính	Chi tiết
+Module ID	MOD-08
+Tên Module	Lưu trữ và Trừu tượng hóa (File & Basic OOP)
+Mục tiêu Module	Giữ lại dữ liệu sau khi tắt chương trình và nâng cấp tư duy mô hình hóa thực tế vào code.
+Kiến thức chính	File IO (Text), Tư duy OOP, Class, Object, Attributes, Methods, Constructor.
+Điều kiện tiên quyết	Hoàn thành MOD-07 (Cần vững khái niệm Hàm trước khi học Phương thức OOP).
+Kỹ năng đạt được	Lưu file báo cáo/log, tạo ra các đối tượng (như HocSinh, NhanVien) có tính chất và hành vi riêng biệt.
+Số Chapter đề xuất	02 Chapters
+Tổng số Lesson đề xuất	07 Lessons
+Tổng số Exercise đề xuất	~50 Exercises (Đọc/ghi file thực tế, Xây dựng Class thiết thực)
+Thời lượng học	7.5 Giờ
+
+2. Danh sách Chapter (MOD-08)
+Chapter ID	Tên Chapter	Mục tiêu	Các Lesson thuộc Chapter	Kiến thức trọng tâm	Kỹ năng đạt được
+CH-12	Xử lý Tập tin (File I/O)	Tương tác với Ổ cứng thay vì RAM.	LS-08.01 đến LS-08.03	Hàm open(), các mode r, w, a, Context Manager with.	Lưu trữ dữ liệu vĩnh viễn (Text data).
+CH-13	OOP Cơ bản	Mô phỏng thế giới thực thông qua Code.	LS-08.04 đến LS-08.07	Lớp (Class), Đối tượng (Object), Thuộc tính, Phương thức, Kế thừa đơn giản.	Phân tích bài toán thành các thực thể độc lập giao tiếp với nhau.
+
+3. Danh sách Lesson (MOD-08)
+Lesson ID	Tên Lesson	Mục tiêu Lesson	Kiến thức chính	Độ khó	Thời lượng
+LS-08.01	Cấu trúc bộ nhớ và Hàm open()	Nắm vững cách kết nối với File.	RAM vs Disk, Đường dẫn (Path), Hàm open(), .close().	Trung bình	25 phút
+LS-08.02	Đọc và Ghi File Text	Chuyển dữ liệu ra/vào chương trình.	Mode r, w, a, các hàm .read(), .write().	Trung bình	30 phút
+LS-08.03	Context Manager với từ khóa 'with'	Tự động hóa quản lý tài nguyên.	Cú pháp with open(...) as file:, tránh rò rỉ bộ nhớ.	Cơ bản	20 phút
+LS-08.04	Tư duy Hướng đối tượng (Class vs Object)	Chuyển đổi góc nhìn lập trình.	Khái niệm Bản thiết kế (Class) và Thực thể (Object/Instance).	Khó	30 phút
+LS-08.05	Thuộc tính và Phương thức	Khai báo Đặc điểm và Hành động cho Đối tượng.	Cấu trúc Class, tham số self bắt buộc.	Khó	35 phút
+LS-08.06	Phương thức Khởi tạo (__init__)	Tự động hóa quá trình sinh ra đối tượng.	Hàm magic __init__, gán thuộc tính ban đầu.	Khó	35 phút
+LS-08.07	Khái quát về Kế thừa (Inheritance)	Tái sử dụng thiết kế Class cũ.	Cú pháp kế thừa Class cha, mô hình hóa Parent-Child (Mức cơ bản).	Khó	40 phút
+
+
+SƠ ĐỒ CÂY CẤU TRÚC KHÓA HỌC (TREE STRUCTURE)
+PlaintextCourse: Khóa học Lập trình Python Nền tảng (Python Fundamentals)
+  ├── Module 01: Nhập môn Lập trình & Python cơ bản
+  │    ├── Chapter 01: Bắt đầu hành trình
+  │    │    ├── Lesson 01.01: Máy tính và Ngôn ngữ lập trình
+  │    │    ├── Lesson 01.02: Môi trường lập trình Python
+  │    │    └── Lesson 01.03: Chương trình Python đầu tiên
+  │    ├── Chapter 02: Dữ liệu và Toán tử
+  │    │    ├── Lesson 01.04: Khái niệm Biến và Cách đặt tên
+  │    │    ├── Lesson 01.05: Các kiểu dữ liệu nguyên thủy
+  │    │    ├── Lesson 01.06: Toán tử số học
+  │    │    └── Lesson 01.07: Toán tử gán và Cập nhật biến
+  │    └── Chapter 03: Tương tác cơ bản
+  │         ├── Lesson 01.08: Hàm xuất dữ liệu (Print)
+  │         ├── Lesson 01.09: Hàm nhập dữ liệu (Input)
+  │         └── Lesson 01.10: Ép kiểu dữ liệu (Type Casting)
+  │
+  ├── Module 02: Cấu trúc rẽ nhánh
+  │    └── Chapter 04: Cấu trúc rẽ nhánh
+  │         ├── Lesson 02.01: Biểu thức Logic & Toán tử so sánh
+  │         ├── Lesson 02.02: Khái niệm rẽ nhánh và Lệnh if
+  │         ├── Lesson 02.03: Lệnh if-else và if-elif-else
+  │         └── Lesson 02.04: Toán tử Logic kết hợp
+  │
+  ├── Module 03: Cấu trúc lặp
+  │    └── Chapter 05: Cấu trúc lặp
+  │         ├── Lesson 03.01: Tư duy lặp và Vòng lặp while
+  │         ├── Lesson 03.02: Dãy số với hàm range()
+  │         ├── Lesson 03.03: Vòng lặp for
+  │         └── Lesson 03.04: Điều hướng lặp: break & continue
+  │
+  ├── Module 04: Xử lý Chuỗi (String)
+  │    └── Chapter 06: Xử lý Chuỗi (String)
+  │         ├── Lesson 04.01: Chuỗi như một Mảng: Indexing
+  │         ├── Lesson 04.02: Cắt chuỗi (Slicing)
+  │         ├── Lesson 04.03: Các phương thức chuỗi phổ biến
+  │         └── Lesson 04.04: Định dạng chuỗi (F-string)
+  │
+  ├── Module 05: Cấu trúc Tuần tự (List & Tuple)
+  │    └── Chapter 07: Cấu trúc Tuần tự (List & Tuple)
+  │         ├── Lesson 05.01: Khái niệm List & Khởi tạo
+  │         ├── Lesson 05.02: Cập nhật & Sửa đổi List
+  │         ├── Lesson 05.03: Duyệt mảng bằng Vòng lặp
+  │         ├── Lesson 05.04: Sắp xếp và Tìm kiếm cơ bản
+  │         └── Lesson 05.05: Tuple: Danh sách bất biến
+  │
+  ├── Module 06: Tập hợp và Ánh xạ (Set & Dictionary)
+  │    └── Chapter 08: Tập hợp và Ánh xạ (Set & Dict)
+  │         ├── Lesson 06.01: Set: Tập hợp toán học
+  │         ├── Lesson 06.02: Dictionary: Cấu trúc Key-Value
+  │         └── Lesson 06.03: Thao tác trên Dictionary
+  │
+  ├── Module 07: Tái sử dụng & Tổ chức mã nguồn
+  │    ├── Chapter 09: Hàm (Function)
+  │    │    ├── Lesson 07.01: Tư duy đóng gói và Lệnh def
+  │    │    ├── Lesson 07.02: Tham số và Đối số
+  │    │    ├── Lesson 07.03: Trả về kết quả (Return)
+  │    │    └── Lesson 07.04: Phạm vi của Biến (Scope)
+  │    ├── Chapter 10: Xử lý Ngoại lệ (Exception)
+  │    │    ├── Lesson 07.05: Nhận diện Ngoại lệ (Exceptions)
+  │    │    ├── Lesson 07.06: Bắt lỗi với Try-Except
+  │    │    └── Lesson 07.07: Luồng Finally và Ném lỗi chủ động
+  │    └── Chapter 11: Module và Thư viện
+  │         ├── Lesson 07.08: Khái niệm Module và Lệnh Import
+  │         └── Lesson 07.09: Khám phá Standard Library
+  │
+  └── Module 08: Lưu trữ và Trừu tượng hóa (File & Basic OOP)
+       ├── Chapter 12: Xử lý Tập tin (File I/O)
+       │    ├── Lesson 08.01: Cấu trúc bộ nhớ và Hàm open()
+       │    ├── Lesson 08.02: Đọc và Ghi File Text
+       │    └── Lesson 08.03: Context Manager với từ khóa 'with'
+       └── Chapter 13: OOP Cơ bản
+            ├── Lesson 08.04: Tư duy Hướng đối tượng (Class vs Object)
+            ├── Lesson 08.05: Thuộc tính và Phương thức
+            ├── Lesson 08.06: Phương thức Khởi tạo (__init__)
+            └── Lesson 08.07: Khái quát về Kế thừa (Inheritance)

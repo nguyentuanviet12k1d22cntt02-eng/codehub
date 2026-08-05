@@ -12,6 +12,7 @@ import {
     getLeaderboard
 } from "../controllers/practiceController";
 import { authenticateToken, optionalAuthenticateToken } from "../middlewares/auth";
+import { getRecommendations, getUserMastery } from "../controllers/recommendController";
 
 dotenv.config();
 const router = Router();
@@ -23,7 +24,7 @@ router.post('/register', register);
 router.post('/login', login);
 
 router.get('/dashboard', getCourses);
-router.get('/course/:id', getCourseById);
+router.get('/course/:id', optionalAuthenticateToken, getCourseById);
 router.get('/lesson/:id', getLessonById);
 
 // Bài học & Bài tập thực hành
@@ -39,5 +40,9 @@ router.post('/practice/compiler/run', runPracticeCode);
 router.post('/practice/problems/:id/submit', authenticateToken, submitPracticeCode);
 router.get('/practice/problems/:id/submissions', authenticateToken, getPracticeSubmissions);
 router.get('/practice/leaderboard', getLeaderboard);
+
+// Phân hệ Gợi ý học tập thích ứng (Adaptive Recommendation Engine)
+router.get('/recommendations', authenticateToken, getRecommendations);
+router.get('/user-mastery', authenticateToken, getUserMastery);
 
 export default router;

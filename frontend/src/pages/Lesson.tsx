@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -42,11 +42,12 @@ const cleanAlertPrefix = (node: any): any => {
     return node;
 };
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const Lesson: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     // Sử dụng useQuery để quản lý nạp dữ liệu bài học lý thuyết
     const { data: lesson, isLoading, error } = useQuery({
@@ -70,6 +71,7 @@ const Lesson: React.FC = () => {
                     }
                 }
             );
+            queryClient.invalidateQueries();
             if (lesson.nextLessonId) {
                 navigate(`/lesson/${lesson.nextLessonId}`);
             } else {
@@ -106,7 +108,7 @@ const Lesson: React.FC = () => {
             {/* Header */}
             <header className="h-14 border-b border-border-custom bg-bg-secondary px-6 md:px-12 flex justify-between items-center shrink-0 sticky top-0 z-50 transition-colors duration-200">
                 <div className="flex items-center gap-3">
-                    <span 
+                    <span
                         className="text-xl font-bold tracking-tight text-text-primary cursor-pointer"
                         onClick={() => navigate('/dashboard')}
                     >
@@ -117,11 +119,11 @@ const Lesson: React.FC = () => {
                         Lý thuyết bài học: <span className="text-text-primary font-semibold">{lesson.title}</span>
                     </span>
                 </div>
-                
+
                 <div className="flex items-center gap-4">
                     <ThemeToggle />
-                    <Link 
-                        to="/dashboard" 
+                    <Link
+                        to="/dashboard"
                         className="text-xs text-text-secondary hover:text-text-primary no-underline transition-colors px-3 py-1.5 rounded-lg hover:bg-bg-tertiary border border-border-custom flex items-center gap-1.5"
                     >
                         <span>Quay lại Dashboard</span>
@@ -221,15 +223,15 @@ const Lesson: React.FC = () => {
                                     );
                                 },
                                 table: ({ ...props }) => (
-                                     <div className="overflow-x-auto w-full border border-border-custom rounded-xl my-6 transition-colors duration-200">
-                                         <table className="w-full text-sm text-left border-collapse" {...props} />
-                                     </div>
-                                 ),
-                                 thead: ({ ...props }) => <thead className="bg-bg-tertiary border-b border-border-custom" {...props} />,
-                                 tbody: ({ ...props }) => <tbody className="divide-y divide-border-custom" {...props} />,
-                                 tr: ({ ...props }) => <tr className="hover:bg-bg-tertiary/30" {...props} />,
-                                 th: ({ ...props }) => <th className="p-3 font-semibold text-text-primary border-r border-border-custom last:border-r-0" {...props} />,
-                                 td: ({ ...props }) => <td className="p-3 text-text-secondary border-r border-border-custom/50 last:border-r-0" {...props} />
+                                    <div className="overflow-x-auto w-full border border-border-custom rounded-xl my-6 transition-colors duration-200">
+                                        <table className="w-full text-sm text-left border-collapse" {...props} />
+                                    </div>
+                                ),
+                                thead: ({ ...props }) => <thead className="bg-bg-tertiary border-b border-border-custom" {...props} />,
+                                tbody: ({ ...props }) => <tbody className="divide-y divide-border-custom" {...props} />,
+                                tr: ({ ...props }) => <tr className="hover:bg-bg-tertiary/30" {...props} />,
+                                th: ({ ...props }) => <th className="p-3 font-semibold text-text-primary border-r border-border-custom last:border-r-0" {...props} />,
+                                td: ({ ...props }) => <td className="p-3 text-text-secondary border-r border-border-custom/50 last:border-r-0" {...props} />
                             }}
                         >
                             {stripFrontmatter(lesson.content || '')}
@@ -240,15 +242,21 @@ const Lesson: React.FC = () => {
 
                     {/* Bottom CTA Button */}
                     {hasExercise ? (
-                        <button 
+                        <button
                             className="bg-accent-custom hover:bg-accent-hover text-white dark:text-[#030303] py-3.5 rounded-xl text-sm font-bold cursor-pointer active:scale-95 transition-all w-full border-none shadow-lg shadow-accent-custom/10 flex items-center justify-center gap-2"
-                            onClick={() => navigate(`/practice/${id}`)}
+                            onClick={() => {
+                                if (lesson?.lessonId === 'LS-01.MP') {
+                                    navigate(`/module-practice/MOD-01/${id}`);
+                                } else {
+                                    navigate(`/practice/${id}`);
+                                }
+                            }}
                         >
                             <span>Chuyển sang làm bài tập thực hành</span>
                             <span>&rarr;</span>
                         </button>
                     ) : (
-                        <button 
+                        <button
                             className="bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-xl text-sm font-bold cursor-pointer active:scale-95 transition-all w-full border-none shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2"
                             onClick={handleCompleteWithoutExercise}
                         >

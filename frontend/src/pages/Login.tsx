@@ -19,7 +19,26 @@ const Login: React.FC = () => {
 
             if (data.token) {
                 localStorage.setItem('token', data.token);
-                navigate('/dashboard');
+                let role = 'STUDENT';
+                try {
+                    // Decode base64 payload of JWT
+                    const base64Url = data.token.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+                    localStorage.setItem('user', jsonPayload);
+                    const userObj = JSON.parse(jsonPayload);
+                    role = userObj.role || 'STUDENT';
+                } catch (e) {
+                    console.error("Failed to parse token payload", e);
+                }
+
+                if (role === 'ADMIN') {
+                    navigate('/admin');
+                } else {
+                    navigate('/dashboard');
+                }
             } else {
                 setError('Không nhận được mã xác thực hợp lệ');
             }
@@ -78,8 +97,8 @@ const Login: React.FC = () => {
                         </div>
                     )}
 
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         disabled={loading}
                         className="bg-white hover:bg-[#f3f3f3] text-black font-bold py-3.5 rounded-lg transition-colors cursor-pointer active:scale-[0.98] disabled:opacity-50 text-sm mt-4 w-full"
                     >

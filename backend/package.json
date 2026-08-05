@@ -7,7 +7,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --watch src --ext ts,json --exec ts-node src/app.ts"
+    "dev": "nodemon --watch src --ext ts,json --exec ts-node src/app.ts",
+    "admin:create": "ts-node src/scripts/createAdminUser.ts",
+    "admin:seed": "ts-node src/scripts/adminSeeder.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

@@ -21,7 +21,10 @@ export const authService = {
     },
 
     getCourseDetail: async (id: string) => {
-        const response = await axios.get(`${API_URL}/course/${id}`);
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/course/${id}`, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
         console.log(response.data)
         return response.data;
     },
