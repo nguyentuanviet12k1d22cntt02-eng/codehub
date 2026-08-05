@@ -29,14 +29,15 @@ async function main() {
     });
     console.log('   ✅ Đã đồng bộ tài khoản Admin: admin@mcode.com / admin123');
 
-<<<<<<< HEAD
-    // Xóa các module và khóa học cũ để tránh lỗi trùng lặp module_id (MOD-01 -> MOD-05) khi seed lại
+    // Xóa các module cũ để tránh lỗi trùng lặp module_id khi nạp dữ liệu lại
     await prisma.module.deleteMany({
         where: {
             moduleId: {
                 in: ['MOD-01', 'MOD-02', 'MOD-03', 'MOD-04', 'MOD-05']
             }
-=======
+        }
+    });
+
     // 3. TẠO/CẬP NHẬT KHÓA HỌC CHÍNH
     console.log('2️⃣ Thiết lập khóa học...');
     const courseId = '8038010b-d02c-41ed-923b-3a12b011f418';
@@ -47,9 +48,9 @@ async function main() {
                 { id: courseId },
                 { title: 'Lập trình Python cơ bản cho người mới bắt đầu' }
             ]
->>>>>>> 469081e0eff3feae1a64a370eb758f9b3c8f329f
         }
     });
+
     await prisma.course.deleteMany({
         where: {
             OR: [

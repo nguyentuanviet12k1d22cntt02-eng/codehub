@@ -12,16 +12,9 @@ from dotenv import load_dotenv
 if sys.stdout.encoding != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8')
 
-import numpy as np
-import torch
-import psycopg2
-from fastapi import FastAPI, HTTPException, Query
-from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
-from dotenv import load_dotenv
-
 # Ensure core directory is accessible
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 from core.bkt import BKTModel
 from core.dkt import DKTModel, prepare_dkt_sequence
 from core.palnet import PALNet

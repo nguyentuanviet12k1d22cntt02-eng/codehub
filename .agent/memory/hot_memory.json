@@ -1,7 +1,7 @@
 {
   "project_name": "LearnPython - VIBECODE AI Learning System",
-  "active_milestone": "MVP implementation & Bug Resolution",
-  "current_task": "Resolved 404 on /api/admin/dashboard/stats by terminating orphan Node process on port 3000 and adding EADDRINUSE error handler in app.ts.",
+  "active_milestone": "DevOps Hands-on Plan Created",
+  "current_task": "Added DEVOPS_PLAN.md and .devops/ to .gitignore, generated comprehensive hands-on DevOps plan for user practice.",
   "session_progress": [
     "- [x] /init onboarding: hydrated ARCHITECTURE.md, FEATURES.md, hot_memory.json, cold_memory.md ADRs 010-014",
     "- [x] Configured backend/.env with Supabase PostgreSQL connection string",
@@ -10,6 +10,7 @@
     "- [x] Installed PyTorch & pyBKT into ai-service virtual environment",
     "- [x] Updated README.md with ⚡ Daily Startup Workflow + ⚙️ First-Time Setup in 100% English",
     "- [x] Fixed 404 /api/admin/dashboard/stats by killing orphan port 3000 process and updating app.ts with EADDRINUSE handler",
+    "- [x] Added DEVOPS_PLAN.md & .devops/ to .gitignore and created DEVOPS_PLAN.md for hands-on practice",
     "- [x] Resolved Git merge conflicts and created commit 1a3e811",
     "- [x] Synced hot_memory.json and cold_memory.md"
   ],
@@ -20,19 +21,20 @@
     "ai-service/database_test.py",
     "ai-service/main.py",
     "README.md",
+    ".gitignore",
+    "DEVOPS_PLAN.md",
     ".agent/memory/hot_memory.json",
     ".agent/memory/cold_memory.md",
     ".agent/docs/FEATURES.md"
   ],
   "git_commit_hash": "1a3e8113709b1f72e39de32f22b7a9561bd0840b",
-  "git_dirty_status": "M README.md M backend/src/app.ts M ai-service/database_test.py M frontend/package-lock.json",
+  "git_dirty_status": "M .gitignore M README.md M backend/src/app.ts M backend/src/prisma/seed.ts M ai-service/database_test.py M ai-service/main.py M frontend/package-lock.json",
   "last_successful_checkpoint": "1a3e811 fix: resolve merge conflicts in ai-service/main.py and backend/seed.ts",
   "active_blockers": [],
   "learnings": [
     "Code execution is funneled through a single CodeExecutionQueue singleton (maxConcurrency=4) to bound Docker container load.",
     "Runtime is measured inside the container via an __RUNTIME__ marker to exclude Docker/interpreter overhead.",
-    "Orphan Node processes holding port 3000 can cause silent app.listen failures in nodemon resulting in 404s for newly merged routes.",
-    "Added server.on('error', EADDRINUSE) in backend/src/app.ts to immediately detect port conflicts."
+    "Added DEVOPS_PLAN.md and .devops/ to .gitignore for private DevOps hands-on practice."
   ],
   "installed_dynamic_skills": [
     "fetch-skill"

@@ -24,3 +24,8 @@ Thumbs.db
 .agent/scratchpad.md
 .agent/specs/current-task.md
 .agent/specs/archive/
+
+# DevOps private hands-on plan & workspace
+DEVOPS_PLAN.md
+.devops/
+
