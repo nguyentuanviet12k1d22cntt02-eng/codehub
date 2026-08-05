@@ -1,19 +1,21 @@
 {
   "project_name": "LearnPython - VIBECODE AI Learning System",
-  "active_milestone": "MVP implementation & Git Merge Resolution",
-  "current_task": "Merged remote changes, resolved conflicts in ai-service/main.py and backend/src/prisma/seed.ts, committed clean merge.",
+  "active_milestone": "MVP implementation & Bug Resolution",
+  "current_task": "Resolved 404 on /api/admin/dashboard/stats by terminating orphan Node process on port 3000 and adding EADDRINUSE error handler in app.ts.",
   "session_progress": [
     "- [x] /init onboarding: hydrated ARCHITECTURE.md, FEATURES.md, hot_memory.json, cold_memory.md ADRs 010-014",
     "- [x] Configured backend/.env with Supabase PostgreSQL connection string",
     "- [x] Fixed P2002 unique constraint module_id seed issue in seed.ts and executed prisma db seed",
     "- [x] Created & merged remote ai-service/main.py with complete PAL-Net, BKT, DKT recommendation engine",
-    "- [x] Fixed Windows charmap encoding issue in ai-service/database_test.py",
-    "- [x] Updated README.md with accurate setup steps for Backend, Frontend, Docker Sandbox, and AI Service",
+    "- [x] Installed PyTorch & pyBKT into ai-service virtual environment",
+    "- [x] Updated README.md with ⚡ Daily Startup Workflow + ⚙️ First-Time Setup in 100% English",
+    "- [x] Fixed 404 /api/admin/dashboard/stats by killing orphan port 3000 process and updating app.ts with EADDRINUSE handler",
     "- [x] Resolved Git merge conflicts and created commit 1a3e811",
     "- [x] Synced hot_memory.json and cold_memory.md"
   ],
   "modified_files": [
     "backend/.env",
+    "backend/src/app.ts",
     "backend/src/prisma/seed.ts",
     "ai-service/database_test.py",
     "ai-service/main.py",
@@ -23,15 +25,14 @@
     ".agent/docs/FEATURES.md"
   ],
   "git_commit_hash": "1a3e8113709b1f72e39de32f22b7a9561bd0840b",
-  "git_dirty_status": "M README.md M ai-service/database_test.py M frontend/package-lock.json",
+  "git_dirty_status": "M README.md M backend/src/app.ts M ai-service/database_test.py M frontend/package-lock.json",
   "last_successful_checkpoint": "1a3e811 fix: resolve merge conflicts in ai-service/main.py and backend/seed.ts",
   "active_blockers": [],
   "learnings": [
     "Code execution is funneled through a single CodeExecutionQueue singleton (maxConcurrency=4) to bound Docker container load.",
     "Runtime is measured inside the container via an __RUNTIME__ marker to exclude Docker/interpreter overhead.",
-    "Seed idempotency requires deleting existing modules matching module_id list (MOD-01..MOD-05) before creating pythonCourse to avoid P2002 errors on Supabase DB.",
-    "Windows terminal charmap codec requires sys.stdout.reconfigure(encoding='utf-8') for printing Vietnamese characters in Python scripts.",
-    "Git pull conflicts on main.py and seed.ts resolved by favoring the remote PAL-Net implementation and upsert-based seed logic."
+    "Orphan Node processes holding port 3000 can cause silent app.listen failures in nodemon resulting in 404s for newly merged routes.",
+    "Added server.on('error', EADDRINUSE) in backend/src/app.ts to immediately detect port conflicts."
   ],
   "installed_dynamic_skills": [
     "fetch-skill"

@@ -24,6 +24,15 @@ app.get('/ping', (req, res) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/admin', adminRoutes)
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Server đang chạy tại http://localhost:${PORT}`);
-}) 
+});
+
+server.on('error', (err: any) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`❌ Lỗi: Cổng ${PORT} đã bị chiếm bởi tiến trình khác! Hãy diệt tiến trình cũ trên port ${PORT}.`);
+    } else {
+        console.error(`❌ Lỗi server:`, err);
+    }
+});
+ 
