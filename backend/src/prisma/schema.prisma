@@ -23,6 +23,8 @@ model User {
   lessonProgress      LessonProgress[]
   practiceSubmissions PracticeSubmission[]
   submissions         Submission[]
+  personalizedPaths   PersonalizedPath[]
+  pathChatSessions    PathChatSession[]
 
   @@map("users")
 }
@@ -297,3 +299,144 @@ enum Gender {
   FEMALE
   OTHER
 }
+
+enum PathStatus {
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+enum QuizOption {
+  A
+  B
+  C
+  D
+}
+
+enum QCStatus {
+  PENDING
+  VERIFIED
+  FAILED
+}
+
+model PersonalizedPath {
+  id              String               @id @default(uuid()) @db.Uuid
+  userId          String               @map("user_id") @db.Uuid
+  title           String
+  description     String?              @db.Text
+  targetSkills    String[]             @map("target_skills")
+  palNetAvgScore  Float                @map("pal_net_avg_score")
+  status          PathStatus           @default(IN_PROGRESS)
+  createdAt       DateTime             @default(now()) @map("created_at")
+  updatedAt       DateTime             @updatedAt @map("updated_at")
+
+  user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessons         PersonalizedLesson[]
+
+  @@map("personalized_paths")
+}
+
+model PersonalizedLesson {
+  id              String                 @id @default(uuid()) @db.Uuid
+  pathId          String                 @map("path_id") @db.Uuid
+  orderIndex      Int                    @map("order_index")
+  title           String
+  targetSkillId   String                 @map("target_skill_id")
+  theoryContent   String                 @map("theory_content") @db.Text
+  isCompleted     Boolean                @default(false) @map("is_completed")
+  createdAt       DateTime               @default(now()) @map("created_at")
+  
+  path            PersonalizedPath       @relation(fields: [pathId], references: [id], onDelete: Cascade)
+  quizzes         PersonalizedQuiz[]
+  exercise        PersonalizedExercise?
+
+  @@map("personalized_lessons")
+}
+
+model PersonalizedQuiz {
+  id              String             @id @default(uuid()) @db.Uuid
+  lessonId        String             @map("lesson_id") @db.Uuid
+  question        String             @db.Text
+  optionA         String             @map("option_a")
+  optionB         String             @map("option_b")
+  optionC         String             @map("option_c")
+  optionD         String             @map("option_d")
+  correctOption   QuizOption         @map("correct_option")
+  explanation     String             @db.Text
+  
+  lesson          PersonalizedLesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@map("personalized_quizzes")
+}
+
+model PersonalizedExercise {
+  id                 String             @id @default(uuid()) @db.Uuid
+  lessonId           String             @unique @map("lesson_id") @db.Uuid
+  title              String
+  difficulty         ExerciseDifficulty @default(MEDIUM)
+  problemDescription String             @map("problem_description") @db.Text
+  starterCode        String?            @map("starter_code") @db.Text
+  solutionCode       String?            @map("solution_code") @db.Text
+  language           ProgrammingLanguage @default(PYTHON)
+  qcStatus           QCStatus           @default(PENDING) @map("qc_status")
+  
+  lesson             PersonalizedLesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  testCases          PersonalizedTestCase[]
+
+  @@map("personalized_exercises")
+}
+
+model PersonalizedTestCase {
+  id                 String               @id @default(uuid()) @db.Uuid
+  exerciseId         String               @map("exercise_id") @db.Uuid
+  input              String               @db.Text
+  expectedOutput     String               @map("expected_output") @db.Text
+  isHidden           Boolean              @default(false) @map("is_hidden")
+  
+  exercise           PersonalizedExercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@map("personalized_test_cases")
+}
+
+model PathTemplateCache {
+  id                 String             @id @default(uuid()) @db.Uuid
+  targetSkillId      String             @map("target_skill_id")
+  archetype          String
+  zpdRange           String             @map("zpd_range")
+  payloadJson        Json               @map("payload_json")
+  usageCount         Int                @default(0) @map("usage_count")
+  createdAt          DateTime           @default(now()) @map("created_at")
+
+  @@index([targetSkillId, archetype, zpdRange])
+  @@map("path_template_caches")
+}
+
+model PathChatSession {
+  id            String            @id @default(uuid()) @db.Uuid
+  userId        String            @map("user_id") @db.Uuid
+  initialGoal   String            @map("initial_goal") @db.Text
+  isFinalized   Boolean           @default(false) @map("is_finalized")
+  createdPathId String?           @map("created_path_id") @db.Uuid
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages      PathChatMessage[]
+
+  @@map("path_chat_sessions")
+}
+
+model PathChatMessage {
+  id        String          @id @default(uuid()) @db.Uuid
+  sessionId String          @map("session_id") @db.Uuid
+  sender    String          // 'USER' | 'AI_TUTOR'
+  content   String          @db.Text
+  metadata  Json?           // Lưu thông tin gợi ý chip hoặc pipeline preview
+  createdAt DateTime        @default(now()) @map("created_at")
+
+  session   PathChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("path_chat_messages")
+}
+
+

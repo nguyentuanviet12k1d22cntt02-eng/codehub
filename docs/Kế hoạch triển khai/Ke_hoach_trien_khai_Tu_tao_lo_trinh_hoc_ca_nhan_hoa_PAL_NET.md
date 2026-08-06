@@ -1,12 +1,13 @@
 # 🎯 KẾ HOẠCH TRIỂN KHAI CHỨC NĂNG TỰ TẠO LỘ TRÌNH HỌC CÁ NHÂN HÓA DỰA TRÊN TRI THỨC PAL-NET
-> **(ADAPTIVE PERSONALIZED LEARNING PATH GENERATOR)**
+> **(ADAPTIVE PERSONALIZED LEARNING PATH GENERATOR WITH OMNIROUTE GATEWAY)**
 
 > **Dự án:** VIBECODE AI - Hệ Thống Học Lập Trình Thích Ứng (LearnPython)  
 > **Mô hình Tri thức Nòng cốt:** **Mô hình PAL-Net (Predictive Adaptive Learning Network)**  
+> **Công nghệ LLM Gateway:** **OmniRoute Open-Source AI Gateway**  
 > **Tài liệu:** Kế hoạch Kỹ thuật & Triển khai Chi tiết  
 > **Thư mục:** `docs/Kế hoạch triển khai/`  
 > **Ngày cập nhật:** 06/08/2026  
-> **Trạng thái:** DÃ QUYẾT ĐỊNH & KHÓA CHUẨN KIẾN TRÚC (BỔ SUNG CÔNG NGHỆ OMNIROUTE GATEWAY)  
+> **Trạng thái:** ĐÃ TÍCH HỢP ĐẦY ĐỦ OMNIROUTE & KHÓA CHUẨN KIẾN TRÚC  
 
 ---
 
@@ -14,10 +15,10 @@
 1. [Cam Kết Kiến Trúc & Quyết Định Nòng Cốt](#1-cam-kết-kiến-trúc--quyết-định-nòng-cốt)
 2. [Tổng Quan & Đặt Vấn Đề](#2-tổng-quan--đặt-vấn-đề)
 3. [Phạm Vi & Cấu Trúc 1 Lộ Trình Học Cá Nhân Hóa](#3-phạm-vi--cấu-trúc-1-lộ-trình-học-cá-nhân-hóa)
-4. [Kiến Trúc Tổng Thể Hệ Thống](#4-kiến-trúc-tổng-thể-hệ-thống)
+4. [Kiến Trúc Tổng Thể Hệ Thống Tích Hợp OmniRoute](#4-kiến-trúc-tổng-thể-hệ-thống-tích-hợp-omniroute)
 5. [Thiết Kế Cơ Sở Dữ Liệu & Schema Updates (Prisma)](#5-thiết-kế-cơ-sở-dữ-liệu--schema-updates-prisma)
 6. [Quy Trình Sinh Nội Dung & Kiểm Định Chất Lượng Sandbox (QC Engine)](#6-quy-trình-sinh-nội-dung--kiểm-định-chất-lượng-sandbox-qc-engine)
-7. [Giải Pháp Khắc Phục Lỗi Hết Quota API Key Bằng Công Nghệ Mã Nguồn Mở OmniRoute Gateway](#7-giải-pháp-khắc-phục-lỗi-hết-quota-api-key-bằng-công-nghệ-mã-nguồn-mở-omniroute-gateway)
+7. [Giải Pháp Khắc Phục Lỗi Hết Quota API Key Chi Tiết Bằng Mã Nguồn Mở OmniRoute Gateway](#7-giải-pháp-khắc-phục-lỗi-hết-quota-api-key-chi-tiết-bằng-mã-nguồn-mở-omniroute-gateway)
 8. [Lộ Trình Triển Khai Chi Tiết (6 Giai Đoạn Roadmap)](#8-lộ-trình-triển-khai-chi-tiết-6-giai-đoạn-roadmap)
 9. [Tiêu Chí Đánh Giá Thành Công (DoD) & Quản Lý Rủi Ro](#9-tiêu-chí-đánh-giá-thành-công-dod--quản-lý-rủi-ro)
 
@@ -28,7 +29,10 @@
 > [!IMPORTANT]
 > **Quyết định Kiến trúc Tối cao:**
 > 1. **Mô hình Trạng thái Tri thức:** Sử dụng **DUY NHẤT mô hình PAL-Net (Predictive Adaptive Learning Network)** độc quyền của dự án. Mô hình kết hợp Graph Convolutional Network (GCN 2 lớp trên `skill_graph.json`), mã hóa Learner Embedding và Sequential Attention GRU để ước lượng chính xác xác suất giải đúng $P_{\text{PAL-Net}}$ của từng kỹ năng.
-> 2. **LLM Gateway Engine:** Sử dụng **Google Gemini API (Gemini Flash)** làm mô hình sinh nội dung chính, kết hợp với **OmniRoute AI Gateway (Open-Source Proxy)** để xoay tua API Key Pools, tự động Failover khi hết Quota và Nén Token (Token Compression) nhằm hạn chế chạm ngạch API.
+> 2. **LLM Gateway Engine - OmniRoute Integration:** Sử dụng công nghệ mã nguồn mở **OmniRoute AI Gateway** (chạy dưới dạng Container Proxy tại `http://localhost:20128/v1`) làm trạm điều phối trung gian cho toàn bộ request sinh bài của `ai-service`. OmniRoute chịu trách nhiệm:
+>    - Quản lý và xoay tua tự động danh sách Gemini API Keys (API Key Pooling).
+>    - Nén Token tự động (Token Compression: RTK/Caveman) để tiết kiệm $15\%-95\%$ Token, chống nổ hạn ngạch RPM/TPM.
+>    - Chuyển đổi mô hình dự phòng (Automatic Multi-Provider Failover) sang Groq hoặc Local LLM Ollama khi hết Quota.
 > 3. **Validation & Sandbox QC:** Toàn bộ bài tập lập trình thực hành trong lộ trình học phải chạy qua **Docker Sandbox Execution Engine** để kiểm định $100\%$ tính chính xác trước khi gửi tới phía học viên.
 
 ---
@@ -62,9 +66,9 @@ graph TD
 
 ---
 
-## 4. KIẾN TRÚC TỔNG THỂ HỆ THỐNG
+## 4. KIẾN TRÚC TỔNG THỂ HỆ THỐNG TÍCH HỢP OMNIROUTE
 
-### 🏗️ Luồng Xử Lý Từ Phía Học Viên (Learner End-to-End Flow)
+### 🏗️ Luồng Xử Lý Từ Phía Học Viên Qua OmniRoute Proxy Gateway
 
 ```mermaid
 flowchart TD
@@ -75,15 +79,19 @@ flowchart TD
     subgraph AI Service Core
         D --> E[PAL-Net PyTorch Engine: Trích xuất Ma trận Tri thức & ZPD Skills]
         E --> F[Path Planner: Lên danh sách các chủ đề bài học theo sơ đồ kỹ năng]
-        F --> G[OmniRoute AI Gateway Proxy: Localhost:20128]
-        G --> H[Docker Sandbox QC: Chạy thử Solution Code với Test Cases]
-        H -- Lỗi Code / Fail Test --> I[Self-Correction Loop: Gemini Sửa lỗi Max 3 lần]
-        I --> G
-        H -- Pass 100% --> J[Trả về JSON Lộ Trình Cá Nhân Hóa Hoàn Chỉnh]
+        F --> G[OmniRoute AI Gateway Proxy - http://localhost:20128/v1]
     end
-    
-    J --> K[Backend: Lưu Lộ trình + Bài học + Trắc nghiệm + Bài tập vào PostgreSQL]
-    K --> L[Frontend UI: Render Lộ Trình Cá Nhân Hóa trên Giao diện Học viên]
+
+    subgraph OmniRoute Open-Source Engine
+        G --> H[Token Compression Core: Nén 15-95% Token]
+        H --> I[API Key Pool Manager & Failover Rotator]
+        I --> J[Google Gemini API Pool / Groq / Ollama Local]
+    end
+
+    J --> K[Docker Sandbox QC: Chạy thử Solution Code với Test Cases]
+    K -- Pass 100% --> L[Trả về JSON Lộ Trình Cá Nhân Hóa Hoàn Chỉnh]
+    L --> M[Backend: Lưu Lộ trình + Bài học + Trắc nghiệm + Bài tập vào PostgreSQL]
+    M --> N[Frontend UI: Render Lộ Trình Cá Nhân Hóa trên Giao diện Học viên]
 ```
 
 ---
@@ -209,16 +217,16 @@ model PathTemplateCache {
 
 ---
 
-## 7. GIẢI PHÁP KHẮC PHÚC LỖI HẾT QUOTA API KEY BẰNG CÔNG NGHỆ MÃ NGUỒN MỞ OMNIROUTE GATEWAY
+## 7. GIẢI PHÁP KHẮC PHÚC LỖI HẾT QUOTA API KEY CHI TIẾT BẰNG MÃ NGUỒN MỞ OMNIROUTE GATEWAY
 
 > [!TIP]
-> **OmniRoute** là một dự án **mã nguồn mở (Open-Source AI Gateway / Proxy)** chuyên dụng được thiết kế để giải quyết bài toán cạn kiệt Quota API, giới hạn tốc độ (Rate Limit 429), quản lý chìa khóa API tập trung và tối ưu hóa chi phí token cho các hệ thống ứng dụng AI.
+> **OmniRoute** là một dự án **mã nguồn mở (Open-Source AI Gateway / Proxy)** chuyên dụng được triển khai độc lập nhằm giải quyết bài toán cạn kiệt Quota API, giới hạn tốc độ (Rate Limit 429), quản lý chìa khóa API tập trung và tối ưu hóa chi phí token cho toàn bộ hệ thống VIBECODE AI.
 
 ```mermaid
 flowchart TD
-    AI[AI Microservice] -- Chuẩn OpenAI Request --> Omni[OmniRoute Local Proxy Gateway :20128]
+    AI[AI Microservice Python] -- Standard OpenAI Client Request --> Omni[OmniRoute Local Proxy Gateway :20128]
     
-    subgraph OmniRoute AI Engine
+    subgraph OmniRoute Open-Source Core Engine
         Omni --> TokenCompressor[Token Compression Core: Nén 15-95% Token]
         TokenCompressor --> QuotaTracker[Real-time Quota & Rate Limit Tracker]
         QuotaTracker --> KeyRotator{Xoay Tua Key & Automatic Provider Failover}
@@ -229,19 +237,51 @@ flowchart TD
     KeyRotator -- Tất cả Gemini Hết Quota --> Provider3[Backup LLM: Groq / Local Ollama DeepSeek-Coder]
 ```
 
-### ⚡ Các Tính Năng Cốt Lõi Của OmniRoute Trong Kiến Trúc VIBECODE AI:
+### ⚡ Chi Tiết Cấu Hình & Tích Hợp OmniRoute Trong Dự Án VIBECODE AI:
 
+#### 1. Triển khai OmniRoute Service:
+OmniRoute được khởi chạy dưới dạng một microservice độc lập qua Docker Compose:
+```yaml
+# docker-compose.yml snippet
+services:
+  omniroute:
+    image: omniroute/gateway:latest
+    container_name: vibecode_omniroute_gateway
+    ports:
+      - "20128:20128"
+    environment:
+      - GEMINI_API_KEYS=key_acc1_xxxx,key_acc2_yyyy,key_acc3_zzzz
+      - COMPRESSION_ENABLED=true
+      - FALLBACK_CHAIN=gemini-flash,groq-llama3,ollama-deepseek
+    restart: always
+```
+
+#### 2. Tích hợp phía `ai-service` (Python FastAPI):
+Thay vì gọi trực tiếp Google SDK, `ai-service` chuyển sang gọi qua OmniRoute endpoint tiêu chuẩn:
+```python
+# ai-service/core/path_generator.py
+from openai import OpenAI
+
+# Kết nối trực tiếp tới OmniRoute Proxy Gateway
+client = OpenAI(
+    base_url="http://localhost:20128/v1",
+    api_key="omniroute-internal-key" # OmniRoute tự quản lý API keys thực phía sau
+)
+
+response = client.chat.completions.create(
+    model="gemini-1.5-flash", # OmniRoute tự động route, nén token và rotate keys khi lỗi 429
+    messages=[{"role": "user", "content": prompt_text}]
+)
+```
+
+#### 3. Các Tính Năng Cốt Lõi OmniRoute Đem Lại:
 1. **Gom Nhóm & Xoay Tua API Keys (Key Pooling & Automatic Failover)**:
-   - Cho phép cấu hình nhiều tài khoản/API Keys khác nhau (kể cả Free Tier từ Google Gemini).
-   - Khi 1 API key gặp lỗi `429 RESOURCE_EXHAUSTED`, OmniRoute lập tức âm thầm chuyển tiếp request sang API key khác hoặc provider dự phòng mà ứng dụng `ai-service` không bị gián đoạn hay trả lỗi ra giao diện.
-2. **Cơ Chế Nén Token Tự Động (Token Compression - RTK / Caveman Compression)**:
-   - Tự động lọc bỏ các từ thừa/định dạng dư thừa trong Prompt trước khi gửi lên API bên ngoài, giúp tiết kiệm từ **$15\% - 95\%$ số lượng Token**.
-   - Việc tiêu tốn ít token hơn trực tiếp giúp hệ thống **lâu chạm ngưỡng Quota theo phút (RPM/TPM)** hơn gấp nhiều lần.
-3. **Một Endpoint Chuẩn Tương Thích Duy Nhất (Unified OpenAI-Compatible API Endpoint)**:
-   - OmniRoute chạy thành một container cách ly (hoặc daemon service tại `http://localhost:20128/v1`).
-   - `ai-service` chỉ cần kết nối tới endpoint này như một server OpenAI chuẩn, OmniRoute ở phía sau tự định tuyến thông minh (Smart Routing).
-4. **Hệ Thống Fallback Đa Tầng (Combo / Fallback Chain)**:
-   - Thiết lập chuỗi ưu tiên: `Gemini 1.5 Flash Key Pool` $\rightarrow$ `Groq Llama-3 Pool` $\rightarrow$ `Local Ollama DeepSeek-Coder (Tự chạy Offline 100%, không tốn Quota)`.
+   - Gom nhiều API Key Gemini (cả free tier và paid tier).
+   - Tự động bắt lỗi `429 RESOURCE_EXHAUSTED` và chuyển tiếp request sang Key khác trong Pool với thời gian phản hồi $<100$ms.
+2. **Nén Token Tự Động (Token Compression - RTK / Caveman)**:
+   - Lọc bỏ từ thừa trong Prompt trước khi gửi lên API bên ngoài, giúp tiết kiệm từ **$15\% - 95\%$ số lượng Token**.
+3. **Mô Hình Dự Phòng Đa Tầng (Multi-Tier Model Fallback)**:
+   - Tự động chuyển vùng gọi sang `Groq API` hoặc `Local Ollama DeepSeek-Coder` khi toàn bộ Gemini Keys bị khóa tạm thời.
 
 ---
 
@@ -250,16 +290,16 @@ flowchart TD
 ### 🗓️ Giai Đoạn 1: Tích Hợp Mô Hình PAL-Net & Cấu Hình OmniRoute Gateway Docker
 * **Thời lượng:** 3 Ngày
 * **Công việc thực hiện:**
-  - Khởi chạy OmniRoute Gateway Docker Container (`docker run -p 20128:20128 omniroute/gateway`).
-  - Cấu hình Key Pool cho Gemini API trong giao diện quản trị OmniRoute.
+  - Khởi chạy OmniRoute Gateway Docker Container (`docker-compose up -d omniroute`).
+  - Cấu hình Gemini Key Pool & Token Compression trong OmniRoute Config.
   - Kết nối PyTorch engine `pal_net_model.pth` trong `ai-service`.
 * **Sản phẩm bàn giao:** OmniRoute Gateway hoạt động mượt mà tại cổng 20128.
 
 ### 🗓️ Giai Đoạn 2: Xây Dựng Engine Sinh Lộ Trình Học Qua OmniRoute Proxy
 * **Thời lượng:** 4 Ngày
 * **Công việc thực hiện:**
-  - Cấu hình `ai-service` gửi request sinh nội dung thông qua OmniRoute Gateway Proxy.
-  - Bật tính năng Token Compression trên OmniRoute để giảm 30-50% số lượng token tiêu thụ.
+  - Cấu hình `ai-service` gửi request sinh nội dung thông qua OmniRoute Gateway Proxy (`http://localhost:20128/v1`).
+  - Bật tính năng Token Compression trên OmniRoute để tiết kiệm token.
   - Cấu hình Fallback sang Local Ollama (DeepSeek-Coder).
 * **Sản phẩm bàn giao:** Generator Core bền bỉ, chống tuyệt đối cạn kiệt Quota.
 

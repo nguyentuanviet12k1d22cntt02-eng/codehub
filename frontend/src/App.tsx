@@ -13,7 +13,12 @@ import PracticeWorkspace from "./pages/PracticeWorkspace";
 import AdaptivePractice from "./pages/AdaptivePractice";
 import Profile from "./pages/Profile";
 import ModulePracticeSelect from "./pages/ModulePracticeSelect";
+import PersonalizedPath from "./pages/PersonalizedPath";
+import PersonalizedPathWorkspace from "./pages/PersonalizedPathWorkspace";
 import AdminLayout from "./pages/admin/AdminLayout";
+
+
+
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import UserDetail from "./pages/admin/UserDetail";
@@ -56,7 +61,11 @@ function App() {
           <Route path="/practice-arena" element={<PracticeList />} />
           <Route path="/practice-arena/:slug" element={<PracticeWorkspace />} />
           <Route path="/adaptive-practice" element={<AdaptivePractice />} />
+          <Route path="/personalized-path" element={<PersonalizedPath />} />
+          <Route path="/personalized-path/:pathId" element={<PersonalizedPathWorkspace />} />
           <Route path="/profile" element={<Profile />} />
+
+
           <Route path="/module-practice/:moduleId/:lessonId" element={<ModulePracticeSelect />} />
 
           {/* Admin Routes */}
