@@ -1,16 +1,19 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config({ override: true });
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 
 // 1. Cấu hình CSDL chính (Supabase Cloud)
 const supabaseUrl = process.env.DATABASE_URL;
+console.log("🔌 Prisma Config: Supabase URL =", supabaseUrl ? supabaseUrl.replace(/:[^:]+@/, ":***@") : "Chưa định cấu hình!");
 const supabasePool = new Pool({ connectionString: supabaseUrl });
 const supabaseAdapter = new PrismaPg(supabasePool);
 const supabasePrisma = new PrismaClient({ adapter: supabaseAdapter });
 
 // 2. Cấu hình CSDL phụ (Local PostgreSQL cho pgAdmin)
 const localUrl = process.env.LOCAL_DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/learnpython";
+console.log("🔌 Prisma Config: Local URL =", localUrl ? localUrl.replace(/:[^:]+@/, ":***@") : "Chưa định cấu hình!");
 const localPool = new Pool({ connectionString: localUrl });
 const localAdapter = new PrismaPg(localPool);
 const localPrisma = new PrismaClient({ adapter: localAdapter });
