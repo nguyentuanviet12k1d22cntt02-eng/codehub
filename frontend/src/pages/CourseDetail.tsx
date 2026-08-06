@@ -27,6 +27,8 @@ interface DBLesson {
     durationMinutes: number | null;
     isFree: boolean;
     isCompleted?: boolean;
+    lessonId?: string;
+    objective?: string;
 }
 
 interface DBChapter {

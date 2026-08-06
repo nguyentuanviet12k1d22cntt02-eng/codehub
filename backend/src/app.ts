@@ -1,3 +1,6 @@
+import dns from 'dns';
+dns.setDefaultResultOrder('ipv4first');
+
 import express from 'express'
 import authRoutes from "./routes/routes";
 import adminRoutes from "./routes/adminRoutes";
@@ -9,7 +12,7 @@ const PORT = process.env.PORT || 3000
 
 // Cho phép frontend gọi API
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:8080'],
     credentials: true
 }))
 
@@ -35,4 +38,3 @@ server.on('error', (err: any) => {
         console.error(`❌ Lỗi server:`, err);
     }
 });
- 

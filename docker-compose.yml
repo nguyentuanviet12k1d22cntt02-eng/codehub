@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: codehub-frontend
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+    restart: always
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: codehub-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - AI_SERVICE_URL=http://ai-service:8000
+    env_file:
+      - ./backend/.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - app-network
+    depends_on:
+      ai-service:
+        condition: service_healthy
+    restart: always
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: codehub-ai-service
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    networks:
+      - app-network
+    restart: always
+
+    healthcheck:
+      test: [ "CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:8000/docs\")' || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  app-network:
+    driver: bridge
