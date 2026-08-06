@@ -18,6 +18,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 from core.bkt import BKTModel
 from core.dkt import DKTModel, prepare_dkt_sequence
 from core.palnet import PALNet
+from core.path_generator import generate_personalized_learning_path, interact_ai_tutor_dialogue
+
+
 
 app = FastAPI(
     title="PAL-Net Recommendation AI Service",
@@ -624,4 +627,92 @@ def get_user_mastery(user_id: str):
         if conn and not conn.closed:
             conn.close()
         raise HTTPException(status_code=500, detail=str(e))
+
+class GeneratePathRequest(BaseModel):
+    user_id: str
+    archetype: Optional[str] = "Persister"
+    topic: Optional[str] = None
+
+@app.post("/pal-net/generate-path")
+def generate_palnet_learning_path(req: GeneratePathRequest):
+    """Endpoint sinh Lộ trình Học cá nhân hóa dựa trên Mô hình PAL-Net"""
+    try:
+        user_id = req.user_id
+        conn = get_db_connection()
+        skills_selected = ["python_loops", "python_lists"]
+        
+        if conn:
+            student_meta, actions = query_student_history(conn, user_id)
+            if actions and palnet_model:
+                # Compute PAL-Net predictions for skills
+                attempts = np.zeros(len(skills_list))
+                corrects = np.zeros(len(skills_list))
+                raw_masteries = np.full(len(skills_list), 0.5)
+                for a in actions:
+                    k_idx = kc_to_idx.get(a["kc_id"])
+                    if k_idx is not None:
+                        attempts[k_idx] += 1
+                        if a["correct"] == 1:
+                            corrects[k_idx] += 1
+                        raw_masteries[k_idx] = 0.7 * raw_masteries[k_idx] + 0.3 * a["correct"]
+                
+                stats = np.zeros(len(skills_list) * 2)
+                for k in range(len(skills_list)):
+                    stats[k * 2] = attempts[k]
+                    stats[k * 2 + 1] = corrects[k] / attempts[k] if attempts[k] > 0 else 0.0
+                
+                stats_tensor = torch.tensor([stats], dtype=torch.float)
+                profile_tensor = torch.tensor([1], dtype=torch.long)
+                masteries_tensor = torch.tensor([raw_masteries], dtype=torch.float)
+                
+                scored_skills = []
+                with torch.no_grad():
+                    for kc in skills_list:
+                        k_idx = kc_to_idx[kc]
+                        k_idx_tensor = torch.tensor([k_idx], dtype=torch.long)
+                        pred_prob = palnet_model(
+                            k_idx_tensor, stats_tensor, profile_tensor, masteries_tensor, palnet_adj
+                        )
+                        score = float(pred_prob[0].item())
+                        scored_skills.append((kc, score))
+                
+                # Sort ZPD score (target score around 0.70-0.85 or lowest scores)
+                scored_skills.sort(key=lambda x: abs(x[1] - 0.78))
+                skills_selected = [s[0] for s in scored_skills[:2]]
+            conn.close()
+            
+        path_payload = generate_personalized_learning_path(
+            user_id=user_id,
+            skills_selected=skills_selected,
+            learner_archetype=req.archetype or "Persister",
+            topic=req.topic
+        )
+        return {"success": True, "data": path_payload}
+
+    except Exception as e:
+        print(f"[Generate Path Endpoint Error]: {e}")
+        # Return guaranteed fallback path
+        fallback = generate_personalized_learning_path(req.user_id, ["python_loops", "python_lists"])
+        return {"success": True, "data": fallback}
+
+class ChatInteractRequest(BaseModel):
+    user_id: str
+    session_id: Optional[str] = None
+    messages: List[Dict[str, str]] = []
+
+@app.post("/pal-net/chat-interact")
+def chat_interact_ai_tutor(req: ChatInteractRequest):
+    """Endpoint tương tác đối thoại AI Tutor phỏng vấn & làm rõ mục tiêu học tập"""
+    try:
+        res = interact_ai_tutor_dialogue(
+            user_id=req.user_id,
+            history=req.messages
+        )
+        return {"success": True, "data": res}
+    except Exception as e:
+        print(f"[Chat Interact Error]: {e}")
+        fallback_res = interact_ai_tutor_dialogue(req.user_id, req.messages)
+        return {"success": True, "data": fallback_res}
+
+
 
