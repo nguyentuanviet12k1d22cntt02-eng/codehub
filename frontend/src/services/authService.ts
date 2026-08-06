@@ -5,13 +5,11 @@ const API_URL = 'http://localhost:3000/api/auth';
 export const authService = {
     register: async (userData: any) => {
         const response = await axios.post(`${API_URL}/register`, userData);
-        console.log(response.data);
         return response.data;
     },
 
     login: async (userData: any) => {
         const response = await axios.post(`${API_URL}/login`, userData);
-        console.log(response.data);
         return response.data;
     },
 
@@ -25,7 +23,6 @@ export const authService = {
         const response = await axios.get(`${API_URL}/course/${id}`, {
             headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
-        console.log(response.data)
         return response.data;
     },
 

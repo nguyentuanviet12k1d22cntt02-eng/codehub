@@ -772,7 +772,7 @@ const Practice: React.FC = () => {
                                                 {isRunning ? 'Đang chạy...' : 'Chạy thử'}
                                             </button>
                                         )}
-                                        {completedExercises[exercise.id] && currentExerciseIdx < exercises.length - 1 && (
+                                        {exercise && completedExercises[exercise.id] && currentExerciseIdx < exercises.length - 1 && (
                                             <button
                                                 className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
                                                 onClick={() => selectExercise(currentExerciseIdx + 1)}

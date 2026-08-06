@@ -1,3 +1,6 @@
+import dns from 'dns';
+dns.setDefaultResultOrder('ipv4first');
+
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
@@ -17,7 +20,7 @@ const PORT = Number(process.env.PORT) || 3000
 
 // Cho phép frontend gọi API
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:8080'],
     credentials: true
 }))
 
