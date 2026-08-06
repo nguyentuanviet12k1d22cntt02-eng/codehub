@@ -125,9 +125,13 @@ const Dashboard: React.FC = () => {
                     <Link to="/dashboard" className="text-accent-custom font-semibold no-underline text-[13px] tracking-[0.8px]">
                         Dashboard
                     </Link>
+                    <Link to="/personalized-path" className="text-text-tertiary hover:text-text-primary no-underline text-[13px] font-semibold tracking-[0.8px] transition-colors duration-200">
+                        🚀 Lộ trình Cá Nhân Hóa
+                    </Link>
                     <Link to="/adaptive-practice" className="text-text-tertiary hover:text-text-primary no-underline text-[13px] font-semibold tracking-[0.8px] transition-colors duration-200">
                         Rèn luyện thích ứng
                     </Link>
+
                     <Link to="/practice-arena" className="text-text-tertiary hover:text-text-primary no-underline text-[13px] font-semibold tracking-[0.8px] transition-colors duration-200">
                         Đấu trường Luyện tập
                     </Link>
