@@ -7,6 +7,7 @@ build/
 .env
 .env.local
 *.pem
+key.txt
 
 # Python
 __pycache__/
