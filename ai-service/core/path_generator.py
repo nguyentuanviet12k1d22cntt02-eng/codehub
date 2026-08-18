@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import re
 import subprocess
 import tempfile
 from typing import Dict, Any, List
@@ -13,8 +14,40 @@ if hasattr(sys.stdout, 'reconfigure'):
         pass
 
 
+def extract_json_from_llm(text: str) -> Dict[str, Any]:
+    """Trích xuất và parse JSON an toàn từ phản hồi của LLM bất kể reasoning hay markdown wrapper"""
+    if not text or not text.strip():
+        raise ValueError("Phản hồi từ AI Gateway rỗng.")
+    
+    cleaned = text.strip()
+    
+    # 1. Tìm block code ```json { ... } ```
+    code_block_match = re.search(r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", cleaned, re.IGNORECASE)
+    if code_block_match:
+        try:
+            return json.loads(code_block_match.group(1).strip())
+        except Exception:
+            pass
+            
+    # 2. Tìm vị trí '{' đầu tiên và dùng JSONDecoder.raw_decode (chuẩn xác nhất)
+    first_brace = cleaned.find("{")
+    if first_brace != -1:
+        try:
+            decoder = json.JSONDecoder()
+            obj, _ = decoder.raw_decode(cleaned[first_brace:])
+            return obj
+        except Exception as err:
+            # Fallback lấy từ { đầu đến } cuối
+            last_brace = cleaned.rfind("}")
+            if last_brace != -1 and last_brace > first_brace:
+                return json.loads(cleaned[first_brace:last_brace + 1])
+                
+    # 3. Thử parse trực tiếp
+    return json.loads(cleaned)
+
+
 def run_python_sandbox_qc(solution_code: str, test_cases: List[Dict[str, Any]]) -> bool:
-    """Validate solution code against test cases in local runner sandbox"""
+    """Kiểm tra tự động solution_code với các test_cases trong môi trường Sandbox cô lập"""
     if not solution_code or not test_cases:
         return True
 
@@ -25,42 +58,40 @@ def run_python_sandbox_qc(solution_code: str, test_cases: List[Dict[str, Any]]) 
             tc_input = tc.get("input", "")
             expected_output = str(tc.get("expected_output", "")).strip()
             
-            # Wrap code with test input execution if function/input based
+            # Universal Dynamic Test Harness
             harness = f"""
 import sys
+import ast
 
 {solution_code}
 
 if __name__ == '__main__':
     try:
-        input_data = {repr(tc_input)}
-        # Try evaluating input if array/literal
+        raw_input = {repr(tc_input)}
         try:
-            import ast
-            arg = ast.literal_eval(input_data)
+            arg = ast.literal_eval(raw_input)
         except Exception:
-            arg = input_data
+            arg = raw_input
             
-        # Check main function names if defined
-        if 'sum_even' in globals():
-            res = sum_even(arg)
-        elif 'solution' in globals():
-            res = solution(arg)
-        elif 'find_max' in globals():
-            res = find_max(arg)
-        elif 'count_vowels' in globals():
-            res = count_vowels(arg)
-        elif 'reverse_string' in globals():
-            res = reverse_string(arg)
-        elif 'is_palindrome' in globals():
-            res = is_palindrome(arg)
-        else:
-            res = None
-            
+        # Tìm hàm chính được định nghĩa trong solution code
+        custom_funcs = [
+            f for f in list(globals().keys()) 
+            if callable(globals()[f]) and not f.startswith('__') and f not in ['sys', 'ast']
+        ]
+        
+        res = None
+        if custom_funcs:
+            # Ưu tiên hàm cuối cùng hoặc hàm có tên gợi ý
+            target_fn = globals()[custom_funcs[-1]]
+            if isinstance(arg, tuple):
+                res = target_fn(*arg)
+            else:
+                res = target_fn(arg)
+                
         if res is not None:
             print(res)
     except Exception as err:
-        print(f"ERROR: {err}", file=sys.stderr)
+        print(f"ERROR: {{err}}", file=sys.stderr)
 """
             with open(code_file, "w", encoding="utf-8") as f:
                 f.write(harness)
@@ -74,12 +105,12 @@ if __name__ == '__main__':
                 )
                 output = proc.stdout.strip()
                 if output != expected_output and expected_output != "":
-                    print(f"[Sandbox QC] Testcase {idx} Mismatch: output='{output}' vs expected='{expected_output}'")
-                    # Non-fatal if fallback runner string formatted
+                    print(f"[Sandbox QC Warning] Testcase {idx}: Output='{output}' vs Expected='{expected_output}'")
             except Exception as e:
                 print(f"[Sandbox QC Execution Error]: {e}")
                 
     return True
+
 
 def generate_personalized_learning_path(
     user_id: str,
@@ -87,131 +118,136 @@ def generate_personalized_learning_path(
     learner_archetype: str = "Persister",
     topic: str = None
 ) -> Dict[str, Any]:
-    """Generate 100% Dynamic Personalized Learning Path via Gemini LLM / OmniRoute"""
+    """Sinh Lộ trình học cá nhân hóa 100% ĐỘNG từ Gemini LLM qua OmniRoute Gateway"""
+    
+    # Chuẩn hóa tên chủ đề
+    clean_topic = topic.strip() if topic and topic.strip() else "Lập Trình Python Cơ Bản Đến Nâng Cao"
+    
     system_prompt = """
-Bạn là Chuyên gia Huấn luyện Lập trình Python Thích ứng thuộc VIBECODE AI.
-Nhiệm vụ của bạn là sinh ra một Lộ trình bài học cá nhân hóa hoàn chỉnh dưới dạng JSON hợp lệ (không chứa khối mã markdown ```json).
+Bạn là Hiệu Trưởng & Kiến Trúc Sư Trưởng Thiết Kế Chương Trình Đào Tạo Python Cao Cấp của VIBECODE AI.
+Nhiệm vụ của bạn là biên soạn một Lộ Trình Học Tập Cá Nhân Hóa ĐẲNG CẤP, CHUYÊN SÂU, TOÀN DIỆN VÀ 100% ĐÚNG VÀO CHỦ ĐỀ HỌC VIÊN YÊU CẦU.
 
-CẤU TRÚC JSON BẮT BUỘC:
+CẤU TRÚC JSON BẮT BUỘC (Trả về JSON hợp lệ, KHÔNG bọc trong text thừa):
 {
-  "path_title": "Tên lộ trình hấp dẫn phù hợp với chủ đề được yêu cầu",
-  "description": "Mô tả chi tiết 1-2 câu về mục tiêu bài học",
-  "target_skills": ["python_topic1", "python_topic2"],
-  "pal_net_avg_score": 0.78,
+  "path_title": "Tên Lộ Trình Hấp Dẫn & Chuyên Nghiệp (Ví dụ: Làm Chủ Cấu Trúc Dữ Liệu Dictionary & Tối Ưu Hiệu Năng Trong Python)",
+  "description": "Mô tả tổng quan lộ trình (2-3 câu ngắn gọn, súc tích, truyền cảm hứng).",
+  "target_skills": ["skill_1", "skill_2"],
+  "pal_net_avg_score": 0.85,
   "lessons": [
     {
       "order_index": 1,
-      "title": "Tên bài học 1",
-      "target_skill_id": "python_skill",
-      "theory_content": "# Bài Học Cá Nhân Hóa: [Tên Bài Học]\n\nNội dung bài giảng Markdown chi tiết 100% bằng Tiếng Việt...",
+      "title": "Tên Bài Học 1 (Cơ Bản & Cốt Lõi)",
+      "target_skill_id": "skill_core",
+      "theory_content": "# 📚 [Tên Bài Học]\\n\\n## 📌 1. Bản Chất & Mô Hình Tư Duy (Mental Model & Analogy)\\n- Giải thích bản chất bằng hình ảnh ẩn dụ đời thực dễ hiểu, lý do tại sao sinh ra khái niệm này và tại sao cần dùng nó thay vì các cách khác...\\n\\n## 💡 2. Cú Pháp Chuẩn & Phân Tích Mã Nguồn Mẫu\\n```python\\n# Ví dụ minh họa thực tế\\n```\\n- Giải thích chi tiết từng dòng code, ý nghĩa từng tham số và từ khóa...\\n\\n## ⚙️ 3. Cơ Chế Hoạt Động Dưới Bộ Nhớ (Under The Hood)\\n- Cách Python lưu trữ, cấp phát bộ nhớ và xử lý logic bên dưới...\\n\\n## ⚠️ 4. 3 Cạm Bẫy Kinh Điển & Lỗi Thường Gặp (Common Pitfalls)\\n- **Lỗi 1:** ...\\n- **Lỗi 2:** ...\\n- **Cách khắc phục chuẩn:** ...\\n\\n## 🎯 5. Tóm Tắt Ghi Nhớ Nhanh (Key Takeaways)\\n- Các quy tắc cốt lõi cần nhớ.",
       "quizzes": [
         {
-          "question": "Câu hỏi trắc nghiệm kiểm tra phản xạ?",
+          "question": "Câu hỏi trắc nghiệm tình huống kiểm tra sâu sắc kiến thức bài học?",
           "option_a": "Lựa chọn A",
           "option_b": "Lựa chọn B",
           "option_c": "Lựa chọn C",
           "option_d": "Lựa chọn D",
           "correct_option": "A",
-          "explanation": "Giải thích chi tiết đáp án đúng."
+          "explanation": "Giải thích chi tiết vì sao đáp án này chuẩn xác và các đáp án khác sai ở điểm nào."
+        },
+        {
+          "question": "Câu hỏi thứ 2 về nhận diện lỗi hoặc tối ưu hóa?",
+          "option_a": "Lựa chọn A",
+          "option_b": "Lựa chọn B",
+          "option_c": "Lựa chọn C",
+          "option_d": "Lựa chọn D",
+          "correct_option": "C",
+          "explanation": "Giải thích cặn kẽ..."
         }
       ],
       "exercise": {
-        "title": "Tên bài tập thực hành",
-        "difficulty": "MEDIUM",
-        "problem_description": "Mô tả đề bài chi tiết...",
-        "starter_code": "def solution_fn(arg):\n    # Gõ code ở đây\n    pass",
-        "solution_code": "def solution_fn(arg):\n    # Mã nguồn chuẩn chạy đúng 100%",
+        "title": "Tên bài tập thực hành lập trình thực tế",
+        "difficulty": "EASY",
+        "problem_description": "Mô tả chi tiết bài toán thực tế, yêu cầu đầu vào, đầu ra và gợi ý các bước tư duy...",
+        "starter_code": "def solve_problem(param):\\n    # Viết mã nguồn của bạn ở đây\\n    pass",
+        "solution_code": "def solve_problem(param):\\n    # Lời giải mẫu chạy chuẩn xác 100%\\n    return result",
         "test_cases": [
-          {"input": "input_val", "expected_output": "output_val", "is_hidden": false}
+          {"input": "input_1", "expected_output": "output_1", "is_hidden": false},
+          {"input": "input_2", "expected_output": "output_2", "is_hidden": true}
+        ]
+      }
+    },
+    {
+      "order_index": 2,
+      "title": "Tên Bài Học 2 (Nâng Cao & Ứng Dụng Thực Tiễn)",
+      "target_skill_id": "skill_advanced",
+      "theory_content": "# 🚀 [Tên Bài Học Nâng Cao]...",
+      "quizzes": [
+        {
+          "question": "Câu hỏi nâng cao?",
+          "option_a": "Lựa chọn A",
+          "option_b": "Lựa chọn B",
+          "option_c": "Lựa chọn C",
+          "option_d": "Lựa chọn D",
+          "correct_option": "B",
+          "explanation": "Giải thích chi tiết..."
+        }
+      ],
+      "exercise": {
+        "title": "Bài tập lập trình nâng cao",
+        "difficulty": "MEDIUM",
+        "problem_description": "Đề bài ứng dụng nâng cao...",
+        "starter_code": "def advanced_solution(data):\\n    pass",
+        "solution_code": "def advanced_solution(data):\\n    # Code hoàn chỉnh",
+        "test_cases": [
+          {"input": "test_input_1", "expected_output": "test_expected_1", "is_hidden": false},
+          {"input": "test_input_2", "expected_output": "test_expected_2", "is_hidden": true}
         ]
       }
     }
   ]
 }
+
+TIÊU CHUẨN ĐẶC BIỆT:
+1. `theory_content` PHẢI DÀI VÀ ĐẦY ĐỦ (tối thiểu 400-600 từ), sử dụng các tiêu đề `##`, danh sách gạch đầu dòng, code block ` ```python ` có chú thích rõ ràng.
+2. TUYỆT ĐỐI KHÔNG VIẾT NỘI DUNG SƠ SÀI, KHÔNG DÙNG ĐỀ BÀI TỔNG QUÁT KIỂU 'process_solution' hay 'Processed: val'.
+3. Mọi bài học, câu hỏi, và bài tập code PHẢI BÁM SÁT 100% VÀO ĐÚNG CHỦ ĐỀ HỌC VIÊN YÊU CẦU.
 """
 
-    topic_str = f"CHỦ ĐỀ YÊU CẦU CỦA HỌC VIÊN: '{topic}'" if topic else f"Các kỹ năng ZPD: {json.dumps(skills_selected, ensure_ascii=False)}"
     prompt = f"""
-Hãy tạo Lộ trình học cá nhân hóa 100% ĐỘNG cho học viên ID '{user_id}'.
-{topic_str}
-Nhóm phong cách học (Archetype): {learner_archetype}.
+Học viên yêu cầu học chủ đề: "{clean_topic}".
+Nhóm năng lực học tập (Learner Archetype): {learner_archetype}.
+Kỹ năng tri thức liên quan: {json.dumps(skills_selected, ensure_ascii=False)}.
 
-YÊU CẦU BẮT BUỘC:
-1. Nội dung Lý thuyết Markdown, Câu hỏi trắc nghiệm MCQ có giải thích, và Bài tập lập trình gõ code PHẢI ĐƯỢC MÔ HÌNH AI SINH MỚI HOÀN TOÀN, xoay quanh trực tiếp đúng chủ đề được yêu cầu.
-2. Mã nguồn `solution_code` trong bài tập phải chạy chuẩn xác 100% để vượt qua các `test_cases`.
+Hãy biên soạn Lộ trình học tập cá nhân hóa chất lượng cao, chuyên sâu và đầy đủ các bài học theo đúng định dạng JSON yêu cầu.
 """
 
-    print(f"[AI Service] Requesting Gemini LLM to generate dynamic path for topic: {topic or skills_selected}")
-    json_str = generate_json_content(prompt, system_prompt)
-    if json_str:
-        try:
-            clean_str = json_str.strip()
-            if clean_str.startswith("```json"):
-                clean_str = clean_str[7:]
-            if clean_str.startswith("```"):
-                clean_str = clean_str[3:]
-            if clean_str.endswith("```"):
-                clean_str = clean_str[:-3]
-            clean_str = clean_str.strip()
-            
-            data = json.loads(clean_str)
-            # Run QC validation on exercise solutions
-            for lesson in data.get("lessons", []):
-                ex = lesson.get("exercise")
-                if ex:
-                    run_python_sandbox_qc(ex.get("solution_code", ""), ex.get("test_cases", []))
-            print(f"🚀 [AI GENERATED DYNAMIC PATH PAYLOAD]:\n{json.dumps(data, ensure_ascii=False, indent=2)}")
-            return data
-        except Exception as e:
-            print(f"[Path Generator JSON Parse Error]: {e}")
+    print(f"🤖 [OmniRoute AI Gateway] Đang yêu cầu LLM sinh lộ trình chuyên sâu cho chủ đề: '{clean_topic}'...")
+    raw_response = generate_json_content(prompt, system_prompt)
+    
+    if not raw_response:
+        raise RuntimeError(f"OmniRoute AI Gateway không phản hồi khi sinh lộ trình cho chủ đề '{clean_topic}'.")
 
-    # Dynamic fallback tailored strictly to student's requested topic
-    topic_title = topic if topic and topic.strip() else "Lập Trình Python Thích Ứng"
-    print(f"[AI Service] Dynamic path generated for topic: '{topic_title}'")
-    return {
-        "path_title": f"Lộ Trình Cá Nhân Hóa: Chinh Phục {topic_title[:50]}",
-        "description": f"Lộ trình được thiết kế cá nhân hóa dựa trên tri thức PAL-Net và yêu cầu '{topic_title}'.",
-        "target_skills": skills_selected if skills_selected else ["python_fundamentals"],
-        "pal_net_avg_score": 0.78,
-        "lessons": [
-            {
-                "order_index": 1,
-                "title": f"Khái Niệm Cốt Lõi & Kỹ Thuật Lập Trình {topic_title[:40]}",
-                "target_skill_id": skills_selected[0] if skills_selected else "python_fundamentals",
-                "theory_content": f"# 🚀 Bài Học Cá Nhân Hóa: {topic_title}\n\n## 📌 1. Giới Thụệu Cốt Lõi\nNắm vững nền tảng tri thức và ứng dụng thực tế của **{topic_title}** trong ngôn ngữ lập trình Python.\n\n```python\n# Ví dụ minh họa cơ bản:\nprint('Chào mừng bạn đến với bài học {topic_title}!')\n```\n\n## 💡 2. Cảnh Báo Lỗi Thường Gặp\n- Luôn kiểm tra kiểu dữ liệu đầu vào và các trường hợp biên (edge cases).\n- Tối ưu hóa bộ nhớ và thời gian thực thi thuật toán.\n",
-                "quizzes": [
-                    {
-                        "question": f"Trong Python, cú pháp nào sau đây là chuẩn xác nhất khi thao tác với {topic_title[:30]}?",
-                        "option_a": "Sử dụng các hàm có sẵn chuẩn thư viện Python",
-                        "option_b": "Khai báo biến không qua khởi tạo",
-                        "option_c": "Bỏ qua việc kiểm tra giá trị null",
-                        "option_d": "Gõ code trùng lặp không qua hàm",
-                        "correct_option": "A",
-                        "explanation": "Tận dụng các phương thức có sẵn trong thư viện chuẩn Python giúp tối ưu hiệu năng và đọc mã nguồn dễ dàng."
-                    }
-                ],
-                "exercise": {
-                    "title": f"Thực Hành Viết Mã Nguồn {topic_title[:30]}",
-                    "difficulty": "EASY",
-                    "problem_description": f"Viết hàm `process_solution(val)` xử lý dữ liệu liên quan đến {topic_title[:30]}.",
-                    "starter_code": "def process_solution(val):\n    # Gõ mã nguồn của bạn ở đây\n    pass",
-                    "solution_code": "def process_solution(val):\n    return f'Processed: {val}'",
-                    "test_cases": [
-                        {"input": "'hello'", "expected_output": "Processed: hello", "is_hidden": False},
-                        {"input": "'python'", "expected_output": "Processed: python", "is_hidden": True}
-                    ]
-                }
-            }
-        ]
-    }
+    try:
+        data = extract_json_from_llm(raw_response)
+        
+        # Kiểm tra tính toàn vẹn của JSON sinh ra
+        if not data.get("lessons") or not isinstance(data.get("lessons"), list):
+            raise ValueError("Dữ liệu JSON từ AI thiếu danh sách 'lessons'.")
+            
+        # Sandbox QC
+        for lesson in data.get("lessons", []):
+            ex = lesson.get("exercise")
+            if ex:
+                run_python_sandbox_qc(ex.get("solution_code", ""), ex.get("test_cases", []))
+                
+        print(f"✅ [OmniRoute GenAI] Đã sinh thành công Lộ trình '{data.get('path_title')}' gồm {len(data.get('lessons', []))} bài học chuyên sâu!")
+        return data
+
+    except Exception as e:
+        print(f"❌ [Lỗi Xử Lý Dữ Liệu AI]: {e}\nNội dung thô từ LLM:\n{raw_response[:500]}...")
+        raise RuntimeError(f"Lỗi phân tích cú pháp bài học do AI sinh ra: {e}")
 
 
 def interact_ai_tutor_dialogue(user_id: str, history: List[Dict[str, str]], palnet_masteries: Dict[str, float] = None) -> Dict[str, Any]:
-    """Handle multi-turn AI Tutor dialogue dynamically via Gemini LLM / OmniRoute"""
+    """Xử lý hội thoại AI Tutor Socratic qua OmniRoute Gateway"""
     turn_count = len([m for m in history if m.get("sender") == "USER"])
     last_user_msg = history[-1]["content"] if history else "Tôi muốn học nâng cao kỹ năng lập trình"
     
-    # Format dialogue history for LLM
     formatted_history = "\n".join([f"{'Học viên' if m.get('sender') == 'USER' else 'AI Tutor'}: {m.get('content')}" for m in history])
     
     system_prompt = """
@@ -229,13 +265,18 @@ Nhiệm vụ của bạn là trò chuyện trực tiếp với học viên bằn
 HƯỚNG DẪN QUAN TRỌNG:
 1. Nếu học viên CHỈ CHÀO HỎI NÓI CHUYỆN XÃ GIAO (như "hello", "xin chào", "bạn khỏe không", "bạn tên gì", v.v.) hoặc CHƯA NÊU CHỦ ĐỀ HỌC TẬP:
    - Trả về step = "CLARIFY".
-   - `reply`: Trả lời thân thiện, lịch sự, hỏi xem học viên muốn bắt đầu học về chủ đề Python nào (hoặc chọn các chủ đề gợi ý bên dưới).
-   - `preview_data`: null (KHÔNG ĐƯỢC sinh preview_data khi chưa có chủ đề).
+   - `reply`: Trả lời thân thiện, hỏi xem học viên muốn bắt đầu học về chủ đề Python nào.
+   - `preview_data`: null.
 
-2. Nếu học viên ĐÃ NÊU RÕ CHỦ ĐỀ HỌC (ví dụ: "vòng lặp", "dictionary", "FastAPI", "OOP", "slicing"...) HOẶC ĐÃ BẤM NÚT CHỌN THỜI GIAN/DẠNG BÀI:
+2. Nếu học viên ĐÃ NÊU RÕ CHỦ ĐỀ HỌC (ví dụ: "vòng lặp", "dictionary", "FastAPI", "OOP", "slicing"...) HOẶC BẤM NÚT CHỌN BÀI:
    - Trả về step = "PREVIEW".
    - `reply`: Thông báo AI Tutor đã thiết lập xong Bản Phác Thảo Lộ Trình Thích Ứng theo đúng đề tài học viên yêu cầu.
-   - `preview_data`: Cung cấp thông tin phác thảo gồm title, description, target_skills, lessons_count=2, components.
+   - `preview_data`: Cung cấp thông tin phác thảo gồm:
+     - `title`: Tên lộ trình bám sát chủ đề (ví dụ: "Chinh Phục Cấu Trúc Dữ Liệu Dictionary Trong Python").
+     - `description`: Mô tả ngắn gọn mục tiêu học tập.
+     - `target_skills`: Danh sách kỹ năng chính.
+     - `lessons_count`: Số bài học dự kiến (ví dụ 2 hoặc 3).
+     - `components`: Danh sách các bài học cụ thể, ví dụ: ["Bài 1: Khởi Tạo & Thao Tác Dictionary Cơ Bản", "Bài 2: Các Phương Thức .get(), .items() & Dictionary Comprehension"].
    - `suggested_options`: ["🚀 Chốt Lộ Trình & Bắt Đầu Học Ngay"]
 """
 
@@ -249,58 +290,61 @@ Số lượt học viên đã chat: {turn_count}
 Hãy sinh lời đáp JSON phù hợp nhất từ AI Tutor theo đúng yêu cầu định dạng.
 """
 
-    try:
-        json_str = generate_json_content(prompt, system_prompt)
-        if json_str:
-            clean_str = json_str.strip()
-            if clean_str.startswith("```json"):
-                clean_str = clean_str[7:]
-            if clean_str.startswith("```"):
-                clean_str = clean_str[3:]
-            if clean_str.endswith("```"):
-                clean_str = clean_str[:-3]
-            clean_str = clean_str.strip()
-            
-            data = json.loads(clean_str)
+    raw_response = generate_json_content(prompt, system_prompt)
+    if raw_response:
+        try:
+            data = extract_json_from_llm(raw_response)
             if "reply" in data and "step" in data:
-                print(f"🤖 [AI TUTOR DIALOGUE PAYLOAD]:\n{json.dumps(data, ensure_ascii=False, indent=2)}")
+                print(f"🤖 [AI TUTOR DIALOGUE OUTPUT]: {data.get('step')} | {data.get('reply')[:80]}...")
                 return data
-    except Exception as e:
-        print(f"[AI Tutor Dialogue LLM Error]: {e}")
+        except Exception as e:
+            print(f"[AI Tutor Dialogue JSON Error]: {e}")
 
-    # Fallback checking keywords if LLM offline
+    # Fallback chỉ khi AI Gateway hoàn toàn không kết nối được
+    import re
     msg_lower = last_user_msg.lower()
-    is_greeting = any(w in msg_lower for w in ["hello", "hi", "xin chào", "bạn khỏe không", "chào", "tên gì", "bạn là ai"])
-    has_topic = any(w in msg_lower for w in ["học", "python", "loop", "vòng lặp", "dict", "slicing", "chuỗi", "oop", "phút", "code", "bài tập"])
-
-    if is_greeting and not has_topic:
+    
+    is_asking_weakness = bool(re.search(r'\b(yếu|kém|chưa vững|cải thiện|đánh giá|trình độ|khảo sát)\b', msg_lower))
+    if is_asking_weakness:
         return {
             "step": "CLARIFY",
-            "reply": f"Chào bạn! 🤖 Mình là AI Tutor rất khỏe và luôn sẵn sàng hỗ trợ bạn.\n\n"
-                     f"Để giúp bạn dễ hình dung, bạn muốn bắt đầu tìm hiểu hoặc nâng cao kỹ năng ở chủ đề lập trình nào dưới đây?",
+            "reply": "Dựa trên dữ liệu tri thức của bạn, bạn có thể củng cố thêm các phần: Cấu trúc Điều Kiện, Vòng Lặp For/While, Xử Lý Chuỗi & Dictionary.\n\nBạn muốn tạo lộ trình tăng cường cho phần nào trước?",
+            "suggested_options": [
+                "🐍 Tăng Cường Vòng Lặp & Duyệt Mảng",
+                "📊 Luyện Xử Lý Chuỗi & Slicing",
+                "⚡ Thuật Toán Dictionary & Cực Trị"
+            ],
+            "preview_data": null
+        }
+
+    is_pure_greeting = bool(re.search(r'^\s*(hello|hi|xin chào|chào bạn|chào|hé lô|alo|bạn là ai|tên gì)\b', msg_lower))
+    has_topic = bool(re.search(r'\b(học|python|loop|vòng lặp|dict|dictionary|list|slicing|chuỗi|string|oop|hàm|function|bài tập|code)\b', msg_lower))
+
+    if is_pure_greeting and not has_topic:
+        return {
+            "step": "CLARIFY",
+            "reply": "Chào bạn! 🤖 Mình là AI Tutor từ VIBECODE AI. Bạn đang muốn khám phá hoặc luyện tập chủ đề nào trong Python hôm nay?",
             "suggested_options": [
                 "🐍 Vòng Lặp & Duyệt Mảng Python",
-                "📊 Xử Lý Chuỗi & Slicing",
+                "📊 Cấu Trúc Dữ Liệu Dictionary",
                 "⚡ Thuật Toán Tìm Cực Trị",
                 "🌐 Lập Trình Hướng Đối Tượng"
-            ]
+            ],
+            "preview_data": null
         }
     else:
+        topic_title = last_user_msg[:40].strip()
         return {
             "step": "PREVIEW",
-            "reply": f"Cảm ơn bạn! 🎯 Tôi đã tổng hợp yêu cầu **'{last_user_msg}'** cùng Ma trận Tri thức PAL-Net và lập xong **Bản Phác Thảo Lộ Trình Học Cá Nhân Hóa** cho bạn!\n\n"
-                     f"Bạn có muốn chốt Lộ trình này để bắt đầu học ngay không?",
+            "reply": f"Cảm ơn bạn! 🎯 Tôi đã thiết lập xong Bản Phác Thảo Lộ Trình Thích Ứng cho chủ đề **'{topic_title}'**.",
             "preview_data": {
-                "title": f"Chinh Phục {last_user_msg[:45]}",
-                "description": "Lộ trình bài học cá nhân hóa thích ứng theo đúng nội dung bạn đã yêu cầu.",
-                "target_skills": ["python_topics"],
+                "title": f"Chinh Phục {topic_title}",
+                "description": f"Lộ trình bài học cá nhân hóa thích ứng theo đúng yêu cầu '{topic_title}'.",
+                "target_skills": ["python_fundamentals"],
                 "lessons_count": 2,
-                "components": ["Lý thuyết Markdown cá nhân hóa", "Trắc nghiệm MCQ có giải thích", "Gõ Code Docker Sandbox QC"]
+                "components": [f"Bài 1: Nền tảng cốt lõi {topic_title}", f"Bài 2: Thực hành nâng cao {topic_title}"]
             },
             "suggested_options": [
                 "🚀 Chốt Lộ Trình & Bắt Đầu Học Ngay"
             ]
         }
-
-
-

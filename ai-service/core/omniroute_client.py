@@ -37,28 +37,51 @@ def get_next_gemini_key():
     return key
 
 
+OMNIROUTE_API_KEY = os.getenv("OMNIROUTE_API_KEY", "")
+
 def call_omniroute_gateway(prompt: str, system_prompt: str = None) -> str:
     """Attempt call to OmniRoute Proxy Gateway at localhost:20128"""
     headers = {"Content-Type": "application/json"}
+    if OMNIROUTE_API_KEY:
+        headers["Authorization"] = f"Bearer {OMNIROUTE_API_KEY}"
+        
     messages = []
     if system_prompt:
         messages.append({"role": "system", "content": system_prompt})
     messages.append({"role": "user", "content": prompt})
 
-    payload = {
-        "model": "gemini-1.5-flash",
-        "messages": messages,
-        "temperature": 0.7,
-        "response_format": {"type": "json_object"}
-    }
+    # Models supported in OmniRoute (đa nhà cung cấp: Gemini, Groq, OpenRouter)
+    models_to_try = [
+        "gemini/gemini-2.5-flash",
+        "gemini/gemini-2.5-pro",
+        "gemini/gemini-3.7-flash",
+        "groq/llama-3.3-70b-versatile",
+        "groq/llama3-70b-8192",
+        "openrouter/meta-llama/llama-3.3-70b-instruct:free",
+        "openrouter/google/gemini-2.0-flash-exp:free",
+        "openrouter/auto"
+    ]
     
-    try:
-        response = requests.post(OMNIROUTE_URL, json=payload, headers=headers, timeout=1.5)
-        if response.status_code == 200:
-            data = response.json()
-            return data["choices"][0]["message"]["content"]
-    except Exception as e:
-        print(f"[OmniRoute] Gateway call offline (fast skip): {e}")
+    for model_name in models_to_try:
+        payload = {
+            "model": model_name,
+            "messages": messages,
+            "temperature": 0.7,
+            "stream": False,
+            "response_format": {"type": "json_object"}
+        }
+        
+        try:
+            response = requests.post(OMNIROUTE_URL, json=payload, headers=headers, timeout=70.0)
+            if response.status_code == 200:
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                if content:
+                    return content
+            else:
+                print(f"[OmniRoute] Model {model_name} response status {response.status_code}: {response.text[:120]}")
+        except Exception as e:
+            print(f"[OmniRoute] Gateway call error on {model_name}: {e}")
     return None
 
 def call_direct_gemini_api(prompt: str, system_prompt: str = None) -> str:
@@ -73,7 +96,7 @@ def call_direct_gemini_api(prompt: str, system_prompt: str = None) -> str:
         if not key:
             break
         
-        models_to_try = ["gemini-flash-latest", "gemini-2.0-flash-lite", "gemini-2.0-flash"]
+        models_to_try = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-3.7-flash", "gemini-3.5-flash"]
         full_text = prompt
         if system_prompt:
             full_text = f"{system_prompt}\n\n{prompt}"
@@ -93,7 +116,7 @@ def call_direct_gemini_api(prompt: str, system_prompt: str = None) -> str:
         for model_name in models_to_try:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={key}"
             try:
-                res = requests.post(url, json=payload, headers=headers, timeout=25.0)
+                res = requests.post(url, json=payload, headers=headers, timeout=70.0)
                 if res.status_code == 200:
                     result = res.json()
                     text = result["candidates"][0]["content"]["parts"][0]["text"]
@@ -102,7 +125,7 @@ def call_direct_gemini_api(prompt: str, system_prompt: str = None) -> str:
                     print(f"[Gemini API Key Rotation] Key hit quota/limit ({res.status_code}) on model {model_name}.")
                     continue
                 else:
-                    print(f"[Gemini API Error] Model {model_name} Status {res.status_code}: {res.text}")
+                    print(f"[Gemini API Error] Model {model_name} Status {res.status_code}: {res.text[:120]}")
             except Exception as e:
                 print(f"[Gemini API Request Error on {model_name}]: {e}")
 

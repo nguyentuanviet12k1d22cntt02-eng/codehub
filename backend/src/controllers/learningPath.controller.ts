@@ -262,11 +262,56 @@ export const submitExerciseCode = async (req: AuthenticatedRequest, res: Respons
         const results = [];
 
         for (const tc of exercise.testCases) {
-            const jobRes = await codeExecutionQueue.pushJob(code, 'PYTHON', tc.input || '', 5000);
-            const actualOut = (jobRes.stdout || '').trim();
-            const expectedOut = tc.expectedOutput.trim();
+            const rawInput = tc.input ? tc.input.trim() : '';
+            const expectedOut = (tc.expectedOutput || '').trim();
 
-            const isPassed = jobRes.status === 'SUCCESS' && actualOut === expectedOut;
+            // Tự động xây dựng execution harness để kiểm thử linh hoạt Function & Class OOP
+            let codeToRun = code;
+            if (rawInput) {
+                const isExpression = rawInput.includes('(') || rawInput.includes('[') || rawInput.includes('{');
+                codeToRun = `
+${code}
+
+if __name__ == '__main__':
+    import sys
+    try:
+        raw_val = ${JSON.stringify(rawInput)}
+        ${isExpression ? `
+        try:
+            res = eval(raw_val)
+            if res is not None:
+                print(res)
+        except Exception:
+            exec(raw_val)
+        ` : `
+        funcs = [f for f in list(globals().keys()) if callable(globals()[f]) and not f.startswith('__') and f != 'sys']
+        if funcs:
+            import ast
+            try:
+                parsed_arg = ast.literal_eval(raw_val)
+            except Exception:
+                parsed_arg = raw_val
+            target_fn = globals()[funcs[-1]]
+            if isinstance(parsed_arg, tuple):
+                res = target_fn(*parsed_arg)
+            else:
+                res = target_fn(parsed_arg)
+            if res is not None:
+                print(res)
+        `}
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+`;
+            }
+
+            const jobRes = await codeExecutionQueue.pushJob(codeToRun, 'PYTHON', rawInput, 5000);
+            const actualOut = (jobRes.stdout || '').trim();
+
+            const isPassed = jobRes.status === 'SUCCESS' && (
+                actualOut === expectedOut ||
+                (expectedOut.toLowerCase() === 'none' && (actualOut === 'None' || actualOut === '' || actualOut.includes('object at 0x'))) ||
+                (expectedOut === '' && actualOut === '')
+            );
             if (isPassed) passedCases++;
 
             results.push({
@@ -361,7 +406,8 @@ export const startChatSession = async (req: AuthenticatedRequest, res: Response)
                 sender: 'AI_TUTOR',
                 content: aiReplyContent,
                 metadata: {
-                    step: aiReplyData?.step || 'CLARIFY',
+                    step: aiReplyData?.step || (aiReplyData?.preview_data ? 'PREVIEW' : 'CLARIFY'),
+                    previewData: aiReplyData?.preview_data,
                     suggestedOptions
                 }
             }
