@@ -1,0 +1,328 @@
+Thiết Kế Kiến Trúc Thư Mục Chuẩn Mở Rộng Cho Nền Tảng Học Lập Trình Đa Ngôn Ngữ Và Điều Phối AI
+Kiến trúc phần mềm cho một nền tảng công nghệ giáo dục (EdTech) tích hợp trình thực thi mã nguồn đa ngôn ngữ (Python, JavaScript, SQL, C++) và động cơ trí tuệ nhân tạo (AI) tạo lộ trình học tập đòi hỏi tính phân lập cao giữa các miền nghiệp vụ. Việc kết hợp các công nghệ không đồng nhất bao gồm React, TypeScript, Vite, Tailwind CSS ở tầng giao diện, Node.js và Express.js tại máy chủ điều phối trung tâm, cùng FastAPI trên nền tảng Python phục vụ các thuật toán AI tạo sinh, đặt ra yêu cầu xây dựng một mô hình quản trị mã nguồn tối ưu.   
+
+Mô hình kho lưu trữ đơn khối đa ngôn ngữ (Polyglot Monorepo) sử dụng công cụ quản lý vùng làm việc pnpm kết hợp với Turborepo cung cấp cơ sở hạ tầng phát triển linh hoạt. Cơ chế này cho phép các ứng dụng dùng chung các quy chuẩn kiểm tra mã nguồn (ESLint, Prettier), chia sẻ các hợp đồng giao diện dữ liệu (TypeScript schemas), đồng thời duy trì khả năng xây dựng và kiểm thử độc lập cho từng dịch vụ riêng biệt.   
+
+Phân hệ hệ thống	Công nghệ chủ đạo	Vai trò kiến trúc trong hệ thống	Ranh giới trách nhiệm và cách ly
+Frontend Web App	React 18+, TypeScript, Vite, Tailwind CSS, Monaco Editor	Tương tác người dùng, biên tập mã nguồn, trực quan hóa cây lộ trình học tập	
+Kiến trúc hướng tính năng (Feature-driven Architecture), cách ly hoàn toàn tầng hiển thị và tầng kết nối mạng.
+
+Core API Gateway & LMS	Node.js, Express.js, TypeScript, Prisma ORM, PostgreSQL, Redis	Quản lý người dùng, khóa học, tiến độ, phân quyền, tiếp nhận nộp bài và hàng đợi tác vụ	
+Kiến trúc phân tầng hướng miền (Layered Domain Architecture), vận hành non-blocking I/O.
+
+AI Roadmap Engine	Python 3.11+, FastAPI, Pydantic, LangChain / LlamaIndex	Đánh giá năng lực đầu vào, tính toán đồ thị phụ thuộc bài học, tạo sinh lộ trình cá nhân hóa	
+Kiến trúc hướng dịch vụ xử lý dữ liệu và mô hình AI, hỗ trợ cơ chế phản hồi luồng (Streaming responses).
+
+Code Execution Sandbox	Docker, Isolate / Judge0, Linux cgroups, Redis Worker	Biên dịch, thực thi an toàn các chương trình Python, C++, JS và truy vấn SQL	
+Môi trường cách ly nghiêm ngặt về tài nguyên CPU, bộ nhớ và ngắt kết nối mạng ngoài.
+
+  
+Cấu Trúc Tổng Thể Kho Lưu Trữ Monorepo
+Một cấu trúc cây thư mục monorepo hoàn chỉnh cần thiết lập sự phân định ranh giới tường minh giữa mã nguồn ứng dụng (apps/), các gói tái sử dụng (packages/), và các cấu hình triển khai hạ tầng (docker/).   
+
+edtech-platform/
+.github/
+workflows/
+ci-web.yml
+ci-core.yml
+ci-ai.yml
+.husky/
+pre-commit
+pre-push
+apps/
+web/
+server-core/
+service-ai/
+packages/
+shared-types/
+eslint-config/
+tsconfig/
+ui-kit/
+docker/
+docker-compose.dev.yml
+docker-compose.prod.yml
+Dockerfile.web
+Dockerfile.core
+Dockerfile.ai
+judge0/
+judge0.conf
+scripts/
+setup-dev.sh
+seed-data.ts
+.gitignore
+.prettierrc
+.npmrc
+pnpm-workspace.yaml
+turbo.json
+package.json
+
+Trong thiết kế này, tệp turbo.json chịu trách nhiệm định nghĩa đồ thị phụ thuộc giữa các lệnh xây dựng dự án, cho phép thực hiện lưu bộ nhớ đệm tính toán (computational caching) song song giữa ứng dụng web và các dịch vụ nền tảng. Thư mục packages/ đóng vai trò là nguồn chân lý duy nhất cho các định nghĩa kiểu dữ liệu và thư viện dùng chung, ngăn chặn sự sai lệch về định dạng dữ liệu truyền tải giữa các tầng dịch vụ.   
+
+Thiết Kế Chi Tiết Từng Phân Hệ Chức Năng
+Phân Hệ Frontend (React, TypeScript, Vite, Tailwind CSS)
+Kiến trúc tầng giao diện được tổ chức dựa trên mô hình thiết kế Bulletproof React, lấy các mô-đun chức năng (Features) làm hạt nhân cấu trúc. Thay vì phân chia mã nguồn theo các thư mục kỹ thuật thuần túy như controllers hay views, phương pháp tiếp cận này nhóm toàn bộ logic nghiệp vụ, giao diện, hooks, và lời gọi API của một miền nghiệp vụ vào cùng một không gian thư mục.   
+
+apps/web/
+public/
+monaco-workers/
+src/
+app/
+routes/
+auth/
+dashboard/
+courses/
+roadmap/
+playground/
+index.tsx
+app.tsx
+provider.tsx
+router.tsx
+assets/
+components/
+ui/
+layout/
+feedback/
+navigation/
+config/
+env.ts
+features/
+auth/
+api/
+components/
+hooks/
+types/
+index.ts
+code-editor/
+api/
+execute-code.ts
+get-submission-status.ts
+components/
+monaco-wrapper.tsx
+terminal-output.tsx
+test-case-runner.tsx
+language-selector.tsx
+hooks/
+use-code-runner.ts
+use-editor-hotkeys.ts
+types/
+index.ts
+utils/
+language-templates.ts
+roadmap/
+api/
+generate-roadmap.ts
+get-learning-path.ts
+components/
+roadmap-node.tsx
+roadmap-graph.tsx
+progress-tracker.tsx
+assessment-modal.tsx
+hooks/
+use-roadmap-stream.ts
+types/
+index.ts
+courses/
+hooks/
+lib/
+axios.ts
+react-query.ts
+monaco.ts
+stores/
+types/
+utils/
+index.html
+tailwind.config.js
+tsconfig.json
+vite.config.ts
+
+Thành phần thư mục	Trách nhiệm thiết kế	Tiêu chuẩn triển khai
+src/app/	Điểm khởi tạo ứng dụng, tích hợp bộ định tuyến React Router và các Providers	
+Thiết lập tầng bọc ngoài cùng; không chứa logic xử lý nghiệp vụ sâu.
+
+src/features/*	Mô-đun hóa khép kín từng tính năng như trình soạn thảo mã nguồn hay bản đồ lộ trình	
+Đóng gói toàn bộ API, Hooks, và UI đặc thù; chỉ chia sẻ ra ngoài qua giao diện rõ ràng.
+
+src/components/ui/	Các thành phần giao diện nguyên tử tái sử dụng toàn cục (Button, Modal, Input)	
+Xây dựng không phụ thuộc vào trạng thái nghiệp vụ, tích hợp Tailwind CSS nhất quán.
+
+src/config/env.ts	Thẩm định các biến môi trường tại thời điểm nạp ứng dụng bằng thư viện Zod	
+Ngăn chặn việc khởi chạy ứng dụng khi thiếu các cấu hình API URL quan trọng.
+
+  
+Phân Hệ Core Backend (Node.js, Express.js, TypeScript)
+Hệ thống máy chủ điều phối trung tâm triển khai theo mô hình kiến trúc phân tầng kết hợp định hướng miền (Domain-Driven Layered Architecture). Cấu trúc này thiết lập sự rành mạch giữa lớp tiếp nhận giao thức HTTP (Controllers), lớp thực thi luật nghiệp vụ (Services), và lớp truy cập dữ liệu (Repositories) thông qua Prisma ORM.   
+
+apps/server-core/
+prisma/
+schema.prisma
+migrations/
+src/
+config/
+database.ts
+redis.ts
+env.ts
+common/
+errors/
+middleware/
+authentication.ts
+rate-limiter.ts
+validation.ts
+utils/
+modules/
+auth/
+user/
+curriculum/
+submission/
+submission.controller.ts
+submission.service.ts
+submission.repository.ts
+submission.routes.ts
+submission.queue.ts
+submission.types.ts
+ai-proxy/
+ai-proxy.controller.ts
+ai-proxy.service.ts
+ai-proxy.routes.ts
+clients/
+judge0.client.ts
+fast-api.client.ts
+jobs/
+workers/
+queues/
+app.ts
+server.ts
+tsconfig.json
+package.json
+
+Phân vùng mô-đun	Trách nhiệm và luồng xử lý dữ liệu
+src/modules/submission/	
+Tiếp nhận mã nguồn của học viên từ Frontend, lưu vết giao dịch vào cơ sở dữ liệu PostgreSQL, đưa tác vụ vào hàng đợi Redis để chờ chấm điểm.
+
+src/modules/ai-proxy/	
+Xác thực danh tính học viên, kiểm soát định mức gọi API (rate limiting) trước khi chuyển tiếp yêu cầu khởi tạo lộ trình sang dịch vụ AI FastAPI.
+
+src/clients/	
+Đóng gói toàn bộ giao thức giao tiếp ra bên ngoài hệ thống nội bộ, quản lý vòng đời kết nối và cơ chế tự động thử lại khi lỗi mạng.
+
+  
+Phân Hệ AI Roadmap Engine (Python, FastAPI)
+Dịch vụ AI được tổ chức dựa trên nguyên lý Kiến trúc Sạch (Clean Architecture) cho các hệ thống học máy và mô hình ngôn ngữ lớn. Hệ thống tách rời hoàn toàn tầng định tuyến API, các chuỗi logic tương tác với LLM, hệ thống quản trị câu lệnh mẫu (Prompts), và các mô hình biểu diễn dữ liệu Pydantic.   
+
+apps/service-ai/
+app/
+api/
+v1/
+endpoints/
+roadmap.py
+assessment.py
+tutor_chat.py
+api_router.py
+dependencies.py
+core/
+config.py
+logging.py
+security.py
+engines/
+roadmap/
+graph_builder.py
+node_generator.py
+prerequisite_solver.py
+evaluation/
+code_explainer.py
+skill_analyzer.py
+prompts/
+templates/
+roadmap_prompt.jinja2
+feedback_prompt.jinja2
+prompt_manager.py
+schemas/
+roadmap.py
+assessment.py
+user_context.py
+services/
+llm_provider.py
+cache_service.py
+vector_store.py
+main.py
+tests/
+pyproject.toml
+requirements.txt
+
+Phân vùng mô-đun	Trách nhiệm và vai trò xử lý chuyên sâu
+app/engines/roadmap/	
+Giải thuật giải quyết đồ thị có hướng không chu trình (DAG) để xác định thứ tự tiên quyết của các khái niệm lập trình (Python, C++, JS, SQL).
+
+app/schemas/	
+Định nghĩa cấu trúc dữ liệu chặt chẽ qua Pydantic, bắt buộc mô hình ngôn ngữ lớn trả về dữ liệu có cấu trúc JSON hợp lệ.
+
+app/engines/prompts/	
+Quản lý độc lập các mẫu câu lệnh (Prompt templates), tách rời mã nguồn xử lý và nội dung ngữ cảnh nhằm tạo điều kiện cho việc tối ưu hóa prompt.
+
+  
+Phân Hệ Gói Dùng Chung (Shared Packages)
+Để ngăn ngừa tình trạng trôi lệch định nghĩa dữ liệu giữa các dịch vụ khác nhau trong kho lưu trữ đơn khối, các gói dùng chung cung cấp một điểm tham chiếu duy nhất.   
+
+packages/
+shared-types/
+src/
+domain/
+roadmap.ts
+submission.ts
+language.ts
+api/
+contracts.ts
+package.json
+tsconfig.json
+ui-kit/
+src/
+components/
+theme/
+package.json
+tsconfig.json
+eslint-config/
+package.json
+index.js
+
+Cơ Chế Giao Tiếp Và Hạ Tầng Thực Thi Mã Nguồn An Toàn
+Việc biên dịch và thực thi mã nguồn do người dùng tải lên từ trình soạn thảo Monaco đặt ra những thách thức lớn về an toàn hệ thống, bao gồm nguy cơ tấn công từ chối dịch vụ (fork bombs), chiếm dụng bộ nhớ, hoặc xâm nhập trái phép hệ thống tệp. Hệ thống giải quyết bài toán này bằng mô hình xếp hàng xử lý bất đồng bộ kết hợp các thùng chứa cách ly tài nguyên.   
+
+Quy trình xử lý bắt đầu khi học viên gửi mã nguồn từ ứng dụng React thông qua yêu cầu HTTP POST. Tầng Core Backend tiếp nhận, ghi nhận trạng thái bài nộp ban đầu vào cơ sở dữ liệu PostgreSQL và lập tức trả về mã định danh bài nộp cho phía giao diện. Song song với đó, Core Backend đưa tác vụ vào hàng đợi Redis do thư viện BullMQ quản lý.   
+
+Các tiến trình công nhân (Worker processes) liên tục lắng nghe hàng đợi để lấy tác vụ và điều phối tới bộ máy thực thi mã nguồn Judge0 hoặc môi trường Isolate. Mã nguồn được biên dịch và chạy trong một vùng chứa cách ly nghiêm ngặt dựa trên Linux namespaces và cgroups, giới hạn thời gian CPU cũng như dung lượng bộ nhớ. Khi việc thực thi hoàn tất, tiến trình công nhân ghi nhận kết quả kiểm thử vào cơ sở dữ liệu và phát thông báo qua kết nối WebSocket hoặc cho phép giao diện người dùng định kỳ thăm dò trạng thái để hiển thị kết quả.   
+
+Ngôn ngữ thực thi	Cơ chế biên dịch và chạy	Giới hạn thời gian (CPU Limit)	Giới hạn bộ nhớ (RAM Limit)	Phương thức cách ly môi trường
+Python	
+CPython 3.11 / Pyodide WebAssembly
+
+2.0 gi 
+a
+ˆ
+ y	128 MB	
+Isolate Sandbox, vô hiệu hóa mạng ngoài
+
+C++	Trình biên dịch GCC 17 (g++)	1.0 gi 
+a
+ˆ
+ y	256 MB	
+Linux namespaces, bộ lọc lệnh hệ thống Seccomp
+
+JavaScript	V8 Engine / Node.js Runtime	2.0 gi 
+a
+ˆ
+ y	128 MB	
+Vùng chứa container cô lập với hệ thống tệp gốc
+
+SQL	PostgreSQL / SQLite Sandbox	3.0 gi 
+a
+ˆ
+ y	256 MB	Phân vùng lược đồ tạm, tự động hoàn tác giao dịch
+  
+Đối với quy trình tạo lộ trình học tập thích ứng, khi học viên hoàn thành bài khảo sát hoặc có nhu cầu cập nhật lộ trình, yêu cầu từ ứng dụng Frontend sẽ được chuyển qua Core Backend để xác thực quyền hạn và kiểm soát tần suất. Sau đó, Core Backend chuyển tiếp yêu cầu đến dịch vụ AI FastAPI. Động cơ AI phân tích trình độ hiện tại, tính toán các kỹ năng còn thiếu, và sinh ra một cấu trúc đồ thị bài học phân cấp. Dữ liệu phản hồi được kiểm tra tính tương thích với mô hình Pydantic trước khi truyền ngược về hệ thống quản lý học tập để lưu trữ và hiển thị trực quan cho học viên.   
+
+Quản Trị Phụ Thuộc Mã Nguồn Và Chiến Lược Mở Rộng Hệ Thống
+Để đảm bảo tính bền vững của dự án khi quy mô mã nguồn và số lượng thành viên phát triển mở rộng, các quy tắc kiến trúc cần được bảo vệ tự động thông qua cấu hình công cụ.   
+
+Quy tắc phụ thuộc một chiều được thực thi nghiêm ngặt bằng cấu hình ESLint import/no-restricted-paths, theo đó các thư mục chia sẻ không được phép tham chiếu ngược vào các thư mục tính năng, và các thư mục tính năng trong src/features/ tuyệt đối không được nhập mã trực tiếp của nhau. Mọi sự kết hợp giữa các tính năng độc lập bắt buộc phải diễn ra tại tầng ứng dụng cấp cao hơn là src/app/. Cơ chế này ngăn ngừa triệt để tình trạng phụ thuộc vòng, giúp việc kiểm thử đơn vị và tái cấu trúc mô-đun diễn ra độc lập mà không gây lỗi dây chuyền.   
+
+Việc chuẩn hóa các đường dẫn nhập tuyệt đối (@/*) trong tệp cấu hình TypeScript của cả Frontend và Backend giúp loại bỏ hoàn toàn các đường dẫn tương đối phức tạp, đơn giản hóa việc di chuyển vị trí các tệp tin trong quá trình phát triển. Đồng thời, sự phân tách hoàn toàn giữa dịch vụ AI viết bằng FastAPI và máy chủ trung tâm Express.js cho phép đội ngũ hạ tầng áp dụng cơ chế tự động co giãn theo chiều ngang độc lập, đảm bảo rằng việc tăng tải đột biến từ các tác vụ tính toán AI sẽ không làm suy giảm hiệu năng xử lý các hoạt động học tập cơ bản của học viên trên nền tảng.   
+

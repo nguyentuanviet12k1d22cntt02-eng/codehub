@@ -691,9 +691,7 @@ def generate_palnet_learning_path(req: GeneratePathRequest):
 
     except Exception as e:
         print(f"[Generate Path Endpoint Error]: {e}")
-        # Return guaranteed fallback path
-        fallback = generate_personalized_learning_path(req.user_id, ["python_loops", "python_lists"])
-        return {"success": True, "data": fallback}
+        raise HTTPException(status_code=500, detail=f"Lỗi sinh lộ trình AI: {e}")
 
 class ChatInteractRequest(BaseModel):
     user_id: str

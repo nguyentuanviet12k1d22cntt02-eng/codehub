@@ -12,9 +12,9 @@ export interface ChatMessage {
         previewData?: {
             title: string;
             description: string;
-            target_skills: string[];
+            target_skills: any[];
             lessons_count: number;
-            components: string[];
+            components: any[];
         };
     };
 }
@@ -98,13 +98,16 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                             {meta.previewData.description}
                                         </p>
 
-                                        <div className="pt-2 flex flex-wrap gap-2">
-                                            {meta.previewData.components.map((comp, cIdx) => (
-                                                <span key={cIdx} className="text-[11px] bg-[#21262D] text-gray-300 px-2 py-1 rounded border border-[#30363D]">
-                                                    ✓ {comp}
-                                                </span>
-                                            ))}
-                                        </div>
+                                         <div className="pt-2 flex flex-wrap gap-2">
+                                             {Array.isArray(meta.previewData.components) && meta.previewData.components.map((comp: any, cIdx: number) => {
+                                                 const label = typeof comp === 'string' ? comp : (comp?.title || comp?.name || comp?.description || JSON.stringify(comp));
+                                                 return (
+                                                     <span key={cIdx} className="text-[11px] bg-[#21262D] text-gray-300 px-2 py-1 rounded border border-[#30363D]">
+                                                         ✓ {label}
+                                                     </span>
+                                                 );
+                                             })}
+                                         </div>
 
                                         <div className="pt-3">
                                             <button
@@ -122,15 +125,28 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                             {/* Suggested Option Chips */}
                             {meta?.suggestedOptions && meta.suggestedOptions.length > 0 && (
                                 <div className="flex flex-wrap gap-2 pt-1">
-                                    {meta.suggestedOptions.map((opt, oIdx) => (
-                                        <button
-                                            key={oIdx}
-                                            onClick={() => onSendMessage(opt)}
-                                            className="text-xs bg-[#1F242C] hover:bg-[#1F6FE5]/20 hover:border-[#58A6FF] border border-[#30363D] text-[#58A6FF] px-3 py-1.5 rounded-full transition-all text-left"
-                                        >
-                                            {opt}
-                                        </button>
-                                    ))}
+                                    {meta.suggestedOptions.map((opt: string, oIdx: number) => {
+                                        const isConfirmChip = /chốt lộ trình|bắt đầu học/i.test(opt);
+                                        return (
+                                            <button
+                                                key={oIdx}
+                                                onClick={() => {
+                                                    if (isConfirmChip) {
+                                                        onConfirmPath();
+                                                    } else {
+                                                        onSendMessage(opt);
+                                                    }
+                                                }}
+                                                className={`text-xs px-3 py-1.5 rounded-full transition-all text-left font-bold ${
+                                                    isConfirmChip
+                                                        ? 'bg-gradient-to-r from-[#238636] to-[#2EA043] text-white hover:opacity-90 shadow-md border-none'
+                                                        : 'bg-[#1F242C] hover:bg-[#1F6FE5]/20 hover:border-[#58A6FF] border border-[#30363D] text-[#58A6FF]'
+                                                }`}
+                                            >
+                                                {opt}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
