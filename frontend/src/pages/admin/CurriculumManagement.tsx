@@ -4,7 +4,7 @@ import { API_BASE_URL } from '../../config/api';
 interface CourseNode {
     id: string;
     title: string;
-    language: string;
+    level?: string;
     modules: {
         id: string;
         title: string;
@@ -134,15 +134,20 @@ export default function CurriculumManagement() {
                 headers: getAuthHeaders()
             });
             const data = await res.json();
-            setTree(data);
-            if (data.length > 0 && !selectedCourseId) {
-                setSelectedCourseId(data[0].id);
-                if (data[0].modules[0]?.chapters[0]) {
-                    setSelectedChapterId(data[0].modules[0].chapters[0].id);
-                    if (data[0].modules[0].chapters[0].lessons[0]) {
-                        setSelectedLessonId(data[0].modules[0].chapters[0].lessons[0].id);
+            if (Array.isArray(data)) {
+                setTree(data);
+                if (data.length > 0 && !selectedCourseId) {
+                    setSelectedCourseId(data[0].id);
+                    if (data[0].modules?.[0]?.chapters?.[0]) {
+                        setSelectedChapterId(data[0].modules[0].chapters[0].id);
+                        if (data[0].modules[0].chapters[0].lessons?.[0]) {
+                            setSelectedLessonId(data[0].modules[0].chapters[0].lessons[0].id);
+                        }
                     }
                 }
+            } else {
+                setTree([]);
+                showToast(data.message || 'Lỗi khi tải danh mục khóa học');
             }
         } catch (err: any) {
             showToast('Lỗi khi tải danh mục khóa học');
@@ -510,7 +515,7 @@ export default function CurriculumManagement() {
                     >
                         {tree.map(c => (
                             <option key={c.id} value={c.id}>
-                                {c.title} ({c.language})
+                                {c.title} {c.level ? `(${c.level})` : ''}
                             </option>
                         ))}
                     </select>

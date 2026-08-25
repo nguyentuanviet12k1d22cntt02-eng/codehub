@@ -709,7 +709,6 @@ export const getCurriculumTreeAdmin = async (req: Request, res: Response) => {
             select: {
                 id: true,
                 title: true,
-                language: true,
                 level: true,
                 modules: {
                     orderBy: { orderIndex: 'asc' },
