@@ -119,6 +119,23 @@ const runCodeLocally = async (
     });
 };
 
+let isDockerDaemonAvailable: boolean | null = null;
+
+const checkDockerDaemon = (): Promise<boolean> => {
+    if (isDockerDaemonAvailable !== null) return Promise.resolve(isDockerDaemonAvailable);
+    return new Promise((resolve) => {
+        exec('docker info', { timeout: 1500 }, (err) => {
+            isDockerDaemonAvailable = !err;
+            if (!isDockerDaemonAvailable) {
+                console.log('⚡ [Sandbox Engine] Docker daemon không khả dụng. Sử dụng Native Sandboxed Process Engine (Nhanh & Tối ưu cho Cloud/Render).');
+            } else {
+                console.log('🐳 [Sandbox Engine] Docker daemon đang hoạt động. Sử dụng Docker Container Sandbox.');
+            }
+            resolve(isDockerDaemonAvailable);
+        });
+    });
+};
+
 export const runCodeInDocker = async (
     userCode: string,
     language: 'PYTHON' | 'JAVASCRIPT' | 'CPP' | 'C' | 'SQL' = 'PYTHON',
@@ -142,7 +159,7 @@ export const runCodeInDocker = async (
     } else if (language === 'CPP') {
         suffix = 'cpp';
         dockerImage = 'gcc:12-alpine';
-        defaultTimeout = 5000; // 5s để include cả compile time
+        defaultTimeout = 5000;
         memoryLimit = '64m';
     } else if (language === 'C') {
         suffix = 'c';
@@ -153,17 +170,16 @@ export const runCodeInDocker = async (
 
     const actualTimeout = timeoutMs || defaultTimeout;
 
-    // Dùng crypto.randomBytes thay vì Date.now() + Math.random() để đảm bảo unique khi chạy song song
     const uniqueId = generateUniqueId();
     const fileName = `sol_${uniqueId}.${suffix}`;
     const filePath = path.join(temp_dir, fileName);
     const containerName = `sandbox_${uniqueId}`;
 
-    // ghi code của user vào filePath
     await fs.writeFile(filePath, userCode, 'utf-8');
 
-    // Đối với SQL, thực thi trực tiếp qua SQLite in-memory sandbox engine nhanh và an toàn
-    if (language === 'SQL') {
+    // Đối với SQL hoặc khi Docker không có sẵn, chạy ngay lập tức bằng engine cục bộ
+    const hasDocker = await checkDockerDaemon();
+    if (language === 'SQL' || !hasDocker) {
         return runCodeLocally(filePath, language, inputData, actualTimeout);
     }
 
@@ -313,6 +329,12 @@ export const runCodeInDocker = async (
             if (isFinished) return;
             isFinished = true;
             clearTimeout(timer);
+
+            if (code !== 0 && /docker API|Cannot connect to the Docker daemon|docker\.sock|no such file or directory/i.test(stderr)) {
+                isDockerDaemonAvailable = false;
+                const localResult = await runCodeLocally(filePath, language, inputData, actualTimeout);
+                return resolve(localResult);
+            }
 
             await fs.unlink(filePath).catch(() => {});
 
