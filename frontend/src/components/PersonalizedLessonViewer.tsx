@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import axios from 'axios';
 import { stripQuizSectionFromMarkdown } from '../utils/quizParser';
+import { API_BASE_URL } from '../config/api';
 
 interface Quiz {
     id: string;
@@ -76,7 +77,7 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
 
         try {
             const res = await axios.post(
-                'http://localhost:3000/api/learning-path/submit-quiz',
+                `${API_BASE_URL}/api/learning-path/submit-quiz`,
                 { quizId, selectedOption },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -102,7 +103,7 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
 
         try {
             const res = await axios.post(
-                'http://localhost:3000/api/learning-path/submit-exercise',
+                `${API_BASE_URL}/api/learning-path/submit-exercise`,
                 {
                     exerciseId: lesson.exercise.id,
                     code

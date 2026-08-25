@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { authService } from '../services/authService';
+import { API_BASE_URL } from '../config/api';
 import type { DBLessonDetail } from '../components/lesson/types';
 import { LessonHeader } from '../components/lesson/LessonHeader';
 import { LessonMeta } from '../components/lesson/LessonMeta';
@@ -37,7 +38,7 @@ const Lesson: React.FC = () => {
         try {
             const token = localStorage.getItem('token');
             await axios.post(
-                `http://localhost:3000/api/auth/lessons/${id}/complete`,
+                `${API_BASE_URL}/api/auth/lessons/${id}/complete`,
                 {},
                 {
                     headers: {

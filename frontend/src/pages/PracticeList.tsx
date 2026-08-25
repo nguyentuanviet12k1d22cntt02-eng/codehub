@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { getInitialTheme } from '../utils/themeHelper';
+import { API_BASE_URL } from '../config/api';
 
 interface Tag {
     id: string;
@@ -84,7 +85,7 @@ const PracticeList: React.FC = () => {
             if (status) params.status = status;
             if (search) params.search = search;
 
-            const response = await axios.get('http://localhost:3000/api/auth/practice/problems', {
+            const response = await axios.get(`${API_BASE_URL}/api/auth/practice/problems`, {
                 headers,
                 params
             });
@@ -101,7 +102,7 @@ const PracticeList: React.FC = () => {
     const fetchLeaderboard = async () => {
         setLeaderboardLoading(true);
         try {
-            const response = await axios.get('http://localhost:3000/api/auth/practice/leaderboard');
+            const response = await axios.get(`${API_BASE_URL}/api/auth/practice/leaderboard`);
             setLeaderboard(response.data);
         } catch (err) {
             console.error('Lỗi khi fetch bảng xếp hạng:', err);

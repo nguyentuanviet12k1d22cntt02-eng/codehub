@@ -5,6 +5,7 @@ import { CourseCard } from '../components/CourseCard';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 // Helper decode JWT
 const decodeToken = (token: string) => {
@@ -60,7 +61,7 @@ const Dashboard: React.FC = () => {
         setRecsLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:3000/api/auth/recommendations?algo=${algoName}&limit=3`, {
+            const response = await axios.get(`${API_BASE_URL}/api/auth/recommendations?algo=${algoName}&limit=3`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

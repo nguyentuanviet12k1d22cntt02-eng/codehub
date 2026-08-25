@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { API_BASE_URL } from '../config/api';
 import { AITutorChat, type ChatMessage } from '../components/AITutorChat';
 
 const QUICK_SUGGESTIONS = [
@@ -46,7 +47,7 @@ const PersonalizedPath: React.FC = () => {
         setChatLoading(true);
         try {
             const res = await axios.post(
-                'http://localhost:3000/api/learning-path/chat/start',
+                `${API_BASE_URL}/api/learning-path/chat/start`,
                 { goal: promptToUse },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -72,7 +73,7 @@ const PersonalizedPath: React.FC = () => {
         setChatLoading(true);
         try {
             const res = await axios.post(
-                'http://localhost:3000/api/learning-path/chat/reply',
+                `${API_BASE_URL}/api/learning-path/chat/reply`,
                 { sessionId: activeSessionId, content: msgText },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -99,7 +100,7 @@ const PersonalizedPath: React.FC = () => {
         setChatLoading(true);
         try {
             const res = await axios.post(
-                'http://localhost:3000/api/learning-path/chat/confirm',
+                `${API_BASE_URL}/api/learning-path/chat/confirm`,
                 { sessionId: activeSessionId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

@@ -8,6 +8,7 @@ import rehypeRaw from 'rehype-raw';
 import axios from 'axios';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { getInitialTheme } from '../utils/themeHelper';
+import { API_BASE_URL } from '../config/api';
 
 interface TestCaseResult {
     id: string;
@@ -97,7 +98,7 @@ const PracticeWorkspace: React.FC = () => {
             setConsoleOutput('Bấm "Chạy thử" để xem đầu ra của testcase tùy chỉnh...');
             
             try {
-                const response = await axios.get(`http://localhost:3000/api/auth/practice/problems/${slug}`);
+                const response = await axios.get(`${API_BASE_URL}/api/auth/practice/problems/${slug}`);
                 const data = response.data;
                 setProblem(data);
                 
@@ -125,7 +126,7 @@ const PracticeWorkspace: React.FC = () => {
         try {
             const token = localStorage.getItem('token');
             if (!token) return;
-            const response = await axios.get(`http://localhost:3000/api/auth/practice/problems/${problem.id}/submissions`, {
+            const response = await axios.get(`${API_BASE_URL}/api/auth/practice/problems/${problem.id}/submissions`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setSubmissions(response.data);
@@ -159,7 +160,7 @@ const PracticeWorkspace: React.FC = () => {
         setActiveTerminalTab('console');
 
         try {
-            const response = await axios.post('http://localhost:3000/api/auth/practice/compiler/run', {
+            const response = await axios.post(`${API_BASE_URL}/api/auth/practice/compiler/run`, {
                 code,
                 language: selectedLanguage,
                 input: customInput
@@ -194,7 +195,7 @@ const PracticeWorkspace: React.FC = () => {
 
         try {
             const response = await axios.post(
-                `http://localhost:3000/api/auth/practice/problems/${problem?.id}/submit`,
+                `${API_BASE_URL}/api/auth/practice/problems/${problem?.id}/submit`,
                 { code, language: selectedLanguage },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

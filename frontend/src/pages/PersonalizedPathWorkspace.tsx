@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { PersonalizedLessonViewer } from '../components/PersonalizedLessonViewer';
+import { API_BASE_URL } from '../config/api';
 
 export const PersonalizedPathWorkspace: React.FC = () => {
     const { pathId } = useParams<{ pathId: string }>();
@@ -28,7 +29,7 @@ export const PersonalizedPathWorkspace: React.FC = () => {
     const fetchPathDetail = async (id: string, authToken: string) => {
         setLoading(true);
         try {
-            const res = await axios.get(`http://localhost:3000/api/learning-path/${id}`, {
+            const res = await axios.get(`${API_BASE_URL}/api/learning-path/${id}`, {
                 headers: { Authorization: `Bearer ${authToken}` }
             });
             if (res.data.success) {

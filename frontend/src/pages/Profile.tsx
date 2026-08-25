@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ThemeToggle } from '../components/ThemeToggle';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 const kcNames: Record<string, string> = {
     'KC_VAR': 'Biến & Kiểu dữ liệu (Variables)',
@@ -60,7 +61,7 @@ const Profile: React.FC = () => {
             }
             try {
                 setLoading(true);
-                const response = await axios.get('http://localhost:3000/api/auth/user-mastery', {
+                const response = await axios.get(`${API_BASE_URL}/api/auth/user-mastery`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setData(response.data);

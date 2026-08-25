@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useQueryClient } from '@tanstack/react-query';
 import { authService } from '../services/authService';
 import { getInitialTheme } from '../utils/themeHelper';
+import { API_BASE_URL } from '../config/api';
 
 import type { ExerciseMock, TestCaseMock, SubmitStats, SubmissionItem } from '../components/practice/types';
 import { PracticeHeader } from '../components/practice/PracticeHeader';
@@ -104,7 +105,7 @@ const Practice: React.FC = () => {
                         await Promise.all(
                             data.codingExercises.map(async (ex: any) => {
                                 try {
-                                    const resSub = await axios.get(`http://localhost:3000/api/auth/exercises/${ex.id}/submissions`, {
+                                    const resSub = await axios.get(`${API_BASE_URL}/api/auth/exercises/${ex.id}/submissions`, {
                                         headers: { Authorization: `Bearer ${token}` }
                                     });
                                     const hasPassed = resSub.data.some((sub: any) => sub.status === 'PASSED');
@@ -188,7 +189,7 @@ const Practice: React.FC = () => {
         if (!exercise) return;
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:3000/api/auth/exercises/${exercise.id}/submissions`, {
+            const response = await axios.get(`${API_BASE_URL}/api/auth/exercises/${exercise.id}/submissions`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setSubmissions(response.data);
@@ -214,7 +215,7 @@ const Practice: React.FC = () => {
 
         try {
             const isSql = lesson?.lessonId?.startsWith('SQL-') || /SELECT|FROM/i.test(code);
-            const response = await axios.post('http://localhost:3000/api/auth/compiler/run', {
+            const response = await axios.post(`${API_BASE_URL}/api/auth/compiler/run`, {
                 code,
                 input: customInput,
                 language: isSql ? 'SQL' : 'PYTHON'
@@ -245,7 +246,7 @@ const Practice: React.FC = () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.post(
-                `http://localhost:3000/api/auth/exercises/${exercise.id}/submit`,
+                `${API_BASE_URL}/api/auth/exercises/${exercise.id}/submit`,
                 { code },
                 {
                     headers: { Authorization: `Bearer ${token}` }

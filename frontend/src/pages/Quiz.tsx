@@ -7,6 +7,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import { API_BASE_URL } from '../config/api';
 
 interface DBQuizOption {
     id: string;
@@ -186,7 +187,7 @@ const Quiz: React.FC = () => {
         try {
             const token = localStorage.getItem('token');
             await axios.post(
-                `http://localhost:3000/api/auth/lessons/${id}/complete`,
+                `${API_BASE_URL}/api/auth/lessons/${id}/complete`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             );

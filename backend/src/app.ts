@@ -18,9 +18,9 @@ dotenv.config();
 const app = express()
 const PORT = Number(process.env.PORT) || 3000
 
-// Cho phép frontend gọi API
+// Cho phép frontend gọi API từ Vercel hoặc localhost
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:8080'],
+    origin: true,
     credentials: true
 }))
 

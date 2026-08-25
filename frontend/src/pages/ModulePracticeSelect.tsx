@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { ThemeToggle } from '../components/ThemeToggle';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 interface DBLesson {
     id: string;
@@ -78,7 +79,7 @@ const ModulePracticeSelect: React.FC = () => {
                         await Promise.all(
                             data.codingExercises.map(async (ex: any) => {
                                 try {
-                                    const resSub = await axios.get(`http://localhost:3000/api/auth/exercises/${ex.id}/submissions`, {
+                                    const resSub = await axios.get(`${API_BASE_URL}/api/auth/exercises/${ex.id}/submissions`, {
                                         headers: { Authorization: `Bearer ${token}` }
                                     });
                                     const hasPassed = resSub.data.some((sub: any) => sub.status === 'PASSED');
