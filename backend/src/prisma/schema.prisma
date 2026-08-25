@@ -97,13 +97,40 @@ model Lesson {
   durationMinutes Int?             @map("duration_minutes")
   isFree          Boolean          @default(false) @map("is_free")
   createdAt       DateTime         @default(now()) @map("created_at")
-  updatedAt       DateTime         @updatedAt @map("updated_at")
-  aiReviews       AIReview[]
-  codingExercises CodingExercise[]
-  lessonProgress  LessonProgress[]
-  chapter         Chapter          @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  updatedAt          DateTime             @updatedAt @map("updated_at")
+  aiReviews          AIReview[]
+  codingExercises    CodingExercise[]
+  quizQuestions      LessonQuizQuestion[]
+  lessonProgress     LessonProgress[]
+  chapter            Chapter              @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
   @@map("lessons")
+}
+
+model LessonQuizQuestion {
+  id          String             @id @default(uuid()) @db.Uuid
+  lessonId    String             @map("lesson_id") @db.Uuid
+  question    String             @db.Text
+  level       String?
+  explanation String?            @db.Text
+  orderIndex  Int                @default(1) @map("order_index")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+  lesson      Lesson             @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  options     LessonQuizOption[]
+
+  @@map("lesson_quiz_questions")
+}
+
+model LessonQuizOption {
+  id         String             @id @default(uuid()) @db.Uuid
+  questionId String             @map("question_id") @db.Uuid
+  key        String
+  text       String             @db.Text
+  isCorrect  Boolean            @default(false) @map("is_correct")
+  question   LessonQuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("lesson_quiz_options")
 }
 
 model CodingExercise {
@@ -292,6 +319,7 @@ enum ProgrammingLanguage {
   JAVASCRIPT
   CPP
   C
+  SQL
 }
 
 enum Gender {

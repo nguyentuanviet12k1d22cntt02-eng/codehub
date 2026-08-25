@@ -29,6 +29,9 @@ const runCodeLocally = async (
         if (language === 'PYTHON') {
             command = process.platform === 'win32' ? 'python' : 'python3';
             args = [filePath];
+        } else if (language === 'SQL') {
+            command = process.platform === 'win32' ? 'python' : 'python3';
+            args = [path.join(__dirname, 'sql_runner.py'), filePath];
         } else if (language === 'JAVASCRIPT') {
             command = 'node';
             args = [filePath];
@@ -118,7 +121,7 @@ const runCodeLocally = async (
 
 export const runCodeInDocker = async (
     userCode: string,
-    language: 'PYTHON' | 'JAVASCRIPT' | 'CPP' | 'C' = 'PYTHON',
+    language: 'PYTHON' | 'JAVASCRIPT' | 'CPP' | 'C' | 'SQL' = 'PYTHON',
     inputData: string = '',
     timeoutMs?: number
 ): Promise<ExecuteResult> => {
@@ -129,7 +132,10 @@ export const runCodeInDocker = async (
     let defaultTimeout = 3000;
     let memoryLimit = '128m';
 
-    if (language === 'JAVASCRIPT') {
+    if (language === 'SQL') {
+        suffix = 'sql';
+        defaultTimeout = 5000;
+    } else if (language === 'JAVASCRIPT') {
         suffix = 'js';
         dockerImage = 'node:18-alpine';
         defaultTimeout = 3000;
@@ -155,6 +161,11 @@ export const runCodeInDocker = async (
 
     // ghi code của user vào filePath
     await fs.writeFile(filePath, userCode, 'utf-8');
+
+    // Đối với SQL, thực thi trực tiếp qua SQLite in-memory sandbox engine nhanh và an toàn
+    if (language === 'SQL') {
+        return runCodeLocally(filePath, language, inputData, actualTimeout);
+    }
 
     // chuyển đường dẫn tuyệt đối dạng windows sang định dạng docker dễ đọc
     const hostDir = temp_dir.replace(/\\/g, '/');

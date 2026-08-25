@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import CourseDetail from "./pages/CourseDetail";
 import Practice from "./pages/Practice";
 import Lesson from "./pages/Lesson";
+import Quiz from "./pages/Quiz";
 import PracticeList from "./pages/PracticeList";
 import PracticeWorkspace from "./pages/PracticeWorkspace";
 import AdaptivePractice from "./pages/AdaptivePractice";
@@ -56,6 +57,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/course/:id" element={<CourseDetail />} />
           <Route path="/lesson/:id" element={<Lesson />} />
+          <Route path="/quiz/:id" element={<Quiz />} />
           <Route path="/practice" element={<Practice />} />
           <Route path="/practice/:id" element={<Practice />} />
           <Route path="/practice-arena" element={<PracticeList />} />

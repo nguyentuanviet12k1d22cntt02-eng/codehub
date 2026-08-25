@@ -4,6 +4,7 @@ import Editor from '@monaco-editor/react';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import axios from 'axios';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { getInitialTheme } from '../utils/themeHelper';
@@ -339,7 +340,14 @@ const PracticeWorkspace: React.FC = () => {
                                     </pre>
                                 </div>
                             ) : activeLeftTab === 'desc' ? (
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    rehypePlugins={[rehypeRaw]}
+                                    components={{
+                                        details: ({ node, ...props }) => <details className="my-3 p-3.5 rounded-xl border border-border-custom bg-bg-tertiary/40 text-xs md:text-sm transition-all" {...props} />,
+                                        summary: ({ node, ...props }) => <summary className="font-semibold text-text-primary hover:text-accent-custom cursor-pointer select-none transition-colors mb-2" {...props} />
+                                    }}
+                                >
                                     {problem.description}
                                 </ReactMarkdown>
                             ) : (

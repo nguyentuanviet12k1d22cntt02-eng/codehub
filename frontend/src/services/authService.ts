@@ -29,5 +29,15 @@ export const authService = {
     getLessonDetail: async (id: string) => {
         const response = await axios.get(`${API_URL}/lesson/${id}`);
         return response.data;
+    },
+
+    getLessonQuiz: async (id: string) => {
+        const response = await axios.get(`${API_URL}/lesson/${id}/quiz`);
+        return response.data;
+    },
+
+    submitLessonQuiz: async (id: string, answers: Record<string, string>) => {
+        const response = await axios.post(`${API_URL}/lesson/${id}/quiz/submit`, { answers });
+        return response.data;
     }
 };

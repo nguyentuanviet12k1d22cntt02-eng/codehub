@@ -3,7 +3,7 @@ import { runCodeInDocker, ExecuteResult } from './sandboxService';
 interface ExecutionJob {
     id: string;
     userCode: string;
-    language: 'PYTHON' | 'JAVASCRIPT' | 'CPP' | 'C';
+    language: 'PYTHON' | 'JAVASCRIPT' | 'CPP' | 'C' | 'SQL';
     inputData: string;
     timeoutMs: number;
     resolve: (value: ExecuteResult) => void;
@@ -25,7 +25,7 @@ class CodeExecutionQueue {
      */
     public pushJob(
         userCode: string,
-        language: 'PYTHON' | 'JAVASCRIPT' | 'CPP' | 'C' = 'PYTHON',
+        language: 'PYTHON' | 'JAVASCRIPT' | 'CPP' | 'C' | 'SQL' = 'PYTHON',
         inputData: string = '',
         timeoutMs?: number
     ): Promise<ExecuteResult> {

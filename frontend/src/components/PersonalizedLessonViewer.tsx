@@ -3,6 +3,7 @@ import Editor from '@monaco-editor/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import axios from 'axios';
+import { stripQuizSectionFromMarkdown } from '../utils/quizParser';
 
 interface Quiz {
     id: string;
@@ -192,7 +193,7 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                                 prose-blockquote:border-l-4 prose-blockquote:border-cyan-500 prose-blockquote:bg-cyan-950/20 prose-blockquote:p-4 prose-blockquote:rounded-r-xl prose-blockquote:text-cyan-200"
                             >
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                    {lesson.theoryContent}
+                                    {stripQuizSectionFromMarkdown(lesson.theoryContent)}
                                 </ReactMarkdown>
                             </article>
                         </div>
@@ -226,9 +227,34 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                                             <span className="px-2.5 py-1 rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs font-mono font-bold shrink-0">
                                                 CÂU {idx + 1}
                                             </span>
-                                            <h4 className="text-sm md:text-base font-bold text-white leading-snug">
-                                                {q.question}
-                                            </h4>
+                                            <div className="text-sm md:text-base font-bold text-white leading-snug flex-1">
+                                                <ReactMarkdown
+                                                    remarkPlugins={[remarkGfm]}
+                                                    components={{
+                                                        p: ({ node, ...props }) => <p className="mb-2 last:mb-0 leading-relaxed" {...props} />,
+                                                        code: ({ node, className, children, ...props }) => {
+                                                            const contentStr = String(children || '');
+                                                            const hasNewline = contentStr.includes('\n');
+                                                            const match = /language-(\w+)/.exec(className || '');
+                                                            const isInline = !match && !hasNewline;
+
+                                                            return isInline ? (
+                                                                <code className="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-1.5 py-0.5 rounded font-mono text-xs font-semibold mx-0.5" {...props}>
+                                                                    {children}
+                                                                </code>
+                                                            ) : (
+                                                                <pre className="p-3 my-2 bg-[#060911] border border-white/10 rounded-xl overflow-x-auto text-xs font-mono text-cyan-200">
+                                                                    <code className={className} {...props}>
+                                                                        {children}
+                                                                    </code>
+                                                                </pre>
+                                                            );
+                                                        }
+                                                    }}
+                                                >
+                                                    {q.question}
+                                                </ReactMarkdown>
+                                            </div>
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">

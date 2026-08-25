@@ -1,4 +1,4 @@
-import { prisma } from './src/config/prisma';
+import { prisma } from '../config/prisma';
 
 async function check() {
     const userId = "19fac5ca-b6ee-4790-8c88-392bdf4136e9";
@@ -18,7 +18,7 @@ async function check() {
     });
 
     console.log(`Submissions count: ${submissions.length}`);
-    submissions.forEach(sub => {
+    submissions.forEach((sub: any) => {
         console.log(`Sub: ${sub.id} | Exercise: ${sub.exercise?.title} | Status: ${sub.status} | Lesson: ${sub.exercise?.lessonId}`);
     });
 }

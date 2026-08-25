@@ -210,3 +210,83 @@ export const completeLesson = async (req: Request, res: Response, next: NextFunc
         next(error);
     }
 };
+
+// Lấy danh sách câu hỏi trắc nghiệm của bài học (Không trả về isCorrect để bảo mật)
+export const getLessonQuiz = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const id = req.params.id as string;
+
+        const questions = await prisma.lessonQuizQuestion.findMany({
+            where: { lessonId: id },
+            orderBy: { orderIndex: 'asc' },
+            include: {
+                options: {
+                    select: {
+                        id: true,
+                        key: true,
+                        text: true
+                    },
+                    orderBy: { key: 'asc' }
+                }
+            }
+        });
+
+        res.status(200).json({
+            success: true,
+            total: questions.length,
+            questions
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Chấm điểm bài trắc nghiệm và trả về kết quả kèm lời giải thích
+export const submitLessonQuiz = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const id = req.params.id as string;
+        const { answers } = req.body; // { [questionId]: 'A' | 'B' | 'C' | 'D' }
+
+        if (!answers || typeof answers !== 'object') {
+            res.status(400).json({ error: "Dữ liệu câu trả lời không hợp lệ." });
+            return;
+        }
+
+        const questions = await prisma.lessonQuizQuestion.findMany({
+            where: { lessonId: id },
+            include: {
+                options: true
+            },
+            orderBy: { orderIndex: 'asc' }
+        });
+
+        let correctCount = 0;
+        const results = questions.map(q => {
+            const selectedKey = answers[q.id] || null;
+            const correctOpt = q.options.find(o => o.isCorrect);
+            const correctKey = correctOpt ? correctOpt.key : 'A';
+            const isCorrect = selectedKey === correctKey;
+
+            if (isCorrect) {
+                correctCount++;
+            }
+
+            return {
+                questionId: q.id,
+                selectedKey,
+                correctKey,
+                isCorrect,
+                explanation: q.explanation || 'Chúc mừng bạn đã chọn đáp án chính xác!'
+            };
+        });
+
+        res.status(200).json({
+            success: true,
+            score: correctCount,
+            total: questions.length,
+            results
+        });
+    } catch (error) {
+        next(error);
+    }
+};

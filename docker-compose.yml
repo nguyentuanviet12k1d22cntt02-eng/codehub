@@ -29,9 +29,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - app-network
-    depends_on:
-      ai-service:
-        condition: service_healthy
     restart: always
 
   ai-service:

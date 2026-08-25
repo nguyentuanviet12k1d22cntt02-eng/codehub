@@ -6,19 +6,20 @@ import { AuthenticatedRequest } from '../middlewares/auth';
 // Chạy thử code (không lưu database)
 export const runCodeDynamic = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { code, input } = req.body;
+        const { code, input, language } = req.body;
 
         if (!code) {
             res.status(400).json({ error: "Mã nguồn không được để trống!" });
             return;
         }
 
-        const result = await codeExecutionQueue.pushJob(code, 'PYTHON', input || '', 5000);
+        const execLanguage = language || (/SELECT|FROM|WHERE|INSERT|UPDATE|DELETE/i.test(code) ? 'SQL' : 'PYTHON');
+        const result = await codeExecutionQueue.pushJob(code, execLanguage as any, input || '', 5000);
 
         if (result.status === 'TIMEOUT') {
             res.status(200).json({
                 success: false,
-                output: "Lỗi: Chương trình chạy quá thời gian cho phép (Timeout 3s). Vui lòng kiểm tra xem có vòng lặp vô hạn hay không."
+                output: "Lỗi: Chương trình chạy quá thời gian cho phép (Timeout 5s)."
             });
             return;
         }
@@ -140,10 +141,10 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
             return;
         }
 
-        // 1. Lấy thông tin bài tập cùng testcases (ép kiểu any để tránh lỗi TypeScript với nested include)
+        // 1. Lấy thông tin bài tập cùng testcases
         const exercise = await prisma.codingExercise.findUnique({
             where: { id },
-            include: { testCases: true }
+            include: { testCases: true, lesson: true }
         }) as any;
 
         if (!exercise) {
@@ -151,22 +152,27 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
             return;
         }
 
-        // 2. Kiểm tra ràng buộc biến tĩnh (Review 3)
-        const constraintError = validateCodeConstraints(exercise.title, code);
-        if (constraintError) {
-            res.status(200).json({
-                success: true,
-                allPassed: false,
-                message: constraintError,
-                results: (exercise.testCases || []).map((tc: any) => ({
-                    id: tc.id,
-                    input: tc.input,
-                    expectedOutput: tc.expectedOutput,
-                    actualOutput: `[Lỗi chấm bài] ${constraintError}`,
-                    passed: false
-                }))
-            });
-            return;
+        const isSqlExercise = exercise.lesson?.lessonId?.startsWith('SQL-') || /SELECT|FROM|WHERE/i.test(code);
+        const execLanguage = isSqlExercise ? 'SQL' : 'PYTHON';
+
+        // 2. Kiểm tra ràng buộc biến tĩnh (Review 3) chỉ khi là bài tập Python
+        if (!isSqlExercise) {
+            const constraintError = validateCodeConstraints(exercise.title, code);
+            if (constraintError) {
+                res.status(200).json({
+                    success: true,
+                    allPassed: false,
+                    message: constraintError,
+                    results: (exercise.testCases || []).map((tc: any) => ({
+                        id: tc.id,
+                        input: tc.input,
+                        expectedOutput: tc.expectedOutput,
+                        actualOutput: `[Lỗi chấm bài] ${constraintError}`,
+                        passed: false
+                    }))
+                });
+                return;
+            }
         }
 
         // 3. Thực thi song song tất cả các testcase trong môi trường Sandbox/Local
@@ -176,7 +182,7 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
         const results = await Promise.all(
             (exercise.testCases || []).map(async (tc: any) => {
                 try {
-                    const result = await codeExecutionQueue.pushJob(code, 'PYTHON', tc.input, 5000);
+                    const result = await codeExecutionQueue.pushJob(code, execLanguage as any, tc.input, 5000);
                     totalRuntime += result.runtimeMs;
 
                     if (result.status === 'TIMEOUT') {
@@ -184,23 +190,17 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
                             id: tc.id,
                             input: tc.input,
                             expectedOutput: tc.expectedOutput,
-                            actualOutput: "Lỗi: Quá thời gian thực thi (3s)",
+                            actualOutput: "Lỗi: Quá thời gian thực thi (5s)",
                             passed: false
                         };
                     }
 
                     const matchOutput = (act: string, exp: string): boolean => {
-                        const cleanActual = act.replace(/\r\n/g, '\n').trim();
-                        const cleanExpected = exp.replace(/\r\n/g, '\n').trim();
+                        const cleanActual = act.replace(/\r\n/g, '\n').trim().replace(/\s+/g, ' ');
+                        const cleanExpected = exp.replace(/\r\n/g, '\n').trim().replace(/\s+/g, ' ');
                         if (cleanActual === cleanExpected) return true;
                         if (cleanActual.endsWith(cleanExpected)) {
-                            const prefixLen = cleanActual.length - cleanExpected.length;
-                            if (prefixLen > 0) {
-                                const boundary = cleanActual[prefixLen - 1];
-                                if (/\s|:|：|>|\)|\]/.test(boundary)) {
-                                    return true;
-                                }
-                            }
+                            return true;
                         }
                         return false;
                     };
@@ -244,7 +244,7 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
                 userId,
                 exerciseId: id,
                 code,
-                language: 'PYTHON',
+                language: execLanguage as any,
                 status: allPassed ? 'PASSED' : 'FAILED',
                 runtime: normalizedRuntime
             }
