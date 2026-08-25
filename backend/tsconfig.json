@@ -17,10 +17,19 @@
     ]
   },
   "include": [
-    "src/**/*"
+    "src/app.ts",
+    "src/config/**/*",
+    "src/controllers/**/*",
+    "src/middlewares/**/*",
+    "src/routes/**/*",
+    "src/services/**/*",
+    "src/types/**/*"
   ],
   "exclude": [
     "node_modules",
-    "src/scripts/**/*"
+    "dist",
+    "src/scripts",
+    "src/scripts/**/*",
+    "src/prisma"
   ]
 }
