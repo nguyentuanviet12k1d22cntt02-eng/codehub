@@ -24,6 +24,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import UserDetail from "./pages/admin/UserDetail";
 import CourseManagement from "./pages/admin/CourseManagement";
+import CurriculumManagement from "./pages/admin/CurriculumManagement";
 import SubmissionManagement from "./pages/admin/SubmissionManagement";
 import PracticeProblemManagement from "./pages/admin/PracticeProblemManagement";
 import Analytics from "./pages/admin/Analytics";
@@ -77,6 +78,7 @@ function App() {
             <Route path="users" element={<UserManagement />} />
             <Route path="users/:id" element={<UserDetail />} />
             <Route path="courses" element={<CourseManagement />} />
+            <Route path="curriculum" element={<CurriculumManagement />} />
             <Route path="submissions" element={<SubmissionManagement />} />
             <Route path="practice-problems" element={<PracticeProblemManagement />} />
           </Route>

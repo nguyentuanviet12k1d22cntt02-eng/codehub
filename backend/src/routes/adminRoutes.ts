@@ -12,7 +12,25 @@ import {
     getAllSubmissions,
     getAllPracticeProblemsAdmin,
     deletePracticeProblem,
-    getSystemActivity
+    getSystemActivity,
+    getCurriculumTreeAdmin,
+    getAllLessonsAdmin,
+    getLessonDetailAdmin,
+    createLessonAdmin,
+    updateLessonAdmin,
+    deleteLessonAdmin,
+    getExercisesByLessonAdmin,
+    createExerciseAdmin,
+    updateExerciseAdmin,
+    deleteExerciseAdmin,
+    getTestCasesByExerciseAdmin,
+    createTestCaseAdmin,
+    updateTestCaseAdmin,
+    deleteTestCaseAdmin,
+    getQuizzesByLessonAdmin,
+    createQuizQuestionAdmin,
+    updateQuizQuestionAdmin,
+    deleteQuizQuestionAdmin
 } from '../controllers/adminController';
 import {
     getUserGrowthStats,
@@ -57,5 +75,31 @@ router.get('/submissions', getAllSubmissions);
 // ============ PRACTICE PROBLEM MANAGEMENT ============
 router.get('/practice-problems', getAllPracticeProblemsAdmin);
 router.delete('/practice-problems/:id', deletePracticeProblem);
+
+// ============ CURRICULUM & LESSONS ============
+router.get('/curriculum-tree', getCurriculumTreeAdmin);
+router.get('/lessons', getAllLessonsAdmin);
+router.get('/lessons/:id', getLessonDetailAdmin);
+router.post('/lessons', createLessonAdmin);
+router.put('/lessons/:id', updateLessonAdmin);
+router.delete('/lessons/:id', deleteLessonAdmin);
+
+// ============ CODING EXERCISES ============
+router.get('/exercises', getExercisesByLessonAdmin);
+router.post('/exercises', createExerciseAdmin);
+router.put('/exercises/:id', updateExerciseAdmin);
+router.delete('/exercises/:id', deleteExerciseAdmin);
+
+// ============ TEST CASES ============
+router.get('/exercises/:exerciseId/testcases', getTestCasesByExerciseAdmin);
+router.post('/testcases', createTestCaseAdmin);
+router.put('/testcases/:id', updateTestCaseAdmin);
+router.delete('/testcases/:id', deleteTestCaseAdmin);
+
+// ============ QUIZZES & OPTIONS ============
+router.get('/quizzes', getQuizzesByLessonAdmin);
+router.post('/quizzes', createQuizQuestionAdmin);
+router.put('/quizzes/:id', updateQuizQuestionAdmin);
+router.delete('/quizzes/:id', deleteQuizQuestionAdmin);
 
 export default router;

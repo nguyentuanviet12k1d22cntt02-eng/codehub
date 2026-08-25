@@ -74,7 +74,8 @@ export default function AdminLayout() {
                         </div>
 
                         <NavLink to="/admin/users" active={location.pathname.startsWith('/admin/users')} icon={<i className="fa-solid fa-user-group"></i>} badge="1.4k">Học Viên</NavLink>
-                        <NavLink to="/admin/courses" active={location.pathname.startsWith('/admin/courses')} icon={<i className="fa-solid fa-book-open"></i>} badge="Active">Khóa Học</NavLink>
+                        <NavLink to="/admin/courses" active={location.pathname === '/admin/courses'} icon={<i className="fa-solid fa-book-open"></i>} badge="Active">Khóa Học</NavLink>
+                        <NavLink to="/admin/curriculum" active={location.pathname.startsWith('/admin/curriculum')} icon={<i className="fa-solid fa-list-check"></i>} badge="Core">Bài Học & Test Cases</NavLink>
                         <NavLink to="/admin/submissions" active={location.pathname.startsWith('/admin/submissions')} icon={<i className="fa-solid fa-paper-plane"></i>}>Submissions</NavLink>
                         <NavLink to="/admin/practice-problems" active={location.pathname.startsWith('/admin/practice-problems')} icon={<i className="fa-solid fa-laptop-code"></i>} badge="Hot">Bài Tập</NavLink>
                     </nav>
