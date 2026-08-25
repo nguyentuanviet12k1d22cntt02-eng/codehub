@@ -754,9 +754,21 @@ export const getCurriculumTreeAdmin = async (req: Request, res: Response) => {
 // ============ LESSON CRUD ============
 export const getAllLessonsAdmin = async (req: Request, res: Response) => {
     try {
-        const { chapterId, search } = req.query;
+        const { courseId, moduleId, chapterId, search, isModulePractice } = req.query;
         const where: any = {};
-        if (chapterId && typeof chapterId === 'string') where.chapterId = chapterId;
+
+        if (chapterId && typeof chapterId === 'string') {
+            where.chapterId = chapterId;
+        } else if (moduleId && typeof moduleId === 'string') {
+            where.chapter = { moduleId };
+        } else if (courseId && typeof courseId === 'string') {
+            where.chapter = { module: { courseId } };
+        }
+
+        if (isModulePractice === 'true') {
+            where.lessonId = { contains: '.MP' };
+        }
+
         if (search && typeof search === 'string') {
             where.OR = [
                 { title: { contains: search, mode: 'insensitive' } },

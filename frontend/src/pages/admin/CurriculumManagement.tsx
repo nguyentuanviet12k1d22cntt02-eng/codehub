@@ -85,9 +85,11 @@ export default function CurriculumManagement() {
     const [tree, setTree] = useState<CourseNode[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
-    // Selected hierarchy state
+    // 4-Level Hierarchy Filters
     const [selectedCourseId, setSelectedCourseId] = useState<string>('');
-    const [selectedChapterId, setSelectedChapterId] = useState<string>('');
+    const [selectedModuleId, setSelectedModuleId] = useState<string>('');
+    const [selectedChapterId, setSelectedChapterId] = useState<string>('ALL');
+    const [lessonTypeFilter, setLessonTypeFilter] = useState<'ALL' | 'NORMAL' | 'MODULE_PRACTICE'>('ALL');
     const [selectedLessonId, setSelectedLessonId] = useState<string>('');
 
     // Lessons state
@@ -137,12 +139,12 @@ export default function CurriculumManagement() {
             if (Array.isArray(data)) {
                 setTree(data);
                 if (data.length > 0 && !selectedCourseId) {
-                    setSelectedCourseId(data[0].id);
-                    if (data[0].modules?.[0]?.chapters?.[0]) {
-                        setSelectedChapterId(data[0].modules[0].chapters[0].id);
-                        if (data[0].modules[0].chapters[0].lessons?.[0]) {
-                            setSelectedLessonId(data[0].modules[0].chapters[0].lessons[0].id);
-                        }
+                    const firstCourse = data[0];
+                    setSelectedCourseId(firstCourse.id);
+                    if (firstCourse.modules?.[0]) {
+                        const firstMod = firstCourse.modules[0];
+                        setSelectedModuleId(firstMod.id);
+                        setSelectedChapterId('ALL');
                     }
                 }
             } else {
@@ -160,12 +162,12 @@ export default function CurriculumManagement() {
         fetchTree();
     }, []);
 
-    // Load lessons when chapter changes
+    // Load lessons when filters change
     useEffect(() => {
-        if (selectedChapterId) {
-            fetchLessons(selectedChapterId);
+        if (selectedModuleId || selectedChapterId) {
+            fetchLessons(selectedModuleId, selectedChapterId, lessonTypeFilter);
         }
-    }, [selectedChapterId]);
+    }, [selectedCourseId, selectedModuleId, selectedChapterId, lessonTypeFilter]);
 
     // Load exercises and quizzes when lesson changes
     useEffect(() => {
@@ -175,15 +177,43 @@ export default function CurriculumManagement() {
         }
     }, [selectedLessonId]);
 
-    const fetchLessons = async (chapterId: string) => {
+    const fetchLessons = async (moduleId: string, chapterId: string, filterType: string) => {
         try {
-            const res = await fetch(`${API_BASE_URL}/api/admin/lessons?chapterId=${chapterId}`, {
+            let url = `${API_BASE_URL}/api/admin/lessons?`;
+            const params: string[] = [];
+
+            if (chapterId && chapterId !== 'ALL') {
+                params.push(`chapterId=${chapterId}`);
+            } else if (moduleId) {
+                params.push(`moduleId=${moduleId}`);
+            } else if (selectedCourseId) {
+                params.push(`courseId=${selectedCourseId}`);
+            }
+
+            if (filterType === 'MODULE_PRACTICE') {
+                params.push(`isModulePractice=true`);
+            }
+
+            url += params.join('&');
+
+            const res = await fetch(url, {
                 headers: getAuthHeaders()
             });
             const data = await res.json();
-            setLessons(data);
-            if (data.length > 0 && !selectedLessonId) {
-                setSelectedLessonId(data[0].id);
+            let result = Array.isArray(data) ? data : [];
+
+            if (filterType === 'NORMAL') {
+                result = result.filter(l => !l.lessonId || !l.lessonId.includes('.MP'));
+            }
+
+            setLessons(result);
+            if (result.length > 0) {
+                const stillExists = result.some(l => l.id === selectedLessonId);
+                if (!stillExists) {
+                    setSelectedLessonId(result[0].id);
+                }
+            } else {
+                setSelectedLessonId('');
             }
         } catch (err: any) {
             showToast('Lỗi khi tải danh sách bài học');
@@ -196,9 +226,10 @@ export default function CurriculumManagement() {
                 headers: getAuthHeaders()
             });
             const data = await res.json();
-            setExercises(data);
-            if (data.length > 0) {
-                setSelectedExerciseForTC(data[0]);
+            const exList = Array.isArray(data) ? data : [];
+            setExercises(exList);
+            if (exList.length > 0) {
+                setSelectedExerciseForTC(exList[0]);
             } else {
                 setSelectedExerciseForTC(null);
             }
@@ -213,7 +244,7 @@ export default function CurriculumManagement() {
                 headers: getAuthHeaders()
             });
             const data = await res.json();
-            setQuizzes(data);
+            setQuizzes(Array.isArray(data) ? data : []);
         } catch (err: any) {
             showToast('Lỗi khi tải câu hỏi trắc nghiệm');
         }
@@ -231,9 +262,16 @@ export default function CurriculumManagement() {
                 : `${API_BASE_URL}/api/admin/lessons`;
             const method = isEdit ? 'PUT' : 'POST';
 
+            const effectiveChapterId = editingLesson.chapterId || (selectedChapterId !== 'ALL' ? selectedChapterId : currentModuleChapters[0]?.id);
+
+            if (!effectiveChapterId) {
+                showToast('Vui lòng chọn một chương học cho bài học này');
+                return;
+            }
+
             const payload = {
                 ...editingLesson,
-                chapterId: selectedChapterId
+                chapterId: effectiveChapterId
             };
 
             const res = await fetch(url, {
@@ -245,7 +283,7 @@ export default function CurriculumManagement() {
             if (res.ok) {
                 showToast(isEdit ? 'Đã cập nhật bài học thành công' : 'Đã tạo bài học mới thành công');
                 setIsLessonModalOpen(false);
-                fetchLessons(selectedChapterId);
+                fetchLessons(selectedModuleId, selectedChapterId, lessonTypeFilter);
                 fetchTree();
             } else {
                 const err = await res.json();
@@ -265,7 +303,7 @@ export default function CurriculumManagement() {
             });
             if (res.ok) {
                 showToast('Đã xóa bài học thành công');
-                fetchLessons(selectedChapterId);
+                fetchLessons(selectedModuleId, selectedChapterId, lessonTypeFilter);
                 fetchTree();
             } else {
                 showToast('Lỗi khi xóa bài học');
@@ -437,9 +475,12 @@ export default function CurriculumManagement() {
         }
     };
 
+    // Tree navigation helpers
     const currentCourse = tree.find(c => c.id === selectedCourseId);
-    const allChapters = currentCourse?.modules.flatMap(m => m.chapters) || [];
-    const currentChapter = allChapters.find(ch => ch.id === selectedChapterId);
+    const currentCourseModules = currentCourse?.modules || [];
+    const currentModule = currentCourseModules.find(m => m.id === selectedModuleId);
+    const currentModuleChapters = currentModule?.chapters || [];
+    const currentChapter = currentModuleChapters.find(ch => ch.id === selectedChapterId);
     const currentLesson = lessons.find(l => l.id === selectedLessonId);
 
     return (
@@ -451,7 +492,7 @@ export default function CurriculumManagement() {
                         Quản Lý Nội Dung & Bài Tập
                     </h1>
                     <p className="text-sm text-text-secondary mt-1">
-                        {loading ? 'Đang đồng bộ dữ liệu khóa học...' : 'Hệ thống biên soạn bài học, bài tập tự luận, quản lý test cases và câu hỏi trắc nghiệm.'}
+                        {loading ? 'Đang đồng bộ dữ liệu khóa học...' : 'Hệ thống biên soạn bài học, bài tập thực hành theo từng Module, Chapter và Test Cases.'}
                     </p>
                 </div>
 
@@ -490,12 +531,12 @@ export default function CurriculumManagement() {
                 </div>
             </div>
 
-            {/* Filter Hierarchy Bar */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-bg-secondary p-4 rounded-xl border border-border-custom">
-                {/* Course Select */}
+            {/* 4-LEVEL HIERARCHY FILTER BAR */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-bg-secondary p-4 rounded-xl border border-border-custom">
+                {/* 1. Course Select */}
                 <div>
                     <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
-                        Khóa học
+                        1. Khóa học
                     </label>
                     <select
                         value={selectedCourseId}
@@ -503,15 +544,17 @@ export default function CurriculumManagement() {
                             const cId = e.target.value;
                             setSelectedCourseId(cId);
                             const foundCourse = tree.find(c => c.id === cId);
-                            const firstChapter = foundCourse?.modules[0]?.chapters[0];
-                            if (firstChapter) {
-                                setSelectedChapterId(firstChapter.id);
+                            const firstMod = foundCourse?.modules?.[0];
+                            if (firstMod) {
+                                setSelectedModuleId(firstMod.id);
+                                setSelectedChapterId('ALL');
                             } else {
-                                setSelectedChapterId('');
+                                setSelectedModuleId('');
+                                setSelectedChapterId('ALL');
                                 setSelectedLessonId('');
                             }
                         }}
-                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-custom"
+                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-xs font-semibold text-text-primary focus:outline-none focus:border-accent-custom"
                     >
                         {tree.map(c => (
                             <option key={c.id} value={c.id}>
@@ -521,17 +564,40 @@ export default function CurriculumManagement() {
                     </select>
                 </div>
 
-                {/* Chapter Select */}
+                {/* 2. Module Select */}
                 <div>
                     <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
-                        Chương học
+                        2. Module (Học phần)
+                    </label>
+                    <select
+                        value={selectedModuleId}
+                        onChange={(e) => {
+                            const mId = e.target.value;
+                            setSelectedModuleId(mId);
+                            setSelectedChapterId('ALL');
+                        }}
+                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-xs font-semibold text-text-primary focus:outline-none focus:border-accent-custom"
+                    >
+                        {currentCourseModules.map(m => (
+                            <option key={m.id} value={m.id}>
+                                {m.title}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* 3. Chapter Select */}
+                <div>
+                    <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+                        3. Chương học (Chapter)
                     </label>
                     <select
                         value={selectedChapterId}
                         onChange={(e) => setSelectedChapterId(e.target.value)}
-                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-custom"
+                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-xs font-semibold text-text-primary focus:outline-none focus:border-accent-custom"
                     >
-                        {allChapters.map(ch => (
+                        <option value="ALL">Toàn bộ chương trong Module</option>
+                        {currentModuleChapters.map(ch => (
                             <option key={ch.id} value={ch.id}>
                                 {ch.title}
                             </option>
@@ -539,15 +605,15 @@ export default function CurriculumManagement() {
                     </select>
                 </div>
 
-                {/* Lesson Select */}
+                {/* 4. Lesson Select */}
                 <div>
                     <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
-                        Bài học đang chọn
+                        4. Bài học đang chọn
                     </label>
                     <select
                         value={selectedLessonId}
                         onChange={(e) => setSelectedLessonId(e.target.value)}
-                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-custom"
+                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-xs font-semibold text-text-primary focus:outline-none focus:border-accent-custom"
                     >
                         {lessons.map(l => (
                             <option key={l.id} value={l.id}>
@@ -558,24 +624,72 @@ export default function CurriculumManagement() {
                 </div>
             </div>
 
+            {/* Quick Type Filter Bar (All vs Normal vs Module Practice) */}
+            <div className="flex flex-wrap items-center justify-between gap-3 bg-bg-secondary px-4 py-3 rounded-xl border border-border-custom">
+                <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-text-secondary mr-1">
+                        Lọc theo loại:
+                    </span>
+                    <button
+                        onClick={() => setLessonTypeFilter('ALL')}
+                        className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                            lessonTypeFilter === 'ALL'
+                                ? 'bg-bg-tertiary text-text-primary border border-border-custom shadow-sm'
+                                : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                    >
+                        Tất cả ({lessons.length})
+                    </button>
+                    <button
+                        onClick={() => setLessonTypeFilter('NORMAL')}
+                        className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                            lessonTypeFilter === 'NORMAL'
+                                ? 'bg-bg-tertiary text-text-primary border border-border-custom shadow-sm'
+                                : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                    >
+                        Bài học lý thuyết
+                    </button>
+                    <button
+                        onClick={() => setLessonTypeFilter('MODULE_PRACTICE')}
+                        className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                            lessonTypeFilter === 'MODULE_PRACTICE'
+                                ? 'bg-accent-custom/20 text-accent-custom border border-accent-border shadow-sm'
+                                : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                    >
+                        Luyện tập tổng hợp Module (.MP)
+                    </button>
+                </div>
+
+                <div className="text-xs text-text-secondary">
+                    Phạm vi: <span className="font-semibold text-text-primary">{currentModule?.title || 'Chưa chọn'}</span>
+                    {selectedChapterId !== 'ALL' && (
+                        <span> &rarr; <span className="font-semibold text-text-primary">{currentChapter?.title}</span></span>
+                    )}
+                </div>
+            </div>
+
             {/* TAB 1: LESSONS MANAGEMENT */}
             {activeTab === 'lessons' && (
                 <div className="space-y-4">
                     <div className="flex justify-between items-center">
                         <div className="text-sm font-semibold text-text-secondary">
-                            Danh sách bài học trong chương: <span className="text-text-primary">{currentChapter?.title || 'Chưa chọn'}</span>
+                            Danh sách bài học & ôn tập ({lessons.length} mục)
                         </div>
                         <button
                             onClick={() => {
+                                const isMP = lessonTypeFilter === 'MODULE_PRACTICE';
+                                const defaultChapterId = selectedChapterId !== 'ALL' ? selectedChapterId : currentModuleChapters[0]?.id || '';
                                 setEditingLesson({
                                     id: '',
-                                    chapterId: selectedChapterId,
-                                    lessonId: `LS-${Date.now().toString().slice(-6)}`,
-                                    title: '',
+                                    chapterId: defaultChapterId,
+                                    lessonId: isMP ? `LS-0${currentModule?.orderIndex || 1}.MP` : `LS-${Date.now().toString().slice(-6)}`,
+                                    title: isMP ? `Bài tập thực hành tổng hợp ${currentModule?.title?.split(':')[0] || 'Module'}` : '',
                                     difficulty: 'EASY',
-                                    durationMinutes: 10,
-                                    content: '# 1. Lý thuyết cốt lõi\n\nNội dung lý thuyết...\n\n# 2. Cú pháp & Code mẫu\n\n```python\nprint("Hello")\n```',
-                                    objective: '',
+                                    durationMinutes: isMP ? 45 : 15,
+                                    content: isMP ? '# Ôn Luyện Tổng Hợp\n\nNội dung ôn luyện tổng hợp...' : '# 1. Lý thuyết cốt lõi\n\nNội dung lý thuyết...\n\n# 2. Cú pháp & Code mẫu\n\n```python\nprint("Hello")\n```',
+                                    objective: isMP ? `Tổng hợp kiến thức ${currentModule?.title || 'Module'} thông qua các bài tập nâng cao.` : '',
                                     keyKnowledge: '',
                                     orderIndex: lessons.length + 1,
                                     isFree: false
@@ -584,7 +698,7 @@ export default function CurriculumManagement() {
                             }}
                             className="bg-accent-custom hover:bg-accent-hover text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm"
                         >
-                            Tạo Bài Học Mới
+                            Tạo Bài Học / Ôn Luyện Mới
                         </button>
                     </div>
 
@@ -595,9 +709,10 @@ export default function CurriculumManagement() {
                                     <tr className="border-b border-border-custom bg-bg-tertiary text-text-secondary text-xs uppercase tracking-wider">
                                         <th className="p-4 font-semibold">STT</th>
                                         <th className="p-4 font-semibold">Mã Bài</th>
+                                        <th className="p-4 font-semibold">Phân Loại</th>
                                         <th className="p-4 font-semibold">Tiêu Đề Bài Học</th>
+                                        <th className="p-4 font-semibold">Chương Trực Thuộc</th>
                                         <th className="p-4 font-semibold">Độ Khó</th>
-                                        <th className="p-4 font-semibold">Thời Lượng</th>
                                         <th className="p-4 font-semibold">Bài Tập / Quiz</th>
                                         <th className="p-4 font-semibold text-right">Thao Tác</th>
                                     </tr>
@@ -605,63 +720,79 @@ export default function CurriculumManagement() {
                                 <tbody className="divide-y divide-border-custom text-sm">
                                     {lessons.length === 0 ? (
                                         <tr>
-                                            <td colSpan={7} className="p-8 text-center text-text-secondary">
-                                                Chưa có bài học nào trong chương này.
+                                            <td colSpan={8} className="p-8 text-center text-text-secondary">
+                                                Chưa có bài học nào trong phạm vi đang chọn.
                                             </td>
                                         </tr>
                                     ) : (
-                                        lessons.map((l, idx) => (
-                                            <tr
-                                                key={l.id}
-                                                className={`hover:bg-bg-tertiary/50 transition-colors ${
-                                                    selectedLessonId === l.id ? 'bg-accent-custom/5 font-medium' : ''
-                                                }`}
-                                            >
-                                                <td className="p-4 text-text-secondary">{l.orderIndex || idx + 1}</td>
-                                                <td className="p-4 font-mono text-xs text-accent-custom font-bold">
-                                                    {l.lessonId || 'N/A'}
-                                                </td>
-                                                <td className="p-4 text-text-primary">
-                                                    <div className="font-semibold">{l.title}</div>
-                                                    <div className="text-xs text-text-secondary truncate max-w-md">
-                                                        {l.objective || 'Chưa có mục tiêu'}
-                                                    </div>
-                                                </td>
-                                                <td className="p-4">
-                                                    <span className={`text-[11px] px-2 py-0.5 rounded font-semibold border ${
-                                                        l.difficulty === 'EASY'
-                                                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
-                                                            : l.difficulty === 'MEDIUM'
-                                                            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
-                                                            : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
-                                                    }`}>
-                                                        {l.difficulty || 'EASY'}
-                                                    </span>
-                                                </td>
-                                                <td className="p-4 text-text-secondary">{l.durationMinutes || 10} phút</td>
-                                                <td className="p-4 text-xs text-text-secondary font-mono">
-                                                    {l._count?.codingExercises || 0} bài tập / {l._count?.quizQuestions || 0} quiz
-                                                </td>
-                                                <td className="p-4 text-right space-x-2">
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedLessonId(l.id);
-                                                            setEditingLesson(l);
-                                                            setIsLessonModalOpen(true);
-                                                        }}
-                                                        className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border-custom hover:bg-bg-tertiary text-text-primary transition-colors"
-                                                    >
-                                                        Chỉnh Sửa
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteLesson(l.id)}
-                                                        className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                                                    >
-                                                        Xóa
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))
+                                        lessons.map((l, idx) => {
+                                            const isMP = l.lessonId && l.lessonId.includes('.MP');
+                                            return (
+                                                <tr
+                                                    key={l.id}
+                                                    className={`hover:bg-bg-tertiary/50 transition-colors ${
+                                                        selectedLessonId === l.id ? 'bg-accent-custom/5 font-medium' : ''
+                                                    }`}
+                                                >
+                                                    <td className="p-4 text-text-secondary">{l.orderIndex || idx + 1}</td>
+                                                    <td className="p-4 font-mono text-xs text-accent-custom font-bold">
+                                                        {l.lessonId || 'N/A'}
+                                                    </td>
+                                                    <td className="p-4">
+                                                        {isMP ? (
+                                                            <span className="text-[10px] px-2 py-0.5 rounded font-extrabold bg-accent-custom/10 text-accent-custom border border-accent-border uppercase">
+                                                                Tổng Hợp Module
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-[10px] px-2 py-0.5 rounded font-semibold bg-bg-tertiary text-text-secondary border border-border-custom">
+                                                                Lý thuyết
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-4 text-text-primary">
+                                                        <div className="font-semibold">{l.title}</div>
+                                                        <div className="text-xs text-text-secondary truncate max-w-xs">
+                                                            {l.objective || 'Chưa có mục tiêu'}
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-4 text-xs text-text-secondary max-w-[150px] truncate">
+                                                        {l.chapter?.title || 'N/A'}
+                                                    </td>
+                                                    <td className="p-4">
+                                                        <span className={`text-[11px] px-2 py-0.5 rounded font-semibold border ${
+                                                            l.difficulty === 'EASY'
+                                                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                                                                : l.difficulty === 'MEDIUM'
+                                                                ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                                                                : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
+                                                        }`}>
+                                                            {l.difficulty || 'EASY'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="p-4 text-xs text-text-secondary font-mono">
+                                                        {l._count?.codingExercises || 0} bài tập / {l._count?.quizQuestions || 0} quiz
+                                                    </td>
+                                                    <td className="p-4 text-right space-x-2">
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedLessonId(l.id);
+                                                                setEditingLesson(l);
+                                                                setIsLessonModalOpen(true);
+                                                            }}
+                                                            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border-custom hover:bg-bg-tertiary text-text-primary transition-colors"
+                                                        >
+                                                            Chỉnh Sửa
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteLesson(l.id)}
+                                                            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                                                        >
+                                                            Xóa
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
                                     )}
                                 </tbody>
                             </table>
@@ -676,9 +807,14 @@ export default function CurriculumManagement() {
                     {/* Left Column: Exercises List (5 cols) */}
                     <div className="lg:col-span-5 space-y-4">
                         <div className="flex justify-between items-center">
-                            <h2 className="text-sm font-semibold text-text-primary">
-                                Danh Sách Bài Tập ({exercises.length})
-                            </h2>
+                            <div>
+                                <h2 className="text-sm font-semibold text-text-primary">
+                                    Danh Sách Bài Tập ({exercises.length})
+                                </h2>
+                                <p className="text-xs text-text-secondary mt-0.5 truncate max-w-xs">
+                                    {currentLesson?.title || 'Chưa chọn bài học'}
+                                </p>
+                            </div>
                             <button
                                 onClick={() => {
                                     setEditingExercise({
@@ -701,7 +837,7 @@ export default function CurriculumManagement() {
                         <div className="space-y-3">
                             {exercises.length === 0 ? (
                                 <div className="p-8 text-center text-text-secondary bg-bg-secondary rounded-2xl border border-border-custom">
-                                    Bài học này chưa có bài tập tự luận nào.
+                                    Mục này chưa có bài tập tự luận nào. Bấm nút Thêm Bài Tập để tạo mới.
                                 </div>
                             ) : (
                                 exercises.map(ex => (
@@ -875,7 +1011,7 @@ export default function CurriculumManagement() {
                 <div className="space-y-4">
                     <div className="flex justify-between items-center">
                         <div className="text-sm font-semibold text-text-secondary">
-                            Câu hỏi trắc nghiệm của bài học: <span className="text-text-primary">{currentLesson?.title || 'Chưa chọn'}</span>
+                            Câu hỏi trắc nghiệm: <span className="text-text-primary">{currentLesson?.title || 'Chưa chọn'}</span>
                         </div>
                         <button
                             onClick={() => {
@@ -1009,7 +1145,7 @@ export default function CurriculumManagement() {
                                 </div>
                                 <div>
                                     <label className="block text-xs font-semibold text-text-secondary mb-1">
-                                        Mã bài học (VD: LS-01.01)
+                                        Mã bài học (VD: LS-05.01 hoặc LS-05.MP)
                                     </label>
                                     <input
                                         type="text"
@@ -1020,7 +1156,23 @@ export default function CurriculumManagement() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div>
+                                    <label className="block text-xs font-semibold text-text-secondary mb-1">
+                                        Chương học
+                                    </label>
+                                    <select
+                                        value={editingLesson.chapterId || ''}
+                                        onChange={(e) => setEditingLesson({ ...editingLesson, chapterId: e.target.value })}
+                                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-accent-custom"
+                                    >
+                                        {currentModuleChapters.map(ch => (
+                                            <option key={ch.id} value={ch.id}>
+                                                {ch.title}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                                 <div>
                                     <label className="block text-xs font-semibold text-text-secondary mb-1">
                                         Độ khó
@@ -1028,7 +1180,7 @@ export default function CurriculumManagement() {
                                     <select
                                         value={editingLesson.difficulty}
                                         onChange={(e) => setEditingLesson({ ...editingLesson, difficulty: e.target.value })}
-                                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-custom"
+                                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-accent-custom"
                                     >
                                         <option value="EASY">Dễ (EASY)</option>
                                         <option value="MEDIUM">Trung bình (MEDIUM)</option>
@@ -1043,18 +1195,18 @@ export default function CurriculumManagement() {
                                         type="number"
                                         value={editingLesson.durationMinutes}
                                         onChange={(e) => setEditingLesson({ ...editingLesson, durationMinutes: Number(e.target.value) })}
-                                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-custom"
+                                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-accent-custom"
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-semibold text-text-secondary mb-1">
-                                        Thứ tự hiển thị
+                                        Thứ tự (STT)
                                     </label>
                                     <input
                                         type="number"
                                         value={editingLesson.orderIndex}
                                         onChange={(e) => setEditingLesson({ ...editingLesson, orderIndex: Number(e.target.value) })}
-                                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-custom"
+                                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-accent-custom"
                                     />
                                 </div>
                             </div>
@@ -1068,7 +1220,7 @@ export default function CurriculumManagement() {
                                     value={editingLesson.objective || ''}
                                     onChange={(e) => setEditingLesson({ ...editingLesson, objective: e.target.value })}
                                     className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-custom"
-                                    placeholder="Nắm vững câu lệnh in ra màn hình..."
+                                    placeholder="Nắm vững câu lệnh in ra màn hình hoặc tổng hợp kiến thức Module..."
                                 />
                             </div>
 
