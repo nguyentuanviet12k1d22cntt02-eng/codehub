@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { ThemeToggle } from '../components/ThemeToggle';
+import UserMenuDropdown from '../components/UserMenuDropdown';
 import axios from 'axios';
 import { API_BASE_URL } from '../config/api';
 
@@ -12,29 +13,12 @@ interface DBLesson {
     codingExercises?: any[];
 }
 
-const decodeToken = (token: string) => {
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(
-            atob(base64)
-                .split('')
-                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                .join('')
-        );
-        return JSON.parse(jsonPayload);
-    } catch {
-        return null;
-    }
-};
-
 const ModulePracticeSelect: React.FC = () => {
     const { moduleId, lessonId } = useParams<{ moduleId: string, lessonId: string }>();
     const navigate = useNavigate();
 
     const [lesson, setLesson] = useState<DBLesson | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const [username, setUsername] = useState<string>('Học viên');
     const [error, setError] = useState<string>('');
     const [completionStatus, setCompletionStatus] = useState<{
         easy: { total: number; completed: number };
@@ -45,16 +29,6 @@ const ModulePracticeSelect: React.FC = () => {
         medium: { total: 0, completed: 0 },
         hard: { total: 0, completed: 0 }
     });
-
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            const decoded = decodeToken(token);
-            if (decoded && decoded.username) {
-                setUsername(decoded.username);
-            }
-        }
-    }, []);
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -112,11 +86,6 @@ const ModulePracticeSelect: React.FC = () => {
         fetchDetails();
     }, [lessonId]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/');
-    };
-
     if (loading) {
         return (
             <div className="bg-bg-primary text-text-primary min-h-screen flex items-center justify-center font-sans">
@@ -173,30 +142,9 @@ const ModulePracticeSelect: React.FC = () => {
                         Tri thức cá nhân
                     </Link>
                 </nav>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                     <ThemeToggle />
-                    <div className="flex items-center gap-3">
-                        <div
-                            title="Xem thông tin cá nhân"
-                            className="w-8 h-8 rounded-full bg-accent-custom text-white dark:text-[#030303] flex items-center justify-center font-bold text-sm cursor-pointer hover:opacity-85 transition-opacity"
-                            onClick={() => navigate('/profile')}
-                        >
-                            {username.substring(0, 1).toUpperCase()}
-                        </div>
-                        <span
-                            title="Xem thông tin cá nhân"
-                            className="text-sm font-semibold text-text-primary hidden sm:inline cursor-pointer hover:text-accent-custom transition-colors"
-                            onClick={() => navigate('/profile')}
-                        >
-                            {username}
-                        </span>
-                        <button
-                            className="text-xs text-text-tertiary hover:text-text-primary bg-transparent border border-border-custom hover:border-text-tertiary rounded-full px-3 py-1.5 cursor-pointer transition-colors"
-                            onClick={handleLogout}
-                        >
-                            Đăng xuất
-                        </button>
-                    </div>
+                    <UserMenuDropdown />
                 </div>
             </header>
 

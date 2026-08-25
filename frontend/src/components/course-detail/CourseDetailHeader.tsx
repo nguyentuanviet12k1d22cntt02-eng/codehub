@@ -1,17 +1,16 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ThemeToggle } from '../ThemeToggle';
+import UserMenuDropdown from '../UserMenuDropdown';
 
 interface CourseDetailHeaderProps {
     courseTitle: string;
-    username: string;
-    onLogout: () => void;
+    username?: string;
+    onLogout?: () => void;
 }
 
 export const CourseDetailHeader: React.FC<CourseDetailHeaderProps> = ({
     courseTitle,
-    username,
-    onLogout,
 }) => {
     const navigate = useNavigate();
 
@@ -38,20 +37,9 @@ export const CourseDetailHeader: React.FC<CourseDetailHeaderProps> = ({
                         Luyện tập
                     </Link>
                 </nav>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                     <ThemeToggle />
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-accent-custom text-white dark:text-[#030303] flex items-center justify-center font-bold text-sm">
-                            {username.substring(0, 1).toUpperCase()}
-                        </div>
-                        <span className="text-sm font-semibold text-text-primary hidden sm:inline">{username}</span>
-                        <button
-                            className="text-xs text-text-tertiary hover:text-text-primary bg-transparent border border-border-custom hover:border-text-tertiary rounded-full px-3 py-1.5 cursor-pointer transition-colors"
-                            onClick={onLogout}
-                        >
-                            Đăng xuất
-                        </button>
-                    </div>
+                    <UserMenuDropdown />
                 </div>
             </header>
 

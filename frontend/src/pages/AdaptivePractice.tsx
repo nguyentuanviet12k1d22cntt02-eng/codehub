@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ThemeToggle } from '../components/ThemeToggle';
+import UserMenuDropdown from '../components/UserMenuDropdown';
 import axios from 'axios';
 import { API_BASE_URL } from '../config/api';
 
@@ -30,26 +31,8 @@ const AdaptivePractice: React.FC = () => {
     const navigate = useNavigate();
     const [selectedAlgo, setSelectedAlgo] = useState<string>('PAL-Net');
     const [recommendations, setRecommendations] = useState<RecommendItem[]>([]);
-    const [username, setUsername] = useState<string>('Học viên');
     const [loading, setLoading] = useState<boolean>(true);
     const [engineName, setEngineName] = useState<string>('');
-
-    // Decode token to get username
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const decoded = JSON.parse(atob(base64));
-                if (decoded && decoded.username) {
-                    setUsername(decoded.username);
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        }
-    }, []);
 
     // Filters state
     const [filterType, setFilterType] = useState<'ALL' | 'LESSON_EXERCISE' | 'PRACTICE_PROBLEM'>('ALL');
@@ -81,11 +64,6 @@ const AdaptivePractice: React.FC = () => {
     useEffect(() => {
         fetchRecommendations(selectedAlgo);
     }, [selectedAlgo]);
-
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/');
-    };
 
     const handleRecClick = (item: RecommendItem) => {
         if (item.type === 'LESSON_EXERCISE' && item.lesson_id) {
@@ -131,30 +109,9 @@ const AdaptivePractice: React.FC = () => {
                         Tri thức cá nhân
                     </Link>
                 </nav>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                     <ThemeToggle />
-                    <div className="flex items-center gap-3">
-                        <div
-                            title="Xem thông tin cá nhân"
-                            className="w-8 h-8 rounded-full bg-accent-custom text-white dark:text-bg-primary flex items-center justify-center font-bold text-sm cursor-pointer hover:opacity-85 transition-opacity"
-                            onClick={() => navigate('/profile')}
-                        >
-                            {username.substring(0, 1).toUpperCase()}
-                        </div>
-                        <span
-                            title="Xem thông tin cá nhân"
-                            className="text-sm font-semibold text-text-primary hidden sm:inline cursor-pointer hover:text-accent-custom transition-colors"
-                            onClick={() => navigate('/profile')}
-                        >
-                            {username}
-                        </span>
-                        <button
-                            className="text-xs text-text-tertiary hover:text-text-primary bg-transparent border border-border-custom hover:border-text-tertiary rounded-full px-3 py-1.5 cursor-pointer transition-colors"
-                            onClick={handleLogout}
-                        >
-                            Đăng xuất
-                        </button>
-                    </div>
+                    <UserMenuDropdown />
                 </div>
             </header>
 

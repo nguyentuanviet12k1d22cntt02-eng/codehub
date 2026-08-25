@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { CourseCard } from '../components/CourseCard';
 import { ThemeToggle } from '../components/ThemeToggle';
+import UserMenuDropdown from '../components/UserMenuDropdown';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { API_BASE_URL } from '../config/api';
@@ -93,12 +94,6 @@ const Dashboard: React.FC = () => {
         }
     }, [navigate, selectedAlgo]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate('/');
-    };
-
     const handleRecClick = (item: any) => {
         if (item.type === 'LESSON_EXERCISE' && item.lesson_id) {
             navigate(`/practice/${item.lesson_id}`);
@@ -145,30 +140,9 @@ const Dashboard: React.FC = () => {
                         </Link>
                     )}
                 </nav>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                     <ThemeToggle />
-                    <div className="flex items-center gap-3">
-                        <div
-                            title="Xem thông tin cá nhân"
-                            className="w-8 h-8 rounded-full bg-accent-custom text-white dark:text-bg-primary flex items-center justify-center font-bold text-sm cursor-pointer hover:opacity-85 transition-opacity"
-                            onClick={() => navigate('/profile')}
-                        >
-                            {username.substring(0, 1).toUpperCase()}
-                        </div>
-                        <span
-                            title="Xem thông tin cá nhân"
-                            className="text-sm font-semibold text-text-primary hidden sm:inline cursor-pointer hover:text-accent-custom transition-colors"
-                            onClick={() => navigate('/profile')}
-                        >
-                            {username}
-                        </span>
-                        <button
-                            className="text-xs text-text-tertiary hover:text-text-primary bg-transparent border border-border-custom hover:border-text-tertiary rounded-full px-3 py-1.5 cursor-pointer transition-colors"
-                            onClick={handleLogout}
-                        >
-                            Đăng xuất
-                        </button>
-                    </div>
+                    <UserMenuDropdown />
                 </div>
             </header>
 

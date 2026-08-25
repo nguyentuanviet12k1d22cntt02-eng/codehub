@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { ThemeToggle } from '../components/ThemeToggle';
+import UserMenuDropdown from '../components/UserMenuDropdown';
 import { getInitialTheme } from '../utils/themeHelper';
 import { API_BASE_URL } from '../config/api';
 
@@ -32,7 +33,6 @@ interface LeaderboardEntry {
 const PracticeList: React.FC = () => {
     const navigate = useNavigate();
     const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(getInitialTheme());
-    const [username, setUsername] = useState<string>('Học viên');
     const [activeView, setActiveView] = useState<'problems' | 'leaderboard'>('problems');
 
     // Filter states
@@ -54,23 +54,6 @@ const PracticeList: React.FC = () => {
         };
         window.addEventListener('theme-change', handleThemeChange);
         return () => window.removeEventListener('theme-change', handleThemeChange);
-    }, []);
-
-    // Decode token to get username
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const decoded = JSON.parse(atob(base64));
-                if (decoded && decoded.username) {
-                    setUsername(decoded.username);
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        }
     }, []);
 
     // Fetch problems and tags
@@ -119,11 +102,6 @@ const PracticeList: React.FC = () => {
         }
     }, [activeView, difficulty, selectedTag, status, search]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/');
-    };
-
     return (
         <div data-theme={currentTheme} className="bg-bg-primary text-text-primary min-h-screen w-full relative overflow-hidden flex flex-col font-sans select-none transition-colors duration-200">
             {/* Header */}
@@ -153,30 +131,9 @@ const PracticeList: React.FC = () => {
                         Tri thức cá nhân
                     </Link>
                 </nav>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                     <ThemeToggle />
-                    <div className="flex items-center gap-3">
-                        <div
-                            title="Xem thông tin cá nhân"
-                            className="w-8 h-8 rounded-full bg-accent-bg border border-accent-border flex items-center justify-center text-[13px] font-bold text-accent-custom uppercase cursor-pointer hover:opacity-85 transition-opacity"
-                            onClick={() => navigate('/profile')}
-                        >
-                            {username.substring(0, 2)}
-                        </div>
-                        <span
-                            title="Xem thông tin cá nhân"
-                            className="hidden sm:inline text-xs font-semibold text-text-secondary cursor-pointer hover:text-accent-custom transition-colors"
-                            onClick={() => navigate('/profile')}
-                        >
-                            {username}
-                        </span>
-                        <button
-                            onClick={handleLogout}
-                            className="bg-bg-tertiary hover:bg-red-500 hover:text-white px-3 py-1.5 rounded border border-border-custom text-[11px] font-bold text-text-secondary transition-all duration-200 cursor-pointer"
-                        >
-                            Đăng xuất
-                        </button>
-                    </div>
+                    <UserMenuDropdown />
                 </div>
             </header>
 
