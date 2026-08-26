@@ -96,7 +96,6 @@ const parseMarkdownToBlocks = (markdown: string, lessonTitle: string): LessonBlo
 
         if (line.startsWith('```')) {
             if (!inCode) {
-                // Flush text before code
                 if (currentText.length > 0) {
                     const textJoined = currentText.join('\n').trim();
                     if (textJoined) {
@@ -134,7 +133,6 @@ const parseMarkdownToBlocks = (markdown: string, lessonTitle: string): LessonBlo
         }
 
         if (line.startsWith('# ') || line.startsWith('## ') || line.startsWith('### ')) {
-            // Flush text before heading
             if (currentText.length > 0) {
                 const textJoined = currentText.join('\n').trim();
                 if (textJoined) {
@@ -156,11 +154,6 @@ const parseMarkdownToBlocks = (markdown: string, lessonTitle: string): LessonBlo
                 title: title,
                 content: ''
             });
-            continue;
-        }
-
-        if (line.startsWith('> [!NOTE]') || line.startsWith('> [!TIP]') || line.startsWith('> [!WARNING]') || line.startsWith('> ')) {
-            currentText.push(line);
             continue;
         }
 
@@ -241,6 +234,7 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
     const [history, setHistory] = useState<LessonBlock[][]>([blocks]);
     const [historyIndex, setHistoryIndex] = useState(0);
     const [previewMode, setPreviewMode] = useState(false);
+    const [isDarkTheme, setIsDarkTheme] = useState(false); // Default to crisp LIGHT theme
 
     const activeBlock = blocks.find(b => b.id === selectedBlockId) || blocks[0];
 
@@ -283,8 +277,8 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                     id: newId,
                     type: 'heading',
                     headingLevel: 'H2',
-                    title: 'Tiêu đề mục mới',
-                    content: 'Nội dung giải thích chi tiết cho mục này...'
+                    title: '1. Tiêu đề mục bài học',
+                    content: 'Nhập nội dung giải thích chi tiết cho mục này...'
                 };
                 break;
             case 'paragraph':
@@ -409,19 +403,29 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
     };
 
     return createPortal(
-        <div className="fixed inset-0 top-0 left-0 w-screen h-screen z-[99999] bg-[#0c0c10] text-white flex flex-col font-sans select-none overflow-hidden">
-            {/* TOP NAVIGATION BAR */}
-            <div className="h-16 bg-[#121217] border-b border-white/10 px-6 flex items-center justify-between flex-shrink-0 z-20">
+        <div className={`fixed inset-0 top-0 left-0 w-screen h-screen z-[99999] flex flex-col font-sans select-none overflow-hidden transition-colors ${
+            isDarkTheme ? 'bg-[#0c0c10] text-white' : 'bg-[#f8fafc] text-slate-900'
+        }`}>
+            {/* 1. TOP NAVIGATION BAR */}
+            <div className={`h-16 px-6 flex items-center justify-between flex-shrink-0 z-20 border-b shadow-sm ${
+                isDarkTheme ? 'bg-[#121217] border-white/10' : 'bg-white border-slate-200'
+            }`}>
                 {/* Left Brand & Breadcrumb */}
                 <div className="flex items-center gap-3">
                     <button
                         onClick={onClose}
-                        className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors text-white/80"
+                        className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
+                            isDarkTheme
+                                ? 'border-white/10 bg-white/5 hover:bg-white/10 text-white/80'
+                                : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'
+                        }`}
                     >
                         &larr; Quay lại danh sách
                     </button>
-                    <div className="h-4 w-[1px] bg-white/10" />
-                    <span className="text-xs text-white/50 font-medium">Nền tảng học lập trình / Admin / Soạn bài học</span>
+                    <div className={`h-4 w-[1px] ${isDarkTheme ? 'bg-white/10' : 'bg-slate-200'}`} />
+                    <span className={`text-xs font-medium ${isDarkTheme ? 'text-white/50' : 'text-slate-500'}`}>
+                        Nền tảng học lập trình / Admin / Soạn bài học
+                    </span>
                 </div>
 
                 {/* Center Editable Title */}
@@ -433,25 +437,48 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                             setTitle(e.target.value);
                             setIsSaved(false);
                         }}
-                        className="bg-white/5 hover:bg-white/10 focus:bg-[#181820] border border-white/10 focus:border-purple-500 rounded-lg px-3 py-1.5 text-xs md:text-sm font-bold text-white text-center w-full focus:outline-none transition-all"
+                        className={`border rounded-lg px-3 py-1.5 text-xs md:text-sm font-bold text-center w-full focus:outline-none transition-all ${
+                            isDarkTheme
+                                ? 'bg-white/5 hover:bg-white/10 focus:bg-[#181820] border-white/10 focus:border-purple-500 text-white'
+                                : 'bg-slate-50 hover:bg-slate-100/80 focus:bg-white border-slate-300 focus:border-purple-600 text-slate-900 shadow-inner'
+                        }`}
                         placeholder="Nhập tiêu đề bài học..."
                     />
                 </div>
 
                 {/* Right Actions */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
+                    {/* Theme Toggle (Sáng / Tối) */}
+                    <button
+                        onClick={() => setIsDarkTheme(!isDarkTheme)}
+                        className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-colors flex items-center gap-1.5 ${
+                            isDarkTheme
+                                ? 'border-white/10 bg-white/5 hover:bg-white/10 text-white/80'
+                                : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'
+                        }`}
+                        title="Chuyển đổi giao diện Sáng / Tối"
+                    >
+                        <span>{isDarkTheme ? '🌙 Tối' : '☀️ Sáng'}</span>
+                    </button>
+
                     {/* Status badge */}
-                    <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <div className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${
+                        isSaved
+                            ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                            : 'text-amber-700 bg-amber-50 border-amber-200'
+                    }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${isSaved ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
                         {isSaved ? 'Đã lưu' : 'Có thay đổi chưa lưu'}
                     </div>
 
                     {/* Undo / Redo */}
-                    <div className="flex items-center bg-white/5 rounded-lg border border-white/10 p-0.5">
+                    <div className={`flex items-center rounded-lg border p-0.5 ${
+                        isDarkTheme ? 'bg-white/5 border-white/10' : 'bg-slate-50 border-slate-200'
+                    }`}>
                         <button
                             onClick={handleUndo}
                             disabled={historyIndex === 0}
-                            className="px-2 py-1 text-xs text-white/70 hover:text-white disabled:opacity-30"
+                            className={`px-2 py-1 text-xs disabled:opacity-30 ${isDarkTheme ? 'text-white/70 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
                             title="Hoàn tác (Undo)"
                         >
                             ↺
@@ -459,7 +486,7 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                         <button
                             onClick={handleRedo}
                             disabled={historyIndex >= history.length - 1}
-                            className="px-2 py-1 text-xs text-white/70 hover:text-white disabled:opacity-30"
+                            className={`px-2 py-1 text-xs disabled:opacity-30 ${isDarkTheme ? 'text-white/70 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
                             title="Làm lại (Redo)"
                         >
                             ↻
@@ -470,7 +497,11 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                     <button
                         onClick={() => setPreviewMode(!previewMode)}
                         className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
-                            previewMode ? 'bg-purple-600 text-white border-purple-500' : 'bg-white/5 text-white/80 border-white/10 hover:bg-white/10'
+                            previewMode
+                                ? 'bg-purple-600 text-white border-purple-500'
+                                : isDarkTheme
+                                    ? 'bg-white/5 text-white/80 border-white/10 hover:bg-white/10'
+                                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 shadow-sm'
                         }`}
                     >
                         {previewMode ? 'Sửa bài' : 'Xem thử'}
@@ -480,7 +511,11 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                     <button
                         onClick={handleSaveAll}
                         disabled={isSaving}
-                        className="text-xs font-semibold px-3.5 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-colors"
+                        className={`text-xs font-semibold px-3.5 py-1.5 rounded-lg border transition-colors ${
+                            isDarkTheme
+                                ? 'border-white/10 bg-white/5 hover:bg-white/10 text-white'
+                                : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-sm'
+                        }`}
                     >
                         Lưu nháp
                     </button>
@@ -489,17 +524,28 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                     <button
                         onClick={handleSaveAll}
                         disabled={isSaving}
-                        className="text-xs font-bold px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-600/20 transition-all active:scale-95 disabled:opacity-50"
+                        className="text-xs font-bold px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-md shadow-purple-600/20 transition-all active:scale-95 disabled:opacity-50"
                     >
                         {isSaving ? 'Đang lưu...' : 'Xuất bản'}
                     </button>
                 </div>
             </div>
 
-            {/* 3-COLUMN MAIN WORKSPACE */}
+            {/* 2. 3-COLUMN MAIN WORKSPACE */}
             <div className="flex-1 flex overflow-hidden">
                 {/* 1. LEFT SIDEBAR: THÊM KHỐI (KÉO THẢ / CLICK) */}
-                <div className="w-64 bg-[#121217] border-r border-white/10 p-4 flex flex-col gap-4 overflow-y-auto flex-shrink-0">
+                <div className={`w-64 border-r p-4 flex flex-col gap-4 overflow-y-auto flex-shrink-0 ${
+                    isDarkTheme ? 'bg-[#121217] border-white/10' : 'bg-white border-slate-200'
+                }`}>
+                    {/* Header */}
+                    <div className="flex items-center justify-between">
+                        <span className={`text-[11px] font-bold uppercase tracking-wider ${
+                            isDarkTheme ? 'text-white/60' : 'text-slate-700'
+                        }`}>
+                            Thêm Khối (Kéo thả)
+                        </span>
+                    </div>
+
                     {/* Search */}
                     <div>
                         <input
@@ -507,7 +553,11 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                             placeholder="Tìm kiếm khối..."
                             value={searchBlockQuery}
                             onChange={(e) => setSearchBlockQuery(e.target.value)}
-                            className="w-full bg-[#181820] border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/40 focus:outline-none focus:border-purple-500"
+                            className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-purple-500 transition-colors ${
+                                isDarkTheme
+                                    ? 'bg-[#181820] border-white/10 text-white placeholder-white/40'
+                                    : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'
+                            }`}
                         />
                     </div>
 
@@ -515,162 +565,238 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                     <div className="space-y-4 text-left">
                         {/* Group 1: CƠ BẢN */}
                         <div>
-                            <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block mb-2">
+                            <span className={`text-[10px] font-bold uppercase tracking-wider block mb-2 ${
+                                isDarkTheme ? 'text-white/40' : 'text-slate-400'
+                            }`}>
                                 Cơ bản
                             </span>
                             <div className="grid grid-cols-3 gap-1.5">
                                 <button
                                     onClick={() => handleAddBlock('heading')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-purple-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-purple-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-bold text-sm text-purple-400">H</span>
-                                    <span className="text-[10px] text-white/80">Tiêu đề</span>
+                                    <span className="font-bold text-sm text-purple-600">H</span>
+                                    <span className="text-[10px] font-semibold">Tiêu đề</span>
                                 </button>
                                 <button
                                     onClick={() => handleAddBlock('paragraph')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-purple-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-purple-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-bold text-sm text-purple-400">¶</span>
-                                    <span className="text-[10px] text-white/80">Đoạn văn</span>
+                                    <span className="font-bold text-sm text-purple-600">¶</span>
+                                    <span className="text-[10px] font-semibold">Đoạn văn</span>
                                 </button>
                                 <button
                                     onClick={() => handleAddBlock('list')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-purple-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-purple-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-bold text-sm text-purple-400">≡</span>
-                                    <span className="text-[10px] text-white/80">Danh sách</span>
+                                    <span className="font-bold text-sm text-purple-600">≡</span>
+                                    <span className="text-[10px] font-semibold">Danh sách</span>
                                 </button>
                                 <button
                                     onClick={() => handleAddBlock('callout')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-amber-50 border-slate-200 hover:border-amber-300 text-slate-700 hover:text-amber-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-bold text-sm text-amber-400">💡</span>
-                                    <span className="text-[10px] text-white/80">Callout</span>
+                                    <span className="font-bold text-sm text-amber-500">💡</span>
+                                    <span className="text-[10px] font-semibold">Callout</span>
                                 </button>
                                 <button
                                     onClick={() => handleAddBlock('note')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-sky-50 border-slate-200 hover:border-sky-300 text-slate-700 hover:text-sky-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-bold text-sm text-sky-400">📝</span>
-                                    <span className="text-[10px] text-white/80">Ghi chú</span>
+                                    <span className="font-bold text-sm text-sky-500">📝</span>
+                                    <span className="text-[10px] font-semibold">Ghi chú</span>
                                 </button>
                                 <button
                                     onClick={() => handleAddBlock('divider')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-slate-100 border-slate-200 hover:border-slate-300 text-slate-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-bold text-sm text-white/60">—</span>
-                                    <span className="text-[10px] text-white/80">Đường kẻ</span>
+                                    <span className="font-bold text-sm text-slate-400">—</span>
+                                    <span className="text-[10px] font-semibold">Đường kẻ</span>
                                 </button>
                             </div>
                         </div>
 
                         {/* Group 2: NỘI DUNG LẬP TRÌNH */}
                         <div>
-                            <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block mb-2">
+                            <span className={`text-[10px] font-bold uppercase tracking-wider block mb-2 ${
+                                isDarkTheme ? 'text-white/40' : 'text-slate-400'
+                            }`}>
                                 Nội dung lập trình
                             </span>
                             <div className="grid grid-cols-3 gap-1.5">
                                 <button
                                     onClick={() => handleAddBlock('code')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-purple-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-purple-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-mono font-bold text-xs text-purple-400">&lt;/&gt;</span>
-                                    <span className="text-[10px] text-white/80">Khối mã</span>
+                                    <span className="font-mono font-bold text-xs text-purple-600">&lt;/&gt;</span>
+                                    <span className="text-[10px] font-semibold">Khối mã</span>
                                 </button>
                                 <button
                                     onClick={() => handleAddBlock('output')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-sky-50 border-slate-200 hover:border-sky-300 text-slate-700 hover:text-sky-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-bold text-xs text-sky-400">▶</span>
-                                    <span className="text-[10px] text-white/80">Kết quả</span>
+                                    <span className="font-bold text-xs text-sky-500">▶</span>
+                                    <span className="text-[10px] font-semibold">Kết quả</span>
                                 </button>
                                 <button
                                     onClick={() => handleAddBlock('explanation')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-amber-50 border-slate-200 hover:border-amber-300 text-slate-700 hover:text-amber-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-bold text-xs text-amber-400">ℹ</span>
-                                    <span className="text-[10px] text-white/80">Giải thích</span>
+                                    <span className="font-bold text-xs text-amber-500">ℹ</span>
+                                    <span className="text-[10px] font-semibold">Giải thích</span>
                                 </button>
                                 <button
                                     onClick={() => handleAddBlock('exercise')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-emerald-50 border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-bold text-xs text-emerald-400">✎</span>
-                                    <span className="text-[10px] text-white/80">Bài tập</span>
+                                    <span className="font-bold text-xs text-emerald-500">✎</span>
+                                    <span className="text-[10px] font-semibold">Bài tập</span>
                                 </button>
                                 <button
                                     onClick={() => handleAddBlock('quiz')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-rose-50 border-slate-200 hover:border-rose-300 text-slate-700 hover:text-rose-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-bold text-xs text-rose-400">?</span>
-                                    <span className="text-[10px] text-white/80">Quiz</span>
+                                    <span className="font-bold text-xs text-rose-500">?</span>
+                                    <span className="text-[10px] font-semibold">Quiz</span>
                                 </button>
                                 <button
                                     onClick={() => handleAddBlock('theory')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-indigo-50 border-slate-200 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-bold text-xs text-indigo-400">📖</span>
-                                    <span className="text-[10px] text-white/80">Lý thuyết</span>
+                                    <span className="font-bold text-xs text-indigo-500">📖</span>
+                                    <span className="text-[10px] font-semibold">Lý thuyết</span>
                                 </button>
                             </div>
                         </div>
 
                         {/* Group 3: DỮ LIỆU & SQL */}
                         <div>
-                            <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block mb-2">
+                            <span className={`text-[10px] font-bold uppercase tracking-wider block mb-2 ${
+                                isDarkTheme ? 'text-white/40' : 'text-slate-400'
+                            }`}>
                                 Dữ liệu & SQL
                             </span>
                             <div className="grid grid-cols-3 gap-1.5">
                                 <button
                                     onClick={() => handleAddBlock('table')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-purple-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-purple-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-bold text-xs text-purple-400">▦</span>
-                                    <span className="text-[10px] text-white/80">Bảng</span>
+                                    <span className="font-bold text-xs text-purple-600">▦</span>
+                                    <span className="text-[10px] font-semibold">Bảng</span>
                                 </button>
                                 <button
                                     onClick={() => handleAddBlock('erd')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-indigo-50 border-slate-200 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-bold text-xs text-indigo-400">☍</span>
-                                    <span className="text-[10px] text-white/80">Sơ đồ ERD</span>
+                                    <span className="font-bold text-xs text-indigo-500">☍</span>
+                                    <span className="text-[10px] font-semibold">Sơ đồ ERD</span>
                                 </button>
                                 <button
                                     onClick={() => handleAddBlock('output')}
-                                    className="p-2 bg-[#181820] hover:bg-purple-600/20 hover:border-purple-500/40 border border-white/5 rounded-lg flex flex-col items-center gap-1 transition-all"
+                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
+                                        isDarkTheme
+                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
+                                            : 'bg-slate-50 hover:bg-emerald-50 border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 shadow-sm'
+                                    }`}
                                 >
-                                    <span className="font-bold text-xs text-emerald-400">🗄</span>
-                                    <span className="text-[10px] text-white/80">Kết quả SQL</span>
+                                    <span className="font-bold text-xs text-emerald-500">🗄</span>
+                                    <span className="text-[10px] font-semibold">Kết quả SQL</span>
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     {/* Tip at bottom */}
-                    <div className="mt-auto pt-4 border-t border-white/5 text-[11px] text-white/40 leading-relaxed">
+                    <div className={`mt-auto pt-4 border-t text-[11px] leading-relaxed ${
+                        isDarkTheme ? 'border-white/5 text-white/40' : 'border-slate-100 text-slate-500'
+                    }`}>
                         Bấm vào khối để thêm hoặc kéo thả để đổi thứ tự trực quan.
                     </div>
                 </div>
 
                 {/* 2. CENTER CANVAS: SOẠN THẢO TRỰC QUAN */}
-                <div className="flex-1 bg-[#09090c] p-6 overflow-y-auto flex justify-center">
+                <div className={`flex-1 p-6 overflow-y-auto flex justify-center ${
+                    isDarkTheme ? 'bg-[#09090c]' : 'bg-[#f1f5f9]'
+                }`}>
                     <div className="w-full max-w-4xl space-y-4">
                         {/* Top Formatting Ribbon */}
-                        <div className="bg-[#121217] border border-white/10 rounded-xl p-2 flex items-center justify-between select-none shadow-sm">
-                            <div className="flex items-center gap-1.5 text-xs text-white/70">
-                                <span className="font-semibold px-2 py-1 bg-white/5 rounded">H2 ▾</span>
-                                <div className="h-4 w-[1px] bg-white/10" />
-                                <span className="font-bold px-2 py-0.5 hover:bg-white/10 rounded cursor-pointer">B</span>
-                                <span className="italic font-serif px-2 py-0.5 hover:bg-white/10 rounded cursor-pointer">I</span>
-                                <span className="underline px-2 py-0.5 hover:bg-white/10 rounded cursor-pointer">U</span>
-                                <span className="line-through px-2 py-0.5 hover:bg-white/10 rounded cursor-pointer">S</span>
-                                <div className="h-4 w-[1px] bg-white/10" />
-                                <span className="font-mono text-xs px-2 py-0.5 hover:bg-white/10 rounded cursor-pointer">&lt;/&gt;</span>
-                                <span className="px-2 py-0.5 hover:bg-white/10 rounded cursor-pointer">🔗</span>
-                                <span className="px-2 py-0.5 hover:bg-white/10 rounded cursor-pointer">🖼️</span>
-                                <span className="px-2 py-0.5 hover:bg-white/10 rounded cursor-pointer">▦</span>
+                        <div className={`border rounded-xl p-2.5 flex items-center justify-between select-none shadow-sm ${
+                            isDarkTheme ? 'bg-[#121217] border-white/10 text-white/70' : 'bg-white border-slate-200 text-slate-700'
+                        }`}>
+                            <div className="flex items-center gap-1.5 text-xs">
+                                <span className={`font-semibold px-2 py-1 rounded ${isDarkTheme ? 'bg-white/5' : 'bg-slate-100 text-slate-800'}`}>
+                                    H2 ▾
+                                </span>
+                                <div className={`h-4 w-[1px] ${isDarkTheme ? 'bg-white/10' : 'bg-slate-200'}`} />
+                                <span className={`font-bold px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>B</span>
+                                <span className={`italic font-serif px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>I</span>
+                                <span className={`underline px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>U</span>
+                                <span className={`line-through px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>S</span>
+                                <div className={`h-4 w-[1px] ${isDarkTheme ? 'bg-white/10' : 'bg-slate-200'}`} />
+                                <span className={`font-mono text-xs px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>&lt;/&gt;</span>
+                                <span className={`px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>🔗</span>
+                                <span className={`px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>🖼️</span>
+                                <span className={`px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>▦</span>
                             </div>
-                            <span className="text-[11px] text-white/40">Studio Block Editor</span>
+                            <span className={`text-[11px] font-medium ${isDarkTheme ? 'text-white/40' : 'text-slate-400'}`}>
+                                Studio Block Editor
+                            </span>
                         </div>
 
                         {/* Drag & Drop Blocks Container */}
@@ -692,21 +818,31 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                             ref={providedDraggable.innerRef}
                                                             {...providedDraggable.draggableProps}
                                                             onClick={() => setSelectedBlockId(block.id)}
-                                                            className={`bg-[#121217] rounded-2xl border transition-all relative overflow-hidden group ${
-                                                                isSelected
-                                                                    ? 'border-purple-500 shadow-xl shadow-purple-500/5 ring-1 ring-purple-500/50'
-                                                                    : 'border-white/10 hover:border-white/20'
+                                                            className={`rounded-2xl border transition-all relative overflow-hidden group ${
+                                                                isDarkTheme
+                                                                    ? isSelected
+                                                                        ? 'bg-[#121217] border-purple-500 shadow-xl shadow-purple-500/5 ring-1 ring-purple-500/50'
+                                                                        : 'bg-[#121217] border-white/10 hover:border-white/20'
+                                                                    : isSelected
+                                                                        ? 'bg-white border-purple-500 shadow-lg ring-2 ring-purple-200'
+                                                                        : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'
                                                             }`}
                                                         >
                                                             {/* Top Block Header bar */}
-                                                            <div className="px-4 py-2.5 bg-white/[0.02] border-b border-white/5 flex items-center justify-between">
+                                                            <div className={`px-4 py-2.5 border-b flex items-center justify-between ${
+                                                                isDarkTheme
+                                                                    ? 'bg-white/[0.02] border-white/5'
+                                                                    : 'bg-slate-50/80 border-slate-100'
+                                                            }`}>
                                                                 {/* Drag Handle */}
                                                                 <div
                                                                     {...providedDraggable.dragHandleProps}
-                                                                    className="cursor-grab active:cursor-grabbing text-white/40 hover:text-white flex items-center gap-2"
+                                                                    className={`cursor-grab active:cursor-grabbing flex items-center gap-2 ${
+                                                                        isDarkTheme ? 'text-white/40 hover:text-white' : 'text-slate-400 hover:text-slate-700'
+                                                                    }`}
                                                                 >
                                                                     <span className="font-mono text-xs tracking-tighter">:::</span>
-                                                                    <span className="text-[11px] font-semibold text-white/60">
+                                                                    <span className={`text-[11px] font-semibold ${isDarkTheme ? 'text-white/60' : 'text-slate-600'}`}>
                                                                         Khối #{index + 1}
                                                                     </span>
                                                                 </div>
@@ -714,11 +850,11 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                                 {/* Block Type Badge */}
                                                                 <div className="flex items-center gap-2">
                                                                     <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                                                                        block.type === 'heading' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
-                                                                        block.type === 'code' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                                                                        block.type === 'output' || block.type === 'table' ? 'bg-sky-500/10 text-sky-400 border border-sky-500/20' :
-                                                                        block.type === 'exercise' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' :
-                                                                        'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                                                        block.type === 'heading' ? 'bg-purple-100 text-purple-700 border border-purple-200' :
+                                                                        block.type === 'code' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' :
+                                                                        block.type === 'output' || block.type === 'table' ? 'bg-sky-100 text-sky-700 border border-sky-200' :
+                                                                        block.type === 'exercise' ? 'bg-indigo-100 text-indigo-700 border border-indigo-200' :
+                                                                        'bg-amber-100 text-amber-800 border border-amber-200'
                                                                     }`}>
                                                                         {block.type === 'heading' ? 'Tiêu đề + Đoạn văn' :
                                                                          block.type === 'code' ? `Khối mã (${block.language || 'SQL'})` :
@@ -733,7 +869,7 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                                             e.stopPropagation();
                                                                             handleDeleteBlock(block.id);
                                                                         }}
-                                                                        className="text-white/30 hover:text-rose-400 text-xs px-1.5 py-0.5 rounded transition-colors"
+                                                                        className="text-slate-400 hover:text-rose-600 text-xs px-1.5 py-0.5 rounded transition-colors"
                                                                         title="Xóa khối này"
                                                                     >
                                                                         ✕
@@ -750,14 +886,18 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                                             type="text"
                                                                             value={block.title || ''}
                                                                             onChange={(e) => handleUpdateActiveBlock({ title: e.target.value })}
-                                                                            className="w-full bg-transparent text-lg md:text-xl font-extrabold text-white border-none focus:outline-none placeholder-white/30"
+                                                                            className={`w-full bg-transparent text-lg md:text-xl font-extrabold border-none focus:outline-none ${
+                                                                                isDarkTheme ? 'text-white placeholder-white/30' : 'text-slate-900 placeholder-slate-400'
+                                                                            }`}
                                                                             placeholder="1. SELECT và FROM là gì?"
                                                                         />
                                                                         <textarea
                                                                             rows={2}
                                                                             value={block.content || ''}
                                                                             onChange={(e) => handleUpdateActiveBlock({ content: e.target.value })}
-                                                                            className="w-full bg-transparent text-xs text-white/70 leading-relaxed border-none focus:outline-none resize-none placeholder-white/30"
+                                                                            className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-none ${
+                                                                                isDarkTheme ? 'text-white/70 placeholder-white/30' : 'text-slate-600 placeholder-slate-400'
+                                                                            }`}
                                                                             placeholder="Nhập mô tả chi tiết cho tiêu đề này..."
                                                                         />
                                                                     </div>
@@ -769,16 +909,18 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                                         rows={3}
                                                                         value={block.content || ''}
                                                                         onChange={(e) => handleUpdateActiveBlock({ content: e.target.value })}
-                                                                        className="w-full bg-transparent text-xs text-white/80 leading-relaxed border-none focus:outline-none resize-y placeholder-white/30"
+                                                                        className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-y ${
+                                                                            isDarkTheme ? 'text-white/80 placeholder-white/30' : 'text-slate-700 placeholder-slate-400'
+                                                                        }`}
                                                                         placeholder="Nhập đoạn văn lý thuyết..."
                                                                     />
                                                                 )}
 
                                                                 {/* 3. CODE BLOCK */}
                                                                 {block.type === 'code' && (
-                                                                    <div className="bg-[#0e0e13] rounded-xl border border-white/10 p-4 font-mono text-xs text-emerald-400 overflow-x-auto relative">
-                                                                        <div className="flex justify-between items-center text-[10px] text-white/40 mb-2 border-b border-white/5 pb-1">
-                                                                            <span>{block.language || 'SQL'}</span>
+                                                                    <div className="bg-[#1e1e2e] rounded-xl border border-slate-700/60 p-4 font-mono text-xs text-emerald-400 overflow-x-auto relative shadow-inner">
+                                                                        <div className="flex justify-between items-center text-[10px] text-slate-400 mb-2 border-b border-slate-700 pb-1">
+                                                                            <span className="font-bold text-purple-400">{block.language || 'SQL'}</span>
                                                                             <span>{block.showLineNumbers ? 'Line numbers: ON' : ''}</span>
                                                                         </div>
                                                                         <textarea
@@ -795,17 +937,23 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                                 {(block.type === 'output' || block.type === 'table') && (
                                                                     <div className="space-y-2">
                                                                         {block.title && (
-                                                                            <div className="text-xs font-bold text-white/80">
+                                                                            <div className={`text-xs font-bold ${isDarkTheme ? 'text-white/80' : 'text-slate-800'}`}>
                                                                                 {block.title}
                                                                             </div>
                                                                         )}
 
-                                                                        <div className="overflow-x-auto rounded-xl border border-white/10">
+                                                                        <div className={`overflow-x-auto rounded-xl border ${
+                                                                            isDarkTheme ? 'border-white/10' : 'border-slate-200'
+                                                                        }`}>
                                                                             <table className="w-full text-left text-xs border-collapse">
                                                                                 <thead>
-                                                                                    <tr className="bg-white/5 border-b border-white/10 text-white font-bold">
+                                                                                    <tr className={`border-b font-bold ${
+                                                                                        isDarkTheme ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                                                                    }`}>
                                                                                         {block.tableHeaders?.map((th, thIdx) => (
-                                                                                            <th key={thIdx} className="p-3 border-r border-white/10 last:border-r-0">
+                                                                                            <th key={thIdx} className={`p-3 border-r last:border-r-0 ${
+                                                                                                isDarkTheme ? 'border-white/10' : 'border-slate-200'
+                                                                                            }`}>
                                                                                                 <input
                                                                                                     type="text"
                                                                                                     value={th}
@@ -814,17 +962,23 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                                                                         newHeaders[thIdx] = e.target.value;
                                                                                                         handleUpdateActiveBlock({ tableHeaders: newHeaders });
                                                                                                     }}
-                                                                                                    className="bg-transparent font-bold text-white text-center w-full focus:outline-none"
+                                                                                                    className={`bg-transparent font-bold text-center w-full focus:outline-none ${
+                                                                                                        isDarkTheme ? 'text-white' : 'text-slate-900'
+                                                                                                    }`}
                                                                                                 />
                                                                                             </th>
                                                                                         ))}
                                                                                     </tr>
                                                                                 </thead>
-                                                                                <tbody className="divide-y divide-white/5 text-white/80">
+                                                                                <tbody className={`divide-y ${
+                                                                                    isDarkTheme ? 'divide-white/5 text-white/80' : 'divide-slate-200 text-slate-700'
+                                                                                }`}>
                                                                                     {block.tableRows?.map((row, rIdx) => (
-                                                                                        <tr key={rIdx} className="hover:bg-white/[0.02]">
+                                                                                        <tr key={rIdx} className={isDarkTheme ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50'}>
                                                                                             {row.map((cell, cIdx) => (
-                                                                                                <td key={cIdx} className="p-3 border-r border-white/10 last:border-r-0">
+                                                                                                <td key={cIdx} className={`p-3 border-r last:border-r-0 ${
+                                                                                                    isDarkTheme ? 'border-white/10' : 'border-slate-200'
+                                                                                                }`}>
                                                                                                     <input
                                                                                                         type="text"
                                                                                                         value={cell}
@@ -833,7 +987,9 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                                                                             newRows[rIdx][cIdx] = e.target.value;
                                                                                                             handleUpdateActiveBlock({ tableRows: newRows });
                                                                                                         }}
-                                                                                                        className="bg-transparent text-white/80 text-center w-full focus:outline-none"
+                                                                                                        className={`bg-transparent text-center w-full focus:outline-none ${
+                                                                                                            isDarkTheme ? 'text-white/80' : 'text-slate-800'
+                                                                                                        }`}
                                                                                                     />
                                                                                                 </td>
                                                                                             ))}
@@ -843,12 +999,14 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                                             </table>
                                                                         </div>
 
-                                                                        <div className="flex justify-between items-center text-[11px] text-white/50 pt-1">
+                                                                        <div className="flex justify-between items-center text-[11px] pt-1">
                                                                             <input
                                                                                 type="text"
                                                                                 value={block.tableNote || ''}
                                                                                 onChange={(e) => handleUpdateActiveBlock({ tableNote: e.target.value })}
-                                                                                className="bg-transparent text-white/40 text-xs italic focus:outline-none w-2/3"
+                                                                                className={`bg-transparent text-xs italic focus:outline-none w-2/3 ${
+                                                                                    isDarkTheme ? 'text-white/40' : 'text-slate-500'
+                                                                                }`}
                                                                                 placeholder="→ Kết quả trả về 2 dòng."
                                                                             />
                                                                             <button
@@ -859,7 +1017,7 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                                                     newRows.push(Array(colCount).fill(''));
                                                                                     handleUpdateActiveBlock({ tableRows: newRows });
                                                                                 }}
-                                                                                className="text-purple-400 hover:underline text-xs font-semibold"
+                                                                                className="text-purple-600 hover:underline text-xs font-semibold"
                                                                             >
                                                                                 + Thêm dòng
                                                                             </button>
@@ -869,21 +1027,29 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
 
                                                                 {/* 5. EXPLANATION / CALLOUT BLOCK */}
                                                                 {(block.type === 'explanation' || block.type === 'callout' || block.type === 'note') && (
-                                                                    <div className="bg-amber-500/[0.04] border border-amber-500/20 rounded-xl p-4 space-y-2">
+                                                                    <div className={`rounded-xl p-4 space-y-2 border ${
+                                                                        isDarkTheme
+                                                                            ? 'bg-amber-500/[0.04] border-amber-500/20 text-white/80'
+                                                                            : 'bg-[#fffbeb] border-[#fde68a] text-[#92400e]'
+                                                                    }`}>
                                                                         <div className="flex items-center gap-2">
-                                                                            <span className="text-amber-400 font-bold">💡</span>
+                                                                            <span className="font-bold">💡</span>
                                                                             <input
                                                                                 type="text"
                                                                                 value={block.title || 'Giải thích'}
                                                                                 onChange={(e) => handleUpdateActiveBlock({ title: e.target.value })}
-                                                                                className="bg-transparent font-bold text-xs text-amber-300 focus:outline-none w-full"
+                                                                                className={`bg-transparent font-bold text-xs focus:outline-none w-full ${
+                                                                                    isDarkTheme ? 'text-amber-300' : 'text-amber-900'
+                                                                                }`}
                                                                             />
                                                                         </div>
                                                                         <textarea
                                                                             rows={4}
                                                                             value={block.content || ''}
                                                                             onChange={(e) => handleUpdateActiveBlock({ content: e.target.value })}
-                                                                            className="w-full bg-transparent text-xs text-white/80 leading-relaxed border-none focus:outline-none resize-none"
+                                                                            className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-none ${
+                                                                                isDarkTheme ? 'text-white/80' : 'text-amber-900'
+                                                                            }`}
                                                                             placeholder="• Ý 1\n• Ý 2..."
                                                                         />
                                                                     </div>
@@ -891,29 +1057,39 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
 
                                                                 {/* 6. EXERCISE BLOCK */}
                                                                 {block.type === 'exercise' && (
-                                                                    <div className="bg-indigo-500/[0.04] border border-indigo-500/20 rounded-xl p-4 space-y-3">
+                                                                    <div className={`rounded-xl p-4 space-y-3 border ${
+                                                                        isDarkTheme
+                                                                            ? 'bg-indigo-500/[0.04] border-indigo-500/20 text-white/80'
+                                                                            : 'bg-[#eef2ff] border-[#c7d2fe] text-[#3730a3]'
+                                                                    }`}>
                                                                         <div className="flex items-center gap-2">
-                                                                            <span className="text-indigo-400 font-bold">✎</span>
+                                                                            <span className="font-bold">✎</span>
                                                                             <input
                                                                                 type="text"
                                                                                 value={block.title || 'Bài tập 1'}
                                                                                 onChange={(e) => handleUpdateActiveBlock({ title: e.target.value })}
-                                                                                className="bg-transparent font-bold text-xs text-indigo-300 focus:outline-none w-full"
+                                                                                className={`bg-transparent font-bold text-xs focus:outline-none w-full ${
+                                                                                    isDarkTheme ? 'text-indigo-300' : 'text-indigo-900'
+                                                                                }`}
                                                                             />
                                                                         </div>
                                                                         <textarea
                                                                             rows={2}
                                                                             value={block.content || ''}
                                                                             onChange={(e) => handleUpdateActiveBlock({ content: e.target.value })}
-                                                                            className="w-full bg-transparent text-xs text-white/80 leading-relaxed border-none focus:outline-none resize-none"
+                                                                            className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-none ${
+                                                                                isDarkTheme ? 'text-white/80' : 'text-indigo-900'
+                                                                            }`}
                                                                             placeholder="Mô tả yêu cầu bài tập..."
                                                                         />
 
-                                                                        <div className="pt-2 border-t border-indigo-500/10 space-y-2">
+                                                                        <div className={`pt-2 border-t space-y-2 ${
+                                                                            isDarkTheme ? 'border-indigo-500/10' : 'border-indigo-200'
+                                                                        }`}>
                                                                             <button
                                                                                 type="button"
                                                                                 onClick={() => handleUpdateActiveBlock({ isSolutionVisible: !block.isSolutionVisible })}
-                                                                                className="text-xs text-indigo-400 font-bold hover:underline flex items-center gap-1.5"
+                                                                                className="text-xs font-bold text-indigo-600 hover:underline flex items-center gap-1.5"
                                                                             >
                                                                                 <span>👁</span>
                                                                                 <span>{block.isSolutionVisible ? 'Ẩn đáp án' : 'Xem đáp án'}</span>
@@ -924,7 +1100,7 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                                                     rows={3}
                                                                                     value={block.solutionCode || ''}
                                                                                     onChange={(e) => handleUpdateActiveBlock({ solutionCode: e.target.value })}
-                                                                                    className="w-full bg-[#0a0a0f] p-3 rounded-lg font-mono text-xs text-emerald-400 border border-white/10 focus:outline-none"
+                                                                                    className="w-full bg-[#1e1e2e] p-3 rounded-lg font-mono text-xs text-emerald-300 border border-slate-700 focus:outline-none shadow-inner"
                                                                                     placeholder="Mã giải mẫu..."
                                                                                 />
                                                                             )}
@@ -935,7 +1111,7 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                                 {/* 7. DIVIDER */}
                                                                 {block.type === 'divider' && (
                                                                     <div className="py-2">
-                                                                        <hr className="border-white/10" />
+                                                                        <hr className={isDarkTheme ? 'border-white/10' : 'border-slate-200'} />
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -953,29 +1129,41 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                 </div>
 
                 {/* 3. RIGHT SIDEBAR: CÀI ĐẶT KHỐI (BLOCK PROPERTIES) */}
-                <div className="w-72 bg-[#121217] border-l border-white/10 p-5 flex flex-col gap-5 overflow-y-auto flex-shrink-0 text-left">
+                <div className={`w-72 border-l p-5 flex flex-col gap-5 overflow-y-auto flex-shrink-0 text-left ${
+                    isDarkTheme ? 'bg-[#121217] border-white/10' : 'bg-white border-slate-200'
+                }`}>
                     {/* General Lesson Properties */}
-                    <div className="space-y-3 pb-4 border-b border-white/5">
-                        <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block">
+                    <div className={`space-y-3 pb-4 border-b ${isDarkTheme ? 'border-white/5' : 'border-slate-200'}`}>
+                        <span className={`text-[10px] font-bold uppercase tracking-wider block ${
+                            isDarkTheme ? 'text-white/40' : 'text-slate-500'
+                        }`}>
                             Thông tin bài học
                         </span>
                         <div>
-                            <label className="block text-[11px] text-white/50 mb-1">Mã bài (Lesson ID)</label>
+                            <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                Mã bài (Lesson ID)
+                            </label>
                             <input
                                 type="text"
                                 value={lessonIdCode}
                                 onChange={(e) => { setLessonIdCode(e.target.value); setIsSaved(false); }}
-                                className="w-full bg-[#181820] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none"
+                                className={`w-full border rounded-lg px-2.5 py-1.5 text-xs font-mono focus:outline-none ${
+                                    isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                }`}
                                 placeholder="LS-01.01"
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                             <div>
-                                <label className="block text-[11px] text-white/50 mb-1">Độ khó</label>
+                                <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                    Độ khó
+                                </label>
                                 <select
                                     value={difficulty}
                                     onChange={(e) => { setDifficulty(e.target.value); setIsSaved(false); }}
-                                    className="w-full bg-[#181820] border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none"
+                                    className={`w-full border rounded-lg px-2 py-1.5 text-xs focus:outline-none ${
+                                        isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                    }`}
                                 >
                                     <option value="EASY">Dễ</option>
                                     <option value="MEDIUM">Vừa</option>
@@ -983,34 +1171,46 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-[11px] text-white/50 mb-1">Thời lượng</label>
+                                <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                    Thời lượng
+                                </label>
                                 <input
                                     type="number"
                                     value={durationMinutes}
                                     onChange={(e) => { setDurationMinutes(Number(e.target.value)); setIsSaved(false); }}
-                                    className="w-full bg-[#181820] border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none"
+                                    className={`w-full border rounded-lg px-2 py-1.5 text-xs focus:outline-none ${
+                                        isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                    }`}
                                 />
                             </div>
                         </div>
                         <div>
-                            <label className="block text-[11px] text-white/50 mb-1">Mục tiêu bài học</label>
+                            <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                Mục tiêu bài học
+                            </label>
                             <textarea
                                 rows={2}
                                 value={objective}
                                 onChange={(e) => { setObjective(e.target.value); setIsSaved(false); }}
-                                className="w-full bg-[#181820] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none resize-none"
+                                className={`w-full border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none resize-none ${
+                                    isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                }`}
                                 placeholder="Mục tiêu bài học..."
                             />
                         </div>
                     </div>
 
                     <div>
-                        <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block mb-1">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider block mb-1 ${
+                            isDarkTheme ? 'text-white/40' : 'text-slate-500'
+                        }`}>
                             CÀI ĐẶT KHỐI
                         </span>
-                        <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                        <h4 className={`text-sm font-bold flex items-center gap-2 ${
+                            isDarkTheme ? 'text-white' : 'text-slate-900'
+                        }`}>
                             <span>{activeBlock?.type === 'code' ? '</> Khối mã' : activeBlock?.type === 'heading' ? 'H Tiêu đề' : activeBlock?.type}</span>
-                            {activeBlock?.language && <span className="text-xs text-purple-400">({activeBlock.language})</span>}
+                            {activeBlock?.language && <span className="text-xs text-purple-600">({activeBlock.language})</span>}
                         </h4>
                     </div>
 
@@ -1018,11 +1218,15 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                     {activeBlock?.type === 'code' && (
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-xs font-semibold text-white/70 mb-1.5">Ngôn ngữ</label>
+                                <label className={`block text-xs font-semibold mb-1.5 ${isDarkTheme ? 'text-white/70' : 'text-slate-700'}`}>
+                                    Ngôn ngữ
+                                </label>
                                 <select
                                     value={activeBlock.language || 'SQL'}
                                     onChange={(e) => handleUpdateActiveBlock({ language: e.target.value })}
-                                    className="w-full bg-[#181820] border border-white/10 rounded-lg px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-purple-500"
+                                    className={`w-full border rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:border-purple-500 ${
+                                        isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
+                                    }`}
                                 >
                                     <option value="SQL">SQL</option>
                                     <option value="Python">Python</option>
@@ -1032,47 +1236,61 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                             </div>
 
                             <div className="flex items-center justify-between">
-                                <span className="text-xs text-white/80">Hiển thị số dòng</span>
+                                <span className={`text-xs font-medium ${isDarkTheme ? 'text-white/80' : 'text-slate-700'}`}>
+                                    Hiển thị số dòng
+                                </span>
                                 <input
                                     type="checkbox"
                                     checked={activeBlock.showLineNumbers ?? true}
                                     onChange={(e) => handleUpdateActiveBlock({ showLineNumbers: e.target.checked })}
-                                    className="accent-purple-500 cursor-pointer w-4 h-4"
+                                    className="accent-purple-600 cursor-pointer w-4 h-4"
                                 />
                             </div>
 
                             <div className="flex items-center justify-between">
-                                <span className="text-xs text-white/80">Cho phép copy code</span>
+                                <span className={`text-xs font-medium ${isDarkTheme ? 'text-white/80' : 'text-slate-700'}`}>
+                                    Cho phép copy code
+                                </span>
                                 <input
                                     type="checkbox"
                                     checked={activeBlock.allowCopy ?? true}
                                     onChange={(e) => handleUpdateActiveBlock({ allowCopy: e.target.checked })}
-                                    className="accent-purple-500 cursor-pointer w-4 h-4"
+                                    className="accent-purple-600 cursor-pointer w-4 h-4"
                                 />
                             </div>
                         </div>
                     )}
 
                     {/* Common Appearance Settings */}
-                    <div className="space-y-3 pt-3 border-t border-white/5">
-                        <span className="text-xs font-bold text-white/60 block">Giao diện</span>
+                    <div className={`space-y-3 pt-3 border-t ${isDarkTheme ? 'border-white/5' : 'border-slate-200'}`}>
+                        <span className={`text-xs font-bold block ${isDarkTheme ? 'text-white/60' : 'text-slate-700'}`}>
+                            Giao diện
+                        </span>
                         <div>
-                            <label className="block text-[11px] text-white/50 mb-1">Chủ đề</label>
+                            <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                Chủ đề
+                            </label>
                             <select
                                 value={activeBlock?.theme || 'Dark'}
                                 onChange={(e) => handleUpdateActiveBlock({ theme: e.target.value as any })}
-                                className="w-full bg-[#181820] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none"
+                                className={`w-full border rounded-lg px-3 py-1.5 text-xs focus:outline-none ${
+                                    isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                }`}
                             >
                                 <option value="Dark">Dark</option>
                                 <option value="Light">Light</option>
                             </select>
                         </div>
                         <div>
-                            <label className="block text-[11px] text-white/50 mb-1">Kích thước chữ</label>
+                            <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                Kích thước chữ
+                            </label>
                             <select
                                 value={activeBlock?.fontSize || '14px'}
                                 onChange={(e) => handleUpdateActiveBlock({ fontSize: e.target.value })}
-                                className="w-full bg-[#181820] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none"
+                                className={`w-full border rounded-lg px-3 py-1.5 text-xs focus:outline-none ${
+                                    isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                }`}
                             >
                                 <option value="12px">12px (Nhỏ)</option>
                                 <option value="14px">14px (Chuẩn)</option>
@@ -1082,36 +1300,46 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                     </div>
 
                     {/* Advanced Settings */}
-                    <div className="space-y-3 pt-3 border-t border-white/5">
-                        <span className="text-xs font-bold text-white/60 block">Nâng cao</span>
+                    <div className={`space-y-3 pt-3 border-t ${isDarkTheme ? 'border-white/5' : 'border-slate-200'}`}>
+                        <span className={`text-xs font-bold block ${isDarkTheme ? 'text-white/60' : 'text-slate-700'}`}>
+                            Nâng cao
+                        </span>
                         <div>
-                            <label className="block text-[11px] text-white/50 mb-1">ID (HTML)</label>
+                            <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                ID (HTML)
+                            </label>
                             <input
                                 type="text"
                                 value={activeBlock?.htmlId || ''}
                                 onChange={(e) => handleUpdateActiveBlock({ htmlId: e.target.value })}
                                 placeholder={`block-${activeBlock?.id || 'id'}`}
-                                className="w-full bg-[#181820] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:outline-none"
+                                className={`w-full border rounded-lg px-3 py-1.5 text-xs font-mono focus:outline-none ${
+                                    isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                }`}
                             />
                         </div>
                         <div>
-                            <label className="block text-[11px] text-white/50 mb-1">Ghi chú nội bộ</label>
+                            <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                Ghi chú nội bộ
+                            </label>
                             <textarea
                                 rows={2}
                                 value={activeBlock?.internalNote || ''}
                                 onChange={(e) => handleUpdateActiveBlock({ internalNote: e.target.value })}
                                 placeholder="Ghi chú thêm cho khối..."
-                                className="w-full bg-[#181820] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none resize-none"
+                                className={`w-full border rounded-lg px-3 py-1.5 text-xs focus:outline-none resize-none ${
+                                    isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                }`}
                             />
                         </div>
                     </div>
 
                     {/* Delete Action Button */}
-                    <div className="mt-auto pt-4 border-t border-white/10">
+                    <div className={`mt-auto pt-4 border-t ${isDarkTheme ? 'border-white/10' : 'border-slate-200'}`}>
                         <button
                             type="button"
                             onClick={() => activeBlock && handleDeleteBlock(activeBlock.id)}
-                            className="w-full py-2 rounded-lg border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-bold transition-colors"
+                            className="w-full py-2 rounded-lg border border-rose-300 text-rose-600 hover:bg-rose-50 text-xs font-bold transition-colors shadow-sm"
                         >
                             Xóa khối này
                         </button>
@@ -1119,10 +1347,14 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                 </div>
             </div>
 
-            {/* 4. BOTTOM BAR: CẤU TRÚC BÀI HỌC (BREADCRUMB / MINI-MAP) */}
-            <div className="h-14 bg-[#121217] border-t border-white/10 px-6 flex items-center justify-between text-xs flex-shrink-0 z-20">
+            {/* 3. BOTTOM BAR: CẤU TRÚC BÀI HỌC (BREADCRUMB / MINI-MAP) */}
+            <div className={`h-14 px-6 flex items-center justify-between text-xs flex-shrink-0 z-20 border-t shadow-sm ${
+                isDarkTheme ? 'bg-[#121217] border-white/10' : 'bg-white border-slate-200'
+            }`}>
                 <div className="flex items-center gap-2 overflow-x-auto py-1 max-w-5xl">
-                    <span className="text-[11px] font-bold text-white/50 uppercase tracking-wider whitespace-nowrap mr-2">
+                    <span className={`text-[11px] font-bold uppercase tracking-wider whitespace-nowrap mr-2 ${
+                        isDarkTheme ? 'text-white/50' : 'text-slate-500'
+                    }`}>
                         Cấu trúc bài học:
                     </span>
 
@@ -1134,8 +1366,10 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                     onClick={() => setSelectedBlockId(b.id)}
                                     className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                                         isSelected
-                                            ? 'bg-purple-600 text-white shadow-sm'
-                                            : 'bg-white/5 hover:bg-white/10 text-white/70'
+                                            ? 'bg-purple-600 text-white shadow-sm ring-2 ring-purple-300'
+                                            : isDarkTheme
+                                                ? 'bg-white/5 hover:bg-white/10 text-white/70'
+                                                : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
                                     }`}
                                 >
                                     <span>
@@ -1149,7 +1383,7 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                     </span>
                                 </button>
                                 {idx < blocks.length - 1 && (
-                                    <span className="text-white/30 text-[11px]">&gt;</span>
+                                    <span className={`text-[11px] ${isDarkTheme ? 'text-white/30' : 'text-slate-400'}`}>&gt;</span>
                                 )}
                             </React.Fragment>
                         );
@@ -1157,14 +1391,16 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
 
                     <button
                         onClick={() => handleAddBlock('paragraph')}
-                        className="px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600/30 transition-all ml-2"
+                        className="px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 transition-all ml-2 shadow-sm"
                     >
                         + Thêm khối
                     </button>
                 </div>
 
-                <div className="text-xs text-white/40 whitespace-nowrap hidden lg:block">
-                    Tổng cộng: <strong className="text-white">{blocks.length}</strong> khối nội dung
+                <div className={`text-xs whitespace-nowrap hidden lg:block ${
+                    isDarkTheme ? 'text-white/40' : 'text-slate-500'
+                }`}>
+                    Tổng cộng: <strong className={isDarkTheme ? 'text-white' : 'text-slate-900'}>{blocks.length}</strong> khối nội dung
                 </div>
             </div>
         </div>,
