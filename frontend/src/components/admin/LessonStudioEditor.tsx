@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
+import {
+    DragDropContext,
+    Droppable,
+    Draggable,
+    type DropResult,
+    type DroppableProvided,
+    type DraggableProvided
+} from '@hello-pangea/dnd';
 
 export type BlockType =
     | 'heading'
@@ -668,7 +675,7 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                         {/* Drag & Drop Blocks Container */}
                         <DragDropContext onDragEnd={onDragEnd}>
                             <Droppable droppableId="lesson-blocks-droppable">
-                                {(provided) => (
+                                {(provided: DroppableProvided) => (
                                     <div
                                         {...provided.droppableProps}
                                         ref={provided.innerRef}
@@ -679,7 +686,7 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
 
                                             return (
                                                 <Draggable key={block.id} draggableId={block.id} index={index}>
-                                                    {(providedDraggable) => (
+                                                    {(providedDraggable: DraggableProvided) => (
                                                         <div
                                                             ref={providedDraggable.innerRef}
                                                             {...providedDraggable.draggableProps}
