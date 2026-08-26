@@ -110,7 +110,7 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                     {/* Block Title in Header */}
                     {block.type === 'code' && (
                         <span className="text-xs font-bold text-slate-300 font-mono">
-                            {block.language || 'SQL'}
+                            {block.language || 'Python'}
                         </span>
                     )}
                     {block.type === 'iframe' && (
@@ -119,20 +119,38 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                         </span>
                     )}
                     {(block.type === 'output' || block.type === 'sql_output' || block.type === 'table') && (
-                        <span className="text-xs font-bold text-slate-800">
-                            {block.title || 'Kết quả (ví dụ)'}
-                        </span>
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+                            <input
+                                type="text"
+                                value={block.title || ''}
+                                onChange={(e) => onUpdateActiveBlock({ title: e.target.value })}
+                                placeholder="Kết quả (ví dụ)..."
+                                className="bg-transparent border-none outline-none font-bold text-xs text-slate-800 focus:text-slate-950 placeholder-slate-400 min-w-[120px] max-w-[400px]"
+                            />
+                        </div>
                     )}
                     {(block.type === 'explanation' || block.type === 'callout' || block.type === 'note') && (
                         <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
                             <span>💡</span>
-                            <span>{block.title || 'Giải thích'}</span>
+                            <input
+                                type="text"
+                                value={block.title || ''}
+                                onChange={(e) => onUpdateActiveBlock({ title: e.target.value })}
+                                placeholder="Giải thích / Tiêu đề câu hỏi..."
+                                className="bg-transparent border-none outline-none font-bold text-xs text-amber-900 focus:text-amber-950 placeholder-amber-700/50 min-w-[200px] max-w-[500px]"
+                            />
                         </div>
                     )}
                     {block.type === 'exercise' && (
                         <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-900">
                             <span>✎</span>
-                            <span>{block.title || 'Bài tập vận dụng'}</span>
+                            <input
+                                type="text"
+                                value={block.title || ''}
+                                onChange={(e) => onUpdateActiveBlock({ title: e.target.value })}
+                                placeholder="Bài tập vận dụng..."
+                                className="bg-transparent border-none outline-none font-bold text-xs text-indigo-900 focus:text-indigo-950 placeholder-indigo-700/50 min-w-[200px] max-w-[500px]"
+                            />
                         </div>
                     )}
                     {block.type === 'heading' && (
