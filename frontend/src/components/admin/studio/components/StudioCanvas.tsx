@@ -76,71 +76,79 @@ export const StudioCanvas: React.FC<StudioCanvasProps> = ({
     };
 
     return (
-        <div className={`flex-1 p-6 overflow-y-auto flex justify-center ${
+        <div className={`flex-1 flex flex-col overflow-hidden ${
             isDarkTheme ? 'bg-[#09090c]' : 'bg-[#f1f5f9]'
         }`}>
-            <div className="w-full max-w-4xl space-y-4">
-                {/* 1. TOP FUNCTIONAL FORMATTING TOOLBAR MATCHING SCREENSHOT */}
-                <StudioFormattingToolbar
-                    isDarkTheme={isDarkTheme}
-                    activeHeadingLevel={activeBlock?.type === 'heading' ? (activeBlock.headingLevel || 'H2') : 'H2'}
-                    onChangeHeadingLevel={handleChangeHeadingLevel}
-                    onApplyFormat={handleApplyFormat}
-                    onInsertBlock={handleInsertBlockFromToolbar}
-                />
+            {/* 1. STICKY TOP TOOLBAR: CỐ ĐỊNH KHI CUỘN NỘI DUNG */}
+            <div className={`px-6 py-2.5 border-b flex justify-center flex-shrink-0 z-30 shadow-sm backdrop-blur-md ${
+                isDarkTheme ? 'bg-[#121217]/95 border-white/10' : 'bg-white/95 border-slate-200'
+            }`}>
+                <div className="w-full max-w-4xl">
+                    <StudioFormattingToolbar
+                        isDarkTheme={isDarkTheme}
+                        activeHeadingLevel={activeBlock?.type === 'heading' ? (activeBlock.headingLevel || 'H2') : 'H2'}
+                        onChangeHeadingLevel={handleChangeHeadingLevel}
+                        onApplyFormat={handleApplyFormat}
+                        onInsertBlock={handleInsertBlockFromToolbar}
+                    />
+                </div>
+            </div>
 
-                {/* 2. DROPPABLE LESSON BLOCKS CANVAS */}
-                <Droppable droppableId="lesson-blocks-droppable">
-                    {(provided: DroppableProvided) => (
-                        <div
-                            {...provided.droppableProps}
-                            ref={provided.innerRef}
-                            className="space-y-4 min-h-[300px]"
-                        >
-                            {blocks.map((block, index) => {
-                                const isSelected = selectedBlockId === block.id;
+            {/* 2. SCROLLABLE LESSON BLOCKS CANVAS */}
+            <div className="flex-1 p-6 overflow-y-auto flex justify-center">
+                <div className="w-full max-w-4xl space-y-4">
+                    <Droppable droppableId="lesson-blocks-droppable">
+                        {(provided: DroppableProvided) => (
+                            <div
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                                className="space-y-4 min-h-[300px]"
+                            >
+                                {blocks.map((block, index) => {
+                                    const isSelected = selectedBlockId === block.id;
 
-                                return (
-                                    <Draggable key={block.id} draggableId={block.id} index={index}>
-                                        {(providedDraggable: DraggableProvided) => (
-                                            <div
-                                                ref={providedDraggable.innerRef}
-                                                {...providedDraggable.draggableProps}
-                                                className="space-y-2"
-                                            >
-                                                {/* Main Block Card */}
-                                                <StudioBlockCard
-                                                    block={block}
-                                                    index={index}
-                                                    isSelected={isSelected}
-                                                    isDarkTheme={isDarkTheme}
-                                                    providedDraggable={providedDraggable}
-                                                    onSelect={() => onSelectBlock(block.id)}
-                                                    onDelete={() => onDeleteBlock(block.id)}
-                                                    onUpdateActiveBlock={onUpdateActiveBlock}
-                                                />
+                                    return (
+                                        <Draggable key={block.id} draggableId={block.id} index={index}>
+                                            {(providedDraggable: DraggableProvided) => (
+                                                <div
+                                                    ref={providedDraggable.innerRef}
+                                                    {...providedDraggable.draggableProps}
+                                                    className="space-y-2"
+                                                >
+                                                    {/* Main Block Card */}
+                                                    <StudioBlockCard
+                                                        block={block}
+                                                        index={index}
+                                                        isSelected={isSelected}
+                                                        isDarkTheme={isDarkTheme}
+                                                        providedDraggable={providedDraggable}
+                                                        onSelect={() => onSelectBlock(block.id)}
+                                                        onDelete={() => onDeleteBlock(block.id)}
+                                                        onUpdateActiveBlock={onUpdateActiveBlock}
+                                                    />
 
-                                                {/* Inline Insert Bar Directly Below This Block */}
-                                                <StudioInlineInsertBar
-                                                    index={index}
-                                                    isOpen={insertMenuOpenIndex === index}
-                                                    isDarkTheme={isDarkTheme}
-                                                    onToggle={(e) => {
-                                                        e.stopPropagation();
-                                                        setInsertMenuOpenIndex(insertMenuOpenIndex === index ? null : index);
-                                                    }}
-                                                    onClose={() => setInsertMenuOpenIndex(null)}
-                                                    onInsertBlockAt={onInsertBlockAt}
-                                                />
-                                            </div>
-                                        )}
-                                    </Draggable>
-                                );
-                            })}
-                            {provided.placeholder}
-                        </div>
-                    )}
-                </Droppable>
+                                                    {/* Inline Insert Bar Directly Below This Block */}
+                                                    <StudioInlineInsertBar
+                                                        index={index}
+                                                        isOpen={insertMenuOpenIndex === index}
+                                                        isDarkTheme={isDarkTheme}
+                                                        onToggle={(e) => {
+                                                            e.stopPropagation();
+                                                            setInsertMenuOpenIndex(insertMenuOpenIndex === index ? null : index);
+                                                        }}
+                                                        onClose={() => setInsertMenuOpenIndex(null)}
+                                                        onInsertBlockAt={onInsertBlockAt}
+                                                    />
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    );
+                                })}
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+                </div>
             </div>
         </div>
     );
