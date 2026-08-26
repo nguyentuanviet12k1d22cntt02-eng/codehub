@@ -9,7 +9,7 @@ interface RichTextEditableProps {
     autoFocus?: boolean;
 }
 
-// Convert markdown symbols into clean HTML for WYSIWYG
+// Convert markdown symbols into clean visual HTML for WYSIWYG
 export const markdownToHtml = (md: string = ''): string => {
     if (!md) return '';
     let html = md;
@@ -18,15 +18,62 @@ export const markdownToHtml = (md: string = ''): string => {
     html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
     
-    // Italic *text* or _text_
-    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    html = html.replace(/_(.*?)_/g, '<em>$1</em>');
-    
     // Strikethrough ~~text~~
     html = html.replace(/~~(.*?)~~/g, '<del>$1</del>');
     
     // Inline code `code`
     html = html.replace(/`([^`]+)`/g, '<code style="background-color: rgba(147, 51, 234, 0.1); color: #7e22ce; padding: 2px 5px; border-radius: 4px; font-family: monospace;">$1</code>');
+
+    // Bullet & Numbered list parsing
+    const lines = html.split('\n');
+    let inList = false;
+    let listType: 'ul' | 'ol' | null = null;
+    const processedLines: string[] = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trim();
+        const isBullet = /^(\*|\-|\+|•)\s+(.*)$/.exec(trimmed);
+        const isOrdered = /^(\d+)\.\s+(.*)$/.exec(trimmed);
+
+        if (isBullet) {
+            if (!inList || listType !== 'ul') {
+                if (inList) processedLines.push(listType === 'ol' ? '</ol>' : '</ul>');
+                processedLines.push('<ul class="list-disc pl-5 my-1 space-y-1">');
+                inList = true;
+                listType = 'ul';
+            }
+            // Parse italic inside list item if any
+            let itemContent = isBullet[2].replace(/(?<!\*)\*([^\*\n]+)\*(?!\*)/g, '<em>$1</em>');
+            processedLines.push(`<li>${itemContent}</li>`);
+        } else if (isOrdered) {
+            if (!inList || listType !== 'ol') {
+                if (inList) processedLines.push(listType === 'ul' ? '</ul>' : '</ol>');
+                processedLines.push('<ol class="list-decimal pl-5 my-1 space-y-1">');
+                inList = true;
+                listType = 'ol';
+            }
+            let itemContent = isOrdered[2].replace(/(?<!\*)\*([^\*\n]+)\*(?!\*)/g, '<em>$1</em>');
+            processedLines.push(`<li>${itemContent}</li>`);
+        } else {
+            if (inList) {
+                processedLines.push(listType === 'ol' ? '</ol>' : '</ul>');
+                inList = false;
+                listType = null;
+            }
+            // Parse italic in normal paragraph lines
+            let lineContent = line.replace(/(?<!\*)\*([^\*\n]+)\*(?!\*)/g, '<em>$1</em>');
+            processedLines.push(lineContent);
+        }
+    }
+    if (inList) {
+        processedLines.push(listType === 'ol' ? '</ol>' : '</ul>');
+    }
+
+    html = processedLines.join('\n');
+
+    // Convert newlines to <br/> outside of list tags
+    html = html.replace(/\n(?!(<\/?(ul|ol|li|div|p|h[1-6]|table|blockquote)))/gi, '<br/>');
 
     return html;
 };
@@ -53,6 +100,11 @@ export const htmlToMarkdown = (html: string = ''): string => {
         if (tagName === 'del' || tagName === 's') return `~~${inner}~~`;
         if (tagName === 'code') return `\`${inner}\``;
         if (tagName === 'br') return '\n';
+
+        // Lists
+        if (tagName === 'ul') return `${inner}\n`;
+        if (tagName === 'ol') return `${inner}\n`;
+        if (tagName === 'li') return `* ${inner.trim()}\n`;
 
         // Alignment check
         const align = el.getAttribute('align') || el.style.textAlign;
