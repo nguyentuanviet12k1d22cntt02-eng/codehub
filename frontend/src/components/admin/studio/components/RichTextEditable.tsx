@@ -12,70 +12,58 @@ interface RichTextEditableProps {
 // Convert markdown symbols into clean visual HTML for WYSIWYG
 export const markdownToHtml = (md: string = ''): string => {
     if (!md) return '';
-    let html = md;
+    let text = md;
 
-    // Bold **text** or __text__
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
-    
-    // Strikethrough ~~text~~
-    html = html.replace(/~~(.*?)~~/g, '<del>$1</del>');
-    
-    // Inline code `code`
-    html = html.replace(/`([^`]+)`/g, '<code style="background-color: rgba(147, 51, 234, 0.1); color: #7e22ce; padding: 2px 5px; border-radius: 4px; font-family: monospace;">$1</code>');
+    // 1. Bold & Strikethrough & Code
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/__(.*?)__/g, '<strong>$1</strong>');
+    text = text.replace(/~~(.*?)~~/g, '<del>$1</del>');
+    text = text.replace(/`([^`]+)`/g, '<code style="background-color: rgba(147, 51, 234, 0.1); color: #7e22ce; padding: 2px 5px; border-radius: 4px; font-family: monospace;">$1</code>');
 
-    // Bullet & Numbered list parsing
-    const lines = html.split('\n');
-    let inList = false;
-    let listType: 'ul' | 'ol' | null = null;
-    const processedLines: string[] = [];
+    // 2. Line by line processing for Lists
+    const lines = text.split('\n');
+    const result: string[] = [];
+    let currentList: { type: 'ul' | 'ol'; items: string[] } | null = null;
+
+    const flushList = () => {
+        if (!currentList) return;
+        const tag = currentList.type;
+        const listClass = tag === 'ul' ? 'list-disc pl-5 my-1 space-y-1' : 'list-decimal pl-5 my-1 space-y-1';
+        const lis = currentList.items.map(item => `<li>${item}</li>`).join('');
+        result.push(`<${tag} class="${listClass}">${lis}</${tag}>`);
+        currentList = null;
+    };
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const trimmed = line.trim();
-        const isBullet = /^(\*|\-|\+|•)\s+(.*)$/.exec(trimmed);
-        const isOrdered = /^(\d+)\.\s+(.*)$/.exec(trimmed);
 
-        if (isBullet) {
-            if (!inList || listType !== 'ul') {
-                if (inList) processedLines.push(listType === 'ol' ? '</ol>' : '</ul>');
-                processedLines.push('<ul class="list-disc pl-5 my-1 space-y-1">');
-                inList = true;
-                listType = 'ul';
-            }
-            // Parse italic inside list item if any
-            let itemContent = isBullet[2].replace(/(?<!\*)\*([^\*\n]+)\*(?!\*)/g, '<em>$1</em>');
-            processedLines.push(`<li>${itemContent}</li>`);
-        } else if (isOrdered) {
-            if (!inList || listType !== 'ol') {
-                if (inList) processedLines.push(listType === 'ul' ? '</ul>' : '</ol>');
-                processedLines.push('<ol class="list-decimal pl-5 my-1 space-y-1">');
-                inList = true;
-                listType = 'ol';
-            }
-            let itemContent = isOrdered[2].replace(/(?<!\*)\*([^\*\n]+)\*(?!\*)/g, '<em>$1</em>');
-            processedLines.push(`<li>${itemContent}</li>`);
+        const bulletMatch = /^(\*|\-|\+|•)\s+(.*)$/.exec(trimmed);
+        const orderMatch = /^(\d+)\.\s+(.*)$/.exec(trimmed);
+
+        if (bulletMatch) {
+            if (currentList && currentList.type !== 'ul') flushList();
+            if (!currentList) currentList = { type: 'ul', items: [] };
+            let itemContent = bulletMatch[2].replace(/(?<!\*)\*([^\*\n]+)\*(?!\*)/g, '<em>$1</em>');
+            currentList.items.push(itemContent);
+        } else if (orderMatch) {
+            if (currentList && currentList.type !== 'ol') flushList();
+            if (!currentList) currentList = { type: 'ol', items: [] };
+            let itemContent = orderMatch[2].replace(/(?<!\*)\*([^\*\n]+)\*(?!\*)/g, '<em>$1</em>');
+            currentList.items.push(itemContent);
         } else {
-            if (inList) {
-                processedLines.push(listType === 'ol' ? '</ol>' : '</ul>');
-                inList = false;
-                listType = null;
+            flushList();
+            if (trimmed === '') {
+                // Ignore empty lines between list items or add paragraph spacing
+                continue;
             }
-            // Parse italic in normal paragraph lines
             let lineContent = line.replace(/(?<!\*)\*([^\*\n]+)\*(?!\*)/g, '<em>$1</em>');
-            processedLines.push(lineContent);
+            result.push(lineContent);
         }
     }
-    if (inList) {
-        processedLines.push(listType === 'ol' ? '</ol>' : '</ul>');
-    }
+    flushList();
 
-    html = processedLines.join('\n');
-
-    // Convert newlines to <br/> outside of list tags
-    html = html.replace(/\n(?!(<\/?(ul|ol|li|div|p|h[1-6]|table|blockquote)))/gi, '<br/>');
-
-    return html;
+    return result.join('<br/>');
 };
 
 // Convert innerHTML back to clean Markdown with accurate DOM traversal
@@ -93,6 +81,20 @@ export const htmlToMarkdown = (html: string = ''): string => {
 
         const el = node as HTMLElement;
         const tagName = el.tagName.toLowerCase();
+
+        // Handle Lists with clean single lines and no empty items
+        if (tagName === 'ul') {
+            const lis = Array.from(el.children).filter(c => c.tagName.toLowerCase() === 'li');
+            return lis.map(li => `* ${Array.from(li.childNodes).map(serializeNode).join('').trim()}`).join('\n') + '\n';
+        }
+        if (tagName === 'ol') {
+            const lis = Array.from(el.children).filter(c => c.tagName.toLowerCase() === 'li');
+            return lis.map((li, idx) => `${idx + 1}. ${Array.from(li.childNodes).map(serializeNode).join('').trim()}`).join('\n') + '\n';
+        }
+        if (tagName === 'li') {
+            return `* ${Array.from(el.childNodes).map(serializeNode).join('').trim()}\n`;
+        }
+
         const inner = Array.from(el.childNodes).map(serializeNode).join('');
 
         if (tagName === 'strong' || tagName === 'b') return `**${inner}**`;
@@ -100,11 +102,6 @@ export const htmlToMarkdown = (html: string = ''): string => {
         if (tagName === 'del' || tagName === 's') return `~~${inner}~~`;
         if (tagName === 'code') return `\`${inner}\``;
         if (tagName === 'br') return '\n';
-
-        // Lists
-        if (tagName === 'ul') return `${inner}\n`;
-        if (tagName === 'ol') return `${inner}\n`;
-        if (tagName === 'li') return `* ${inner.trim()}\n`;
 
         // Alignment check
         const align = el.getAttribute('align') || el.style.textAlign;
@@ -119,6 +116,8 @@ export const htmlToMarkdown = (html: string = ''): string => {
     };
 
     let md = Array.from(tempDiv.childNodes).map(serializeNode).join('').trim();
+    // Normalize excessive newlines (keep at most 2 newlines)
+    md = md.replace(/\n{3,}/g, '\n\n');
     return md;
 };
 
