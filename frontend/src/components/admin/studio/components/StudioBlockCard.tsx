@@ -92,10 +92,10 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
             {/* Top Block Header: NO solid divider line beneath it */}
             <div className="px-3 pt-2.5 pb-1 flex items-center justify-between">
                 {/* Left: Drag Handle & Title */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-1 min-w-0 mr-2">
                     <div
                         {...providedDraggable.dragHandleProps}
-                        className={`cursor-grab active:cursor-grabbing flex items-center ${
+                        className={`cursor-grab active:cursor-grabbing flex items-center flex-shrink-0 ${
                             block.type === 'code' && !isDarkTheme
                                 ? 'text-slate-500 hover:text-white'
                                 : isDarkTheme
@@ -119,37 +119,37 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                         </span>
                     )}
                     {(block.type === 'output' || block.type === 'sql_output' || block.type === 'table') && (
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 flex-1 min-w-0">
                             <input
                                 type="text"
                                 value={block.title || ''}
                                 onChange={(e) => onUpdateActiveBlock({ title: e.target.value })}
                                 placeholder="Kết quả (ví dụ)..."
-                                className="bg-transparent border-none outline-none font-bold text-xs text-slate-800 focus:text-slate-950 placeholder-slate-400 min-w-[120px] max-w-[400px]"
+                                className="bg-transparent border-none outline-none font-bold text-xs text-slate-800 focus:text-slate-950 placeholder-slate-400 w-full min-w-0"
                             />
                         </div>
                     )}
                     {(block.type === 'explanation' || block.type === 'callout' || block.type === 'note') && (
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-                            <span>💡</span>
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900 flex-1 min-w-0">
+                            <span className="flex-shrink-0">💡</span>
                             <input
                                 type="text"
                                 value={block.title || ''}
                                 onChange={(e) => onUpdateActiveBlock({ title: e.target.value })}
                                 placeholder="Giải thích / Tiêu đề câu hỏi..."
-                                className="bg-transparent border-none outline-none font-bold text-xs text-amber-900 focus:text-amber-950 placeholder-amber-700/50 min-w-[200px] max-w-[500px]"
+                                className="bg-transparent border-none outline-none font-bold text-xs text-amber-900 focus:text-amber-950 placeholder-amber-700/50 w-full min-w-0"
                             />
                         </div>
                     )}
                     {block.type === 'exercise' && (
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-900">
-                            <span>✎</span>
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-900 flex-1 min-w-0">
+                            <span className="flex-shrink-0">✎</span>
                             <input
                                 type="text"
                                 value={block.title || ''}
                                 onChange={(e) => onUpdateActiveBlock({ title: e.target.value })}
                                 placeholder="Bài tập vận dụng..."
-                                className="bg-transparent border-none outline-none font-bold text-xs text-indigo-900 focus:text-indigo-950 placeholder-indigo-700/50 min-w-[200px] max-w-[500px]"
+                                className="bg-transparent border-none outline-none font-bold text-xs text-indigo-900 focus:text-indigo-950 placeholder-indigo-700/50 w-full min-w-0"
                             />
                         </div>
                     )}
@@ -166,7 +166,7 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                 </div>
 
                 {/* Right: Pill Badge & Delete Action */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 flex-shrink-0">
                     {/* Badge Pill with 2px corner */}
                     <span className={`text-[10px] px-2 py-0.5 rounded-[2px] font-semibold ${
                         block.type === 'code' || block.type === 'iframe'
