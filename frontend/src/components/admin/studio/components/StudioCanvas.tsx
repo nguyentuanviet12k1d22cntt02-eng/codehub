@@ -1,5 +1,6 @@
 import React from 'react';
 import { Droppable, Draggable, type DroppableProvided, type DraggableProvided } from '@hello-pangea/dnd';
+import { StudioFormattingToolbar } from './StudioFormattingToolbar';
 import { StudioBlockCard } from './StudioBlockCard';
 import { StudioInlineInsertBar } from './StudioInlineInsertBar';
 import type { BlockType, LessonBlock } from '../types';
@@ -14,6 +15,7 @@ interface StudioCanvasProps {
     onDeleteBlock: (id: string) => void;
     onUpdateActiveBlock: (fields: Partial<LessonBlock>) => void;
     onInsertBlockAt: (type: BlockType, index: number) => void;
+    onAddBlock: (type: BlockType) => void;
 }
 
 export const StudioCanvas: React.FC<StudioCanvasProps> = ({
@@ -25,38 +27,69 @@ export const StudioCanvas: React.FC<StudioCanvasProps> = ({
     onSelectBlock,
     onDeleteBlock,
     onUpdateActiveBlock,
-    onInsertBlockAt
+    onInsertBlockAt,
+    onAddBlock
 }) => {
+    const activeBlock = blocks.find(b => b.id === selectedBlockId);
+
+    const handleApplyFormat = (command: string, value?: string) => {
+        if (command === 'code') {
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                const selectedText = range.toString();
+                if (selectedText) {
+                    const codeNode = document.createElement('code');
+                    codeNode.style.backgroundColor = 'rgba(147, 51, 234, 0.1)';
+                    codeNode.style.color = '#7e22ce';
+                    codeNode.style.padding = '2px 5px';
+                    codeNode.style.borderRadius = '4px';
+                    codeNode.style.fontFamily = 'monospace';
+                    codeNode.textContent = selectedText;
+                    range.deleteContents();
+                    range.insertNode(codeNode);
+                }
+            }
+            return;
+        }
+
+        document.execCommand(command, false, value);
+    };
+
+    const handleChangeHeadingLevel = (level: 'H1' | 'H2' | 'H3') => {
+        if (activeBlock) {
+            if (activeBlock.type === 'heading') {
+                onUpdateActiveBlock({ headingLevel: level });
+            } else {
+                onUpdateActiveBlock({ type: 'heading', headingLevel: level, title: activeBlock.title || activeBlock.content });
+            }
+        }
+    };
+
+    const handleInsertBlockFromToolbar = (type: BlockType) => {
+        const activeIndex = blocks.findIndex(b => b.id === selectedBlockId);
+        if (activeIndex >= 0) {
+            onInsertBlockAt(type, activeIndex);
+        } else {
+            onAddBlock(type);
+        }
+    };
+
     return (
         <div className={`flex-1 p-6 overflow-y-auto flex justify-center ${
             isDarkTheme ? 'bg-[#09090c]' : 'bg-[#f1f5f9]'
         }`}>
             <div className="w-full max-w-4xl space-y-4">
-                {/* Top Formatting Ribbon */}
-                <div className={`border rounded-xl p-2.5 flex items-center justify-between select-none shadow-sm ${
-                    isDarkTheme ? 'bg-[#121217] border-white/10 text-white/70' : 'bg-white border-slate-200 text-slate-700'
-                }`}>
-                    <div className="flex items-center gap-1.5 text-xs">
-                        <span className={`font-semibold px-2 py-1 rounded ${isDarkTheme ? 'bg-white/5' : 'bg-slate-100 text-slate-800'}`}>
-                            H2 ▾
-                        </span>
-                        <div className={`h-4 w-[1px] ${isDarkTheme ? 'bg-white/10' : 'bg-slate-200'}`} />
-                        <span className={`font-bold px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>B</span>
-                        <span className={`italic font-serif px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>I</span>
-                        <span className={`underline px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>U</span>
-                        <span className={`line-through px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>S</span>
-                        <div className={`h-4 w-[1px] ${isDarkTheme ? 'bg-white/10' : 'bg-slate-200'}`} />
-                        <span className={`font-mono text-xs px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>&lt;/&gt;</span>
-                        <span className={`px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>🔗</span>
-                        <span className={`px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>🖼️</span>
-                        <span className={`px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>▦</span>
-                    </div>
-                    <span className={`text-[11px] font-medium ${isDarkTheme ? 'text-white/40' : 'text-slate-400'}`}>
-                        Studio Block Editor
-                    </span>
-                </div>
+                {/* 1. TOP FUNCTIONAL FORMATTING TOOLBAR MATCHING SCREENSHOT */}
+                <StudioFormattingToolbar
+                    isDarkTheme={isDarkTheme}
+                    activeHeadingLevel={activeBlock?.type === 'heading' ? (activeBlock.headingLevel || 'H2') : 'H2'}
+                    onChangeHeadingLevel={handleChangeHeadingLevel}
+                    onApplyFormat={handleApplyFormat}
+                    onInsertBlock={handleInsertBlockFromToolbar}
+                />
 
-                {/* Droppable Blocks Canvas */}
+                {/* 2. DROPPABLE LESSON BLOCKS CANVAS */}
                 <Droppable droppableId="lesson-blocks-droppable">
                     {(provided: DroppableProvided) => (
                         <div

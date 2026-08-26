@@ -1,5 +1,6 @@
 import React from 'react';
 import type { DraggableProvided } from '@hello-pangea/dnd';
+import { RichTextEditable } from './RichTextEditable';
 import type { LessonBlock } from '../types';
 
 interface StudioBlockCardProps {
@@ -99,28 +100,24 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                             }`}
                             placeholder="1. Tiêu đề mục"
                         />
-                        <textarea
-                            rows={2}
+                        <RichTextEditable
                             value={block.content || ''}
-                            onChange={(e) => onUpdateActiveBlock({ content: e.target.value })}
-                            className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-none ${
-                                isDarkTheme ? 'text-white/70 placeholder-white/30' : 'text-slate-600 placeholder-slate-400'
-                            }`}
+                            onChange={(val) => onUpdateActiveBlock({ content: val })}
                             placeholder="Nhập mô tả chi tiết cho tiêu đề này..."
+                            className="text-xs"
+                            isDarkTheme={isDarkTheme}
                         />
                     </div>
                 )}
 
                 {/* 2. PARAGRAPH / LIST BLOCK */}
-                {(block.type === 'paragraph' || block.type === 'list') && (
-                    <textarea
-                        rows={3}
+                {(block.type === 'paragraph' || block.type === 'list' || block.type === 'theory') && (
+                    <RichTextEditable
                         value={block.content || ''}
-                        onChange={(e) => onUpdateActiveBlock({ content: e.target.value })}
-                        className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-y ${
-                            isDarkTheme ? 'text-white/80 placeholder-white/30' : 'text-slate-700 placeholder-slate-400'
-                        }`}
-                        placeholder="Nhập đoạn văn lý thuyết..."
+                        onChange={(val) => onUpdateActiveBlock({ content: val })}
+                        placeholder="Nhập đoạn văn lý thuyết (Hỗ trợ định dạng in đậm, in nghiêng trực quan)..."
+                        className="text-xs"
+                        isDarkTheme={isDarkTheme}
                     />
                 )}
 
@@ -241,7 +238,7 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                             : 'bg-[#fffbeb] border-[#fde68a] text-[#92400e]'
                     }`}>
                         <div className="flex items-center gap-2">
-                            <span className="font-bold">💡</span>
+                            <span className="font-bold text-sm">💡</span>
                             <input
                                 type="text"
                                 value={block.title || 'Giải thích'}
@@ -251,14 +248,12 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                                 }`}
                             />
                         </div>
-                        <textarea
-                            rows={4}
+                        <RichTextEditable
                             value={block.content || ''}
-                            onChange={(e) => onUpdateActiveBlock({ content: e.target.value })}
-                            className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-none ${
-                                isDarkTheme ? 'text-white/80' : 'text-amber-900'
-                            }`}
-                            placeholder="• Ý 1\n• Ý 2..."
+                            onChange={(val) => onUpdateActiveBlock({ content: val })}
+                            placeholder="Nhập nội dung giải thích (hiển thị in đậm, in nghiêng trực quan)..."
+                            className={`text-xs ${isDarkTheme ? 'text-white/80' : 'text-amber-900'}`}
+                            isDarkTheme={isDarkTheme}
                         />
                     </div>
                 )}
@@ -281,14 +276,12 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                                 }`}
                             />
                         </div>
-                        <textarea
-                            rows={2}
+                        <RichTextEditable
                             value={block.content || ''}
-                            onChange={(e) => onUpdateActiveBlock({ content: e.target.value })}
-                            className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-none ${
-                                isDarkTheme ? 'text-white/80' : 'text-indigo-900'
-                            }`}
+                            onChange={(val) => onUpdateActiveBlock({ content: val })}
                             placeholder="Mô tả yêu cầu bài tập..."
+                            className={`text-xs ${isDarkTheme ? 'text-white/80' : 'text-indigo-900'}`}
+                            isDarkTheme={isDarkTheme}
                         />
 
                         <div className={`pt-2 border-t space-y-2 ${

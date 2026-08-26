@@ -190,6 +190,7 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                         onDeleteBlock={handleDeleteBlock}
                         onUpdateActiveBlock={handleUpdateActiveBlock}
                         onInsertBlockAt={handleInsertBlockAt}
+                        onAddBlock={handleAddBlock}
                     />
 
                     {/* 2.3 RIGHT SIDEBAR: CÀI ĐẶT KHỐI (BLOCK & LESSON PROPERTIES) */}
