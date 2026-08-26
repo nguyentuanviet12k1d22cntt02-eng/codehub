@@ -5,10 +5,9 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Register: React.FC = () => {
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
-    const [role, setRole] = useState('');
-    const [gender, setGender] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -16,9 +15,20 @@ const Register: React.FC = () => {
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage('');
+
+        if (password !== confirmPassword) {
+            setMessage('Mật khẩu xác nhận không khớp!');
+            return;
+        }
+
+        if (password.length < 6) {
+            setMessage('Mật khẩu phải có ít nhất 6 ký tự!');
+            return;
+        }
+
         setLoading(true);
         try {
-            const data = await authService.register({ username, password, email, role, gender });
+            const data = await authService.register({ username, password, email, role: 'STUDENT' });
             setMessage(data.message || 'Đăng ký tài khoản thành công!');
             setTimeout(() => navigate('/login'), 1500);
         } catch (error: any) {
@@ -43,7 +53,7 @@ const Register: React.FC = () => {
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleRegister} className="flex flex-col gap-4.5 text-left">
+                <form onSubmit={handleRegister} className="flex flex-col gap-4 text-left">
                     <div className="flex flex-col gap-1.5">
                         <label className="text-[11px] font-semibold text-[#8e8e93] uppercase tracking-wider">Tên đăng nhập</label>
                         <input
@@ -83,36 +93,17 @@ const Register: React.FC = () => {
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-1.5">
-                            <label className="text-[11px] font-semibold text-[#8e8e93] uppercase tracking-wider">Vai trò</label>
-                            <select 
-                                value={role} 
-                                onChange={(e) => setRole(e.target.value)}
-                                className="bg-[#16161a] border border-white/5 focus:border-[#c084fc]/50 text-white rounded-lg px-3 py-2.5 text-sm focus:outline-none transition-colors w-full cursor-pointer"
-                                required
-                            >
-                                <option value="" className="bg-[#0b0b0e]">Chọn vai trò</option>
-                                <option value="STUDENT" className="bg-[#0b0b0e]">STUDENT</option>
-                                <option value="TEACHER" className="bg-[#0b0b0e]">TEACHER</option>
-                                <option value="ADMIN" className="bg-[#0b0b0e]">ADMIN</option>
-                            </select>
-                        </div>
-
-                        <div className="flex flex-col gap-1.5">
-                            <label className="text-[11px] font-semibold text-[#8e8e93] uppercase tracking-wider">Giới tính</label>
-                            <select 
-                                value={gender} 
-                                onChange={(e) => setGender(e.target.value)}
-                                className="bg-[#16161a] border border-white/5 focus:border-[#c084fc]/50 text-white rounded-lg px-3 py-2.5 text-sm focus:outline-none transition-colors w-full cursor-pointer"
-                                required
-                            >
-                                <option value="" className="bg-[#0b0b0e]">Chọn giới tính</option>
-                                <option value="MALE" className="bg-[#0b0b0e]">MALE</option>
-                                <option value="FEMALE" className="bg-[#0b0b0e]">FEMALE</option>
-                                <option value="OTHER" className="bg-[#0b0b0e]">OTHER</option>
-                            </select>
-                        </div>
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-[11px] font-semibold text-[#8e8e93] uppercase tracking-wider">Xác nhận mật khẩu</label>
+                        <input
+                            type="password"
+                            placeholder="••••••••"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            className="bg-[#16161a] border border-white/5 focus:border-[#c084fc]/50 text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none transition-colors w-full"
+                            required
+                            disabled={loading}
+                        />
                     </div>
 
                     {message && (
@@ -128,7 +119,7 @@ const Register: React.FC = () => {
                     <button 
                         type="submit" 
                         disabled={loading}
-                        className="bg-white hover:bg-[#f3f3f3] text-black font-bold py-3.5 rounded-lg transition-colors cursor-pointer active:scale-[0.98] disabled:opacity-50 text-sm mt-4 w-full"
+                        className="bg-white hover:bg-[#f3f3f3] text-black font-bold py-3.5 rounded-lg transition-colors cursor-pointer active:scale-[0.98] disabled:opacity-50 text-sm mt-3 w-full"
                     >
                         {loading ? 'Đang xử lý...' : 'Đăng ký'}
                     </button>
