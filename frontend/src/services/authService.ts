@@ -5,22 +5,22 @@ const API_URL = `${API_BASE_URL}/api/auth`;
 
 export const authService = {
     register: async (userData: any) => {
-        const response = await axios.post(`${API_URL}/register`, userData);
+        const response = await axios.post(`${API_URL}/register`, userData, { timeout: 12000 });
         return response.data;
     },
 
     verifyOtp: async (data: { email: string; otp: string }) => {
-        const response = await axios.post(`${API_URL}/verify-otp`, data);
+        const response = await axios.post(`${API_URL}/verify-otp`, data, { timeout: 12000 });
         return response.data;
     },
 
     resendOtp: async (data: { email: string }) => {
-        const response = await axios.post(`${API_URL}/resend-otp`, data);
+        const response = await axios.post(`${API_URL}/resend-otp`, data, { timeout: 12000 });
         return response.data;
     },
 
     login: async (userData: any) => {
-        const response = await axios.post(`${API_URL}/login`, userData);
+        const response = await axios.post(`${API_URL}/login`, userData, { timeout: 12000 });
         return response.data;
     },
 

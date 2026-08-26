@@ -1,19 +1,24 @@
 import nodemailer from 'nodemailer';
 
 const GMAIL_USER = process.env.GMAIL_USER || 'nguyentuanviet12k1@gmail.com';
-const GMAIL_APP_PASS = process.env.GMAIL_APP_PASS || 'urlhfkvjbojrljts';
+const GMAIL_APP_PASS = (process.env.GMAIL_APP_PASS || 'urlhfkvjbojrljts').replace(/\s+/g, '');
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // Port 465 uses SSL directly (not STARTTLS on 587)
     auth: {
         user: GMAIL_USER,
         pass: GMAIL_APP_PASS
-    }
+    },
+    connectionTimeout: 6000, // 6s timeout
+    greetingTimeout: 6000,
+    socketTimeout: 8000
 });
 
 export const sendVerificationOtp = async (toEmail: string, otp: string, username: string): Promise<boolean> => {
     try {
-        await transporter.sendMail({
+        const mailOptions = {
             from: `"MCODE Platform" <${GMAIL_USER}>`,
             to: toEmail,
             subject: `[MCODE] Mã xác thực đăng ký tài khoản: ${otp}`,
@@ -49,10 +54,19 @@ export const sendVerificationOtp = async (toEmail: string, otp: string, username
                     </div>
                 </div>
             `
-        });
+        };
+
+        // Enforce 7-second hard timeout so backend never hangs the user request
+        const sendPromise = transporter.sendMail(mailOptions);
+        const timeoutPromise = new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('Email sending timed out after 7s')), 7000)
+        );
+
+        await Promise.race([sendPromise, timeoutPromise]);
+        console.log(`[EmailService] Sent OTP ${otp} to ${toEmail} successfully`);
         return true;
-    } catch (error) {
-        console.error('Error sending OTP email:', error);
+    } catch (error: any) {
+        console.error('[EmailService] Error sending OTP email:', error.message || error);
         return false;
     }
 };
