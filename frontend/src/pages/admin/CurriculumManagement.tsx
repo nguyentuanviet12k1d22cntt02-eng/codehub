@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { API_BASE_URL } from '../../config/api';
-import { TipTapLessonEditor } from '../../components/admin/TipTapLessonEditor';
+import { LessonStudioEditor } from '../../components/admin/LessonStudioEditor';
 
 interface CourseNode {
     id: string;
@@ -258,49 +258,6 @@ export default function CurriculumManagement() {
     };
 
     // ============ LESSON ACTIONS ============
-    const handleSaveLesson = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!editingLesson) return;
-
-        try {
-            const isEdit = Boolean(editingLesson.id);
-            const url = isEdit
-                ? `${API_BASE_URL}/api/admin/lessons/${editingLesson.id}`
-                : `${API_BASE_URL}/api/admin/lessons`;
-            const method = isEdit ? 'PUT' : 'POST';
-
-            const effectiveChapterId = editingLesson.chapterId || (selectedChapterId !== 'ALL' ? selectedChapterId : currentModuleChapters[0]?.id);
-
-            if (!effectiveChapterId) {
-                showToast('Vui lòng chọn một chương học cho bài học này');
-                return;
-            }
-
-            const payload = {
-                ...editingLesson,
-                chapterId: effectiveChapterId
-            };
-
-            const res = await fetch(url, {
-                method,
-                headers: getAuthHeaders(),
-                body: JSON.stringify(payload)
-            });
-
-            if (res.ok) {
-                showToast(isEdit ? 'Đã cập nhật bài học thành công' : 'Đã tạo bài học mới thành công');
-                setIsLessonModalOpen(false);
-                fetchLessons(selectedModuleId, selectedChapterId, lessonTypeFilter);
-                fetchTree();
-            } else {
-                const err = await res.json();
-                showToast(err.message || 'Lỗi khi lưu bài học');
-            }
-        } catch (err: any) {
-            showToast('Lỗi kết nối máy chủ');
-        }
-    };
-
     const handleDeleteLesson = async (id: string) => {
         if (!window.confirm('Bạn có chắc chắn muốn xóa bài học này? Tất cả bài tập và câu hỏi liên quan sẽ bị xóa.')) return;
         try {
@@ -1120,148 +1077,51 @@ export default function CurriculumManagement() {
                 </div>
             )}
 
-            {/* ============ MODAL: EDIT LESSON ============ */}
+            {/* ============ FULLSCREEN STUDIO LESSON EDITOR ============ */}
             {isLessonModalOpen && editingLesson && (
-                <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-                    <div className="bg-bg-secondary w-full max-w-5xl rounded-2xl border border-border-custom shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
-                        <div className="p-5 border-b border-border-custom flex justify-between items-center bg-bg-secondary">
-                            <h3 className="font-bold text-base text-text-primary">
-                                {editingLesson.id ? 'Chỉnh Sửa Bài Học' : 'Tạo Bài Học Mới'}
-                            </h3>
-                            <button
-                                onClick={() => setIsLessonModalOpen(false)}
-                                className="text-text-secondary hover:text-text-primary text-sm font-semibold"
-                            >
-                                Đóng
-                            </button>
-                        </div>
+                <LessonStudioEditor
+                    lesson={editingLesson}
+                    onSave={async (updatedLesson) => {
+                        const isEdit = Boolean(updatedLesson.id);
+                        const url = isEdit
+                            ? `${API_BASE_URL}/api/admin/lessons/${updatedLesson.id}`
+                            : `${API_BASE_URL}/api/admin/lessons`;
+                        const method = isEdit ? 'PUT' : 'POST';
 
-                        <form onSubmit={handleSaveLesson} className="p-6 overflow-y-auto space-y-5 flex-1">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="md:col-span-2">
-                                    <label className="block text-xs font-semibold text-text-secondary mb-1">
-                                        Tiêu đề bài học *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={editingLesson.title}
-                                        onChange={(e) => setEditingLesson({ ...editingLesson, title: e.target.value })}
-                                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-custom"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-text-secondary mb-1">
-                                        Mã bài học (VD: LS-05.01 hoặc LS-05.MP)
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={editingLesson.lessonId}
-                                        onChange={(e) => setEditingLesson({ ...editingLesson, lessonId: e.target.value })}
-                                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-sm font-mono text-text-primary focus:outline-none focus:border-accent-custom"
-                                    />
-                                </div>
-                            </div>
+                        const effectiveChapterId = updatedLesson.chapterId || (selectedChapterId !== 'ALL' ? selectedChapterId : currentModuleChapters[0]?.id);
 
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                <div>
-                                    <label className="block text-xs font-semibold text-text-secondary mb-1">
-                                        Chương học
-                                    </label>
-                                    <select
-                                        value={editingLesson.chapterId || ''}
-                                        onChange={(e) => setEditingLesson({ ...editingLesson, chapterId: e.target.value })}
-                                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-accent-custom"
-                                    >
-                                        {currentModuleChapters.map(ch => (
-                                            <option key={ch.id} value={ch.id}>
-                                                {ch.title}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-text-secondary mb-1">
-                                        Độ khó
-                                    </label>
-                                    <select
-                                        value={editingLesson.difficulty}
-                                        onChange={(e) => setEditingLesson({ ...editingLesson, difficulty: e.target.value })}
-                                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-accent-custom"
-                                    >
-                                        <option value="EASY">Dễ (EASY)</option>
-                                        <option value="MEDIUM">Trung bình (MEDIUM)</option>
-                                        <option value="HARD">Nâng cao (HARD)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-text-secondary mb-1">
-                                        Thời lượng (phút)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={editingLesson.durationMinutes}
-                                        onChange={(e) => setEditingLesson({ ...editingLesson, durationMinutes: Number(e.target.value) })}
-                                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-accent-custom"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-text-secondary mb-1">
-                                        Thứ tự (STT)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={editingLesson.orderIndex}
-                                        onChange={(e) => setEditingLesson({ ...editingLesson, orderIndex: Number(e.target.value) })}
-                                        className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-xs text-text-primary focus:outline-none focus:border-accent-custom"
-                                    />
-                                </div>
-                            </div>
+                        if (!effectiveChapterId) {
+                            showToast('Vui lòng chọn một chương học cho bài học này');
+                            return;
+                        }
 
-                            <div>
-                                <label className="block text-xs font-semibold text-text-secondary mb-1">
-                                    Mục tiêu bài học (Objective)
-                                </label>
-                                <input
-                                    type="text"
-                                    value={editingLesson.objective || ''}
-                                    onChange={(e) => setEditingLesson({ ...editingLesson, objective: e.target.value })}
-                                    className="w-full bg-bg-tertiary border border-border-custom rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-custom"
-                                    placeholder="Nắm vững câu lệnh in ra màn hình hoặc tổng hợp kiến thức Module..."
-                                />
-                            </div>
+                        const payload = {
+                            ...updatedLesson,
+                            chapterId: effectiveChapterId
+                        };
 
-                            {/* TIPTAP VISUAL EDITOR WITH SQL TABLES & CODE BLOCKS */}
-                            <div>
-                                <div className="flex justify-between items-center mb-1.5">
-                                    <label className="block text-xs font-semibold text-text-secondary">
-                                        Nội Dung Lý Thuyết (Trình Soạn Thảo TipTap - Hỗ trợ Bảng SQL, Code & Ghi Chú)
-                                    </label>
-                                </div>
-                                <TipTapLessonEditor
-                                    content={editingLesson.content || ''}
-                                    onChange={(newContent) => setEditingLesson({ ...editingLesson, content: newContent })}
-                                />
-                            </div>
+                        const res = await fetch(url, {
+                            method,
+                            headers: getAuthHeaders(),
+                            body: JSON.stringify(payload)
+                        });
 
-                            <div className="flex justify-end gap-3 pt-4 border-t border-border-custom">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsLessonModalOpen(false)}
-                                    className="px-4 py-2 rounded-lg border border-border-custom text-text-primary text-xs font-semibold hover:bg-bg-tertiary"
-                                >
-                                    Hủy
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-5 py-2 rounded-lg bg-accent-custom hover:bg-accent-hover text-white text-xs font-semibold shadow-sm"
-                                >
-                                    Lưu Bài Học
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                        if (res.ok) {
+                            showToast(isEdit ? 'Đã xuất bản và lưu bài học thành công' : 'Đã tạo bài học mới thành công');
+                            setIsLessonModalOpen(false);
+                            setEditingLesson(null);
+                            fetchLessons(selectedModuleId, selectedChapterId, lessonTypeFilter);
+                            fetchTree();
+                        } else {
+                            const err = await res.json();
+                            showToast(err.message || 'Lỗi khi lưu bài học');
+                        }
+                    }}
+                    onClose={() => {
+                        setIsLessonModalOpen(false);
+                        setEditingLesson(null);
+                    }}
+                />
             )}
 
             {/* ============ MODAL: EDIT CODING EXERCISE ============ */}
