@@ -99,10 +99,10 @@ export const StudioSidebarPalette: React.FC<StudioSidebarPaletteProps> = ({
                                                             {...itemProvided.draggableProps}
                                                             {...itemProvided.dragHandleProps}
                                                             onClick={() => onAddBlock(item.type)}
-                                                            className={`p-2.5 border rounded-[3px] flex flex-col items-center justify-center gap-1.5 cursor-grab active:cursor-grabbing select-none transition-all ${
+                                                            className={`p-2.5 border rounded-[3px] shadow-none flex flex-col items-center justify-center gap-1.5 cursor-grab active:cursor-grabbing select-none transition-colors ${
                                                                 isDarkTheme
                                                                     ? 'bg-[#181820] hover:bg-purple-600/20 border-white/10 hover:border-purple-500 text-white'
-                                                                    : 'bg-white hover:bg-purple-50/60 border-slate-200 hover:border-purple-400 text-slate-800 hover:text-purple-700 shadow-sm hover:shadow'
+                                                                    : 'bg-white hover:bg-purple-50/60 border-slate-200 hover:border-purple-400 text-slate-800 hover:text-purple-700'
                                                             }`}
                                                         >
                                                             <div className="w-6 h-6 flex items-center justify-center">
@@ -127,7 +127,7 @@ export const StudioSidebarPalette: React.FC<StudioSidebarPaletteProps> = ({
 
             {/* Bottom Instruction Help Box (3px border radius) */}
             <div className="mt-auto pt-4 border-t border-slate-100">
-                <div className={`border rounded-[3px] p-3 text-left space-y-1.5 shadow-sm ${
+                <div className={`border rounded-[3px] p-3 text-left space-y-1.5 shadow-none ${
                     isDarkTheme ? 'bg-[#181820] border-white/10' : 'bg-slate-50/90 border-slate-200/80'
                 }`}>
                     <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
