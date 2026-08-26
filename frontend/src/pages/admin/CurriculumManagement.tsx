@@ -229,7 +229,13 @@ export default function CurriculumManagement() {
             const exList = Array.isArray(data) ? data : [];
             setExercises(exList);
             if (exList.length > 0) {
-                setSelectedExerciseForTC(exList[0]);
+                setSelectedExerciseForTC((prev) => {
+                    if (prev) {
+                        const match = exList.find((e) => e.id === prev.id);
+                        if (match) return match;
+                    }
+                    return exList[0];
+                });
             } else {
                 setSelectedExerciseForTC(null);
             }
