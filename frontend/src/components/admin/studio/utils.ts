@@ -131,7 +131,24 @@ export const createDefaultBlock = (type: BlockType, id: string): LessonBlock => 
     }
 };
 
-// Convert Markdown string to initial structured blocks
+// Check if a line is a markdown table separator (e.g. | --- | :---: | --- |)
+const isTableSeparator = (line: string): boolean => {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith('|') || !trimmed.endsWith('|')) return false;
+    const inner = trimmed.substring(1, trimmed.length - 1);
+    const cols = inner.split('|').map(c => c.trim());
+    return cols.length > 0 && cols.every(c => /^:?-+:?$/.test(c));
+};
+
+// Parse a single markdown table row line (| a | b | c |)
+const parseTableRow = (line: string): string[] => {
+    let trimmed = line.trim();
+    if (trimmed.startsWith('|')) trimmed = trimmed.substring(1);
+    if (trimmed.endsWith('|')) trimmed = trimmed.substring(0, trimmed.length - 1);
+    return trimmed.split('|').map(cell => cell.trim());
+};
+
+// Convert Markdown string to initial structured blocks (with full table & callout support)
 export const parseMarkdownToBlocks = (markdown: string, lessonTitle: string): LessonBlock[] => {
     let cleanMarkdown = (markdown || '').trim();
 
@@ -168,91 +185,182 @@ export const parseMarkdownToBlocks = (markdown: string, lessonTitle: string): Le
     const blocks: LessonBlock[] = [];
     const lines = cleanMarkdown.split('\n');
     let currentText: string[] = [];
-    let inCode = false;
-    let codeLang = 'Python';
-    let codeLines: string[] = [];
-
     let blockCounter = 1;
+
+    const flushCurrentText = () => {
+        if (currentText.length > 0) {
+            const textJoined = currentText.join('\n').trim();
+            if (textJoined) {
+                blocks.push({
+                    id: `b-${blockCounter++}`,
+                    type: 'paragraph',
+                    content: textJoined
+                });
+            }
+            currentText = [];
+        }
+    };
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
+        const trimmedLine = line.trim();
 
-        if (line.startsWith('```')) {
-            if (!inCode) {
-                if (currentText.length > 0) {
-                    const textJoined = currentText.join('\n').trim();
-                    if (textJoined) {
-                        blocks.push({
-                            id: `b-${blockCounter++}`,
-                            type: 'paragraph',
-                            content: textJoined
-                        });
-                    }
-                    currentText = [];
-                }
-                inCode = true;
-                codeLang = line.replace('```', '').trim() || 'Python';
-                codeLines = [];
-            } else {
-                inCode = false;
-                blocks.push({
-                    id: `b-${blockCounter++}`,
-                    type: 'code',
-                    language: codeLang.toUpperCase() === 'SQL' ? 'SQL' : 'Python',
-                    showLineNumbers: true,
-                    allowCopy: true,
-                    theme: 'Dark',
-                    fontSize: '14px',
-                    content: codeLines.join('\n')
-                });
-                codeLines = [];
+        // 1. CODE BLOCK (```lang ... ```)
+        if (trimmedLine.startsWith('```')) {
+            flushCurrentText();
+            const codeLang = trimmedLine.replace('```', '').trim() || 'Python';
+            const codeLines: string[] = [];
+            i++;
+            while (i < lines.length && !lines[i].trim().startsWith('```')) {
+                codeLines.push(lines[i]);
+                i++;
             }
-            continue;
-        }
-
-        if (inCode) {
-            codeLines.push(line);
-            continue;
-        }
-
-        if (line.startsWith('# ') || line.startsWith('## ') || line.startsWith('### ')) {
-            if (currentText.length > 0) {
-                const textJoined = currentText.join('\n').trim();
-                if (textJoined) {
-                    blocks.push({
-                        id: `b-${blockCounter++}`,
-                        type: 'paragraph',
-                        content: textJoined
-                    });
-                }
-                currentText = [];
-            }
-
-            const level: 'H1' | 'H2' | 'H3' = line.startsWith('### ') ? 'H3' : line.startsWith('## ') ? 'H2' : 'H1';
-            const title = line.replace(/^#{1,3}\s+/, '').trim();
             blocks.push({
                 id: `b-${blockCounter++}`,
-                type: 'heading',
-                headingLevel: level,
-                title: title,
+                type: 'code',
+                language: codeLang.toUpperCase() === 'SQL' ? 'SQL' : 'Python',
+                showLineNumbers: true,
+                allowCopy: true,
+                theme: 'Dark',
+                fontSize: '14px',
+                content: codeLines.join('\n')
+            });
+            continue;
+        }
+
+        // 2. EXERCISE WITH <details><summary>Xem đáp án</summary>
+        if (trimmedLine.includes('<details>') && (trimmedLine.includes('Xem đáp án') || cleanMarkdown.substring(i).includes('Xem đáp án'))) {
+            flushCurrentText();
+            const exerciseLines: string[] = [];
+            let solutionCode = '';
+            let inSolutionCode = false;
+
+            while (i < lines.length && !lines[i].includes('</details>')) {
+                const cur = lines[i];
+                if (cur.trim().startsWith('```')) {
+                    inSolutionCode = !inSolutionCode;
+                } else if (inSolutionCode) {
+                    solutionCode += (solutionCode ? '\n' : '') + cur;
+                } else if (!cur.includes('<details>') && !cur.includes('<summary>') && !cur.includes('</summary>')) {
+                    exerciseLines.push(cur);
+                }
+                i++;
+            }
+
+            blocks.push({
+                id: `b-${blockCounter++}`,
+                type: 'exercise',
+                title: 'Bài tập vận dụng',
+                content: exerciseLines.join('\n').trim(),
+                solutionCode: solutionCode.trim() || '# Lời giải mẫu',
+                isSolutionVisible: false
+            });
+            continue;
+        }
+
+        // 3. MARKDOWN TABLE (| col1 | col2 |)
+        if (trimmedLine.startsWith('|') && trimmedLine.endsWith('|') && i + 1 < lines.length && isTableSeparator(lines[i + 1])) {
+            flushCurrentText();
+            const headers = parseTableRow(trimmedLine);
+            i++; // skip separator line (| --- | --- |)
+
+            const rows: string[][] = [];
+            while (i + 1 < lines.length && lines[i + 1].trim().startsWith('|') && lines[i + 1].trim().endsWith('|')) {
+                i++;
+                rows.push(parseTableRow(lines[i]));
+            }
+
+            // Check if immediate next line is a table note (*Kết quả trả về...*)
+            let tableNote = '';
+            if (i + 1 < lines.length && lines[i + 1].trim().startsWith('*') && lines[i + 1].trim().endsWith('*') && !lines[i + 1].trim().startsWith('**')) {
+                i++;
+                tableNote = lines[i].trim().replace(/^\*|\*$/g, '').trim();
+            }
+
+            blocks.push({
+                id: `b-${blockCounter++}`,
+                type: 'output',
+                title: 'Kết quả (Output)',
+                tableHeaders: headers,
+                tableRows: rows.length > 0 ? rows : [['', '']],
+                tableNote: tableNote || undefined,
                 content: ''
             });
             continue;
         }
 
+        // 4. CALLOUT / EXPLANATION (> [!NOTE] or > ...)
+        if (trimmedLine.startsWith('>')) {
+            flushCurrentText();
+            const calloutLines: string[] = [];
+            let calloutTitle = 'Giải thích';
+            let calloutType: 'info' | 'tip' | 'warning' | 'explanation' = 'explanation';
+
+            while (i < lines.length && (lines[i].trim().startsWith('>') || (lines[i].trim() === '' && i + 1 < lines.length && lines[i + 1].trim().startsWith('>')))) {
+                if (lines[i].trim() === '') {
+                    i++;
+                    continue;
+                }
+                let rawText = lines[i].trim().replace(/^>\s*/, '');
+                if (rawText.startsWith('[!NOTE]') || rawText.startsWith('[!TIP]') || rawText.startsWith('[!WARNING]')) {
+                    if (rawText.startsWith('[!TIP]')) calloutType = 'tip';
+                    if (rawText.startsWith('[!WARNING]')) calloutType = 'warning';
+                } else if (rawText.startsWith('**') && rawText.includes('**', 2) && calloutLines.length === 0) {
+                    const match = rawText.match(/^\*\*([^*]+)\*\*(.*)/);
+                    if (match) {
+                        calloutTitle = match[1].trim();
+                        if (match[2].trim()) calloutLines.push(match[2].trim());
+                    } else {
+                        calloutLines.push(rawText);
+                    }
+                } else {
+                    calloutLines.push(rawText);
+                }
+                i++;
+            }
+            i--; // step back since outer loop does i++
+
+            blocks.push({
+                id: `b-${blockCounter++}`,
+                type: 'explanation',
+                title: calloutTitle,
+                calloutType: calloutType,
+                content: calloutLines.join('\n').trim()
+            });
+            continue;
+        }
+
+        // 5. HEADINGS (# , ## , ### )
+        if (trimmedLine.startsWith('# ') || trimmedLine.startsWith('## ') || trimmedLine.startsWith('### ')) {
+            flushCurrentText();
+            const level: 'H1' | 'H2' | 'H3' = trimmedLine.startsWith('### ') ? 'H3' : trimmedLine.startsWith('## ') ? 'H2' : 'H1';
+            const headingTitle = trimmedLine.replace(/^#{1,3}\s+/, '').trim();
+            blocks.push({
+                id: `b-${blockCounter++}`,
+                type: 'heading',
+                headingLevel: level,
+                title: headingTitle,
+                content: ''
+            });
+            continue;
+        }
+
+        // 6. DIVIDER (---, ***, ___)
+        if (trimmedLine === '---' || trimmedLine === '***' || trimmedLine === '___') {
+            flushCurrentText();
+            blocks.push({
+                id: `b-${blockCounter++}`,
+                type: 'divider',
+                content: '---'
+            });
+            continue;
+        }
+
+        // 7. DEFAULT PARAGRAPH ACCUMULATION
         currentText.push(line);
     }
 
-    if (currentText.length > 0) {
-        const textJoined = currentText.join('\n').trim();
-        if (textJoined) {
-            blocks.push({
-                id: `b-${blockCounter++}`,
-                type: 'paragraph',
-                content: textJoined
-            });
-        }
-    }
+    flushCurrentText();
 
     return blocks.length > 0 ? blocks : [
         {
@@ -269,7 +377,7 @@ export const convertBlocksToMarkdown = (blocks: LessonBlock[]): string => {
         switch (b.type) {
             case 'heading': {
                 const prefix = b.headingLevel === 'H1' ? '# ' : b.headingLevel === 'H3' ? '### ' : '## ';
-                return `${prefix}${b.title || ''}\n\n${b.content || ''}`.trim();
+                return `${prefix}${b.title || ''}${b.content ? `\n\n${b.content}` : ''}`.trim();
             }
             case 'paragraph':
             case 'theory':
@@ -281,13 +389,15 @@ export const convertBlocksToMarkdown = (blocks: LessonBlock[]): string => {
             case 'callout':
             case 'explanation':
             case 'note':
-                return `> [!NOTE]\n> **${b.title || 'Lưu ý'}**\n> ${b.content.replace(/\n/g, '\n> ')}`;
+                return `> [!NOTE]\n> **${b.title || 'Giải thích'}**\n> ${b.content.replace(/\n/g, '\n> ')}`;
             case 'table':
             case 'output': {
-                if (b.tableHeaders && b.tableRows) {
+                if (b.tableHeaders && b.tableHeaders.length > 0) {
                     const headerLine = `| ${b.tableHeaders.join(' | ')} |`;
                     const separatorLine = `| ${b.tableHeaders.map(() => '---').join(' | ')} |`;
-                    const rowsLines = b.tableRows.map(r => `| ${r.join(' | ')} |`).join('\n');
+                    const rowsLines = (b.tableRows && b.tableRows.length > 0)
+                        ? b.tableRows.map(r => `| ${r.join(' | ')} |`).join('\n')
+                        : `| ${b.tableHeaders.map(() => '').join(' | ')} |`;
                     const noteText = b.tableNote ? `\n\n*${b.tableNote}*` : '';
                     return `${headerLine}\n${separatorLine}\n${rowsLines}${noteText}`;
                 }
