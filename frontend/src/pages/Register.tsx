@@ -50,6 +50,9 @@ const Register: React.FC = () => {
             if (data.requireOtp) {
                 setStep(2);
                 setIsSuccessMessage(true);
+                if (data.devOtp) {
+                    setOtp(data.devOtp);
+                }
                 setMessage(data.message || `Mã xác thực 6 số đã được gửi tới ${email}`);
                 setCountdown(60); // 60s cooldown for resend
             } else {
@@ -100,6 +103,9 @@ const Register: React.FC = () => {
         try {
             const data = await authService.resendOtp({ email });
             setIsSuccessMessage(true);
+            if (data.devOtp) {
+                setOtp(data.devOtp);
+            }
             setMessage(data.message || 'Đã gửi lại mã xác thực mới vào email của bạn!');
             setCountdown(60);
         } catch (error: any) {
