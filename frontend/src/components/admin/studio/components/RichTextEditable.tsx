@@ -13,11 +13,6 @@ interface RichTextEditableProps {
 export const markdownToHtml = (md: string = ''): string => {
     if (!md) return '';
     let html = md;
-    
-    // If it's already HTML (contains tags), return as is
-    if (/<[a-z][\s\S]*>/i.test(html)) {
-        return html;
-    }
 
     // Bold **text** or __text__
     html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -33,41 +28,53 @@ export const markdownToHtml = (md: string = ''): string => {
     // Inline code `code`
     html = html.replace(/`([^`]+)`/g, '<code style="background-color: rgba(147, 51, 234, 0.1); color: #7e22ce; padding: 2px 5px; border-radius: 4px; font-family: monospace;">$1</code>');
     
-    // Newlines to <br/>
-    html = html.replace(/\n/g, '<br/>');
+    // Newlines to <br/> if not wrapped in block tags
+    if (!/<(div|p|ul|ol|li|h[1-6]|table)/i.test(html)) {
+        html = html.replace(/\n/g, '<br/>');
+    }
 
     return html;
 };
 
-// Convert innerHTML back to clean Markdown
+// Convert innerHTML back to clean Markdown while preserving alignment and formatting
 export const htmlToMarkdown = (html: string = ''): string => {
     if (!html) return '';
     let md = html;
 
-    // Convert <br> and <div> to newlines
+    // Preserve text alignment divs before stripping
+    md = md.replace(/<div\s+align=["']center["'][\s\S]*?>([\s\S]*?)<\/div>/gi, '<div align="center">$1</div>');
+    md = md.replace(/<div\s+align=["']right["'][\s\S]*?>([\s\S]*?)<\/div>/gi, '<div align="right">$1</div>');
+    md = md.replace(/<div\s+align=["']left["'][\s\S]*?>([\s\S]*?)<\/div>/gi, '<div align="left">$1</div>');
+    md = md.replace(/<div\s+style=["'][^"']*text-align:\s*center[^"']*["']>([\s\S]*?)<\/div>/gi, '<div align="center">$1</div>');
+    md = md.replace(/<div\s+style=["'][^"']*text-align:\s*right[^"']*["']>([\s\S]*?)<\/div>/gi, '<div align="right">$1</div>');
+    md = md.replace(/<p\s+style=["'][^"']*text-align:\s*center[^"']*["']>([\s\S]*?)<\/p>/gi, '<div align="center">$1</div>');
+    md = md.replace(/<p\s+style=["'][^"']*text-align:\s*right[^"']*["']>([\s\S]*?)<\/p>/gi, '<div align="right">$1</div>');
+    md = md.replace(/<center>([\s\S]*?)<\/center>/gi, '<div align="center">$1</div>');
+
+    // Convert plain <br> and non-aligned <div> to newlines
     md = md.replace(/<br\s*[\/]?>/gi, '\n');
-    md = md.replace(/<\/div>/gi, '\n');
-    md = md.replace(/<div>/gi, '');
+    md = md.replace(/<div>/gi, '\n');
+    md = md.replace(/<\/div>(?!\s*<\/div>)/gi, '');
     md = md.replace(/<\/p>/gi, '\n\n');
     md = md.replace(/<p>/gi, '');
 
     // Bold <strong> / <b>
-    md = md.replace(/<strong>(.*?)<\/strong>/gi, '**$1**');
-    md = md.replace(/<b>(.*?)<\/b>/gi, '**$1**');
+    md = md.replace(/<strong>([\s\S]*?)<\/strong>/gi, '**$1**');
+    md = md.replace(/<b>([\s\S]*?)<\/b>/gi, '**$1**');
 
     // Italic <em> / <i>
-    md = md.replace(/<em>(.*?)<\/em>/gi, '*$1*');
-    md = md.replace(/<i>(.*?)<\/i>/gi, '*$1*');
+    md = md.replace(/<em>([\s\S]*?)<\/em>/gi, '*$1*');
+    md = md.replace(/<i>([\s\S]*?)<\/i>/gi, '*$1*');
 
     // Strikethrough <del> / <s>
-    md = md.replace(/<del>(.*?)<\/del>/gi, '~~$1~~');
-    md = md.replace(/<s>(.*?)<\/s>/gi, '~~$1~~');
+    md = md.replace(/<del>([\s\S]*?)<\/del>/gi, '~~$1~~');
+    md = md.replace(/<s>([\s\S]*?)<\/s>/gi, '~~$1~~');
 
     // Code <code>
-    md = md.replace(/<code[^>]*>(.*?)<\/code>/gi, '`$1`');
+    md = md.replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, '`$1`');
 
-    // Strip any remaining unwanted HTML tags except basic formatting
-    md = md.replace(/<[^>]+>/g, '');
+    // Strip any other unwanted tags EXCEPT <div align="...">
+    md = md.replace(/<(?!\/?div\b)[^>]+>/gi, '');
 
     // Decode HTML entities
     md = md.replace(/&nbsp;/g, ' ');
@@ -118,7 +125,7 @@ export const RichTextEditable: React.FC<RichTextEditableProps> = ({
             onInput={handleInput}
             onBlur={handleInput}
             data-placeholder={placeholder}
-            className={`outline-none min-h-[3.5rem] leading-relaxed cursor-text whitespace-pre-wrap ${
+            className={`outline-none min-h-[1.5rem] leading-relaxed cursor-text whitespace-pre-wrap ${
                 isDarkTheme ? 'text-white/90 focus:text-white' : 'text-slate-800 focus:text-slate-900'
             } empty:before:content-[attr(data-placeholder)] empty:before:text-slate-400 empty:before:pointer-events-none ${className}`}
         />
