@@ -140,13 +140,13 @@ export const StudioCanvas: React.FC<StudioCanvasProps> = ({
 
             {/* 2. SCROLLABLE LESSON BLOCKS CANVAS */}
             <div className="flex-1 p-6 overflow-y-auto flex justify-center">
-                <div className="w-full max-w-4xl space-y-0">
+                <div className="w-full max-w-4xl">
                     <Droppable droppableId="lesson-blocks-droppable">
                         {(provided: DroppableProvided) => (
                             <div
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
-                                className="space-y-0 min-h-[300px]"
+                                className="space-y-[3px] min-h-[300px]"
                             >
                                 {blocks.map((block, index) => {
                                     const isSelected = selectedBlockId === block.id;
