@@ -48,6 +48,26 @@ export const createDefaultBlock = (type: BlockType, id: string): LessonBlock => 
                 tableNote: 'Kết quả trả về 2 dòng.',
                 content: ''
             };
+        case 'sql_output':
+            return {
+                id,
+                type: 'sql_output',
+                title: 'Kết quả SQL',
+                tableHeaders: ['id', 'student_name', 'score'],
+                tableRows: [
+                    ['101', 'Nguyễn Văn A', '9.5'],
+                    ['102', 'Trần Thị B', '8.0']
+                ],
+                tableNote: 'Truy vấn trả về 2 dòng dữ liệu.',
+                content: ''
+            };
+        case 'iframe':
+            return {
+                id,
+                type: 'iframe',
+                title: 'Iframe nhúng',
+                content: '<iframe src="https://example.com" width="100%" height="300"></iframe>'
+            };
         case 'explanation':
             return {
                 id,
@@ -391,7 +411,8 @@ export const convertBlocksToMarkdown = (blocks: LessonBlock[]): string => {
             case 'note':
                 return `> [!NOTE]\n> **${b.title || 'Giải thích'}**\n> ${b.content.replace(/\n/g, '\n> ')}`;
             case 'table':
-            case 'output': {
+            case 'output':
+            case 'sql_output': {
                 if (b.tableHeaders && b.tableHeaders.length > 0) {
                     const headerLine = `| ${b.tableHeaders.join(' | ')} |`;
                     const separatorLine = `| ${b.tableHeaders.map(() => '---').join(' | ')} |`;

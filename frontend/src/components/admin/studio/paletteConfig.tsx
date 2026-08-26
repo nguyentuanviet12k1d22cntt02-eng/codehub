@@ -155,7 +155,7 @@ export const paletteCategories: PaletteCategory[] = [
                 )
             },
             {
-                type: 'output',
+                type: 'sql_output',
                 label: 'Kết quả SQL',
                 icon: (
                     <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -192,12 +192,14 @@ export const paletteCategories: PaletteCategory[] = [
                 )
             },
             {
-                type: 'code',
+                type: 'iframe',
                 label: 'Iframe',
                 icon: (
                     <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <polyline points="16 18 22 12 16 6" strokeLinecap="round" strokeLinejoin="round" />
-                        <polyline points="8 6 2 12 8 18" strokeLinecap="round" strokeLinejoin="round" />
+                        <rect x="2" y="3" width="20" height="14" rx="2" strokeLinecap="round" />
+                        <line x1="2" y1="7" x2="22" y2="7" strokeLinecap="round" />
+                        <polyline points="7 11 9 13 7 15" strokeLinecap="round" strokeLinejoin="round" />
+                        <polyline points="13 15 15 13 13 11" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 )
             }

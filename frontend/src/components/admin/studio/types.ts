@@ -7,6 +7,7 @@ export type BlockType =
     | 'divider'
     | 'code'
     | 'output'
+    | 'sql_output'
     | 'explanation'
     | 'exercise'
     | 'quiz'
@@ -14,7 +15,8 @@ export type BlockType =
     | 'table'
     | 'erd'
     | 'image'
-    | 'video';
+    | 'video'
+    | 'iframe';
 
 export interface LessonBlock {
     id: string;

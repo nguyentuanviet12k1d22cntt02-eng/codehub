@@ -116,18 +116,21 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                 <div className="flex items-center gap-1.5">
                     {/* Badge Pill with 2px corner */}
                     <span className={`text-[10px] px-2 py-0.5 rounded-[2px] font-semibold ${
-                        block.type === 'code'
+                        block.type === 'code' || block.type === 'iframe'
                             ? 'bg-emerald-500/10 text-emerald-400 border border-dashed border-emerald-500/30'
-                            : block.type === 'output' || block.type === 'table'
+                            : block.type === 'output' || block.type === 'sql_output' || block.type === 'table'
                                 ? 'bg-sky-50 text-sky-700 border border-dashed border-sky-300/80'
                                 : block.type === 'explanation' || block.type === 'callout'
                                     ? 'bg-amber-50 text-amber-800 border border-dashed border-amber-300/80'
                                     : block.type === 'exercise'
-                                        ? 'bg-indigo-50 text-indigo-700 border border-dashed border-indigo-300/80'
+                                        ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/80'
                                         : 'bg-slate-100 text-slate-700 border border-dashed border-slate-300'
                     }`}>
                         {block.type === 'code' ? `Khối mã (${block.language || 'SQL'})` :
+                         block.type === 'iframe' ? 'Iframe nhúng' :
+                         block.type === 'sql_output' ? 'Kết quả SQL' :
                          block.type === 'output' ? 'Kết quả (Output)' :
+                         block.type === 'table' ? 'Bảng (Table)' :
                          block.type === 'explanation' ? 'Giải thích' :
                          block.type === 'exercise' ? 'Bài tập (Exercise)' :
                          block.type === 'heading' ? 'Tiêu đề' :
@@ -197,7 +200,7 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                 )}
 
                 {/* 4. TABLE / OUTPUT BLOCK */}
-                {(block.type === 'output' || block.type === 'table') && (
+                {(block.type === 'output' || block.type === 'table' || block.type === 'sql_output') && (
                     <div className="space-y-2">
                         <div className={`overflow-x-auto rounded-[3px] border border-dashed ${
                             isDarkTheme ? 'border-white/10' : 'border-slate-200'
