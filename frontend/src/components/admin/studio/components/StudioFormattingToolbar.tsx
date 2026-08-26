@@ -31,6 +31,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                 <div className="relative">
                     <button
                         type="button"
+                        onMouseDown={(e) => e.preventDefault()}
                         onClick={() => setHeadingMenuOpen(!headingMenuOpen)}
                         className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
                             isDarkTheme
@@ -50,6 +51,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                         }`}>
                             <button
                                 type="button"
+                                onMouseDown={(e) => e.preventDefault()}
                                 onClick={() => { onChangeHeadingLevel?.('H1'); setHeadingMenuOpen(false); }}
                                 className="w-full text-left px-3 py-1.5 hover:bg-purple-50 hover:text-purple-600 font-extrabold"
                             >
@@ -57,6 +59,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                             </button>
                             <button
                                 type="button"
+                                onMouseDown={(e) => e.preventDefault()}
                                 onClick={() => { onChangeHeadingLevel?.('H2'); setHeadingMenuOpen(false); }}
                                 className="w-full text-left px-3 py-1.5 hover:bg-purple-50 hover:text-purple-600 font-bold"
                             >
@@ -64,6 +67,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                             </button>
                             <button
                                 type="button"
+                                onMouseDown={(e) => e.preventDefault()}
                                 onClick={() => { onChangeHeadingLevel?.('H3'); setHeadingMenuOpen(false); }}
                                 className="w-full text-left px-3 py-1.5 hover:bg-purple-50 hover:text-purple-600 font-semibold"
                             >
@@ -79,6 +83,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                 {/* 2. Bold */}
                 <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleCommand('bold')}
                     className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs font-extrabold transition-colors ${
                         isDarkTheme ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-100 text-slate-800'
@@ -91,6 +96,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                 {/* 3. Italic */}
                 <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleCommand('italic')}
                     className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs italic font-serif transition-colors ${
                         isDarkTheme ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-100 text-slate-800'
@@ -103,6 +109,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                 {/* 4. Underline */}
                 <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleCommand('underline')}
                     className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs underline font-semibold transition-colors ${
                         isDarkTheme ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-100 text-slate-800'
@@ -115,6 +122,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                 {/* 5. Strikethrough */}
                 <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleCommand('strikeThrough')}
                     className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs line-through font-semibold transition-colors ${
                         isDarkTheme ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-100 text-slate-800'
@@ -127,6 +135,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                 {/* 6. Inline Code */}
                 <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleCommand('code')}
                     className={`w-7 h-7 flex items-center justify-center rounded-lg font-mono text-xs transition-colors ${
                         isDarkTheme ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-100 text-slate-800'
@@ -142,6 +151,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                 {/* 7. Link */}
                 <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => {
                         const url = prompt('Nhập liên kết URL:');
                         if (url) handleCommand('createLink', url);
@@ -160,6 +170,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                 {/* 8. Image */}
                 <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => onInsertBlock?.('image')}
                     className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs transition-colors ${
                         isDarkTheme ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-100 text-slate-800'
@@ -176,6 +187,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                 {/* 9. Table */}
                 <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => onInsertBlock?.('table')}
                     className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs transition-colors ${
                         isDarkTheme ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-100 text-slate-800'
@@ -194,11 +206,12 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                 {/* 10. Bullet List */}
                 <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleCommand('insertUnorderedList')}
                     className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs transition-colors ${
                         isDarkTheme ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-100 text-slate-800'
                     }`}
-                    title="Danh sách dấu chấm"
+                    title="Danh sách dấu chấm (Bullet List)"
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <line x1="9" y1="6" x2="20" y2="6" />
@@ -213,11 +226,12 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                 {/* 11. Numbered List */}
                 <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleCommand('insertOrderedList')}
                     className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs transition-colors ${
                         isDarkTheme ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-100 text-slate-800'
                     }`}
-                    title="Danh sách số thứ tự"
+                    title="Danh sách số thứ tự (Numbered List)"
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <line x1="10" y1="6" x2="21" y2="6" />
@@ -233,6 +247,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                 {/* 12. Align Left */}
                 <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleCommand('justifyLeft')}
                     className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs transition-colors ${
                         isDarkTheme ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-100 text-slate-800'
@@ -249,6 +264,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                 {/* 13. Align Center */}
                 <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleCommand('justifyCenter')}
                     className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs transition-colors ${
                         isDarkTheme ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-100 text-slate-800'
@@ -265,6 +281,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                 {/* 14. Align Right */}
                 <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleCommand('justifyRight')}
                     className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs transition-colors ${
                         isDarkTheme ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-100 text-slate-800'

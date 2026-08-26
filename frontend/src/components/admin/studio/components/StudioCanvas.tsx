@@ -85,6 +85,19 @@ export const StudioCanvas: React.FC<StudioCanvasProps> = ({
         }
 
         document.execCommand(command, false, value);
+
+        // Immediately notify active contenteditable
+        const sel = window.getSelection();
+        if (sel && sel.anchorNode) {
+            let tEl = sel.anchorNode as HTMLElement;
+            if (tEl.nodeType === Node.TEXT_NODE) {
+                tEl = tEl.parentElement as HTMLElement;
+            }
+            const activeEditable = tEl?.closest('[contenteditable="true"]') as HTMLElement;
+            if (activeEditable) {
+                activeEditable.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
     };
 
     const handleChangeHeadingLevel = (level: 'H1' | 'H2' | 'H3') => {
