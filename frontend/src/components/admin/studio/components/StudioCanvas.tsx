@@ -2,15 +2,14 @@ import React from 'react';
 import { Droppable, Draggable, type DroppableProvided, type DraggableProvided } from '@hello-pangea/dnd';
 import { StudioFormattingToolbar } from './StudioFormattingToolbar';
 import { StudioBlockCard } from './StudioBlockCard';
-import { StudioInlineInsertBar } from './StudioInlineInsertBar';
 import type { BlockType, LessonBlock } from '../types';
 
 interface StudioCanvasProps {
     blocks: LessonBlock[];
     selectedBlockId: string;
     isDarkTheme: boolean;
-    insertMenuOpenIndex: number | null;
-    setInsertMenuOpenIndex: (index: number | null) => void;
+    insertMenuOpenIndex?: number | null;
+    setInsertMenuOpenIndex?: (index: number | null) => void;
     onSelectBlock: (id: string) => void;
     onDeleteBlock: (id: string) => void;
     onUpdateActiveBlock: (fields: Partial<LessonBlock>) => void;
@@ -22,8 +21,6 @@ export const StudioCanvas: React.FC<StudioCanvasProps> = ({
     blocks,
     selectedBlockId,
     isDarkTheme,
-    insertMenuOpenIndex,
-    setInsertMenuOpenIndex,
     onSelectBlock,
     onDeleteBlock,
     onUpdateActiveBlock,
@@ -169,19 +166,6 @@ export const StudioCanvas: React.FC<StudioCanvasProps> = ({
                                                         onSelect={() => onSelectBlock(block.id)}
                                                         onDelete={() => onDeleteBlock(block.id)}
                                                         onUpdateActiveBlock={onUpdateActiveBlock}
-                                                    />
-
-                                                    {/* Inline Insert Bar Directly Below This Block */}
-                                                    <StudioInlineInsertBar
-                                                        index={index}
-                                                        isOpen={insertMenuOpenIndex === index}
-                                                        isDarkTheme={isDarkTheme}
-                                                        onToggle={(e) => {
-                                                            e.stopPropagation();
-                                                            setInsertMenuOpenIndex(insertMenuOpenIndex === index ? null : index);
-                                                        }}
-                                                        onClose={() => setInsertMenuOpenIndex(null)}
-                                                        onInsertBlockAt={onInsertBlockAt}
                                                     />
                                                 </div>
                                             )}
