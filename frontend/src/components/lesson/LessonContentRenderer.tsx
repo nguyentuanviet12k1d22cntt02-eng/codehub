@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { stripQuizSectionFromMarkdown } from '../../utils/quizParser';
+import { tokenizeAndHighlight } from '../admin/studio/components/StudioCodeEditor';
 
 interface LessonContentRendererProps {
     content: string;
@@ -41,6 +42,67 @@ const cleanAlertPrefix = (node: any): any => {
         });
     }
     return node;
+};
+
+// Student View Code Block with dark matte terminal theme, copy button, line numbers and syntax highlighting
+const StudentCodeBlockView: React.FC<{ code: string; language: string }> = ({ code, language }) => {
+    const [copied, setCopied] = useState(false);
+    const lines = (code || '').replace(/\n$/, '').split('\n');
+    const lineCount = Math.max(1, lines.length);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(code);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+        <div className="my-5 rounded-[6px] bg-[#12131a] border border-[#222430] shadow-md overflow-hidden text-slate-200 text-xs font-mono select-text transition-all not-prose">
+            {/* Top Bar */}
+            <div className="flex items-center justify-between px-3.5 py-2 bg-[#171822] border-b border-[#222430] select-none">
+                <span className="text-slate-300 text-xs font-semibold uppercase tracking-wider">
+                    {language || 'Python'}
+                </span>
+                <div className="flex items-center gap-2 text-slate-400">
+                    <button
+                        type="button"
+                        onClick={handleCopy}
+                        className="hover:text-white transition-colors p-1"
+                        title={copied ? 'Đã sao chép!' : 'Sao chép mã'}
+                    >
+                        {copied ? (
+                            <span className="text-emerald-400 font-bold text-[11px] flex items-center gap-1">
+                                <span>✓</span> Đã chép
+                            </span>
+                        ) : (
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                            </svg>
+                        )}
+                    </button>
+                </div>
+            </div>
+
+            {/* Code Body with Line Numbers & Syntax Highlighting */}
+            <div className="flex items-stretch bg-[#12131a] pb-3 pt-2">
+                {/* Left Gutter: Line Numbers */}
+                <div className="w-8 pl-3.5 select-none text-slate-600 text-[13px] font-mono leading-[22px] flex-shrink-0 text-left">
+                    {Array.from({ length: lineCount }).map((_, idx) => (
+                        <div key={idx}>{idx + 1}</div>
+                    ))}
+                </div>
+
+                {/* Right: Code Area with Syntax Highlighting */}
+                <div className="flex-1 pl-3 pr-4 overflow-x-auto">
+                    <pre
+                        dangerouslySetInnerHTML={{ __html: tokenizeAndHighlight(code, language) }}
+                        className="w-full m-0 p-0 font-mono text-[13px] leading-[22px] text-slate-100 whitespace-pre overflow-x-auto select-text"
+                    />
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export const LessonContentRenderer: React.FC<LessonContentRendererProps> = ({ content }) => {
@@ -121,20 +183,8 @@ export const LessonContentRenderer: React.FC<LessonContentRendererProps> = ({ co
                             );
                         }
 
-                        return (
-                            <div className="my-5 rounded-xl border border-border-custom bg-[#0d1117] overflow-hidden shadow-sm">
-                                {match && (
-                                    <div className="px-4 py-1.5 bg-[#161b22] border-b border-white/10 text-[11px] font-mono text-slate-400 uppercase tracking-wider flex items-center justify-between">
-                                        <span>{match[1]}</span>
-                                    </div>
-                                )}
-                                <pre className="p-4 overflow-x-auto text-[13px] leading-relaxed font-mono text-slate-200 select-text m-0 whitespace-pre">
-                                    <code className={className} {...props}>
-                                        {children}
-                                    </code>
-                                </pre>
-                            </div>
-                        );
+                        const lang = match ? match[1] : 'Python';
+                        return <StudentCodeBlockView code={contentStr} language={lang} />;
                     },
                     table: ({ ...props }) => (
                         <div className="overflow-x-auto w-full border border-border-custom rounded-xl my-6 transition-colors duration-200">

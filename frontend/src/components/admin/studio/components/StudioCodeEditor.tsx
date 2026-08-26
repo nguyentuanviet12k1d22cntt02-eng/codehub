@@ -20,7 +20,7 @@ const escapeHtml = (str: string): string => {
 };
 
 // Single-pass Tokenizer for 100% bug-free syntax highlighting
-const tokenizeAndHighlight = (rawCode: string, lang: string = 'Python'): string => {
+export const tokenizeAndHighlight = (rawCode: string, lang: string = 'Python'): string => {
     if (!rawCode) return '&nbsp;';
     const l = (lang || 'Python').toUpperCase();
 
