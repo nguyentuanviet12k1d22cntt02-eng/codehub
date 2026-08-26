@@ -19,13 +19,12 @@ const escapeHtml = (str: string): string => {
         .replace(/'/g, '&#039;');
 };
 
-// Single-pass Tokenizer for 100% bug-free syntax highlighting
+// Single-pass Tokenizer with robust inline styles (immune to .prose overrides)
 export const tokenizeAndHighlight = (rawCode: string, lang: string = 'Python'): string => {
     if (!rawCode) return '&nbsp;';
     const l = (lang || 'Python').toUpperCase();
 
-    // Regex token matcher per language
-    let regex: RegExp;
+    // Keywords and builtins definition
     const pythonKeywords = new Set(['def', 'class', 'import', 'from', 'return', 'if', 'elif', 'else', 'for', 'while', 'in', 'try', 'except', 'finally', 'with', 'as', 'pass', 'break', 'continue', 'lambda', 'yield', 'raise', 'assert', 'async', 'await', 'True', 'False', 'None', 'not', 'and', 'or', 'is', 'global', 'nonlocal']);
     const pythonBuiltins = new Set(['print', 'len', 'range', 'input', 'str', 'int', 'float', 'list', 'dict', 'set', 'tuple', 'open', 'type', 'sum', 'min', 'max', 'enumerate', 'zip', 'isinstance', 'sorted', 'abs', 'round', 'map', 'filter', 'all', 'any']);
 
@@ -34,12 +33,12 @@ export const tokenizeAndHighlight = (rawCode: string, lang: string = 'Python'): 
     const jsKeywords = new Set(['const', 'let', 'var', 'function', 'return', 'if', 'else', 'switch', 'case', 'break', 'for', 'while', 'do', 'import', 'export', 'default', 'class', 'extends', 'new', 'this', 'async', 'await', 'try', 'catch', 'finally', 'throw', 'typeof', 'instanceof', 'true', 'false', 'null', 'undefined']);
     const jsBuiltins = new Set(['console', 'log', 'document', 'window', 'Math', 'JSON', 'Promise', 'Array', 'Object', 'String', 'Number', 'fetch', 'setTimeout', 'setInterval']);
 
+    let regex: RegExp;
     if (l === 'SQL') {
         regex = /(--[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")|(\b\d+(?:\.\d+)?\b)|(\b[a-zA-Z_][a-zA-Z0-9_]*\b)|([^\s\w])/g;
     } else if (l === 'PYTHON') {
         regex = /(#[^\n]*)|(f?'''[\s\S]*?'''|f?"""[\s\S]*?"""|f?'(?:[^'\\]|\\.)*'|f?"(?:[^"\\]|\\.)*")|(\b\d+(?:\.\d+)?\b)|(\b[a-zA-Z_][a-zA-Z0-9_]*\b)|([^\s\w])/g;
     } else {
-        // JS / TS / Default
         regex = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:[^`\\]|\\.)*`|'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")|(\b\d+(?:\.\d+)?\b)|(\b[a-zA-Z_][a-zA-Z0-9_]*\b)|([^\s\w])/g;
     }
 
@@ -48,7 +47,6 @@ export const tokenizeAndHighlight = (rawCode: string, lang: string = 'Python'): 
     let match: RegExpExecArray | null;
 
     while ((match = regex.exec(rawCode)) !== null) {
-        // Text between matches
         if (match.index > lastIndex) {
             htmlResult += escapeHtml(rawCode.substring(lastIndex, match.index));
         }
@@ -56,37 +54,37 @@ export const tokenizeAndHighlight = (rawCode: string, lang: string = 'Python'): 
         const [full, comment, stringLit, numberLit, word, operator] = match;
 
         if (comment) {
-            htmlResult += `<span class="text-[#64748b] italic">${escapeHtml(comment)}</span>`;
+            htmlResult += `<span style="color: #64748b; font-style: italic;">${escapeHtml(comment)}</span>`;
         } else if (stringLit) {
-            htmlResult += `<span class="text-[#4ade80]">${escapeHtml(stringLit)}</span>`;
+            htmlResult += `<span style="color: #4ade80; font-weight: 500;">${escapeHtml(stringLit)}</span>`;
         } else if (numberLit) {
-            htmlResult += `<span class="text-[#38bdf8]">${escapeHtml(numberLit)}</span>`;
+            htmlResult += `<span style="color: #38bdf8; font-weight: 500;">${escapeHtml(numberLit)}</span>`;
         } else if (word) {
             if (l === 'SQL') {
                 if (sqlKeywords.has(word.toUpperCase())) {
-                    htmlResult += `<span class="text-[#f43f5e] font-bold">${escapeHtml(word)}</span>`;
+                    htmlResult += `<span style="color: #f43f5e; font-weight: 700;">${escapeHtml(word)}</span>`;
                 } else {
-                    htmlResult += `<span class="text-[#f8fafc]">${escapeHtml(word)}</span>`;
+                    htmlResult += `<span style="color: #f8fafc;">${escapeHtml(word)}</span>`;
                 }
             } else if (l === 'PYTHON') {
                 if (pythonKeywords.has(word)) {
-                    htmlResult += `<span class="text-[#f59e0b] font-bold">${escapeHtml(word)}</span>`;
+                    htmlResult += `<span style="color: #f59e0b; font-weight: 700;">${escapeHtml(word)}</span>`;
                 } else if (pythonBuiltins.has(word)) {
-                    htmlResult += `<span class="text-[#c084fc] font-semibold">${escapeHtml(word)}</span>`;
+                    htmlResult += `<span style="color: #c084fc; font-weight: 600;">${escapeHtml(word)}</span>`;
                 } else {
-                    htmlResult += `<span class="text-[#f8fafc]">${escapeHtml(word)}</span>`;
+                    htmlResult += `<span style="color: #f8fafc;">${escapeHtml(word)}</span>`;
                 }
             } else {
                 if (jsKeywords.has(word)) {
-                    htmlResult += `<span class="text-[#38bdf8] font-bold">${escapeHtml(word)}</span>`;
+                    htmlResult += `<span style="color: #38bdf8; font-weight: 700;">${escapeHtml(word)}</span>`;
                 } else if (jsBuiltins.has(word)) {
-                    htmlResult += `<span class="text-[#facc15] font-semibold">${escapeHtml(word)}</span>`;
+                    htmlResult += `<span style="color: #facc15; font-weight: 600;">${escapeHtml(word)}</span>`;
                 } else {
-                    htmlResult += `<span class="text-[#f8fafc]">${escapeHtml(word)}</span>`;
+                    htmlResult += `<span style="color: #f8fafc;">${escapeHtml(word)}</span>`;
                 }
             }
         } else if (operator) {
-            htmlResult += `<span class="text-[#94a3b8]">${escapeHtml(operator)}</span>`;
+            htmlResult += `<span style="color: #94a3b8;">${escapeHtml(operator)}</span>`;
         } else {
             htmlResult += escapeHtml(full);
         }
@@ -255,7 +253,7 @@ export const StudioCodeEditor: React.FC<StudioCodeEditorProps> = ({
                     <pre
                         ref={preRef}
                         dangerouslySetInnerHTML={{ __html: tokenizeAndHighlight(code, language) }}
-                        className="w-full m-0 p-0 font-mono text-[13px] leading-[22px] text-slate-100 whitespace-pre pointer-events-none overflow-hidden select-none"
+                        className="w-full m-0 p-0 font-mono text-[13px] leading-[22px] whitespace-pre pointer-events-none overflow-hidden select-none"
                     />
 
                     {/* Layer 2: Transparent Textarea for Typing */}
