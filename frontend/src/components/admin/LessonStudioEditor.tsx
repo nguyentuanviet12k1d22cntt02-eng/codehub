@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
     DragDropContext,
     Droppable,
@@ -407,8 +408,8 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
         }
     };
 
-    return (
-        <div className="fixed inset-0 z-50 bg-[#0c0c10] text-white flex flex-col font-sans select-none overflow-hidden">
+    return createPortal(
+        <div className="fixed inset-0 top-0 left-0 w-screen h-screen z-[99999] bg-[#0c0c10] text-white flex flex-col font-sans select-none overflow-hidden">
             {/* TOP NAVIGATION BAR */}
             <div className="h-16 bg-[#121217] border-b border-white/10 px-6 flex items-center justify-between flex-shrink-0 z-20">
                 {/* Left Brand & Breadcrumb */}
@@ -1166,6 +1167,7 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                     Tổng cộng: <strong className="text-white">{blocks.length}</strong> khối nội dung
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
