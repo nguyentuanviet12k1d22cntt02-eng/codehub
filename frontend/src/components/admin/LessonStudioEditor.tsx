@@ -75,6 +75,12 @@ const createDefaultBlock = (type: BlockType, id: string): LessonBlock => {
                 type: 'paragraph',
                 content: 'Nhập nội dung đoạn văn lý thuyết tại đây...'
             };
+        case 'list':
+            return {
+                id,
+                type: 'list',
+                content: '• Mục danh sách thứ nhất\n• Mục danh sách thứ hai\n• Mục danh sách thứ ba'
+            };
         case 'code':
             return {
                 id,
@@ -91,7 +97,7 @@ const createDefaultBlock = (type: BlockType, id: string): LessonBlock => {
             return {
                 id,
                 type: 'output',
-                title: 'Kết quả (ví dụ)',
+                title: 'Kết quả (Output)',
                 tableHeaders: ['id', 'name', 'age'],
                 tableRows: [
                     ['1', 'An', '20'],
@@ -101,13 +107,28 @@ const createDefaultBlock = (type: BlockType, id: string): LessonBlock => {
                 content: ''
             };
         case 'explanation':
-        case 'callout':
             return {
                 id,
                 type: 'explanation',
                 title: 'Giải thích',
                 calloutType: 'explanation',
                 content: '• Ý 1: Điểm cốt lõi\n• Ý 2: Cú pháp cần nhớ\n• Ý 3: Mẹo thực hành'
+            };
+        case 'callout':
+            return {
+                id,
+                type: 'callout',
+                title: 'Lưu ý quan trọng',
+                calloutType: 'warning',
+                content: 'Đây là thông tin quan trọng cần chú ý khi thực hành.'
+            };
+        case 'note':
+            return {
+                id,
+                type: 'note',
+                title: 'Ghi chú thêm',
+                calloutType: 'info',
+                content: 'Ghi chú bổ sung kiến thức mở rộng.'
             };
         case 'exercise':
             return {
@@ -117,6 +138,41 @@ const createDefaultBlock = (type: BlockType, id: string): LessonBlock => {
                 content: 'Mô tả yêu cầu bài tập cho học viên thực hành...',
                 solutionCode: '# Lời giải mẫu\nprint("Xong")',
                 isSolutionVisible: false
+            };
+        case 'quiz':
+            return {
+                id,
+                type: 'quiz',
+                title: 'Câu hỏi trắc nghiệm',
+                content: 'Đâu là kiểu dữ liệu số nguyên trong Python?\nA. int\nB. float\nC. str\nD. bool'
+            };
+        case 'theory':
+            return {
+                id,
+                type: 'theory',
+                title: 'Khái niệm lý thuyết',
+                content: 'Phân tích lý thuyết và nguyên lý hoạt động chi tiết...'
+            };
+        case 'erd':
+            return {
+                id,
+                type: 'erd',
+                title: 'Sơ đồ quan hệ thực thể (ERD)',
+                content: 'Mô tả quan hệ 1-N giữa bảng Students và Orders.'
+            };
+        case 'image':
+            return {
+                id,
+                type: 'image',
+                title: 'Hình ảnh minh họa',
+                content: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5'
+            };
+        case 'video':
+            return {
+                id,
+                type: 'video',
+                title: 'Video bài giảng',
+                content: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
             };
         case 'divider':
             return {
@@ -305,6 +361,17 @@ const convertBlocksToMarkdown = (blocks: LessonBlock[]): string => {
     }).join('\n\n');
 };
 
+interface PaletteItem {
+    type: BlockType;
+    label: string;
+    icon: React.ReactNode;
+}
+
+interface PaletteCategory {
+    title: string;
+    items: PaletteItem[];
+}
+
 export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, onSave, onClose }) => {
     const [title, setTitle] = useState(lesson.title || '');
     const [lessonIdCode, setLessonIdCode] = useState(lesson.lessonId || '');
@@ -386,13 +453,31 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
         setSelectedBlockId(newBlocks[0].id);
     };
 
-    // Drag and drop reordering
+    // Drag and drop handler (handles both sidebar $\to$ canvas insertion & internal reordering)
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
-        const items = Array.from(blocks);
-        const [reorderedItem] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, reorderedItem);
-        updateBlocksWithHistory(items);
+
+        // 1. Drag from Sidebar Palette $\to$ Center Canvas
+        if (result.source.droppableId === 'sidebar-palette') {
+            if (result.destination.droppableId === 'lesson-blocks-droppable') {
+                const blockType = result.draggableId.replace('sidebar-', '') as BlockType;
+                const newId = `block-${Date.now()}`;
+                const newBlock = createDefaultBlock(blockType, newId);
+                const newBlocks = [...blocks];
+                newBlocks.splice(result.destination.index, 0, newBlock);
+                updateBlocksWithHistory(newBlocks);
+                setSelectedBlockId(newId);
+            }
+            return;
+        }
+
+        // 2. Reordering inside Center Canvas
+        if (result.source.droppableId === 'lesson-blocks-droppable' && result.destination.droppableId === 'lesson-blocks-droppable') {
+            const items = Array.from(blocks);
+            const [reorderedItem] = items.splice(result.source.index, 1);
+            items.splice(result.destination.index, 0, reorderedItem);
+            updateBlocksWithHistory(items);
+        }
     };
 
     // Save All
@@ -415,411 +500,510 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
         }
     };
 
+    // Sidebar palette categories matching user mockup exactly
+    const paletteCategories: PaletteCategory[] = [
+        {
+            title: 'CƠ BẢN',
+            items: [
+                {
+                    type: 'heading',
+                    label: 'Tiêu đề',
+                    icon: (
+                        <span className="font-serif font-bold text-base text-slate-800 tracking-tight">H</span>
+                    )
+                },
+                {
+                    type: 'paragraph',
+                    label: 'Đoạn văn',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" />
+                        </svg>
+                    )
+                },
+                {
+                    type: 'list',
+                    label: 'Danh sách',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <line x1="8" y1="6" x2="21" y2="6" strokeLinecap="round" />
+                            <line x1="8" y1="12" x2="21" y2="12" strokeLinecap="round" />
+                            <line x1="8" y1="18" x2="21" y2="18" strokeLinecap="round" />
+                            <circle cx="4" cy="6" r="1.5" fill="currentColor" />
+                            <circle cx="4" cy="12" r="1.5" fill="currentColor" />
+                            <circle cx="4" cy="18" r="1.5" fill="currentColor" />
+                        </svg>
+                    )
+                },
+                {
+                    type: 'callout',
+                    label: 'Callout',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                    )
+                },
+                {
+                    type: 'note',
+                    label: 'Ghi chú',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    )
+                },
+                {
+                    type: 'divider',
+                    label: 'Đường kẻ',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <line x1="4" y1="12" x2="20" y2="12" strokeLinecap="round" />
+                        </svg>
+                    )
+                }
+            ]
+        },
+        {
+            title: 'NỘI DUNG LẬP TRÌNH',
+            items: [
+                {
+                    type: 'code',
+                    label: 'Khối mã (Code)',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <polyline points="16 18 22 12 16 6" strokeLinecap="round" strokeLinejoin="round" />
+                            <polyline points="8 6 2 12 8 18" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    )
+                },
+                {
+                    type: 'output',
+                    label: 'Kết quả (Output)',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="14" rx="2" strokeLinecap="round" />
+                            <polyline points="7 9 10 11 7 13" strokeLinecap="round" strokeLinejoin="round" />
+                            <line x1="12" y1="13" x2="16" y2="13" strokeLinecap="round" />
+                        </svg>
+                    )
+                },
+                {
+                    type: 'explanation',
+                    label: 'Giải thích',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="9" strokeLinecap="round" />
+                            <line x1="12" y1="16" x2="12" y2="12" strokeLinecap="round" />
+                            <circle cx="12" cy="8" r="1" fill="currentColor" />
+                        </svg>
+                    )
+                },
+                {
+                    type: 'exercise',
+                    label: 'Bài tập (Exercise)',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                    )
+                },
+                {
+                    type: 'quiz',
+                    label: 'Quiz',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="9" strokeLinecap="round" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
+                            <circle cx="12" cy="17" r="1" fill="currentColor" />
+                        </svg>
+                    )
+                },
+                {
+                    type: 'theory',
+                    label: 'Lý thuyết',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    )
+                }
+            ]
+        },
+        {
+            title: 'DỮ LIỆU & SQL',
+            items: [
+                {
+                    type: 'table',
+                    label: 'Bảng (Table)',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="18" height="18" rx="2" strokeLinecap="round" />
+                            <path strokeLinecap="round" d="M3 9h18M3 15h18M9 3v18M15 3v18" />
+                        </svg>
+                    )
+                },
+                {
+                    type: 'erd',
+                    label: 'Sơ đồ ERD',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <circle cx="6" cy="12" r="3" strokeLinecap="round" />
+                            <circle cx="18" cy="6" r="3" strokeLinecap="round" />
+                            <circle cx="18" cy="18" r="3" strokeLinecap="round" />
+                            <path strokeLinecap="round" d="M8.7 10.7l6.6-3.4M8.7 13.3l6.6 3.4" />
+                        </svg>
+                    )
+                },
+                {
+                    type: 'output',
+                    label: 'Kết quả SQL',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <ellipse cx="12" cy="5" rx="9" ry="3" strokeLinecap="round" />
+                            <path strokeLinecap="round" d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+                            <path strokeLinecap="round" d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                        </svg>
+                    )
+                }
+            ]
+        },
+        {
+            title: 'ĐA PHƯƠNG TIỆN',
+            items: [
+                {
+                    type: 'image',
+                    label: 'Hình ảnh',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="18" height="18" rx="2" strokeLinecap="round" />
+                            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
+                            <polyline points="21 15 16 10 5 21" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    )
+                },
+                {
+                    type: 'video',
+                    label: 'Video',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="9" strokeLinecap="round" />
+                            <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
+                        </svg>
+                    )
+                },
+                {
+                    type: 'code',
+                    label: 'Iframe',
+                    icon: (
+                        <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <polyline points="16 18 22 12 16 6" strokeLinecap="round" strokeLinejoin="round" />
+                            <polyline points="8 6 2 12 8 18" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    )
+                }
+            ]
+        }
+    ];
+
+    // Flatten palette items for search & draggable indexing
+    let flattenedPaletteItems: PaletteItem[] = [];
+    paletteCategories.forEach(cat => {
+        cat.items.forEach(item => {
+            if (!searchBlockQuery || item.label.toLowerCase().includes(searchBlockQuery.toLowerCase()) || item.type.toLowerCase().includes(searchBlockQuery.toLowerCase())) {
+                flattenedPaletteItems.push(item);
+            }
+        });
+    });
+
     return createPortal(
-        <div className={`fixed inset-0 top-0 left-0 w-screen h-screen z-[99999] flex flex-col font-sans select-none overflow-hidden transition-colors ${
-            isDarkTheme ? 'bg-[#0c0c10] text-white' : 'bg-[#f8fafc] text-slate-900'
-        }`}>
-            {/* 1. TOP NAVIGATION BAR */}
-            <div className={`h-16 px-6 flex items-center justify-between flex-shrink-0 z-20 border-b shadow-sm ${
-                isDarkTheme ? 'bg-[#121217] border-white/10' : 'bg-white border-slate-200'
+        <DragDropContext onDragEnd={onDragEnd}>
+            <div className={`fixed inset-0 top-0 left-0 w-screen h-screen z-[99999] flex flex-col font-sans select-none overflow-hidden transition-colors ${
+                isDarkTheme ? 'bg-[#0c0c10] text-white' : 'bg-[#f8fafc] text-slate-900'
             }`}>
-                {/* Left Brand & Breadcrumb */}
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={onClose}
-                        className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
-                            isDarkTheme
-                                ? 'border-white/10 bg-white/5 hover:bg-white/10 text-white/80'
-                                : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'
-                        }`}
-                    >
-                        &larr; Quay lại danh sách
-                    </button>
-                    <div className={`h-4 w-[1px] ${isDarkTheme ? 'bg-white/10' : 'bg-slate-200'}`} />
-                    <span className={`text-xs font-medium ${isDarkTheme ? 'text-white/50' : 'text-slate-500'}`}>
-                        Nền tảng học lập trình / Admin / Soạn bài học
-                    </span>
-                </div>
-
-                {/* Center Editable Title */}
-                <div className="flex items-center gap-2 max-w-md w-full justify-center">
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => {
-                            setTitle(e.target.value);
-                            setIsSaved(false);
-                        }}
-                        className={`border rounded-lg px-3 py-1.5 text-xs md:text-sm font-bold text-center w-full focus:outline-none transition-all ${
-                            isDarkTheme
-                                ? 'bg-white/5 hover:bg-white/10 focus:bg-[#181820] border-white/10 focus:border-purple-500 text-white'
-                                : 'bg-slate-50 hover:bg-slate-100/80 focus:bg-white border-slate-300 focus:border-purple-600 text-slate-900 shadow-inner'
-                        }`}
-                        placeholder="Nhập tiêu đề bài học..."
-                    />
-                </div>
-
-                {/* Right Actions */}
-                <div className="flex items-center gap-2.5">
-                    {/* Theme Toggle (Sáng / Tối) */}
-                    <button
-                        onClick={() => setIsDarkTheme(!isDarkTheme)}
-                        className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-colors flex items-center gap-1.5 ${
-                            isDarkTheme
-                                ? 'border-white/10 bg-white/5 hover:bg-white/10 text-white/80'
-                                : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'
-                        }`}
-                        title="Chuyển đổi giao diện Sáng / Tối"
-                    >
-                        <span>{isDarkTheme ? '🌙 Tối' : '☀️ Sáng'}</span>
-                    </button>
-
-                    {/* Status badge */}
-                    <div className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${
-                        isSaved
-                            ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
-                            : 'text-amber-700 bg-amber-50 border-amber-200'
-                    }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${isSaved ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
-                        {isSaved ? 'Đã lưu' : 'Có thay đổi chưa lưu'}
+                {/* 1. TOP NAVIGATION BAR */}
+                <div className={`h-16 px-6 flex items-center justify-between flex-shrink-0 z-20 border-b shadow-sm ${
+                    isDarkTheme ? 'bg-[#121217] border-white/10' : 'bg-white border-slate-200'
+                }`}>
+                    {/* Left Brand & Breadcrumb */}
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={onClose}
+                            className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
+                                isDarkTheme
+                                    ? 'border-white/10 bg-white/5 hover:bg-white/10 text-white/80'
+                                    : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'
+                            }`}
+                        >
+                            &larr; Quay lại danh sách
+                        </button>
+                        <div className={`h-4 w-[1px] ${isDarkTheme ? 'bg-white/10' : 'bg-slate-200'}`} />
+                        <span className={`text-xs font-medium ${isDarkTheme ? 'text-white/50' : 'text-slate-500'}`}>
+                            Nền tảng học lập trình / Admin / Soạn bài học
+                        </span>
                     </div>
 
-                    {/* Undo / Redo */}
-                    <div className={`flex items-center rounded-lg border p-0.5 ${
-                        isDarkTheme ? 'bg-white/5 border-white/10' : 'bg-slate-50 border-slate-200'
-                    }`}>
-                        <button
-                            onClick={handleUndo}
-                            disabled={historyIndex === 0}
-                            className={`px-2 py-1 text-xs disabled:opacity-30 ${isDarkTheme ? 'text-white/70 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
-                            title="Hoàn tác (Undo)"
-                        >
-                            ↺
-                        </button>
-                        <button
-                            onClick={handleRedo}
-                            disabled={historyIndex >= history.length - 1}
-                            className={`px-2 py-1 text-xs disabled:opacity-30 ${isDarkTheme ? 'text-white/70 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
-                            title="Làm lại (Redo)"
-                        >
-                            ↻
-                        </button>
+                    {/* Center Editable Title */}
+                    <div className="flex items-center gap-2 max-w-md w-full justify-center">
+                        <input
+                            type="text"
+                            value={title}
+                            onChange={(e) => {
+                                setTitle(e.target.value);
+                                setIsSaved(false);
+                            }}
+                            className={`border rounded-lg px-3 py-1.5 text-xs md:text-sm font-bold text-center w-full focus:outline-none transition-all ${
+                                isDarkTheme
+                                    ? 'bg-white/5 hover:bg-white/10 focus:bg-[#181820] border-white/10 focus:border-purple-500 text-white'
+                                    : 'bg-slate-50 hover:bg-slate-100/80 focus:bg-white border-slate-300 focus:border-purple-600 text-slate-900 shadow-inner'
+                            }`}
+                            placeholder="Nhập tiêu đề bài học..."
+                        />
                     </div>
 
-                    {/* Preview Button */}
-                    <button
-                        onClick={() => setPreviewMode(!previewMode)}
-                        className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
-                            previewMode
+                    {/* Right Actions */}
+                    <div className="flex items-center gap-2.5">
+                        {/* Theme Toggle (Sáng / Tối) */}
+                        <button
+                            onClick={() => setIsDarkTheme(!isDarkTheme)}
+                            className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-colors flex items-center gap-1.5 ${
+                                isDarkTheme
+                                    ? 'border-white/10 bg-white/5 hover:bg-white/10 text-white/80'
+                                    : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'
+                            }`}
+                            title="Chuyển đổi giao diện Sáng / Tối"
+                        >
+                            <span>{isDarkTheme ? '🌙 Tối' : '☀️ Sáng'}</span>
+                        </button>
+
+                        {/* Status badge */}
+                        <div className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${
+                            isSaved
+                                ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                                : 'text-amber-700 bg-amber-50 border-amber-200'
+                        }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${isSaved ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+                            {isSaved ? 'Đã lưu' : 'Có thay đổi chưa lưu'}
+                        </div>
+
+                        {/* Undo / Redo */}
+                        <div className={`flex items-center rounded-lg border p-0.5 ${
+                            isDarkTheme ? 'bg-white/5 border-white/10' : 'bg-slate-50 border-slate-200'
+                        }`}>
+                            <button
+                                onClick={handleUndo}
+                                disabled={historyIndex === 0}
+                                className={`px-2 py-1 text-xs disabled:opacity-30 ${isDarkTheme ? 'text-white/70 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
+                                title="Hoàn tác (Undo)"
+                            >
+                                ↺
+                            </button>
+                            <button
+                                onClick={handleRedo}
+                                disabled={historyIndex >= history.length - 1}
+                                className={`px-2 py-1 text-xs disabled:opacity-30 ${isDarkTheme ? 'text-white/70 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
+                                title="Làm lại (Redo)"
+                            >
+                                ↻
+                            </button>
+                        </div>
+
+                        {/* Preview Button */}
+                        <button
+                            onClick={() => setPreviewMode(!previewMode)}
+                            className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
+                                previewMode
                                 ? 'bg-purple-600 text-white border-purple-500'
                                 : isDarkTheme
                                     ? 'bg-white/5 text-white/80 border-white/10 hover:bg-white/10'
                                     : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 shadow-sm'
-                        }`}
-                    >
-                        {previewMode ? 'Sửa bài' : 'Xem thử'}
-                    </button>
-
-                    {/* Save Draft */}
-                    <button
-                        onClick={handleSaveAll}
-                        disabled={isSaving}
-                        className={`text-xs font-semibold px-3.5 py-1.5 rounded-lg border transition-colors ${
-                            isDarkTheme
-                                ? 'border-white/10 bg-white/5 hover:bg-white/10 text-white'
-                                : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-sm'
-                        }`}
-                    >
-                        Lưu nháp
-                    </button>
-
-                    {/* Publish CTA */}
-                    <button
-                        onClick={handleSaveAll}
-                        disabled={isSaving}
-                        className="text-xs font-bold px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-md shadow-purple-600/20 transition-all active:scale-95 disabled:opacity-50"
-                    >
-                        {isSaving ? 'Đang lưu...' : 'Xuất bản'}
-                    </button>
-                </div>
-            </div>
-
-            {/* 2. 3-COLUMN MAIN WORKSPACE */}
-            <div className="flex-1 flex overflow-hidden">
-                {/* 1. LEFT SIDEBAR: THÊM KHỐI (KÉO THẢ / CLICK) */}
-                <div className={`w-64 border-r p-4 flex flex-col gap-4 overflow-y-auto flex-shrink-0 ${
-                    isDarkTheme ? 'bg-[#121217] border-white/10' : 'bg-white border-slate-200'
-                }`}>
-                    {/* Header */}
-                    <div className="flex items-center justify-between">
-                        <span className={`text-[11px] font-bold uppercase tracking-wider ${
-                            isDarkTheme ? 'text-white/60' : 'text-slate-700'
-                        }`}>
-                            Thêm Khối (Kéo thả)
-                        </span>
-                    </div>
-
-                    {/* Search */}
-                    <div>
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm khối..."
-                            value={searchBlockQuery}
-                            onChange={(e) => setSearchBlockQuery(e.target.value)}
-                            className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-purple-500 transition-colors ${
-                                isDarkTheme
-                                    ? 'bg-[#181820] border-white/10 text-white placeholder-white/40'
-                                    : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'
                             }`}
-                        />
-                    </div>
+                        >
+                            {previewMode ? 'Sửa bài' : 'Xem thử'}
+                        </button>
 
-                    {/* Groups */}
-                    <div className="space-y-4 text-left">
-                        {/* Group 1: CƠ BẢN */}
-                        <div>
-                            <span className={`text-[10px] font-bold uppercase tracking-wider block mb-2 ${
-                                isDarkTheme ? 'text-white/40' : 'text-slate-400'
-                            }`}>
-                                Cơ bản
-                            </span>
-                            <div className="grid grid-cols-3 gap-1.5">
-                                <button
-                                    onClick={() => handleAddBlock('heading')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-purple-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-purple-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-bold text-sm text-purple-600">H</span>
-                                    <span className="text-[10px] font-semibold">Tiêu đề</span>
-                                </button>
-                                <button
-                                    onClick={() => handleAddBlock('paragraph')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-purple-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-purple-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-bold text-sm text-purple-600">¶</span>
-                                    <span className="text-[10px] font-semibold">Đoạn văn</span>
-                                </button>
-                                <button
-                                    onClick={() => handleAddBlock('list')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-purple-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-purple-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-bold text-sm text-purple-600">≡</span>
-                                    <span className="text-[10px] font-semibold">Danh sách</span>
-                                </button>
-                                <button
-                                    onClick={() => handleAddBlock('callout')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-amber-50 border-slate-200 hover:border-amber-300 text-slate-700 hover:text-amber-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-bold text-sm text-amber-500">💡</span>
-                                    <span className="text-[10px] font-semibold">Callout</span>
-                                </button>
-                                <button
-                                    onClick={() => handleAddBlock('note')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-sky-50 border-slate-200 hover:border-sky-300 text-slate-700 hover:text-sky-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-bold text-sm text-sky-500">📝</span>
-                                    <span className="text-[10px] font-semibold">Ghi chú</span>
-                                </button>
-                                <button
-                                    onClick={() => handleAddBlock('divider')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-slate-100 border-slate-200 hover:border-slate-300 text-slate-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-bold text-sm text-slate-400">—</span>
-                                    <span className="text-[10px] font-semibold">Đường kẻ</span>
-                                </button>
-                            </div>
-                        </div>
+                        {/* Save Draft */}
+                        <button
+                            onClick={handleSaveAll}
+                            disabled={isSaving}
+                            className={`text-xs font-semibold px-3.5 py-1.5 rounded-lg border transition-colors ${
+                                isDarkTheme
+                                    ? 'border-white/10 bg-white/5 hover:bg-white/10 text-white'
+                                    : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-sm'
+                            }`}
+                        >
+                            Lưu nháp
+                        </button>
 
-                        {/* Group 2: NỘI DUNG LẬP TRÌNH */}
-                        <div>
-                            <span className={`text-[10px] font-bold uppercase tracking-wider block mb-2 ${
-                                isDarkTheme ? 'text-white/40' : 'text-slate-400'
-                            }`}>
-                                Nội dung lập trình
-                            </span>
-                            <div className="grid grid-cols-3 gap-1.5">
-                                <button
-                                    onClick={() => handleAddBlock('code')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-purple-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-purple-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-mono font-bold text-xs text-purple-600">&lt;/&gt;</span>
-                                    <span className="text-[10px] font-semibold">Khối mã</span>
-                                </button>
-                                <button
-                                    onClick={() => handleAddBlock('output')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-sky-50 border-slate-200 hover:border-sky-300 text-slate-700 hover:text-sky-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-bold text-xs text-sky-500">▶</span>
-                                    <span className="text-[10px] font-semibold">Kết quả</span>
-                                </button>
-                                <button
-                                    onClick={() => handleAddBlock('explanation')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-amber-50 border-slate-200 hover:border-amber-300 text-slate-700 hover:text-amber-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-bold text-xs text-amber-500">ℹ</span>
-                                    <span className="text-[10px] font-semibold">Giải thích</span>
-                                </button>
-                                <button
-                                    onClick={() => handleAddBlock('exercise')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-emerald-50 border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-bold text-xs text-emerald-500">✎</span>
-                                    <span className="text-[10px] font-semibold">Bài tập</span>
-                                </button>
-                                <button
-                                    onClick={() => handleAddBlock('quiz')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-rose-50 border-slate-200 hover:border-rose-300 text-slate-700 hover:text-rose-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-bold text-xs text-rose-500">?</span>
-                                    <span className="text-[10px] font-semibold">Quiz</span>
-                                </button>
-                                <button
-                                    onClick={() => handleAddBlock('theory')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-indigo-50 border-slate-200 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-bold text-xs text-indigo-500">📖</span>
-                                    <span className="text-[10px] font-semibold">Lý thuyết</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Group 3: DỮ LIỆU & SQL */}
-                        <div>
-                            <span className={`text-[10px] font-bold uppercase tracking-wider block mb-2 ${
-                                isDarkTheme ? 'text-white/40' : 'text-slate-400'
-                            }`}>
-                                Dữ liệu & SQL
-                            </span>
-                            <div className="grid grid-cols-3 gap-1.5">
-                                <button
-                                    onClick={() => handleAddBlock('table')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-purple-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-purple-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-bold text-xs text-purple-600">▦</span>
-                                    <span className="text-[10px] font-semibold">Bảng</span>
-                                </button>
-                                <button
-                                    onClick={() => handleAddBlock('erd')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-indigo-50 border-slate-200 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-bold text-xs text-indigo-500">☍</span>
-                                    <span className="text-[10px] font-semibold">Sơ đồ ERD</span>
-                                </button>
-                                <button
-                                    onClick={() => handleAddBlock('output')}
-                                    className={`p-2 border rounded-xl flex flex-col items-center gap-1 transition-all ${
-                                        isDarkTheme
-                                            ? 'bg-[#181820] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/40 text-white/80'
-                                            : 'bg-slate-50 hover:bg-emerald-50 border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 shadow-sm'
-                                    }`}
-                                >
-                                    <span className="font-bold text-xs text-emerald-500">🗄</span>
-                                    <span className="text-[10px] font-semibold">Kết quả SQL</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Tip at bottom */}
-                    <div className={`mt-auto pt-4 border-t text-[11px] leading-relaxed ${
-                        isDarkTheme ? 'border-white/5 text-white/40' : 'border-slate-100 text-slate-500'
-                    }`}>
-                        Bấm vào khối để thêm hoặc kéo thả để đổi thứ tự trực quan.
+                        {/* Publish CTA */}
+                        <button
+                            onClick={handleSaveAll}
+                            disabled={isSaving}
+                            className="text-xs font-bold px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-md shadow-purple-600/20 transition-all active:scale-95 disabled:opacity-50"
+                        >
+                            {isSaving ? 'Đang lưu...' : 'Xuất bản'}
+                        </button>
                     </div>
                 </div>
 
-                {/* 2. CENTER CANVAS: SOẠN THẢO TRỰC QUAN */}
-                <div className={`flex-1 p-6 overflow-y-auto flex justify-center ${
-                    isDarkTheme ? 'bg-[#09090c]' : 'bg-[#f1f5f9]'
-                }`}>
-                    <div className="w-full max-w-4xl space-y-4">
-                        {/* Top Formatting Ribbon */}
-                        <div className={`border rounded-xl p-2.5 flex items-center justify-between select-none shadow-sm ${
-                            isDarkTheme ? 'bg-[#121217] border-white/10 text-white/70' : 'bg-white border-slate-200 text-slate-700'
-                        }`}>
-                            <div className="flex items-center gap-1.5 text-xs">
-                                <span className={`font-semibold px-2 py-1 rounded ${isDarkTheme ? 'bg-white/5' : 'bg-slate-100 text-slate-800'}`}>
-                                    H2 ▾
-                                </span>
-                                <div className={`h-4 w-[1px] ${isDarkTheme ? 'bg-white/10' : 'bg-slate-200'}`} />
-                                <span className={`font-bold px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>B</span>
-                                <span className={`italic font-serif px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>I</span>
-                                <span className={`underline px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>U</span>
-                                <span className={`line-through px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>S</span>
-                                <div className={`h-4 w-[1px] ${isDarkTheme ? 'bg-white/10' : 'bg-slate-200'}`} />
-                                <span className={`font-mono text-xs px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>&lt;/&gt;</span>
-                                <span className={`px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>🔗</span>
-                                <span className={`px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>🖼️</span>
-                                <span className={`px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>▦</span>
-                            </div>
-                            <span className={`text-[11px] font-medium ${isDarkTheme ? 'text-white/40' : 'text-slate-400'}`}>
-                                Studio Block Editor
+                {/* 2. 3-COLUMN MAIN WORKSPACE */}
+                <div className="flex-1 flex overflow-hidden">
+                    {/* 1. LEFT SIDEBAR: THÊM KHỐI (KÉO THẢ / CLICK) */}
+                    <div className={`w-80 border-r p-4 flex flex-col gap-4 overflow-y-auto flex-shrink-0 ${
+                        isDarkTheme ? 'bg-[#121217] border-white/10' : 'bg-white border-slate-200'
+                    }`}>
+                        {/* Header */}
+                        <div className="flex items-center justify-between">
+                            <span className={`text-xs font-extrabold uppercase tracking-wider ${
+                                isDarkTheme ? 'text-white' : 'text-slate-900'
+                            }`}>
+                                THÊM KHỐI (KÉO THẢ)
                             </span>
                         </div>
 
-                        {/* Drag & Drop Blocks Container */}
-                        <DragDropContext onDragEnd={onDragEnd}>
+                        {/* Search Input with Icon */}
+                        <div className="relative">
+                            <input
+                                type="text"
+                                placeholder="Tìm kiếm khối..."
+                                value={searchBlockQuery}
+                                onChange={(e) => setSearchBlockQuery(e.target.value)}
+                                className={`w-full border rounded-xl pl-3 pr-9 py-2 text-xs focus:outline-none focus:border-purple-500 transition-colors shadow-sm ${
+                                    isDarkTheme
+                                        ? 'bg-[#181820] border-white/10 text-white placeholder-white/40'
+                                        : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
+                                }`}
+                            />
+                            <svg className="w-4 h-4 text-slate-400 absolute right-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <circle cx="11" cy="11" r="8" />
+                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg>
+                        </div>
+
+                        {/* Droppable Palette for Drag-and-Drop */}
+                        <Droppable droppableId="sidebar-palette" isDropDisabled={true}>
+                            {(paletteProvided: DroppableProvided) => (
+                                <div
+                                    ref={paletteProvided.innerRef}
+                                    {...paletteProvided.droppableProps}
+                                    className="space-y-4 text-left"
+                                >
+                                    {paletteCategories.map((category, catIdx) => {
+                                        const filteredItems = category.items.filter(item =>
+                                            !searchBlockQuery ||
+                                            item.label.toLowerCase().includes(searchBlockQuery.toLowerCase()) ||
+                                            item.type.toLowerCase().includes(searchBlockQuery.toLowerCase())
+                                        );
+
+                                        if (filteredItems.length === 0) return null;
+
+                                        return (
+                                            <div key={catIdx} className="space-y-2">
+                                                <span className={`text-[11px] font-extrabold uppercase tracking-wider block ${
+                                                    isDarkTheme ? 'text-white/60' : 'text-slate-800'
+                                                }`}>
+                                                    {category.title}
+                                                </span>
+
+                                                <div className="grid grid-cols-3 gap-2">
+                                                    {filteredItems.map((item, itemIdx) => {
+                                                        const globalIndex = flattenedPaletteItems.findIndex(i => i.type === item.type && i.label === item.label);
+
+                                                        return (
+                                                            <Draggable
+                                                                key={`${item.type}-${item.label}`}
+                                                                draggableId={`sidebar-${item.type}`}
+                                                                index={globalIndex >= 0 ? globalIndex : itemIdx}
+                                                            >
+                                                                {(itemProvided: DraggableProvided) => (
+                                                                    <div
+                                                                        ref={itemProvided.innerRef}
+                                                                        {...itemProvided.draggableProps}
+                                                                        {...itemProvided.dragHandleProps}
+                                                                        onClick={() => handleAddBlock(item.type)}
+                                                                        className={`p-2.5 border rounded-xl flex flex-col items-center justify-center gap-1.5 cursor-grab active:cursor-grabbing select-none transition-all ${
+                                                                            isDarkTheme
+                                                                                ? 'bg-[#181820] hover:bg-purple-600/20 border-white/10 hover:border-purple-500 text-white'
+                                                                                : 'bg-white hover:bg-purple-50/60 border-slate-200 hover:border-purple-400 text-slate-800 hover:text-purple-700 shadow-sm hover:shadow-md'
+                                                                        }`}
+                                                                    >
+                                                                        <div className="w-6 h-6 flex items-center justify-center">
+                                                                            {item.icon}
+                                                                        </div>
+                                                                        <span className="text-[10px] font-semibold text-center leading-tight line-clamp-1">
+                                                                            {item.label}
+                                                                        </span>
+                                                                    </div>
+                                                                )}
+                                                            </Draggable>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                    {paletteProvided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+
+                        {/* Bottom Instruction Help Box matching mockup */}
+                        <div className="mt-auto pt-4 border-t border-slate-100">
+                            <div className={`border rounded-xl p-3 text-left space-y-1.5 shadow-sm ${
+                                isDarkTheme ? 'bg-[#181820] border-white/10' : 'bg-slate-50/90 border-slate-200/80'
+                            }`}>
+                                <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                                    <span className="text-purple-600 text-sm">⬡</span>
+                                    <span className={isDarkTheme ? 'text-white/80' : 'text-slate-700'}>
+                                        Kéo thả khối vào nội dung bài học
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                                    <span className="text-purple-600 text-sm">👆</span>
+                                    <span className={isDarkTheme ? 'text-white/80' : 'text-slate-700'}>
+                                        Sắp xếp lại bằng cách kéo thả khối
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 2. CENTER CANVAS: SOẠN THẢO TRỰC QUAN */}
+                    <div className={`flex-1 p-6 overflow-y-auto flex justify-center ${
+                        isDarkTheme ? 'bg-[#09090c]' : 'bg-[#f1f5f9]'
+                    }`}>
+                        <div className="w-full max-w-4xl space-y-4">
+                            {/* Top Formatting Ribbon */}
+                            <div className={`border rounded-xl p-2.5 flex items-center justify-between select-none shadow-sm ${
+                                isDarkTheme ? 'bg-[#121217] border-white/10 text-white/70' : 'bg-white border-slate-200 text-slate-700'
+                            }`}>
+                                <div className="flex items-center gap-1.5 text-xs">
+                                    <span className={`font-semibold px-2 py-1 rounded ${isDarkTheme ? 'bg-white/5' : 'bg-slate-100 text-slate-800'}`}>
+                                        H2 ▾
+                                    </span>
+                                    <div className={`h-4 w-[1px] ${isDarkTheme ? 'bg-white/10' : 'bg-slate-200'}`} />
+                                    <span className={`font-bold px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>B</span>
+                                    <span className={`italic font-serif px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>I</span>
+                                    <span className={`underline px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>U</span>
+                                    <span className={`line-through px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>S</span>
+                                    <div className={`h-4 w-[1px] ${isDarkTheme ? 'bg-white/10' : 'bg-slate-200'}`} />
+                                    <span className={`font-mono text-xs px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>&lt;/&gt;</span>
+                                    <span className={`px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>🔗</span>
+                                    <span className={`px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>🖼️</span>
+                                    <span className={`px-2 py-0.5 rounded cursor-pointer ${isDarkTheme ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>▦</span>
+                                </div>
+                                <span className={`text-[11px] font-medium ${isDarkTheme ? 'text-white/40' : 'text-slate-400'}`}>
+                                    Studio Block Editor
+                                </span>
+                            </div>
+
+                            {/* Droppable Blocks Canvas */}
                             <Droppable droppableId="lesson-blocks-droppable">
                                 {(provided: DroppableProvided) => (
                                     <div
                                         {...provided.droppableProps}
                                         ref={provided.innerRef}
-                                        className="space-y-4"
+                                        className="space-y-4 min-h-[300px]"
                                     >
                                         {blocks.map((block, index) => {
                                             const isSelected = selectedBlockId === block.id;
@@ -1247,286 +1431,286 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                     </div>
                                 )}
                             </Droppable>
-                        </DragDropContext>
+                        </div>
+                    </div>
+
+                    {/* 3. RIGHT SIDEBAR: CÀI ĐẶT KHỐI (BLOCK PROPERTIES) */}
+                    <div className={`w-72 border-l p-5 flex flex-col gap-5 overflow-y-auto flex-shrink-0 text-left ${
+                        isDarkTheme ? 'bg-[#121217] border-white/10' : 'bg-white border-slate-200'
+                    }`}>
+                        {/* General Lesson Properties */}
+                        <div className={`space-y-3 pb-4 border-b ${isDarkTheme ? 'border-white/5' : 'border-slate-200'}`}>
+                            <span className={`text-[10px] font-bold uppercase tracking-wider block ${
+                                isDarkTheme ? 'text-white/40' : 'text-slate-500'
+                            }`}>
+                                Thông tin bài học
+                            </span>
+                            <div>
+                                <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                    Mã bài (Lesson ID)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={lessonIdCode}
+                                    onChange={(e) => { setLessonIdCode(e.target.value); setIsSaved(false); }}
+                                    className={`w-full border rounded-lg px-2.5 py-1.5 text-xs font-mono focus:outline-none ${
+                                        isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                    }`}
+                                    placeholder="LS-01.01"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                        Độ khó
+                                    </label>
+                                    <select
+                                        value={difficulty}
+                                        onChange={(e) => { setDifficulty(e.target.value); setIsSaved(false); }}
+                                        className={`w-full border rounded-lg px-2 py-1.5 text-xs focus:outline-none ${
+                                            isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                        }`}
+                                    >
+                                        <option value="EASY">Dễ</option>
+                                        <option value="MEDIUM">Vừa</option>
+                                        <option value="HARD">Khó</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                        Thời lượng
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={durationMinutes}
+                                        onChange={(e) => { setDurationMinutes(Number(e.target.value)); setIsSaved(false); }}
+                                        className={`w-full border rounded-lg px-2 py-1.5 text-xs focus:outline-none ${
+                                            isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                        }`}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                    Mục tiêu bài học
+                                </label>
+                                <textarea
+                                    rows={2}
+                                    value={objective}
+                                    onChange={(e) => { setObjective(e.target.value); setIsSaved(false); }}
+                                    className={`w-full border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none resize-none ${
+                                        isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                    }`}
+                                    placeholder="Mục tiêu bài học..."
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <span className={`text-[10px] font-bold uppercase tracking-wider block mb-1 ${
+                                isDarkTheme ? 'text-white/40' : 'text-slate-500'
+                            }`}>
+                                CÀI ĐẶT KHỐI
+                            </span>
+                            <h4 className={`text-sm font-bold flex items-center gap-2 ${
+                                isDarkTheme ? 'text-white' : 'text-slate-900'
+                            }`}>
+                                <span>{activeBlock?.type === 'code' ? '</> Khối mã' : activeBlock?.type === 'heading' ? 'H Tiêu đề' : activeBlock?.type}</span>
+                                {activeBlock?.language && <span className="text-xs text-purple-600">({activeBlock.language})</span>}
+                            </h4>
+                        </div>
+
+                        {/* Dynamic settings based on block type */}
+                        {activeBlock?.type === 'code' && (
+                            <div className="space-y-4">
+                                <div>
+                                    <label className={`block text-xs font-semibold mb-1.5 ${isDarkTheme ? 'text-white/70' : 'text-slate-700'}`}>
+                                        Ngôn ngữ
+                                    </label>
+                                    <select
+                                        value={activeBlock.language || 'SQL'}
+                                        onChange={(e) => handleUpdateActiveBlock({ language: e.target.value })}
+                                        className={`w-full border rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:border-purple-500 ${
+                                            isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
+                                        }`}
+                                    >
+                                        <option value="SQL">SQL</option>
+                                        <option value="Python">Python</option>
+                                        <option value="JavaScript">JavaScript</option>
+                                        <option value="HTML">HTML / CSS</option>
+                                    </select>
+                                </div>
+
+                                <div className="flex items-center justify-between">
+                                    <span className={`text-xs font-medium ${isDarkTheme ? 'text-white/80' : 'text-slate-700'}`}>
+                                        Hiển thị số dòng
+                                    </span>
+                                    <input
+                                        type="checkbox"
+                                        checked={activeBlock.showLineNumbers ?? true}
+                                        onChange={(e) => handleUpdateActiveBlock({ showLineNumbers: e.target.checked })}
+                                        className="accent-purple-600 cursor-pointer w-4 h-4"
+                                    />
+                                </div>
+
+                                <div className="flex items-center justify-between">
+                                    <span className={`text-xs font-medium ${isDarkTheme ? 'text-white/80' : 'text-slate-700'}`}>
+                                        Cho phép copy code
+                                    </span>
+                                    <input
+                                        type="checkbox"
+                                        checked={activeBlock.allowCopy ?? true}
+                                        onChange={(e) => handleUpdateActiveBlock({ allowCopy: e.target.checked })}
+                                        className="accent-purple-600 cursor-pointer w-4 h-4"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Common Appearance Settings */}
+                        <div className={`space-y-3 pt-3 border-t ${isDarkTheme ? 'border-white/5' : 'border-slate-200'}`}>
+                            <span className={`text-xs font-bold block ${isDarkTheme ? 'text-white/60' : 'text-slate-700'}`}>
+                                Giao diện
+                            </span>
+                            <div>
+                                <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                    Chủ đề
+                                </label>
+                                <select
+                                    value={activeBlock?.theme || 'Dark'}
+                                    onChange={(e) => handleUpdateActiveBlock({ theme: e.target.value as any })}
+                                    className={`w-full border rounded-lg px-3 py-1.5 text-xs focus:outline-none ${
+                                        isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                    }`}
+                                >
+                                    <option value="Dark">Dark</option>
+                                    <option value="Light">Light</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                    Kích thước chữ
+                                </label>
+                                <select
+                                    value={activeBlock?.fontSize || '14px'}
+                                    onChange={(e) => handleUpdateActiveBlock({ fontSize: e.target.value })}
+                                    className={`w-full border rounded-lg px-3 py-1.5 text-xs focus:outline-none ${
+                                        isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                    }`}
+                                >
+                                    <option value="12px">12px (Nhỏ)</option>
+                                    <option value="14px">14px (Chuẩn)</option>
+                                    <option value="16px">16px (Lớn)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Advanced Settings */}
+                        <div className={`space-y-3 pt-3 border-t ${isDarkTheme ? 'border-white/5' : 'border-slate-200'}`}>
+                            <span className={`text-xs font-bold block ${isDarkTheme ? 'text-white/60' : 'text-slate-700'}`}>
+                                Nâng cao
+                            </span>
+                            <div>
+                                <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                    ID (HTML)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={activeBlock?.htmlId || ''}
+                                    onChange={(e) => handleUpdateActiveBlock({ htmlId: e.target.value })}
+                                    placeholder={`block-${activeBlock?.id || 'id'}`}
+                                    className={`w-full border rounded-lg px-3 py-1.5 text-xs font-mono focus:outline-none ${
+                                        isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                    }`}
+                                />
+                            </div>
+                            <div>
+                                <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
+                                    Ghi chú nội bộ
+                                </label>
+                                <textarea
+                                    rows={2}
+                                    value={activeBlock?.internalNote || ''}
+                                    onChange={(e) => handleUpdateActiveBlock({ internalNote: e.target.value })}
+                                    placeholder="Ghi chú thêm cho khối..."
+                                    className={`w-full border rounded-lg px-3 py-1.5 text-xs focus:outline-none resize-none ${
+                                        isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                    }`}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Delete Action Button */}
+                        <div className={`mt-auto pt-4 border-t ${isDarkTheme ? 'border-white/10' : 'border-slate-200'}`}>
+                            <button
+                                type="button"
+                                onClick={() => activeBlock && handleDeleteBlock(activeBlock.id)}
+                                className="w-full py-2 rounded-lg border border-rose-300 text-rose-600 hover:bg-rose-50 text-xs font-bold transition-colors shadow-sm"
+                            >
+                                Xóa khối này
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                {/* 3. RIGHT SIDEBAR: CÀI ĐẶT KHỐI (BLOCK PROPERTIES) */}
-                <div className={`w-72 border-l p-5 flex flex-col gap-5 overflow-y-auto flex-shrink-0 text-left ${
+                {/* 3. BOTTOM BAR: CẤU TRÚC BÀI HỌC (BREADCRUMB / MINI-MAP) */}
+                <div className={`h-14 px-6 flex items-center justify-between text-xs flex-shrink-0 z-20 border-t shadow-sm ${
                     isDarkTheme ? 'bg-[#121217] border-white/10' : 'bg-white border-slate-200'
                 }`}>
-                    {/* General Lesson Properties */}
-                    <div className={`space-y-3 pb-4 border-b ${isDarkTheme ? 'border-white/5' : 'border-slate-200'}`}>
-                        <span className={`text-[10px] font-bold uppercase tracking-wider block ${
-                            isDarkTheme ? 'text-white/40' : 'text-slate-500'
+                    <div className="flex items-center gap-2 overflow-x-auto py-1 max-w-5xl">
+                        <span className={`text-[11px] font-bold uppercase tracking-wider whitespace-nowrap mr-2 ${
+                            isDarkTheme ? 'text-white/50' : 'text-slate-500'
                         }`}>
-                            Thông tin bài học
+                            Cấu trúc bài học:
                         </span>
-                        <div>
-                            <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
-                                Mã bài (Lesson ID)
-                            </label>
-                            <input
-                                type="text"
-                                value={lessonIdCode}
-                                onChange={(e) => { setLessonIdCode(e.target.value); setIsSaved(false); }}
-                                className={`w-full border rounded-lg px-2.5 py-1.5 text-xs font-mono focus:outline-none ${
-                                    isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
-                                }`}
-                                placeholder="LS-01.01"
-                            />
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                            <div>
-                                <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
-                                    Độ khó
-                                </label>
-                                <select
-                                    value={difficulty}
-                                    onChange={(e) => { setDifficulty(e.target.value); setIsSaved(false); }}
-                                    className={`w-full border rounded-lg px-2 py-1.5 text-xs focus:outline-none ${
-                                        isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
-                                    }`}
-                                >
-                                    <option value="EASY">Dễ</option>
-                                    <option value="MEDIUM">Vừa</option>
-                                    <option value="HARD">Khó</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
-                                    Thời lượng
-                                </label>
-                                <input
-                                    type="number"
-                                    value={durationMinutes}
-                                    onChange={(e) => { setDurationMinutes(Number(e.target.value)); setIsSaved(false); }}
-                                    className={`w-full border rounded-lg px-2 py-1.5 text-xs focus:outline-none ${
-                                        isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
-                                    }`}
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
-                                Mục tiêu bài học
-                            </label>
-                            <textarea
-                                rows={2}
-                                value={objective}
-                                onChange={(e) => { setObjective(e.target.value); setIsSaved(false); }}
-                                className={`w-full border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none resize-none ${
-                                    isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
-                                }`}
-                                placeholder="Mục tiêu bài học..."
-                            />
-                        </div>
-                    </div>
 
-                    <div>
-                        <span className={`text-[10px] font-bold uppercase tracking-wider block mb-1 ${
-                            isDarkTheme ? 'text-white/40' : 'text-slate-500'
-                        }`}>
-                            CÀI ĐẶT KHỐI
-                        </span>
-                        <h4 className={`text-sm font-bold flex items-center gap-2 ${
-                            isDarkTheme ? 'text-white' : 'text-slate-900'
-                        }`}>
-                            <span>{activeBlock?.type === 'code' ? '</> Khối mã' : activeBlock?.type === 'heading' ? 'H Tiêu đề' : activeBlock?.type}</span>
-                            {activeBlock?.language && <span className="text-xs text-purple-600">({activeBlock.language})</span>}
-                        </h4>
-                    </div>
+                        {blocks.map((b, idx) => {
+                            const isSelected = selectedBlockId === b.id;
+                            return (
+                                <React.Fragment key={b.id}>
+                                    <button
+                                        onClick={() => setSelectedBlockId(b.id)}
+                                        className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                                            isSelected
+                                                ? 'bg-purple-600 text-white shadow-sm ring-2 ring-purple-300'
+                                                : isDarkTheme
+                                                    ? 'bg-white/5 hover:bg-white/10 text-white/70'
+                                                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
+                                        }`}
+                                    >
+                                        <span>
+                                            {b.type === 'heading' ? `H Tiêu đề (${b.headingLevel || 'H2'})` :
+                                             b.type === 'paragraph' ? '¶ Đoạn văn' :
+                                             b.type === 'code' ? `</> Khối mã (${b.language || 'SQL'})` :
+                                             b.type === 'output' ? '▶ Kết quả (Output)' :
+                                             b.type === 'explanation' ? '💡 Giải thích' :
+                                             b.type === 'exercise' ? '✎ Bài tập' :
+                                             b.type}
+                                        </span>
+                                    </button>
+                                    {idx < blocks.length - 1 && (
+                                        <span className={`text-[11px] ${isDarkTheme ? 'text-white/30' : 'text-slate-400'}`}>&gt;</span>
+                                    )}
+                                </React.Fragment>
+                            );
+                        })}
 
-                    {/* Dynamic settings based on block type */}
-                    {activeBlock?.type === 'code' && (
-                        <div className="space-y-4">
-                            <div>
-                                <label className={`block text-xs font-semibold mb-1.5 ${isDarkTheme ? 'text-white/70' : 'text-slate-700'}`}>
-                                    Ngôn ngữ
-                                </label>
-                                <select
-                                    value={activeBlock.language || 'SQL'}
-                                    onChange={(e) => handleUpdateActiveBlock({ language: e.target.value })}
-                                    className={`w-full border rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:border-purple-500 ${
-                                        isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
-                                    }`}
-                                >
-                                    <option value="SQL">SQL</option>
-                                    <option value="Python">Python</option>
-                                    <option value="JavaScript">JavaScript</option>
-                                    <option value="HTML">HTML / CSS</option>
-                                </select>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                                <span className={`text-xs font-medium ${isDarkTheme ? 'text-white/80' : 'text-slate-700'}`}>
-                                    Hiển thị số dòng
-                                </span>
-                                <input
-                                    type="checkbox"
-                                    checked={activeBlock.showLineNumbers ?? true}
-                                    onChange={(e) => handleUpdateActiveBlock({ showLineNumbers: e.target.checked })}
-                                    className="accent-purple-600 cursor-pointer w-4 h-4"
-                                />
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                                <span className={`text-xs font-medium ${isDarkTheme ? 'text-white/80' : 'text-slate-700'}`}>
-                                    Cho phép copy code
-                                </span>
-                                <input
-                                    type="checkbox"
-                                    checked={activeBlock.allowCopy ?? true}
-                                    onChange={(e) => handleUpdateActiveBlock({ allowCopy: e.target.checked })}
-                                    className="accent-purple-600 cursor-pointer w-4 h-4"
-                                />
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Common Appearance Settings */}
-                    <div className={`space-y-3 pt-3 border-t ${isDarkTheme ? 'border-white/5' : 'border-slate-200'}`}>
-                        <span className={`text-xs font-bold block ${isDarkTheme ? 'text-white/60' : 'text-slate-700'}`}>
-                            Giao diện
-                        </span>
-                        <div>
-                            <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
-                                Chủ đề
-                            </label>
-                            <select
-                                value={activeBlock?.theme || 'Dark'}
-                                onChange={(e) => handleUpdateActiveBlock({ theme: e.target.value as any })}
-                                className={`w-full border rounded-lg px-3 py-1.5 text-xs focus:outline-none ${
-                                    isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
-                                }`}
-                            >
-                                <option value="Dark">Dark</option>
-                                <option value="Light">Light</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
-                                Kích thước chữ
-                            </label>
-                            <select
-                                value={activeBlock?.fontSize || '14px'}
-                                onChange={(e) => handleUpdateActiveBlock({ fontSize: e.target.value })}
-                                className={`w-full border rounded-lg px-3 py-1.5 text-xs focus:outline-none ${
-                                    isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
-                                }`}
-                            >
-                                <option value="12px">12px (Nhỏ)</option>
-                                <option value="14px">14px (Chuẩn)</option>
-                                <option value="16px">16px (Lớn)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Advanced Settings */}
-                    <div className={`space-y-3 pt-3 border-t ${isDarkTheme ? 'border-white/5' : 'border-slate-200'}`}>
-                        <span className={`text-xs font-bold block ${isDarkTheme ? 'text-white/60' : 'text-slate-700'}`}>
-                            Nâng cao
-                        </span>
-                        <div>
-                            <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
-                                ID (HTML)
-                            </label>
-                            <input
-                                type="text"
-                                value={activeBlock?.htmlId || ''}
-                                onChange={(e) => handleUpdateActiveBlock({ htmlId: e.target.value })}
-                                placeholder={`block-${activeBlock?.id || 'id'}`}
-                                className={`w-full border rounded-lg px-3 py-1.5 text-xs font-mono focus:outline-none ${
-                                    isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
-                                }`}
-                            />
-                        </div>
-                        <div>
-                            <label className={`block text-[11px] font-semibold mb-1 ${isDarkTheme ? 'text-white/50' : 'text-slate-600'}`}>
-                                Ghi chú nội bộ
-                            </label>
-                            <textarea
-                                rows={2}
-                                value={activeBlock?.internalNote || ''}
-                                onChange={(e) => handleUpdateActiveBlock({ internalNote: e.target.value })}
-                                placeholder="Ghi chú thêm cho khối..."
-                                className={`w-full border rounded-lg px-3 py-1.5 text-xs focus:outline-none resize-none ${
-                                    isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
-                                }`}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Delete Action Button */}
-                    <div className={`mt-auto pt-4 border-t ${isDarkTheme ? 'border-white/10' : 'border-slate-200'}`}>
                         <button
-                            type="button"
-                            onClick={() => activeBlock && handleDeleteBlock(activeBlock.id)}
-                            className="w-full py-2 rounded-lg border border-rose-300 text-rose-600 hover:bg-rose-50 text-xs font-bold transition-colors shadow-sm"
+                            onClick={() => handleAddBlock('paragraph')}
+                            className="px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 transition-all ml-2 shadow-sm"
                         >
-                            Xóa khối này
+                            + Thêm khối
                         </button>
                     </div>
-                </div>
-            </div>
 
-            {/* 3. BOTTOM BAR: CẤU TRÚC BÀI HỌC (BREADCRUMB / MINI-MAP) */}
-            <div className={`h-14 px-6 flex items-center justify-between text-xs flex-shrink-0 z-20 border-t shadow-sm ${
-                isDarkTheme ? 'bg-[#121217] border-white/10' : 'bg-white border-slate-200'
-            }`}>
-                <div className="flex items-center gap-2 overflow-x-auto py-1 max-w-5xl">
-                    <span className={`text-[11px] font-bold uppercase tracking-wider whitespace-nowrap mr-2 ${
-                        isDarkTheme ? 'text-white/50' : 'text-slate-500'
+                    <div className={`text-xs whitespace-nowrap hidden lg:block ${
+                        isDarkTheme ? 'text-white/40' : 'text-slate-500'
                     }`}>
-                        Cấu trúc bài học:
-                    </span>
-
-                    {blocks.map((b, idx) => {
-                        const isSelected = selectedBlockId === b.id;
-                        return (
-                            <React.Fragment key={b.id}>
-                                <button
-                                    onClick={() => setSelectedBlockId(b.id)}
-                                    className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
-                                        isSelected
-                                            ? 'bg-purple-600 text-white shadow-sm ring-2 ring-purple-300'
-                                            : isDarkTheme
-                                                ? 'bg-white/5 hover:bg-white/10 text-white/70'
-                                                : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
-                                    }`}
-                                >
-                                    <span>
-                                        {b.type === 'heading' ? `H Tiêu đề (${b.headingLevel || 'H2'})` :
-                                         b.type === 'paragraph' ? '¶ Đoạn văn' :
-                                         b.type === 'code' ? `</> Khối mã (${b.language || 'SQL'})` :
-                                         b.type === 'output' ? '▶ Kết quả (Output)' :
-                                         b.type === 'explanation' ? '💡 Giải thích' :
-                                         b.type === 'exercise' ? '✎ Bài tập' :
-                                         b.type}
-                                    </span>
-                                </button>
-                                {idx < blocks.length - 1 && (
-                                    <span className={`text-[11px] ${isDarkTheme ? 'text-white/30' : 'text-slate-400'}`}>&gt;</span>
-                                )}
-                            </React.Fragment>
-                        );
-                    })}
-
-                    <button
-                        onClick={() => handleAddBlock('paragraph')}
-                        className="px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 transition-all ml-2 shadow-sm"
-                    >
-                        + Thêm khối
-                    </button>
-                </div>
-
-                <div className={`text-xs whitespace-nowrap hidden lg:block ${
-                    isDarkTheme ? 'text-white/40' : 'text-slate-500'
-                }`}>
-                    Tổng cộng: <strong className={isDarkTheme ? 'text-white' : 'text-slate-900'}>{blocks.length}</strong> khối nội dung
+                        Tổng cộng: <strong className={isDarkTheme ? 'text-white' : 'text-slate-900'}>{blocks.length}</strong> khối nội dung
+                    </div>
                 </div>
             </div>
-        </div>,
+        </DragDropContext>,
         document.body
     );
 };
