@@ -96,16 +96,19 @@ export const register = async (req: Request, res: Response, next: NextFunction):
 
         // Gửi email chứa mã OTP
         const emailSent = await sendVerificationOtp(normalizedEmail, otp, username);
+        if (!emailSent) {
+            pendingRegistrations.delete(normalizedEmail);
+            res.status(500).json({
+                message: 'Không thể gửi email chứa mã xác thực. Vui lòng kiểm tra lại địa chỉ email hoặc thử lại sau ít phút.'
+            });
+            return;
+        }
 
         res.status(200).json({
             success: true,
             requireOtp: true,
             email: normalizedEmail,
-            otpSent: emailSent,
-            devOtp: !emailSent ? otp : undefined,
-            message: emailSent
-                ? `Mã xác thực 6 số đã được gửi tới ${normalizedEmail}. Vui lòng kiểm tra hòm thư của bạn.`
-                : `Hệ thống Render chặn cổng gửi mail SMTP. Mã OTP kích hoạt tài khoản của bạn là: ${otp}`
+            message: `Mã xác thực 6 số đã được gửi tới ${normalizedEmail}. Vui lòng kiểm tra hòm thư của bạn.`
         });
     } catch (error) {
         console.error("DEBUG REGISTER ERROR:", error);
@@ -192,14 +195,14 @@ export const resendOtp = async (req: Request, res: Response, next: NextFunction)
         pendingRegistrations.set(normalizedEmail, pending);
 
         const emailSent = await sendVerificationOtp(normalizedEmail, newOtp, pending.username);
+        if (!emailSent) {
+            res.status(500).json({ message: 'Lỗi khi gửi lại email xác thực' });
+            return;
+        }
 
         res.status(200).json({
             success: true,
-            otpSent: emailSent,
-            devOtp: !emailSent ? newOtp : undefined,
-            message: emailSent
-                ? `Mã xác thực mới đã được gửi tới ${normalizedEmail}`
-                : `Hệ thống Render chặn cổng gửi mail SMTP. Mã OTP mới của bạn là: ${newOtp}`
+            message: `Mã xác thực mới đã được gửi tới ${normalizedEmail}`
         });
     } catch (error) {
         res.status(500).json({ message: (error as any).message || 'Có lỗi xảy ra khi gửi lại OTP' });
