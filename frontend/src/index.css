@@ -133,6 +133,18 @@
   font-size: 0.825rem;
 }
 
+.not-prose pre,
+.prose .not-prose pre,
+.not-prose pre code,
+.prose .not-prose pre code {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  font-size: inherit !important;
+}
+
 .prose pre code {
   background: transparent !important;
   border: none !important;

@@ -57,23 +57,21 @@ const StudentCodeBlockView: React.FC<{ code: string; language: string }> = ({ co
     };
 
     return (
-        <div className="my-5 rounded-[6px] bg-[#12131a] border border-[#222430] shadow-md overflow-hidden text-slate-200 text-xs font-mono select-text transition-all not-prose">
-            {/* Top Bar */}
+        <div className="not-prose my-4 rounded-[6px] bg-[#12131a] border border-[#222430] shadow-sm overflow-hidden text-slate-200 text-xs font-mono select-text transition-all">
+            {/* Top Bar matching Studio */}
             <div className="flex items-center justify-between px-3.5 py-2 bg-[#171822] border-b border-[#222430] select-none">
-                <span className="text-slate-300 text-xs font-semibold uppercase tracking-wider">
+                <span className="text-slate-300 text-xs font-semibold uppercase tracking-wider font-mono">
                     {language || 'Python'}
                 </span>
-                <div className="flex items-center gap-2 text-slate-400">
+                <div className="flex items-center gap-2.5 text-slate-400">
                     <button
                         type="button"
                         onClick={handleCopy}
-                        className="hover:text-white transition-colors p-1"
+                        className="hover:text-white transition-colors"
                         title={copied ? 'Đã sao chép!' : 'Sao chép mã'}
                     >
                         {copied ? (
-                            <span className="text-emerald-400 font-bold text-[11px] flex items-center gap-1">
-                                <span>✓</span> Đã chép
-                            </span>
+                            <span className="text-emerald-400 font-bold text-[11px]">✓</span>
                         ) : (
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
@@ -81,10 +79,30 @@ const StudentCodeBlockView: React.FC<{ code: string; language: string }> = ({ co
                             </svg>
                         )}
                     </button>
+                    <button
+                        type="button"
+                        className="hover:text-white transition-colors"
+                        title="Toàn màn hình"
+                    >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                        </svg>
+                    </button>
+                    <button
+                        type="button"
+                        className="hover:text-white transition-colors"
+                        title="Tùy chọn"
+                    >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <circle cx="12" cy="5" r="1" fill="currentColor" />
+                            <circle cx="12" cy="12" r="1" fill="currentColor" />
+                            <circle cx="12" cy="19" r="1" fill="currentColor" />
+                        </svg>
+                    </button>
                 </div>
             </div>
 
-            {/* Code Body with Line Numbers & Syntax Highlighting */}
+            {/* Code Body with Real Line Numbers & Real-Time Syntax Highlighting */}
             <div className="flex items-stretch bg-[#12131a] pb-3 pt-2">
                 {/* Left Gutter: Line Numbers */}
                 <div className="w-8 pl-3.5 select-none text-slate-600 text-[13px] font-mono leading-[22px] flex-shrink-0 text-left">
@@ -97,7 +115,14 @@ const StudentCodeBlockView: React.FC<{ code: string; language: string }> = ({ co
                 <div className="flex-1 pl-3 pr-4 overflow-x-auto">
                     <pre
                         dangerouslySetInnerHTML={{ __html: tokenizeAndHighlight(code, language) }}
-                        className="w-full m-0 p-0 font-mono text-[13px] leading-[22px] text-slate-100 whitespace-pre overflow-x-auto select-text"
+                        style={{
+                            padding: '0 !important',
+                            margin: '0 !important',
+                            background: 'transparent !important',
+                            border: 'none !important',
+                            boxShadow: 'none !important'
+                        }}
+                        className="w-full !p-0 !m-0 !bg-transparent !border-0 !shadow-none font-mono text-[13px] leading-[22px] text-slate-100 whitespace-pre overflow-x-auto select-text"
                     />
                 </div>
             </div>
