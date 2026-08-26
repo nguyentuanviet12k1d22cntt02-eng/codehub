@@ -39,14 +39,14 @@ export const StudioSidebarPalette: React.FC<StudioSidebarPaletteProps> = ({
                 </span>
             </div>
 
-            {/* Search Input with Icon */}
+            {/* Search Input with Icon (3px border radius) */}
             <div className="relative">
                 <input
                     type="text"
                     placeholder="Tìm kiếm khối..."
                     value={searchBlockQuery}
                     onChange={(e) => setSearchBlockQuery(e.target.value)}
-                    className={`w-full border rounded-xl pl-3 pr-9 py-2 text-xs focus:outline-none focus:border-purple-500 transition-colors shadow-sm ${
+                    className={`w-full border rounded-[3px] pl-3 pr-9 py-2 text-xs focus:outline-none focus:border-purple-500 transition-colors shadow-sm ${
                         isDarkTheme
                             ? 'bg-[#181820] border-white/10 text-white placeholder-white/40'
                             : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
@@ -99,10 +99,10 @@ export const StudioSidebarPalette: React.FC<StudioSidebarPaletteProps> = ({
                                                             {...itemProvided.draggableProps}
                                                             {...itemProvided.dragHandleProps}
                                                             onClick={() => onAddBlock(item.type)}
-                                                            className={`p-2.5 border rounded-xl flex flex-col items-center justify-center gap-1.5 cursor-grab active:cursor-grabbing select-none transition-all ${
+                                                            className={`p-2.5 border rounded-[3px] flex flex-col items-center justify-center gap-1.5 cursor-grab active:cursor-grabbing select-none transition-all ${
                                                                 isDarkTheme
                                                                     ? 'bg-[#181820] hover:bg-purple-600/20 border-white/10 hover:border-purple-500 text-white'
-                                                                    : 'bg-white hover:bg-purple-50/60 border-slate-200 hover:border-purple-400 text-slate-800 hover:text-purple-700 shadow-sm hover:shadow-md'
+                                                                    : 'bg-white hover:bg-purple-50/60 border-slate-200 hover:border-purple-400 text-slate-800 hover:text-purple-700 shadow-sm hover:shadow'
                                                             }`}
                                                         >
                                                             <div className="w-6 h-6 flex items-center justify-center">
@@ -125,9 +125,9 @@ export const StudioSidebarPalette: React.FC<StudioSidebarPaletteProps> = ({
                 )}
             </Droppable>
 
-            {/* Bottom Instruction Help Box */}
+            {/* Bottom Instruction Help Box (3px border radius) */}
             <div className="mt-auto pt-4 border-t border-slate-100">
-                <div className={`border rounded-xl p-3 text-left space-y-1.5 shadow-sm ${
+                <div className={`border rounded-[3px] p-3 text-left space-y-1.5 shadow-sm ${
                     isDarkTheme ? 'bg-[#181820] border-white/10' : 'bg-slate-50/90 border-slate-200/80'
                 }`}>
                     <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
