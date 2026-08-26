@@ -233,84 +233,115 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                     </div>
                 )}
 
-                {/* 4. TABLE / OUTPUT BLOCK WITH FULL RICHTEXT FORMATTING */}
+                {/* 4. TABLE / OUTPUT BLOCK WITH FULL RICHTEXT FORMATTING & ALIGNMENTS */}
                 {(block.type === 'output' || block.type === 'table' || block.type === 'sql_output') && (
                     <div className="space-y-2">
                         <div className={`overflow-x-auto rounded-[3px] border border-dashed ${
                             isDarkTheme ? 'border-white/10' : 'border-slate-200'
                         }`}>
-                            <table className="w-full text-left text-xs border-collapse">
+                            <table className="w-full text-xs border-collapse">
                                 <thead>
                                     <tr className={`font-bold ${
                                         isDarkTheme ? 'bg-white/5 text-white' : 'bg-slate-50/90 text-slate-800'
                                     }`}>
-                                        {block.tableHeaders?.map((th, thIdx) => (
-                                            <th key={thIdx} className={`p-2 border-r border-b border-dashed last:border-r-0 relative group/th ${
-                                                isDarkTheme ? 'border-white/10' : 'border-slate-200'
-                                            }`}>
-                                                <div className="flex items-center justify-between gap-1">
-                                                    <div className="flex-1">
-                                                        <RichTextEditable
-                                                            value={th}
-                                                            onChange={(val) => {
-                                                                const newHeaders = [...(block.tableHeaders || [])];
-                                                                newHeaders[thIdx] = val;
-                                                                onUpdateActiveBlock({ tableHeaders: newHeaders });
-                                                            }}
-                                                            placeholder="Cột"
-                                                            className={`font-bold text-center min-h-[1.5rem] ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}
-                                                            isDarkTheme={isDarkTheme}
-                                                        />
-                                                    </div>
-                                                    {(block.tableHeaders?.length || 0) > 1 && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleDeleteColumn(thIdx)}
-                                                            className="opacity-0 group-hover/th:opacity-100 text-slate-400 hover:text-rose-500 text-[10px] px-1 transition-opacity"
-                                                            title="Xóa cột này"
-                                                        >
-                                                            ✕
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody className={isDarkTheme ? 'text-white/80' : 'text-slate-700'}>
-                                    {block.tableRows?.map((row, rIdx) => (
-                                        <tr key={rIdx} className={`group/tr ${isDarkTheme ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50'}`}>
-                                            {row.map((cell, cIdx) => (
-                                                <td key={cIdx} className={`p-2 border-r border-b border-dashed last:border-r-0 relative ${
+                                        {block.tableHeaders?.map((th, thIdx) => {
+                                            const alignments = block.tableAlignments || block.tableHeaders?.map(() => 'left') || [];
+                                            const colAlign = alignments[thIdx] || 'left';
+                                            const alignClass = colAlign === 'center' ? 'text-center' : colAlign === 'right' ? 'text-right' : 'text-left';
+
+                                            return (
+                                                <th key={thIdx} className={`p-2 border-r border-b border-dashed last:border-r-0 relative group/th ${
                                                     isDarkTheme ? 'border-white/10' : 'border-slate-200'
                                                 }`}>
                                                     <div className="flex items-center justify-between gap-1">
+                                                        {/* Alignment toggle button */}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const newAlignments = [...(block.tableAlignments || block.tableHeaders?.map(() => 'left') || [])];
+                                                                const cur = newAlignments[thIdx] || 'left';
+                                                                const next = cur === 'left' ? 'center' : cur === 'center' ? 'right' : 'left';
+                                                                newAlignments[thIdx] = next;
+                                                                onUpdateActiveBlock({ tableAlignments: newAlignments });
+                                                            }}
+                                                            className={`opacity-40 hover:opacity-100 text-[10px] px-1 py-0.5 rounded transition-opacity ${
+                                                                isDarkTheme ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-200 text-slate-600'
+                                                            }`}
+                                                            title={`Đổi căn lề: đang căn ${colAlign === 'center' ? 'giữa' : colAlign === 'right' ? 'phải' : 'trái'}`}
+                                                        >
+                                                            {colAlign === 'center' ? '↔' : colAlign === 'right' ? '→' : '←'}
+                                                        </button>
+
                                                         <div className="flex-1">
                                                             <RichTextEditable
-                                                                value={cell}
+                                                                value={th}
                                                                 onChange={(val) => {
-                                                                    const newRows = [...(block.tableRows || [])];
-                                                                    newRows[rIdx][cIdx] = val;
-                                                                    onUpdateActiveBlock({ tableRows: newRows });
+                                                                    const newHeaders = [...(block.tableHeaders || [])];
+                                                                    newHeaders[thIdx] = val;
+                                                                    onUpdateActiveBlock({ tableHeaders: newHeaders });
                                                                 }}
-                                                                placeholder="Dữ liệu"
-                                                                className={`text-center min-h-[1.5rem] ${isDarkTheme ? 'text-white/80' : 'text-slate-800'}`}
+                                                                placeholder="Cột"
+                                                                className={`font-bold min-h-[1.5rem] ${alignClass} ${isDarkTheme ? 'text-white' : 'text-slate-900'}`}
                                                                 isDarkTheme={isDarkTheme}
                                                             />
                                                         </div>
-                                                        {cIdx === row.length - 1 && (block.tableRows?.length || 0) > 1 && (
+
+                                                        {(block.tableHeaders?.length || 0) > 1 && (
                                                             <button
                                                                 type="button"
-                                                                onClick={() => handleDeleteRow(rIdx)}
-                                                                className="opacity-0 group-hover/tr:opacity-100 text-slate-400 hover:text-rose-500 text-[10px] px-1 transition-opacity"
-                                                                title="Xóa dòng này"
+                                                                onClick={() => handleDeleteColumn(thIdx)}
+                                                                className="opacity-0 group-hover/th:opacity-100 text-slate-400 hover:text-rose-500 text-[10px] px-1 transition-opacity"
+                                                                title="Xóa cột này"
                                                             >
                                                                 ✕
                                                             </button>
                                                         )}
                                                     </div>
-                                                </td>
-                                            ))}
+                                                </th>
+                                            );
+                                        })}
+                                    </tr>
+                                </thead>
+                                <tbody className={isDarkTheme ? 'text-white/80' : 'text-slate-700'}>
+                                    {block.tableRows?.map((row, rIdx) => (
+                                        <tr key={rIdx} className={`group/tr ${isDarkTheme ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50'}`}>
+                                            {row.map((cell, cIdx) => {
+                                                const alignments = block.tableAlignments || block.tableHeaders?.map(() => 'left') || [];
+                                                const colAlign = alignments[cIdx] || 'left';
+                                                const alignClass = colAlign === 'center' ? 'text-center' : colAlign === 'right' ? 'text-right' : 'text-left';
+
+                                                return (
+                                                    <td key={cIdx} className={`p-2 border-r border-b border-dashed last:border-r-0 relative ${
+                                                        isDarkTheme ? 'border-white/10' : 'border-slate-200'
+                                                    }`}>
+                                                        <div className="flex items-center justify-between gap-1">
+                                                            <div className="flex-1">
+                                                                <RichTextEditable
+                                                                    value={cell}
+                                                                    onChange={(val) => {
+                                                                        const newRows = [...(block.tableRows || [])];
+                                                                        newRows[rIdx][cIdx] = val;
+                                                                        onUpdateActiveBlock({ tableRows: newRows });
+                                                                    }}
+                                                                    placeholder="Dữ liệu"
+                                                                    className={`min-h-[1.5rem] ${alignClass} ${isDarkTheme ? 'text-white/80' : 'text-slate-800'}`}
+                                                                    isDarkTheme={isDarkTheme}
+                                                                />
+                                                            </div>
+                                                            {cIdx === row.length - 1 && (block.tableRows?.length || 0) > 1 && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleDeleteRow(rIdx)}
+                                                                    className="opacity-0 group-hover/tr:opacity-100 text-slate-400 hover:text-rose-500 text-[10px] px-1 transition-opacity"
+                                                                    title="Xóa dòng này"
+                                                                >
+                                                                    ✕
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                );
+                                            })}
                                         </tr>
                                     ))}
                                 </tbody>

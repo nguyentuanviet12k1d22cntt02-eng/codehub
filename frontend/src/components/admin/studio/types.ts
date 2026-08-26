@@ -29,10 +29,12 @@ export interface LessonBlock {
     allowCopy?: boolean;
     theme?: 'Dark' | 'Light';
     fontSize?: string;
+    textAlign?: 'left' | 'center' | 'right' | 'justify';
     // Table / Output
     tableHeaders?: string[];
     tableRows?: string[][];
     tableNote?: string;
+    tableAlignments?: ('left' | 'center' | 'right')[];
     // Callout / Explanation
     calloutType?: 'info' | 'tip' | 'warning' | 'explanation';
     // Exercise

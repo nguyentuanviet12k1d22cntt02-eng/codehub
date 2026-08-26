@@ -160,6 +160,17 @@ const isTableSeparator = (line: string): boolean => {
     return cols.length > 0 && cols.every(c => /^:?-+:?$/.test(c));
 };
 
+// Parse table column alignments from separator line
+const parseTableAlignments = (line: string): ('left' | 'center' | 'right')[] => {
+    const cols = parseTableRow(line);
+    return cols.map(c => {
+        const trimmed = c.trim();
+        if (trimmed.startsWith(':') && trimmed.endsWith(':')) return 'center';
+        if (trimmed.endsWith(':')) return 'right';
+        return 'left';
+    });
+};
+
 // Parse a single markdown table row line (| a | b | c |)
 const parseTableRow = (line: string): string[] => {
     let trimmed = line.trim();
@@ -282,6 +293,7 @@ export const parseMarkdownToBlocks = (markdown: string, lessonTitle: string): Le
         if (trimmedLine.startsWith('|') && trimmedLine.endsWith('|') && i + 1 < lines.length && isTableSeparator(lines[i + 1])) {
             flushCurrentText();
             const headers = parseTableRow(trimmedLine);
+            const alignments = parseTableAlignments(lines[i + 1]);
             i++; // skip separator line (| --- | --- |)
 
             const rows: string[][] = [];
@@ -304,6 +316,7 @@ export const parseMarkdownToBlocks = (markdown: string, lessonTitle: string): Le
                 tableHeaders: headers,
                 tableRows: rows.length > 0 ? rows : [['', '']],
                 tableNote: tableNote || undefined,
+                tableAlignments: alignments,
                 content: ''
             });
             continue;
@@ -415,7 +428,13 @@ export const convertBlocksToMarkdown = (blocks: LessonBlock[]): string => {
             case 'sql_output': {
                 if (b.tableHeaders && b.tableHeaders.length > 0) {
                     const headerLine = `| ${b.tableHeaders.join(' | ')} |`;
-                    const separatorLine = `| ${b.tableHeaders.map(() => '---').join(' | ')} |`;
+                    const alignments = b.tableAlignments || b.tableHeaders.map(() => 'left');
+                    const separatorLine = `| ${b.tableHeaders.map((_, idx) => {
+                        const a = alignments[idx] || 'left';
+                        if (a === 'center') return ':---:';
+                        if (a === 'right') return '---:';
+                        return ':---';
+                    }).join(' | ')} |`;
                     const rowsLines = (b.tableRows && b.tableRows.length > 0)
                         ? b.tableRows.map(r => `| ${r.join(' | ')} |`).join('\n')
                         : `| ${b.tableHeaders.map(() => '').join(' | ')} |`;

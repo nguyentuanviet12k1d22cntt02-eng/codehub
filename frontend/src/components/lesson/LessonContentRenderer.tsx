@@ -138,14 +138,26 @@ export const LessonContentRenderer: React.FC<LessonContentRendererProps> = ({ co
                     },
                     table: ({ ...props }) => (
                         <div className="overflow-x-auto w-full border border-border-custom rounded-xl my-6 transition-colors duration-200">
-                            <table className="w-full text-sm text-left border-collapse" {...props} />
+                            <table className="w-full text-sm border-collapse" {...props} />
                         </div>
                     ),
                     thead: ({ ...props }) => <thead className="bg-bg-tertiary border-b border-border-custom" {...props} />,
                     tbody: ({ ...props }) => <tbody className="divide-y divide-border-custom" {...props} />,
                     tr: ({ ...props }) => <tr className="hover:bg-bg-tertiary/40 transition-colors" {...props} />,
-                    th: ({ ...props }) => <th className="p-3.5 font-semibold text-text-primary border-r border-border-custom last:border-r-0 text-xs tracking-wider uppercase bg-bg-tertiary" {...props} />,
-                    td: ({ ...props }) => <td className="p-3.5 text-text-secondary border-r border-border-custom/50 last:border-r-0 text-sm leading-relaxed" {...props} />,
+                    th: ({ style, ...props }: any) => (
+                        <th
+                            className="p-3.5 font-semibold text-text-primary border-r border-border-custom last:border-r-0 text-xs tracking-wider uppercase bg-bg-tertiary"
+                            style={style}
+                            {...props}
+                        />
+                    ),
+                    td: ({ style, ...props }: any) => (
+                        <td
+                            className="p-3.5 text-text-secondary border-r border-border-custom/50 last:border-r-0 text-sm leading-relaxed"
+                            style={style}
+                            {...props}
+                        />
+                    ),
                     details: ({ ...props }) => <details className="my-5 p-4 rounded-xl border border-border-custom bg-bg-secondary text-sm transition-all" {...props} />,
                     summary: ({ ...props }) => <summary className="font-semibold text-text-primary cursor-pointer select-none hover:text-accent-custom transition-colors" {...props} />
                 }}
