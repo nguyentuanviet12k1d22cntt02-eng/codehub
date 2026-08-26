@@ -1,6 +1,7 @@
 import React from 'react';
 import type { DraggableProvided } from '@hello-pangea/dnd';
 import { RichTextEditable } from './RichTextEditable';
+import { StudioCodeEditor } from './StudioCodeEditor';
 import type { LessonBlock } from '../types';
 
 interface StudioBlockCardProps {
@@ -221,16 +222,24 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                 )}
 
                 {/* 3. CODE / IFRAME BLOCK */}
-                {(block.type === 'code' || block.type === 'iframe') && (
-                    <div className="font-mono text-xs text-emerald-300">
-                        <textarea
-                            rows={Math.max(3, (block.content || '').split('\n').length)}
-                            value={block.content || ''}
-                            onChange={(e) => onUpdateActiveBlock({ content: e.target.value })}
-                            className="w-full bg-transparent text-xs font-mono text-emerald-300 border-none focus:outline-none resize-none leading-relaxed"
-                            placeholder={block.type === 'iframe' ? '<iframe src="..."></iframe>' : 'SELECT id, name FROM students;'}
-                        />
-                    </div>
+                {block.type === 'code' && (
+                    <StudioCodeEditor
+                        code={block.content || ''}
+                        language={block.language || 'SQL'}
+                        onChangeCode={(newCode) => onUpdateActiveBlock({ content: newCode })}
+                        onChangeLanguage={(newLang) => onUpdateActiveBlock({ language: newLang })}
+                        isDarkTheme={isDarkTheme}
+                    />
+                )}
+
+                {block.type === 'iframe' && (
+                    <StudioCodeEditor
+                        code={block.content || ''}
+                        language="HTML"
+                        onChangeCode={(newCode) => onUpdateActiveBlock({ content: newCode })}
+                        onChangeLanguage={(newLang) => onUpdateActiveBlock({ language: newLang })}
+                        isDarkTheme={isDarkTheme}
+                    />
                 )}
 
                 {/* 4. TABLE / OUTPUT BLOCK WITH FULL RICHTEXT FORMATTING & ALIGNMENTS */}
