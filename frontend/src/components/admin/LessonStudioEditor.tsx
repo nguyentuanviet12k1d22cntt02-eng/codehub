@@ -58,9 +58,94 @@ interface LessonStudioEditorProps {
     onClose: () => void;
 }
 
+// Helper to create default block by type
+const createDefaultBlock = (type: BlockType, id: string): LessonBlock => {
+    switch (type) {
+        case 'heading':
+            return {
+                id,
+                type: 'heading',
+                headingLevel: 'H2',
+                title: '1. Tiêu đề mục bài học',
+                content: 'Nhập nội dung giải thích chi tiết cho mục này...'
+            };
+        case 'paragraph':
+            return {
+                id,
+                type: 'paragraph',
+                content: 'Nhập nội dung đoạn văn lý thuyết tại đây...'
+            };
+        case 'code':
+            return {
+                id,
+                type: 'code',
+                language: 'Python',
+                showLineNumbers: true,
+                allowCopy: true,
+                theme: 'Dark',
+                fontSize: '14px',
+                content: '# Viết code minh họa tại đây\nprint("Hello, World!")'
+            };
+        case 'output':
+        case 'table':
+            return {
+                id,
+                type: 'output',
+                title: 'Kết quả (ví dụ)',
+                tableHeaders: ['id', 'name', 'age'],
+                tableRows: [
+                    ['1', 'An', '20'],
+                    ['2', 'Bình', '21']
+                ],
+                tableNote: 'Kết quả trả về 2 dòng.',
+                content: ''
+            };
+        case 'explanation':
+        case 'callout':
+            return {
+                id,
+                type: 'explanation',
+                title: 'Giải thích',
+                calloutType: 'explanation',
+                content: '• Ý 1: Điểm cốt lõi\n• Ý 2: Cú pháp cần nhớ\n• Ý 3: Mẹo thực hành'
+            };
+        case 'exercise':
+            return {
+                id,
+                type: 'exercise',
+                title: 'Bài tập vận dụng',
+                content: 'Mô tả yêu cầu bài tập cho học viên thực hành...',
+                solutionCode: '# Lời giải mẫu\nprint("Xong")',
+                isSolutionVisible: false
+            };
+        case 'divider':
+            return {
+                id,
+                type: 'divider',
+                content: '---'
+            };
+        default:
+            return {
+                id,
+                type,
+                content: 'Nội dung khối mới...'
+            };
+    }
+};
+
 // Convert Markdown string to initial structured blocks
 const parseMarkdownToBlocks = (markdown: string, lessonTitle: string): LessonBlock[] => {
-    if (!markdown || markdown.trim() === '') {
+    let cleanMarkdown = (markdown || '').trim();
+
+    // Strip YAML frontmatter if present (e.g. --- \n lessonId: ... \n title: ... \n ---)
+    if (cleanMarkdown.startsWith('---')) {
+        const endIdx = cleanMarkdown.indexOf('---', 3);
+        if (endIdx !== -1) {
+            cleanMarkdown = cleanMarkdown.substring(endIdx + 3).trim();
+        }
+    }
+
+    if (!cleanMarkdown) {
         return [
             {
                 id: 'b-1',
@@ -83,7 +168,7 @@ const parseMarkdownToBlocks = (markdown: string, lessonTitle: string): LessonBlo
     }
 
     const blocks: LessonBlock[] = [];
-    const lines = markdown.split('\n');
+    const lines = cleanMarkdown.split('\n');
     let currentText: string[] = [];
     let inCode = false;
     let codeLang = 'Python';
@@ -175,7 +260,7 @@ const parseMarkdownToBlocks = (markdown: string, lessonTitle: string): LessonBlo
         {
             id: 'b-init',
             type: 'paragraph',
-            content: markdown
+            content: cleanMarkdown
         }
     ];
 };
@@ -235,6 +320,7 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
     const [historyIndex, setHistoryIndex] = useState(0);
     const [previewMode, setPreviewMode] = useState(false);
     const [isDarkTheme, setIsDarkTheme] = useState(false); // Default to crisp LIGHT theme
+    const [insertMenuOpenIndex, setInsertMenuOpenIndex] = useState<number | null>(null);
 
     const activeBlock = blocks.find(b => b.id === selectedBlockId) || blocks[0];
 
@@ -262,97 +348,24 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
         }
     };
 
-    // Add Block
+    // Add Block to end
     const handleAddBlock = (type: BlockType) => {
         const newId = `block-${Date.now()}`;
-        let newBlock: LessonBlock = {
-            id: newId,
-            type,
-            content: ''
-        };
-
-        switch (type) {
-            case 'heading':
-                newBlock = {
-                    id: newId,
-                    type: 'heading',
-                    headingLevel: 'H2',
-                    title: '1. Tiêu đề mục bài học',
-                    content: 'Nhập nội dung giải thích chi tiết cho mục này...'
-                };
-                break;
-            case 'paragraph':
-                newBlock = {
-                    id: newId,
-                    type: 'paragraph',
-                    content: 'Nhập nội dung đoạn văn lý thuyết tại đây...'
-                };
-                break;
-            case 'code':
-                newBlock = {
-                    id: newId,
-                    type: 'code',
-                    language: 'SQL',
-                    showLineNumbers: true,
-                    allowCopy: true,
-                    theme: 'Dark',
-                    fontSize: '14px',
-                    content: 'SELECT id, name, age\nFROM students\nWHERE age > 18\nORDER BY age ASC;'
-                };
-                break;
-            case 'output':
-            case 'table':
-                newBlock = {
-                    id: newId,
-                    type: 'output',
-                    title: 'Kết quả (ví dụ)',
-                    tableHeaders: ['id', 'name', 'age'],
-                    tableRows: [
-                        ['1', 'An', '20'],
-                        ['2', 'Bình', '21']
-                    ],
-                    tableNote: 'Kết quả trả về 2 dòng.',
-                    content: ''
-                };
-                break;
-            case 'explanation':
-            case 'callout':
-                newBlock = {
-                    id: newId,
-                    type: 'explanation',
-                    title: 'Giải thích',
-                    calloutType: 'explanation',
-                    content: '• SELECT: chọn các cột cần hiển thị.\n• FROM: chỉ định bảng dữ liệu.\n• WHERE: điều kiện lọc dữ liệu.\n• ORDER BY: sắp xếp kết quả.'
-                };
-                break;
-            case 'exercise':
-                newBlock = {
-                    id: newId,
-                    type: 'exercise',
-                    title: 'Bài tập 1',
-                    content: 'Viết câu lệnh SQL để lấy ra danh sách sinh viên có tuổi lớn hơn 20, hiển thị các cột: id, name, age và sắp xếp theo age giảm dần.',
-                    solutionCode: 'SELECT id, name, age\nFROM students\nWHERE age > 20\nORDER BY age DESC;',
-                    isSolutionVisible: false
-                };
-                break;
-            case 'divider':
-                newBlock = {
-                    id: newId,
-                    type: 'divider',
-                    content: '---'
-                };
-                break;
-            default:
-                newBlock = {
-                    id: newId,
-                    type,
-                    content: 'Nội dung khối mới...'
-                };
-        }
-
+        const newBlock: LessonBlock = createDefaultBlock(type, newId);
         const newBlocks = [...blocks, newBlock];
         updateBlocksWithHistory(newBlocks);
         setSelectedBlockId(newId);
+    };
+
+    // Insert Block at specific index (directly below block #index)
+    const handleInsertBlockAt = (type: BlockType, index: number) => {
+        const newId = `block-${Date.now()}`;
+        const newBlock: LessonBlock = createDefaultBlock(type, newId);
+        const newBlocks = [...blocks];
+        newBlocks.splice(index + 1, 0, newBlock);
+        updateBlocksWithHistory(newBlocks);
+        setSelectedBlockId(newId);
+        setInsertMenuOpenIndex(null);
     };
 
     // Update active block
@@ -817,301 +830,411 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                         <div
                                                             ref={providedDraggable.innerRef}
                                                             {...providedDraggable.draggableProps}
-                                                            onClick={() => setSelectedBlockId(block.id)}
-                                                            className={`rounded-2xl border transition-all relative overflow-hidden group ${
-                                                                isDarkTheme
-                                                                    ? isSelected
-                                                                        ? 'bg-[#121217] border-purple-500 shadow-xl shadow-purple-500/5 ring-1 ring-purple-500/50'
-                                                                        : 'bg-[#121217] border-white/10 hover:border-white/20'
-                                                                    : isSelected
-                                                                        ? 'bg-white border-purple-500 shadow-lg ring-2 ring-purple-200'
-                                                                        : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'
-                                                            }`}
+                                                            className="space-y-2"
                                                         >
-                                                            {/* Top Block Header bar */}
-                                                            <div className={`px-4 py-2.5 border-b flex items-center justify-between ${
-                                                                isDarkTheme
-                                                                    ? 'bg-white/[0.02] border-white/5'
-                                                                    : 'bg-slate-50/80 border-slate-100'
-                                                            }`}>
-                                                                {/* Drag Handle */}
-                                                                <div
-                                                                    {...providedDraggable.dragHandleProps}
-                                                                    className={`cursor-grab active:cursor-grabbing flex items-center gap-2 ${
-                                                                        isDarkTheme ? 'text-white/40 hover:text-white' : 'text-slate-400 hover:text-slate-700'
-                                                                    }`}
-                                                                >
-                                                                    <span className="font-mono text-xs tracking-tighter">:::</span>
-                                                                    <span className={`text-[11px] font-semibold ${isDarkTheme ? 'text-white/60' : 'text-slate-600'}`}>
-                                                                        Khối #{index + 1}
-                                                                    </span>
-                                                                </div>
-
-                                                                {/* Block Type Badge */}
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                                                                        block.type === 'heading' ? 'bg-purple-100 text-purple-700 border border-purple-200' :
-                                                                        block.type === 'code' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' :
-                                                                        block.type === 'output' || block.type === 'table' ? 'bg-sky-100 text-sky-700 border border-sky-200' :
-                                                                        block.type === 'exercise' ? 'bg-indigo-100 text-indigo-700 border border-indigo-200' :
-                                                                        'bg-amber-100 text-amber-800 border border-amber-200'
-                                                                    }`}>
-                                                                        {block.type === 'heading' ? 'Tiêu đề + Đoạn văn' :
-                                                                         block.type === 'code' ? `Khối mã (${block.language || 'SQL'})` :
-                                                                         block.type === 'output' ? 'Kết quả (Output)' :
-                                                                         block.type === 'exercise' ? 'Bài tập (Exercise)' :
-                                                                         block.type === 'explanation' ? 'Giải thích' :
-                                                                         block.type}
-                                                                    </span>
-
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            handleDeleteBlock(block.id);
-                                                                        }}
-                                                                        className="text-slate-400 hover:text-rose-600 text-xs px-1.5 py-0.5 rounded transition-colors"
-                                                                        title="Xóa khối này"
-                                                                    >
-                                                                        ✕
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-
-                                                            {/* Block Body Interactive Content */}
-                                                            <div className="p-5 text-left space-y-3">
-                                                                {/* 1. HEADING BLOCK */}
-                                                                {block.type === 'heading' && (
-                                                                    <div className="space-y-2">
-                                                                        <input
-                                                                            type="text"
-                                                                            value={block.title || ''}
-                                                                            onChange={(e) => handleUpdateActiveBlock({ title: e.target.value })}
-                                                                            className={`w-full bg-transparent text-lg md:text-xl font-extrabold border-none focus:outline-none ${
-                                                                                isDarkTheme ? 'text-white placeholder-white/30' : 'text-slate-900 placeholder-slate-400'
-                                                                            }`}
-                                                                            placeholder="1. SELECT và FROM là gì?"
-                                                                        />
-                                                                        <textarea
-                                                                            rows={2}
-                                                                            value={block.content || ''}
-                                                                            onChange={(e) => handleUpdateActiveBlock({ content: e.target.value })}
-                                                                            className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-none ${
-                                                                                isDarkTheme ? 'text-white/70 placeholder-white/30' : 'text-slate-600 placeholder-slate-400'
-                                                                            }`}
-                                                                            placeholder="Nhập mô tả chi tiết cho tiêu đề này..."
-                                                                        />
-                                                                    </div>
-                                                                )}
-
-                                                                {/* 2. PARAGRAPH BLOCK */}
-                                                                {block.type === 'paragraph' && (
-                                                                    <textarea
-                                                                        rows={3}
-                                                                        value={block.content || ''}
-                                                                        onChange={(e) => handleUpdateActiveBlock({ content: e.target.value })}
-                                                                        className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-y ${
-                                                                            isDarkTheme ? 'text-white/80 placeholder-white/30' : 'text-slate-700 placeholder-slate-400'
+                                                            {/* Main Block Card */}
+                                                            <div
+                                                                onClick={() => setSelectedBlockId(block.id)}
+                                                                className={`rounded-2xl border transition-all relative overflow-hidden group ${
+                                                                    isDarkTheme
+                                                                        ? isSelected
+                                                                            ? 'bg-[#121217] border-purple-500 shadow-xl shadow-purple-500/5 ring-1 ring-purple-500/50'
+                                                                            : 'bg-[#121217] border-white/10 hover:border-white/20'
+                                                                        : isSelected
+                                                                            ? 'bg-white border-purple-500 shadow-lg ring-2 ring-purple-200'
+                                                                            : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'
+                                                                }`}
+                                                            >
+                                                                {/* Top Block Header bar */}
+                                                                <div className={`px-4 py-2.5 border-b flex items-center justify-between ${
+                                                                    isDarkTheme
+                                                                        ? 'bg-white/[0.02] border-white/5'
+                                                                        : 'bg-slate-50/80 border-slate-100'
+                                                                }`}>
+                                                                    {/* Drag Handle */}
+                                                                    <div
+                                                                        {...providedDraggable.dragHandleProps}
+                                                                        className={`cursor-grab active:cursor-grabbing flex items-center gap-2 ${
+                                                                            isDarkTheme ? 'text-white/40 hover:text-white' : 'text-slate-400 hover:text-slate-700'
                                                                         }`}
-                                                                        placeholder="Nhập đoạn văn lý thuyết..."
-                                                                    />
-                                                                )}
+                                                                    >
+                                                                        <span className="font-mono text-xs tracking-tighter">:::</span>
+                                                                        <span className={`text-[11px] font-semibold ${isDarkTheme ? 'text-white/60' : 'text-slate-600'}`}>
+                                                                            Khối #{index + 1}
+                                                                        </span>
+                                                                    </div>
 
-                                                                {/* 3. CODE BLOCK */}
-                                                                {block.type === 'code' && (
-                                                                    <div className="bg-[#1e1e2e] rounded-xl border border-slate-700/60 p-4 font-mono text-xs text-emerald-400 overflow-x-auto relative shadow-inner">
-                                                                        <div className="flex justify-between items-center text-[10px] text-slate-400 mb-2 border-b border-slate-700 pb-1">
-                                                                            <span className="font-bold text-purple-400">{block.language || 'SQL'}</span>
-                                                                            <span>{block.showLineNumbers ? 'Line numbers: ON' : ''}</span>
+                                                                    {/* Block Type Badge */}
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                                                                            block.type === 'heading' ? 'bg-purple-100 text-purple-700 border border-purple-200' :
+                                                                            block.type === 'code' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' :
+                                                                            block.type === 'output' || block.type === 'table' ? 'bg-sky-100 text-sky-700 border border-sky-200' :
+                                                                            block.type === 'exercise' ? 'bg-indigo-100 text-indigo-700 border border-indigo-200' :
+                                                                            'bg-amber-100 text-amber-800 border border-amber-200'
+                                                                        }`}>
+                                                                            {block.type === 'heading' ? 'Tiêu đề + Đoạn văn' :
+                                                                             block.type === 'code' ? `Khối mã (${block.language || 'SQL'})` :
+                                                                             block.type === 'output' ? 'Kết quả (Output)' :
+                                                                             block.type === 'exercise' ? 'Bài tập (Exercise)' :
+                                                                             block.type === 'explanation' ? 'Giải thích' :
+                                                                             block.type}
+                                                                        </span>
+
+                                                                        <button
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                handleDeleteBlock(block.id);
+                                                                            }}
+                                                                            className="text-slate-400 hover:text-rose-600 text-xs px-1.5 py-0.5 rounded transition-colors"
+                                                                            title="Xóa khối này"
+                                                                        >
+                                                                            ✕
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Block Body Interactive Content */}
+                                                                <div className="p-5 text-left space-y-3">
+                                                                    {/* 1. HEADING BLOCK */}
+                                                                    {block.type === 'heading' && (
+                                                                        <div className="space-y-2">
+                                                                            <input
+                                                                                type="text"
+                                                                                value={block.title || ''}
+                                                                                onChange={(e) => handleUpdateActiveBlock({ title: e.target.value })}
+                                                                                className={`w-full bg-transparent text-lg md:text-xl font-extrabold border-none focus:outline-none ${
+                                                                                    isDarkTheme ? 'text-white placeholder-white/30' : 'text-slate-900 placeholder-slate-400'
+                                                                                }`}
+                                                                                placeholder="1. Tiêu đề mục"
+                                                                            />
+                                                                            <textarea
+                                                                                rows={2}
+                                                                                value={block.content || ''}
+                                                                                onChange={(e) => handleUpdateActiveBlock({ content: e.target.value })}
+                                                                                className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-none ${
+                                                                                    isDarkTheme ? 'text-white/70 placeholder-white/30' : 'text-slate-600 placeholder-slate-400'
+                                                                                }`}
+                                                                                placeholder="Nhập mô tả chi tiết cho tiêu đề này..."
+                                                                            />
                                                                         </div>
+                                                                    )}
+
+                                                                    {/* 2. PARAGRAPH BLOCK */}
+                                                                    {block.type === 'paragraph' && (
                                                                         <textarea
-                                                                            rows={Math.max(4, (block.content || '').split('\n').length)}
+                                                                            rows={3}
                                                                             value={block.content || ''}
                                                                             onChange={(e) => handleUpdateActiveBlock({ content: e.target.value })}
-                                                                            className="w-full bg-transparent text-xs font-mono text-emerald-300 border-none focus:outline-none resize-none leading-relaxed"
-                                                                            placeholder="SELECT id, name FROM table;"
+                                                                            className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-y ${
+                                                                                isDarkTheme ? 'text-white/80 placeholder-white/30' : 'text-slate-700 placeholder-slate-400'
+                                                                            }`}
+                                                                            placeholder="Nhập đoạn văn lý thuyết..."
                                                                         />
-                                                                    </div>
-                                                                )}
+                                                                    )}
 
-                                                                {/* 4. TABLE / OUTPUT BLOCK */}
-                                                                {(block.type === 'output' || block.type === 'table') && (
-                                                                    <div className="space-y-2">
-                                                                        {block.title && (
-                                                                            <div className={`text-xs font-bold ${isDarkTheme ? 'text-white/80' : 'text-slate-800'}`}>
-                                                                                {block.title}
+                                                                    {/* 3. CODE BLOCK */}
+                                                                    {block.type === 'code' && (
+                                                                        <div className="bg-[#1e1e2e] rounded-xl border border-slate-700/60 p-4 font-mono text-xs text-emerald-400 overflow-x-auto relative shadow-inner">
+                                                                            <div className="flex justify-between items-center text-[10px] text-slate-400 mb-2 border-b border-slate-700 pb-1">
+                                                                                <span className="font-bold text-purple-400">{block.language || 'SQL'}</span>
+                                                                                <span>{block.showLineNumbers ? 'Line numbers: ON' : ''}</span>
                                                                             </div>
-                                                                        )}
+                                                                            <textarea
+                                                                                rows={Math.max(4, (block.content || '').split('\n').length)}
+                                                                                value={block.content || ''}
+                                                                                onChange={(e) => handleUpdateActiveBlock({ content: e.target.value })}
+                                                                                className="w-full bg-transparent text-xs font-mono text-emerald-300 border-none focus:outline-none resize-none leading-relaxed"
+                                                                                placeholder="SELECT id, name FROM table;"
+                                                                            />
+                                                                        </div>
+                                                                    )}
 
-                                                                        <div className={`overflow-x-auto rounded-xl border ${
-                                                                            isDarkTheme ? 'border-white/10' : 'border-slate-200'
-                                                                        }`}>
-                                                                            <table className="w-full text-left text-xs border-collapse">
-                                                                                <thead>
-                                                                                    <tr className={`border-b font-bold ${
-                                                                                        isDarkTheme ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
-                                                                                    }`}>
-                                                                                        {block.tableHeaders?.map((th, thIdx) => (
-                                                                                            <th key={thIdx} className={`p-3 border-r last:border-r-0 ${
-                                                                                                isDarkTheme ? 'border-white/10' : 'border-slate-200'
-                                                                                            }`}>
-                                                                                                <input
-                                                                                                    type="text"
-                                                                                                    value={th}
-                                                                                                    onChange={(e) => {
-                                                                                                        const newHeaders = [...(block.tableHeaders || [])];
-                                                                                                        newHeaders[thIdx] = e.target.value;
-                                                                                                        handleUpdateActiveBlock({ tableHeaders: newHeaders });
-                                                                                                    }}
-                                                                                                    className={`bg-transparent font-bold text-center w-full focus:outline-none ${
-                                                                                                        isDarkTheme ? 'text-white' : 'text-slate-900'
-                                                                                                    }`}
-                                                                                                />
-                                                                                            </th>
-                                                                                        ))}
-                                                                                    </tr>
-                                                                                </thead>
-                                                                                <tbody className={`divide-y ${
-                                                                                    isDarkTheme ? 'divide-white/5 text-white/80' : 'divide-slate-200 text-slate-700'
-                                                                                }`}>
-                                                                                    {block.tableRows?.map((row, rIdx) => (
-                                                                                        <tr key={rIdx} className={isDarkTheme ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50'}>
-                                                                                            {row.map((cell, cIdx) => (
-                                                                                                <td key={cIdx} className={`p-3 border-r last:border-r-0 ${
+                                                                    {/* 4. TABLE / OUTPUT BLOCK */}
+                                                                    {(block.type === 'output' || block.type === 'table') && (
+                                                                        <div className="space-y-2">
+                                                                            {block.title && (
+                                                                                <div className={`text-xs font-bold ${isDarkTheme ? 'text-white/80' : 'text-slate-800'}`}>
+                                                                                    {block.title}
+                                                                                </div>
+                                                                            )}
+
+                                                                            <div className={`overflow-x-auto rounded-xl border ${
+                                                                                isDarkTheme ? 'border-white/10' : 'border-slate-200'
+                                                                            }`}>
+                                                                                <table className="w-full text-left text-xs border-collapse">
+                                                                                    <thead>
+                                                                                        <tr className={`border-b font-bold ${
+                                                                                            isDarkTheme ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'
+                                                                                        }`}>
+                                                                                            {block.tableHeaders?.map((th, thIdx) => (
+                                                                                                <th key={thIdx} className={`p-3 border-r last:border-r-0 ${
                                                                                                     isDarkTheme ? 'border-white/10' : 'border-slate-200'
                                                                                                 }`}>
                                                                                                     <input
                                                                                                         type="text"
-                                                                                                        value={cell}
+                                                                                                        value={th}
                                                                                                         onChange={(e) => {
-                                                                                                            const newRows = [...(block.tableRows || [])];
-                                                                                                            newRows[rIdx][cIdx] = e.target.value;
-                                                                                                            handleUpdateActiveBlock({ tableRows: newRows });
+                                                                                                            const newHeaders = [...(block.tableHeaders || [])];
+                                                                                                            newHeaders[thIdx] = e.target.value;
+                                                                                                            handleUpdateActiveBlock({ tableHeaders: newHeaders });
                                                                                                         }}
-                                                                                                        className={`bg-transparent text-center w-full focus:outline-none ${
-                                                                                                            isDarkTheme ? 'text-white/80' : 'text-slate-800'
+                                                                                                        className={`bg-transparent font-bold text-center w-full focus:outline-none ${
+                                                                                                            isDarkTheme ? 'text-white' : 'text-slate-900'
                                                                                                         }`}
                                                                                                     />
-                                                                                                </td>
+                                                                                                </th>
                                                                                             ))}
                                                                                         </tr>
-                                                                                    ))}
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </div>
+                                                                                    </thead>
+                                                                                    <tbody className={`divide-y ${
+                                                                                        isDarkTheme ? 'divide-white/5 text-white/80' : 'divide-slate-200 text-slate-700'
+                                                                                    }`}>
+                                                                                        {block.tableRows?.map((row, rIdx) => (
+                                                                                            <tr key={rIdx} className={isDarkTheme ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50'}>
+                                                                                                {row.map((cell, cIdx) => (
+                                                                                                    <td key={cIdx} className={`p-3 border-r last:border-r-0 ${
+                                                                                                        isDarkTheme ? 'border-white/10' : 'border-slate-200'
+                                                                                                    }`}>
+                                                                                                        <input
+                                                                                                            type="text"
+                                                                                                            value={cell}
+                                                                                                            onChange={(e) => {
+                                                                                                                const newRows = [...(block.tableRows || [])];
+                                                                                                                newRows[rIdx][cIdx] = e.target.value;
+                                                                                                                handleUpdateActiveBlock({ tableRows: newRows });
+                                                                                                            }}
+                                                                                                            className={`bg-transparent text-center w-full focus:outline-none ${
+                                                                                                                isDarkTheme ? 'text-white/80' : 'text-slate-800'
+                                                                                                            }`}
+                                                                                                        />
+                                                                                                    </td>
+                                                                                                ))}
+                                                                                            </tr>
+                                                                                        ))}
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
 
-                                                                        <div className="flex justify-between items-center text-[11px] pt-1">
-                                                                            <input
-                                                                                type="text"
-                                                                                value={block.tableNote || ''}
-                                                                                onChange={(e) => handleUpdateActiveBlock({ tableNote: e.target.value })}
-                                                                                className={`bg-transparent text-xs italic focus:outline-none w-2/3 ${
-                                                                                    isDarkTheme ? 'text-white/40' : 'text-slate-500'
-                                                                                }`}
-                                                                                placeholder="→ Kết quả trả về 2 dòng."
-                                                                            />
-                                                                            <button
-                                                                                type="button"
-                                                                                onClick={() => {
-                                                                                    const newRows = [...(block.tableRows || [])];
-                                                                                    const colCount = block.tableHeaders?.length || 3;
-                                                                                    newRows.push(Array(colCount).fill(''));
-                                                                                    handleUpdateActiveBlock({ tableRows: newRows });
-                                                                                }}
-                                                                                className="text-purple-600 hover:underline text-xs font-semibold"
-                                                                            >
-                                                                                + Thêm dòng
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-
-                                                                {/* 5. EXPLANATION / CALLOUT BLOCK */}
-                                                                {(block.type === 'explanation' || block.type === 'callout' || block.type === 'note') && (
-                                                                    <div className={`rounded-xl p-4 space-y-2 border ${
-                                                                        isDarkTheme
-                                                                            ? 'bg-amber-500/[0.04] border-amber-500/20 text-white/80'
-                                                                            : 'bg-[#fffbeb] border-[#fde68a] text-[#92400e]'
-                                                                    }`}>
-                                                                        <div className="flex items-center gap-2">
-                                                                            <span className="font-bold">💡</span>
-                                                                            <input
-                                                                                type="text"
-                                                                                value={block.title || 'Giải thích'}
-                                                                                onChange={(e) => handleUpdateActiveBlock({ title: e.target.value })}
-                                                                                className={`bg-transparent font-bold text-xs focus:outline-none w-full ${
-                                                                                    isDarkTheme ? 'text-amber-300' : 'text-amber-900'
-                                                                                }`}
-                                                                            />
-                                                                        </div>
-                                                                        <textarea
-                                                                            rows={4}
-                                                                            value={block.content || ''}
-                                                                            onChange={(e) => handleUpdateActiveBlock({ content: e.target.value })}
-                                                                            className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-none ${
-                                                                                isDarkTheme ? 'text-white/80' : 'text-amber-900'
-                                                                            }`}
-                                                                            placeholder="• Ý 1\n• Ý 2..."
-                                                                        />
-                                                                    </div>
-                                                                )}
-
-                                                                {/* 6. EXERCISE BLOCK */}
-                                                                {block.type === 'exercise' && (
-                                                                    <div className={`rounded-xl p-4 space-y-3 border ${
-                                                                        isDarkTheme
-                                                                            ? 'bg-indigo-500/[0.04] border-indigo-500/20 text-white/80'
-                                                                            : 'bg-[#eef2ff] border-[#c7d2fe] text-[#3730a3]'
-                                                                    }`}>
-                                                                        <div className="flex items-center gap-2">
-                                                                            <span className="font-bold">✎</span>
-                                                                            <input
-                                                                                type="text"
-                                                                                value={block.title || 'Bài tập 1'}
-                                                                                onChange={(e) => handleUpdateActiveBlock({ title: e.target.value })}
-                                                                                className={`bg-transparent font-bold text-xs focus:outline-none w-full ${
-                                                                                    isDarkTheme ? 'text-indigo-300' : 'text-indigo-900'
-                                                                                }`}
-                                                                            />
-                                                                        </div>
-                                                                        <textarea
-                                                                            rows={2}
-                                                                            value={block.content || ''}
-                                                                            onChange={(e) => handleUpdateActiveBlock({ content: e.target.value })}
-                                                                            className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-none ${
-                                                                                isDarkTheme ? 'text-white/80' : 'text-indigo-900'
-                                                                            }`}
-                                                                            placeholder="Mô tả yêu cầu bài tập..."
-                                                                        />
-
-                                                                        <div className={`pt-2 border-t space-y-2 ${
-                                                                            isDarkTheme ? 'border-indigo-500/10' : 'border-indigo-200'
-                                                                        }`}>
-                                                                            <button
-                                                                                type="button"
-                                                                                onClick={() => handleUpdateActiveBlock({ isSolutionVisible: !block.isSolutionVisible })}
-                                                                                className="text-xs font-bold text-indigo-600 hover:underline flex items-center gap-1.5"
-                                                                            >
-                                                                                <span>👁</span>
-                                                                                <span>{block.isSolutionVisible ? 'Ẩn đáp án' : 'Xem đáp án'}</span>
-                                                                            </button>
-
-                                                                            {block.isSolutionVisible && (
-                                                                                <textarea
-                                                                                    rows={3}
-                                                                                    value={block.solutionCode || ''}
-                                                                                    onChange={(e) => handleUpdateActiveBlock({ solutionCode: e.target.value })}
-                                                                                    className="w-full bg-[#1e1e2e] p-3 rounded-lg font-mono text-xs text-emerald-300 border border-slate-700 focus:outline-none shadow-inner"
-                                                                                    placeholder="Mã giải mẫu..."
+                                                                            <div className="flex justify-between items-center text-[11px] pt-1">
+                                                                                <input
+                                                                                    type="text"
+                                                                                    value={block.tableNote || ''}
+                                                                                    onChange={(e) => handleUpdateActiveBlock({ tableNote: e.target.value })}
+                                                                                    className={`bg-transparent text-xs italic focus:outline-none w-2/3 ${
+                                                                                        isDarkTheme ? 'text-white/40' : 'text-slate-500'
+                                                                                    }`}
+                                                                                    placeholder="→ Kết quả trả về 2 dòng."
                                                                                 />
-                                                                            )}
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={() => {
+                                                                                        const newRows = [...(block.tableRows || [])];
+                                                                                        const colCount = block.tableHeaders?.length || 3;
+                                                                                        newRows.push(Array(colCount).fill(''));
+                                                                                        handleUpdateActiveBlock({ tableRows: newRows });
+                                                                                    }}
+                                                                                    className="text-purple-600 hover:underline text-xs font-semibold"
+                                                                                >
+                                                                                    + Thêm dòng
+                                                                                </button>
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                )}
+                                                                    )}
 
-                                                                {/* 7. DIVIDER */}
-                                                                {block.type === 'divider' && (
-                                                                    <div className="py-2">
-                                                                        <hr className={isDarkTheme ? 'border-white/10' : 'border-slate-200'} />
+                                                                    {/* 5. EXPLANATION / CALLOUT BLOCK */}
+                                                                    {(block.type === 'explanation' || block.type === 'callout' || block.type === 'note') && (
+                                                                        <div className={`rounded-xl p-4 space-y-2 border ${
+                                                                            isDarkTheme
+                                                                                ? 'bg-amber-500/[0.04] border-amber-500/20 text-white/80'
+                                                                                : 'bg-[#fffbeb] border-[#fde68a] text-[#92400e]'
+                                                                        }`}>
+                                                                            <div className="flex items-center gap-2">
+                                                                                <span className="font-bold">💡</span>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    value={block.title || 'Giải thích'}
+                                                                                    onChange={(e) => handleUpdateActiveBlock({ title: e.target.value })}
+                                                                                    className={`bg-transparent font-bold text-xs focus:outline-none w-full ${
+                                                                                        isDarkTheme ? 'text-amber-300' : 'text-amber-900'
+                                                                                    }`}
+                                                                                />
+                                                                            </div>
+                                                                            <textarea
+                                                                                rows={4}
+                                                                                value={block.content || ''}
+                                                                                onChange={(e) => handleUpdateActiveBlock({ content: e.target.value })}
+                                                                                className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-none ${
+                                                                                    isDarkTheme ? 'text-white/80' : 'text-amber-900'
+                                                                                }`}
+                                                                                placeholder="• Ý 1\n• Ý 2..."
+                                                                            />
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* 6. EXERCISE BLOCK */}
+                                                                    {block.type === 'exercise' && (
+                                                                        <div className={`rounded-xl p-4 space-y-3 border ${
+                                                                            isDarkTheme
+                                                                                ? 'bg-indigo-500/[0.04] border-indigo-500/20 text-white/80'
+                                                                                : 'bg-[#eef2ff] border-[#c7d2fe] text-[#3730a3]'
+                                                                        }`}>
+                                                                            <div className="flex items-center gap-2">
+                                                                                <span className="font-bold">✎</span>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    value={block.title || 'Bài tập 1'}
+                                                                                    onChange={(e) => handleUpdateActiveBlock({ title: e.target.value })}
+                                                                                    className={`bg-transparent font-bold text-xs focus:outline-none w-full ${
+                                                                                        isDarkTheme ? 'text-indigo-300' : 'text-indigo-900'
+                                                                                    }`}
+                                                                                />
+                                                                            </div>
+                                                                            <textarea
+                                                                                rows={2}
+                                                                                value={block.content || ''}
+                                                                                onChange={(e) => handleUpdateActiveBlock({ content: e.target.value })}
+                                                                                className={`w-full bg-transparent text-xs leading-relaxed border-none focus:outline-none resize-none ${
+                                                                                    isDarkTheme ? 'text-white/80' : 'text-indigo-900'
+                                                                                }`}
+                                                                                placeholder="Mô tả yêu cầu bài tập..."
+                                                                            />
+
+                                                                            <div className={`pt-2 border-t space-y-2 ${
+                                                                                isDarkTheme ? 'border-indigo-500/10' : 'border-indigo-200'
+                                                                            }`}>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={() => handleUpdateActiveBlock({ isSolutionVisible: !block.isSolutionVisible })}
+                                                                                    className="text-xs font-bold text-indigo-600 hover:underline flex items-center gap-1.5"
+                                                                                >
+                                                                                    <span>👁</span>
+                                                                                    <span>{block.isSolutionVisible ? 'Ẩn đáp án' : 'Xem đáp án'}</span>
+                                                                                </button>
+
+                                                                                {block.isSolutionVisible && (
+                                                                                    <textarea
+                                                                                        rows={3}
+                                                                                        value={block.solutionCode || ''}
+                                                                                        onChange={(e) => handleUpdateActiveBlock({ solutionCode: e.target.value })}
+                                                                                        className="w-full bg-[#1e1e2e] p-3 rounded-lg font-mono text-xs text-emerald-300 border border-slate-700 focus:outline-none shadow-inner"
+                                                                                        placeholder="Mã giải mẫu..."
+                                                                                    />
+                                                                                )}
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* 7. DIVIDER */}
+                                                                    {block.type === 'divider' && (
+                                                                        <div className="py-2">
+                                                                            <hr className={isDarkTheme ? 'border-white/10' : 'border-slate-200'} />
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Inline Insert Bar Directly Below This Block */}
+                                                            <div className="relative group/insert py-1 flex items-center justify-center">
+                                                                <div className={`absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] transition-colors ${
+                                                                    isDarkTheme ? 'bg-white/5 group-hover/insert:bg-purple-500/40' : 'bg-slate-200 group-hover/insert:bg-purple-300'
+                                                                }`} />
+                                                                
+                                                                <div className="relative z-10 flex items-center gap-1">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setInsertMenuOpenIndex(insertMenuOpenIndex === index ? null : index);
+                                                                        }}
+                                                                        className={`flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full border shadow-sm transition-all ${
+                                                                            insertMenuOpenIndex === index
+                                                                                ? 'bg-purple-600 text-white border-purple-600 ring-2 ring-purple-200'
+                                                                                : isDarkTheme
+                                                                                    ? 'bg-[#181820] text-purple-400 border-white/10 hover:bg-purple-600/20 hover:border-purple-500'
+                                                                                    : 'bg-white text-purple-600 border-slate-200 hover:border-purple-400 hover:shadow-md'
+                                                                        }`}
+                                                                    >
+                                                                        <span className="w-3.5 h-3.5 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs leading-none font-bold">+</span>
+                                                                        <span>Chèn khối ở đây</span>
+                                                                    </button>
+                                                                </div>
+
+                                                                {/* Popover Menu with Block Choices */}
+                                                                {insertMenuOpenIndex === index && (
+                                                                    <div className={`absolute top-9 z-30 border rounded-2xl p-3 shadow-2xl flex flex-wrap gap-2 max-w-lg justify-center animate-in fade-in zoom-in-95 duration-150 ${
+                                                                        isDarkTheme ? 'bg-[#181820] border-white/15' : 'bg-white border-slate-200 shadow-purple-500/10'
+                                                                    }`}>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleInsertBlockAt('heading', index)}
+                                                                            className={`px-2.5 py-1.5 border rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all ${
+                                                                                isDarkTheme ? 'bg-white/5 border-white/10 text-white hover:bg-purple-600/20' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300'
+                                                                            }`}
+                                                                        >
+                                                                            <span className="text-purple-600 font-bold">H</span> Tiêu đề
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleInsertBlockAt('paragraph', index)}
+                                                                            className={`px-2.5 py-1.5 border rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all ${
+                                                                                isDarkTheme ? 'bg-white/5 border-white/10 text-white hover:bg-purple-600/20' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300'
+                                                                            }`}
+                                                                        >
+                                                                            <span className="text-purple-600 font-bold">¶</span> Đoạn văn
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleInsertBlockAt('code', index)}
+                                                                            className={`px-2.5 py-1.5 border rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all ${
+                                                                                isDarkTheme ? 'bg-white/5 border-white/10 text-white hover:bg-purple-600/20' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300'
+                                                                            }`}
+                                                                        >
+                                                                            <span className="text-purple-600 font-bold">&lt;/&gt;</span> Khối mã
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleInsertBlockAt('explanation', index)}
+                                                                            className={`px-2.5 py-1.5 border rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all ${
+                                                                                isDarkTheme ? 'bg-white/5 border-white/10 text-white hover:bg-amber-600/20' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-300'
+                                                                            }`}
+                                                                        >
+                                                                            <span>💡</span> Giải thích
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleInsertBlockAt('table', index)}
+                                                                            className={`px-2.5 py-1.5 border rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all ${
+                                                                                isDarkTheme ? 'bg-white/5 border-white/10 text-white hover:bg-sky-600/20' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-300'
+                                                                            }`}
+                                                                        >
+                                                                            <span>▦</span> Bảng SQL
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleInsertBlockAt('exercise', index)}
+                                                                            className={`px-2.5 py-1.5 border rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all ${
+                                                                                isDarkTheme ? 'bg-white/5 border-white/10 text-white hover:bg-indigo-600/20' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300'
+                                                                            }`}
+                                                                        >
+                                                                            <span>✎</span> Bài tập
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleInsertBlockAt('divider', index)}
+                                                                            className={`px-2.5 py-1.5 border rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all ${
+                                                                                isDarkTheme ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                                                                            }`}
+                                                                        >
+                                                                            <span>—</span> Đường kẻ
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => setInsertMenuOpenIndex(null)}
+                                                                            className="text-slate-400 hover:text-slate-600 text-xs px-2"
+                                                                        >
+                                                                            ✕
+                                                                        </button>
                                                                     </div>
                                                                 )}
                                                             </div>
