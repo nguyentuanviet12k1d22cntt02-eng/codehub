@@ -24,15 +24,15 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
     onDelete,
     onUpdateActiveBlock
 }) => {
-    // Determine card background and thin 1px dashed border style based on block type
+    // 1px pure dashed border with crisp 3px corner radius and NO solid lines
     const getCardStyle = () => {
         if (isDarkTheme) {
-            if (isSelected) return 'bg-[#14141c] border border-dashed border-purple-400 ring-1 ring-purple-500/40';
-            return 'bg-[#121217] border border-dashed border-white/10 hover:border-white/20';
+            if (isSelected) return 'bg-[#14141c] border border-dashed border-purple-400';
+            return 'bg-[#121217] border border-dashed border-white/15 hover:border-white/25';
         }
 
         if (isSelected) {
-            return 'bg-white border border-dashed border-purple-400 ring-1 ring-purple-300';
+            return 'bg-white border border-dashed border-purple-500';
         }
 
         switch (block.type) {
@@ -40,33 +40,27 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                 return 'bg-[#181822] border border-dashed border-slate-700 text-white';
             case 'output':
             case 'table':
-                return 'bg-white border border-dashed border-sky-300/80 text-slate-800';
+                return 'bg-white border border-dashed border-sky-300/90 text-slate-800';
             case 'explanation':
             case 'callout':
             case 'note':
-                return 'bg-[#fffdf5] border border-dashed border-amber-300/80 text-slate-800';
+                return 'bg-[#fffdf5] border border-dashed border-amber-300/90 text-slate-800';
             case 'exercise':
-                return 'bg-[#f8faff] border border-dashed border-indigo-300/80 text-slate-900';
+                return 'bg-[#f8faff] border border-dashed border-indigo-300/90 text-slate-900';
             case 'heading':
-                return 'bg-white border border-dashed border-purple-300/70 text-slate-900';
+                return 'bg-white border border-dashed border-purple-300/80 text-slate-900';
             default:
-                return 'bg-white border border-dashed border-slate-200 hover:border-slate-300 text-slate-800';
+                return 'bg-white border border-dashed border-slate-300 hover:border-slate-400 text-slate-800';
         }
     };
 
     return (
         <div
             onClick={onSelect}
-            className={`rounded-xl transition-all relative overflow-hidden group ${getCardStyle()}`}
+            className={`rounded-[3px] transition-colors relative group ${getCardStyle()}`}
         >
-            {/* Top Block Header: Clean drag handle, title, badge pill, and ⋮ menu */}
-            <div className={`px-3.5 py-2 flex items-center justify-between border-b ${
-                block.type === 'code' && !isDarkTheme
-                    ? 'border-slate-800 bg-black/10'
-                    : isDarkTheme
-                        ? 'border-white/5 bg-white/[0.02]'
-                        : 'border-slate-100 bg-black/[0.01]'
-            }`}>
+            {/* Top Block Header: NO solid divider line beneath it */}
+            <div className="px-3 pt-2.5 pb-1 flex items-center justify-between">
                 {/* Left: Drag Handle & Title */}
                 <div className="flex items-center gap-2">
                     <div
@@ -118,19 +112,19 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                     )}
                 </div>
 
-                {/* Right: Pill Badge & Menu Actions */}
-                <div className="flex items-center gap-2">
-                    {/* Badge Pill matching mockup */}
-                    <span className={`text-[10px] px-2 py-0.5 rounded font-semibold ${
+                {/* Right: Pill Badge & Delete Action */}
+                <div className="flex items-center gap-1.5">
+                    {/* Badge Pill with 2px corner */}
+                    <span className={`text-[10px] px-2 py-0.5 rounded-[2px] font-semibold ${
                         block.type === 'code'
-                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                            ? 'bg-emerald-500/10 text-emerald-400 border border-dashed border-emerald-500/30'
                             : block.type === 'output' || block.type === 'table'
-                                ? 'bg-sky-50 text-sky-700 border border-sky-200'
+                                ? 'bg-sky-50 text-sky-700 border border-dashed border-sky-300/80'
                                 : block.type === 'explanation' || block.type === 'callout'
-                                    ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                                    ? 'bg-amber-50 text-amber-800 border border-dashed border-amber-300/80'
                                     : block.type === 'exercise'
-                                        ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                                        : 'bg-slate-100 text-slate-700 border border-slate-200'
+                                        ? 'bg-indigo-50 text-indigo-700 border border-dashed border-indigo-300/80'
+                                        : 'bg-slate-100 text-slate-700 border border-dashed border-slate-300'
                     }`}>
                         {block.type === 'code' ? `Khối mã (${block.language || 'SQL'})` :
                          block.type === 'output' ? 'Kết quả (Output)' :
@@ -146,7 +140,7 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                             e.stopPropagation();
                             onDelete();
                         }}
-                        className="text-slate-400 hover:text-rose-500 text-xs px-1 rounded transition-colors"
+                        className="text-slate-400 hover:text-rose-500 text-xs px-1 rounded-[2px] transition-colors"
                         title="Xóa khối"
                     >
                         ✕
@@ -155,10 +149,10 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
             </div>
 
             {/* Block Body Content */}
-            <div className="p-4 text-left space-y-2.5">
+            <div className="px-3.5 pb-3 pt-1 text-left space-y-2">
                 {/* 1. HEADING BLOCK */}
                 {block.type === 'heading' && (
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                         <input
                             type="text"
                             value={block.title || ''}
@@ -205,16 +199,16 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                 {/* 4. TABLE / OUTPUT BLOCK */}
                 {(block.type === 'output' || block.type === 'table') && (
                     <div className="space-y-2">
-                        <div className={`overflow-x-auto rounded-lg border ${
+                        <div className={`overflow-x-auto rounded-[3px] border border-dashed ${
                             isDarkTheme ? 'border-white/10' : 'border-slate-200'
                         }`}>
                             <table className="w-full text-left text-xs border-collapse">
                                 <thead>
-                                    <tr className={`border-b font-bold ${
-                                        isDarkTheme ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-50/90 border-slate-200 text-slate-800'
+                                    <tr className={`font-bold ${
+                                        isDarkTheme ? 'bg-white/5 text-white' : 'bg-slate-50/90 text-slate-800'
                                     }`}>
                                         {block.tableHeaders?.map((th, thIdx) => (
-                                            <th key={thIdx} className={`p-2.5 border-r last:border-r-0 ${
+                                            <th key={thIdx} className={`p-2 border-r border-b border-dashed last:border-r-0 ${
                                                 isDarkTheme ? 'border-white/10' : 'border-slate-200'
                                             }`}>
                                                 <input
@@ -233,13 +227,11 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                                         ))}
                                     </tr>
                                 </thead>
-                                <tbody className={`divide-y ${
-                                    isDarkTheme ? 'divide-white/5 text-white/80' : 'divide-slate-200 text-slate-700'
-                                }`}>
+                                <tbody className={isDarkTheme ? 'text-white/80' : 'text-slate-700'}>
                                     {block.tableRows?.map((row, rIdx) => (
                                         <tr key={rIdx} className={isDarkTheme ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50'}>
                                             {row.map((cell, cIdx) => (
-                                                <td key={cIdx} className={`p-2.5 border-r last:border-r-0 ${
+                                                <td key={cIdx} className={`p-2 border-r border-b border-dashed last:border-r-0 ${
                                                     isDarkTheme ? 'border-white/10' : 'border-slate-200'
                                                 }`}>
                                                     <input
@@ -310,9 +302,7 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                             isDarkTheme={isDarkTheme}
                         />
 
-                        <div className={`pt-2 border-t space-y-2 ${
-                            isDarkTheme ? 'border-indigo-500/10' : 'border-indigo-200/60'
-                        }`}>
+                        <div className="pt-1.5 space-y-1.5">
                             <button
                                 type="button"
                                 onClick={() => onUpdateActiveBlock({ isSolutionVisible: !block.isSolutionVisible })}
@@ -327,7 +317,7 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                                     rows={3}
                                     value={block.solutionCode || ''}
                                     onChange={(e) => onUpdateActiveBlock({ solutionCode: e.target.value })}
-                                    className="w-full bg-[#181822] p-3 rounded-lg font-mono text-xs text-emerald-300 border border-slate-700 focus:outline-none shadow-inner"
+                                    className="w-full bg-[#181822] p-2.5 rounded-[3px] font-mono text-xs text-emerald-300 border border-dashed border-slate-700 focus:outline-none"
                                     placeholder="Mã giải mẫu..."
                                 />
                             )}
@@ -338,7 +328,7 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                 {/* 7. DIVIDER */}
                 {block.type === 'divider' && (
                     <div className="py-1">
-                        <hr className={isDarkTheme ? 'border-white/10' : 'border-slate-200'} />
+                        <hr className={`border-dashed ${isDarkTheme ? 'border-white/10' : 'border-slate-300'}`} />
                     </div>
                 )}
             </div>
