@@ -225,7 +225,7 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                 {block.type === 'code' && (
                     <StudioCodeEditor
                         code={block.content || ''}
-                        language={block.language || 'SQL'}
+                        language={block.language || 'Python'}
                         onChangeCode={(newCode) => onUpdateActiveBlock({ content: newCode })}
                         onChangeLanguage={(newLang) => onUpdateActiveBlock({ language: newLang })}
                         isDarkTheme={isDarkTheme}

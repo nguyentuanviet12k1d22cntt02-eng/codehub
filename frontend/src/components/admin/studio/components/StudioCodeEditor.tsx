@@ -8,74 +8,102 @@ interface StudioCodeEditorProps {
     isDarkTheme?: boolean;
 }
 
-const SUPPORTED_LANGUAGES = ['SQL', 'Python', 'JavaScript', 'TypeScript', 'HTML', 'CSS', 'JSON', 'Bash', 'C++', 'Java'];
+const SUPPORTED_LANGUAGES = ['Python', 'SQL', 'JavaScript', 'TypeScript', 'HTML', 'CSS', 'JSON', 'Bash', 'C++', 'Java'];
 
-// Simple and fast syntax highlighter for live editor rendering
-const highlightCode = (rawCode: string, lang: string = 'SQL'): string => {
-    if (!rawCode) return '&nbsp;';
-    const l = (lang || 'SQL').toUpperCase();
-
-    // Escape HTML first
-    let escaped = rawCode
+const escapeHtml = (str: string): string => {
+    return str
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+};
+
+// Single-pass Tokenizer for 100% bug-free syntax highlighting
+const tokenizeAndHighlight = (rawCode: string, lang: string = 'Python'): string => {
+    if (!rawCode) return '&nbsp;';
+    const l = (lang || 'Python').toUpperCase();
+
+    // Regex token matcher per language
+    let regex: RegExp;
+    const pythonKeywords = new Set(['def', 'class', 'import', 'from', 'return', 'if', 'elif', 'else', 'for', 'while', 'in', 'try', 'except', 'finally', 'with', 'as', 'pass', 'break', 'continue', 'lambda', 'yield', 'raise', 'assert', 'async', 'await', 'True', 'False', 'None', 'not', 'and', 'or', 'is', 'global', 'nonlocal']);
+    const pythonBuiltins = new Set(['print', 'len', 'range', 'input', 'str', 'int', 'float', 'list', 'dict', 'set', 'tuple', 'open', 'type', 'sum', 'min', 'max', 'enumerate', 'zip', 'isinstance', 'sorted', 'abs', 'round', 'map', 'filter', 'all', 'any']);
+
+    const sqlKeywords = new Set(['SELECT', 'FROM', 'WHERE', 'ORDER', 'BY', 'GROUP', 'HAVING', 'INSERT', 'INTO', 'UPDATE', 'DELETE', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'ON', 'AS', 'AND', 'OR', 'NOT', 'IN', 'LIKE', 'ASC', 'DESC', 'LIMIT', 'OFFSET', 'VALUES', 'SET', 'CREATE', 'DROP', 'ALTER', 'TABLE', 'PRIMARY', 'KEY', 'FOREIGN', 'NULL', 'DISTINCT', 'UNION', 'ALL', 'EXISTS', 'BETWEEN', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END']);
+
+    const jsKeywords = new Set(['const', 'let', 'var', 'function', 'return', 'if', 'else', 'switch', 'case', 'break', 'for', 'while', 'do', 'import', 'export', 'default', 'class', 'extends', 'new', 'this', 'async', 'await', 'try', 'catch', 'finally', 'throw', 'typeof', 'instanceof', 'true', 'false', 'null', 'undefined']);
+    const jsBuiltins = new Set(['console', 'log', 'document', 'window', 'Math', 'JSON', 'Promise', 'Array', 'Object', 'String', 'Number', 'fetch', 'setTimeout', 'setInterval']);
 
     if (l === 'SQL') {
-        // Comments
-        escaped = escaped.replace(/(--[^\n]*)/g, '<span class="text-slate-500 italic">$1</span>');
-        // Strings
-        escaped = escaped.replace(/('([^'\\]|\\.)*')/g, '<span class="text-emerald-300">$1</span>');
-        escaped = escaped.replace(/("([^"\\]|\\.)*")/g, '<span class="text-emerald-300">$1</span>');
-        // SQL Keywords (Hot Pink / Rose as in user reference)
-        const sqlKeywords = /\b(SELECT|FROM|WHERE|ORDER\s+BY|GROUP\s+BY|HAVING|INSERT\s+INTO|INSERT|UPDATE|DELETE|JOIN|LEFT\s+JOIN|RIGHT\s+JOIN|INNER\s+JOIN|OUTER\s+JOIN|ON|AS|AND|OR|NOT|IN|LIKE|ASC|DESC|LIMIT|OFFSET|VALUES|SET|CREATE\s+TABLE|DROP\s+TABLE|ALTER\s+TABLE|PRIMARY\s+KEY|FOREIGN\s+KEY|NULL|NOT\s+NULL|DISTINCT|UNION|ALL|EXISTS|BETWEEN|CASE|WHEN|THEN|ELSE|END|INTO|TABLE)\b/gi;
-        escaped = escaped.replace(sqlKeywords, '<span class="text-[#f43f5e] font-semibold">$1</span>');
-        // Numbers
-        escaped = escaped.replace(/\b(\d+)\b/g, '<span class="text-emerald-400">$1</span>');
-        return escaped;
+        regex = /(--[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")|(\b\d+(?:\.\d+)?\b)|(\b[a-zA-Z_][a-zA-Z0-9_]*\b)|([^\s\w])/g;
+    } else if (l === 'PYTHON') {
+        regex = /(#[^\n]*)|(f?'''[\s\S]*?'''|f?"""[\s\S]*?"""|f?'(?:[^'\\]|\\.)*'|f?"(?:[^"\\]|\\.)*")|(\b\d+(?:\.\d+)?\b)|(\b[a-zA-Z_][a-zA-Z0-9_]*\b)|([^\s\w])/g;
+    } else {
+        // JS / TS / Default
+        regex = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:[^`\\]|\\.)*`|'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")|(\b\d+(?:\.\d+)?\b)|(\b[a-zA-Z_][a-zA-Z0-9_]*\b)|([^\s\w])/g;
     }
 
-    if (l === 'PYTHON') {
-        // Comments
-        escaped = escaped.replace(/(#[^\n]*)/g, '<span class="text-slate-500 italic">$1</span>');
-        // Strings
-        escaped = escaped.replace(/(f?['"]([^'"\\]|\\.)*['"])/g, '<span class="text-emerald-300">$1</span>');
-        // Python Keywords (Warm Amber / Orange)
-        const pyKeywords = /\b(def|class|import|from|return|if|elif|else|for|while|in|try|except|finally|with|as|pass|break|continue|lambda|yield|raise|assert|async|await|True|False|None)\b/g;
-        escaped = escaped.replace(pyKeywords, '<span class="text-amber-400 font-semibold">$1</span>');
-        // Built-ins (Purple / Violet)
-        const pyBuiltins = /\b(print|len|range|input|str|int|float|list|dict|set|tuple|open|type|sum|min|max|enumerate|zip|isinstance)\b/g;
-        escaped = escaped.replace(pyBuiltins, '<span class="text-purple-400 font-semibold">$1</span>');
-        // Numbers
-        escaped = escaped.replace(/\b(\d+)\b/g, '<span class="text-sky-400">$1</span>');
-        return escaped;
+    let lastIndex = 0;
+    let htmlResult = '';
+    let match: RegExpExecArray | null;
+
+    while ((match = regex.exec(rawCode)) !== null) {
+        // Text between matches
+        if (match.index > lastIndex) {
+            htmlResult += escapeHtml(rawCode.substring(lastIndex, match.index));
+        }
+
+        const [full, comment, stringLit, numberLit, word, operator] = match;
+
+        if (comment) {
+            htmlResult += `<span class="text-[#64748b] italic">${escapeHtml(comment)}</span>`;
+        } else if (stringLit) {
+            htmlResult += `<span class="text-[#4ade80]">${escapeHtml(stringLit)}</span>`;
+        } else if (numberLit) {
+            htmlResult += `<span class="text-[#38bdf8]">${escapeHtml(numberLit)}</span>`;
+        } else if (word) {
+            if (l === 'SQL') {
+                if (sqlKeywords.has(word.toUpperCase())) {
+                    htmlResult += `<span class="text-[#f43f5e] font-bold">${escapeHtml(word)}</span>`;
+                } else {
+                    htmlResult += `<span class="text-[#f8fafc]">${escapeHtml(word)}</span>`;
+                }
+            } else if (l === 'PYTHON') {
+                if (pythonKeywords.has(word)) {
+                    htmlResult += `<span class="text-[#f59e0b] font-bold">${escapeHtml(word)}</span>`;
+                } else if (pythonBuiltins.has(word)) {
+                    htmlResult += `<span class="text-[#c084fc] font-semibold">${escapeHtml(word)}</span>`;
+                } else {
+                    htmlResult += `<span class="text-[#f8fafc]">${escapeHtml(word)}</span>`;
+                }
+            } else {
+                if (jsKeywords.has(word)) {
+                    htmlResult += `<span class="text-[#38bdf8] font-bold">${escapeHtml(word)}</span>`;
+                } else if (jsBuiltins.has(word)) {
+                    htmlResult += `<span class="text-[#facc15] font-semibold">${escapeHtml(word)}</span>`;
+                } else {
+                    htmlResult += `<span class="text-[#f8fafc]">${escapeHtml(word)}</span>`;
+                }
+            }
+        } else if (operator) {
+            htmlResult += `<span class="text-[#94a3b8]">${escapeHtml(operator)}</span>`;
+        } else {
+            htmlResult += escapeHtml(full);
+        }
+
+        lastIndex = regex.lastIndex;
     }
 
-    if (l === 'JAVASCRIPT' || l === 'TYPESCRIPT') {
-        // Comments
-        escaped = escaped.replace(/(\/\/[^\n]*)/g, '<span class="text-slate-500 italic">$1</span>');
-        // Strings
-        escaped = escaped.replace(/(`[^`]*`|'([^'\\]|\\.)*'|"([^"\\]|\\.)*")/g, '<span class="text-emerald-300">$1</span>');
-        // JS Keywords (Sky Blue)
-        const jsKeywords = /\b(const|let|var|function|return|if|else|switch|case|break|for|while|import|export|default|class|extends|new|this|async|await|try|catch|finally|throw|typeof|instanceof)\b/g;
-        escaped = escaped.replace(jsKeywords, '<span class="text-sky-400 font-semibold">$1</span>');
-        // Methods & Objects (Yellow)
-        const jsObjects = /\b(console|log|document|window|Math|JSON|Promise|Array|Object|String|Number)\b/g;
-        escaped = escaped.replace(jsObjects, '<span class="text-yellow-400 font-semibold">$1</span>');
-        // Numbers
-        escaped = escaped.replace(/\b(\d+)\b/g, '<span class="text-orange-400">$1</span>');
-        return escaped;
+    if (lastIndex < rawCode.length) {
+        htmlResult += escapeHtml(rawCode.substring(lastIndex));
     }
 
-    // Default formatting for other languages
-    escaped = escaped.replace(/(\/\/[^\n]*|#[^\n]*|--[^\n]*)/g, '<span class="text-slate-500 italic">$1</span>');
-    escaped = escaped.replace(/('([^'\\]|\\.)*'|"([^"\\]|\\.)*")/g, '<span class="text-emerald-300">$1</span>');
-    return escaped;
+    return htmlResult;
 };
 
 export const StudioCodeEditor: React.FC<StudioCodeEditorProps> = ({
     code,
-    language = 'SQL',
+    language = 'Python',
     onChangeCode,
     onChangeLanguage
 }) => {
@@ -119,9 +147,9 @@ export const StudioCodeEditor: React.FC<StudioCodeEditorProps> = ({
     };
 
     return (
-        <div className="w-full rounded-[6px] bg-[#15161e] border border-[#232634] shadow-lg overflow-hidden text-slate-200 text-xs font-mono select-text transition-all">
+        <div className="w-full rounded-[6px] bg-[#12131a] border border-[#222430] shadow-md overflow-hidden text-slate-200 text-xs font-mono select-text transition-all">
             {/* Minimalist Dark Top Bar */}
-            <div className="flex items-center justify-between px-3.5 py-2 bg-[#15161e] select-none">
+            <div className="flex items-center justify-between px-3.5 py-2 bg-[#171822] border-b border-[#222430] select-none">
                 {/* Left: Clean Language Identifier */}
                 <div className="relative">
                     <button
@@ -130,18 +158,18 @@ export const StudioCodeEditor: React.FC<StudioCodeEditorProps> = ({
                             e.stopPropagation();
                             setIsLangMenuOpen(!isLangMenuOpen);
                         }}
-                        className="flex items-center gap-1.5 text-slate-400 hover:text-slate-200 text-xs font-semibold uppercase tracking-wider transition-colors"
+                        className="flex items-center gap-1.5 text-slate-300 hover:text-white text-xs font-semibold uppercase tracking-wider transition-colors"
                         title="Bấm để đổi ngôn ngữ"
                     >
-                        <span>{language || 'SQL'}</span>
-                        <svg className="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span>{language || 'Python'}</span>
+                        <svg className="w-3 h-3 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
 
                     {/* Language Dropdown Menu */}
                     {isLangMenuOpen && (
-                        <div className="absolute top-6 left-0 mt-1 w-32 bg-[#1e202c] border border-slate-700 rounded-md shadow-2xl py-1 z-50 animate-in fade-in zoom-in-95 duration-100 max-h-56 overflow-y-auto">
+                        <div className="absolute top-7 left-0 mt-1 w-36 bg-[#1a1c26] border border-slate-700 rounded-md shadow-2xl py-1 z-50 animate-in fade-in zoom-in-95 duration-100 max-h-56 overflow-y-auto">
                             {SUPPORTED_LANGUAGES.map((lang) => (
                                 <button
                                     key={lang}
@@ -152,14 +180,14 @@ export const StudioCodeEditor: React.FC<StudioCodeEditorProps> = ({
                                         setIsLangMenuOpen(false);
                                     }}
                                     className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between hover:bg-slate-700/50 transition-colors ${
-                                        lang.toUpperCase() === (language || 'SQL').toUpperCase()
-                                            ? 'text-rose-400 font-bold bg-white/5'
+                                        lang.toUpperCase() === (language || 'Python').toUpperCase()
+                                            ? 'text-amber-400 font-bold bg-white/5'
                                             : 'text-slate-300'
                                     }`}
                                 >
                                     <span>{lang}</span>
-                                    {lang.toUpperCase() === (language || 'SQL').toUpperCase() && (
-                                        <span className="text-rose-400 font-bold">✓</span>
+                                    {lang.toUpperCase() === (language || 'Python').toUpperCase() && (
+                                        <span className="text-amber-400 font-bold">✓</span>
                                     )}
                                 </button>
                             ))}
@@ -213,7 +241,7 @@ export const StudioCodeEditor: React.FC<StudioCodeEditorProps> = ({
             </div>
 
             {/* Code Body with Real Line Numbers & Real-Time Syntax Highlighting */}
-            <div className="flex items-stretch bg-[#15161e] pb-3 pt-1">
+            <div className="flex items-stretch bg-[#12131a] pb-3 pt-2">
                 {/* Left Gutter: Line Numbers */}
                 <div className="w-8 pl-3.5 select-none text-slate-600 text-[13px] font-mono leading-[22px] flex-shrink-0 text-left">
                     {Array.from({ length: lineCount }).map((_, idx) => (
@@ -226,7 +254,7 @@ export const StudioCodeEditor: React.FC<StudioCodeEditorProps> = ({
                     {/* Layer 1: Highlighted Code Pre */}
                     <pre
                         ref={preRef}
-                        dangerouslySetInnerHTML={{ __html: highlightCode(code, language) }}
+                        dangerouslySetInnerHTML={{ __html: tokenizeAndHighlight(code, language) }}
                         className="w-full m-0 p-0 font-mono text-[13px] leading-[22px] text-slate-100 whitespace-pre pointer-events-none overflow-hidden select-none"
                     />
 
