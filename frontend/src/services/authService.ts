@@ -9,6 +9,16 @@ export const authService = {
         return response.data;
     },
 
+    verifyOtp: async (data: { email: string; otp: string }) => {
+        const response = await axios.post(`${API_URL}/verify-otp`, data);
+        return response.data;
+    },
+
+    resendOtp: async (data: { email: string }) => {
+        const response = await axios.post(`${API_URL}/resend-otp`, data);
+        return response.data;
+    },
+
     login: async (userData: any) => {
         const response = await axios.post(`${API_URL}/login`, userData);
         return response.data;
