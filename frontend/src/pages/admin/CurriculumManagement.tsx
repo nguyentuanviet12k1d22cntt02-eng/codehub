@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { API_BASE_URL } from '../../config/api';
+import { TipTapLessonEditor } from '../../components/admin/TipTapLessonEditor';
 
 interface CourseNode {
     id: string;
@@ -1122,8 +1123,8 @@ export default function CurriculumManagement() {
             {/* ============ MODAL: EDIT LESSON ============ */}
             {isLessonModalOpen && editingLesson && (
                 <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-                    <div className="bg-bg-secondary w-full max-w-3xl rounded-2xl border border-border-custom shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
-                        <div className="p-5 border-b border-border-custom flex justify-between items-center">
+                    <div className="bg-bg-secondary w-full max-w-5xl rounded-2xl border border-border-custom shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+                        <div className="p-5 border-b border-border-custom flex justify-between items-center bg-bg-secondary">
                             <h3 className="font-bold text-base text-text-primary">
                                 {editingLesson.id ? 'Chỉnh Sửa Bài Học' : 'Tạo Bài Học Mới'}
                             </h3>
@@ -1135,7 +1136,7 @@ export default function CurriculumManagement() {
                             </button>
                         </div>
 
-                        <form onSubmit={handleSaveLesson} className="p-6 overflow-y-auto space-y-4 flex-1">
+                        <form onSubmit={handleSaveLesson} className="p-6 overflow-y-auto space-y-5 flex-1">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="md:col-span-2">
                                     <label className="block text-xs font-semibold text-text-secondary mb-1">
@@ -1230,16 +1231,16 @@ export default function CurriculumManagement() {
                                 />
                             </div>
 
+                            {/* TIPTAP VISUAL EDITOR WITH SQL TABLES & CODE BLOCKS */}
                             <div>
-                                <label className="block text-xs font-semibold text-text-secondary mb-1">
-                                    Nội dung lý thuyết Markdown (Theory Content)
-                                </label>
-                                <textarea
-                                    rows={10}
-                                    value={editingLesson.content || ''}
-                                    onChange={(e) => setEditingLesson({ ...editingLesson, content: e.target.value })}
-                                    className="w-full bg-bg-tertiary border border-border-custom rounded-lg p-3 text-xs font-mono text-text-primary focus:outline-none focus:border-accent-custom"
-                                    placeholder="Soạn thảo lý thuyết bài học theo định dạng Markdown..."
+                                <div className="flex justify-between items-center mb-1.5">
+                                    <label className="block text-xs font-semibold text-text-secondary">
+                                        Nội Dung Lý Thuyết (Trình Soạn Thảo TipTap - Hỗ trợ Bảng SQL, Code & Ghi Chú)
+                                    </label>
+                                </div>
+                                <TipTapLessonEditor
+                                    content={editingLesson.content || ''}
+                                    onChange={(newContent) => setEditingLesson({ ...editingLesson, content: newContent })}
                                 />
                             </div>
 
