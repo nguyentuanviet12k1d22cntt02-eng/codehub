@@ -53,6 +53,37 @@ export const StudioCanvas: React.FC<StudioCanvasProps> = ({
             return;
         }
 
+        if (command === 'justifyLeft' || command === 'justifyCenter' || command === 'justifyRight') {
+            const selection = window.getSelection();
+            if (selection && selection.anchorNode) {
+                let targetEl = selection.anchorNode as HTMLElement;
+                if (targetEl.nodeType === Node.TEXT_NODE) {
+                    targetEl = targetEl.parentElement as HTMLElement;
+                }
+                const alignTarget = targetEl?.closest('[contenteditable="true"]') as HTMLElement;
+                if (alignTarget) {
+                    const alignValue = command === 'justifyCenter' ? 'center' : command === 'justifyRight' ? 'right' : 'left';
+                    const innerAlignDiv = targetEl.closest('div[align], div[style*="text-align"]') as HTMLElement;
+
+                    if (innerAlignDiv && alignTarget.contains(innerAlignDiv)) {
+                        if (alignValue === 'left') {
+                            innerAlignDiv.removeAttribute('align');
+                            innerAlignDiv.style.textAlign = '';
+                        } else {
+                            innerAlignDiv.setAttribute('align', alignValue);
+                        }
+                    } else if (alignValue !== 'left') {
+                        document.execCommand(command, false, value);
+                    } else {
+                        document.execCommand('justifyLeft', false, value);
+                    }
+
+                    alignTarget.dispatchEvent(new Event('input', { bubbles: true }));
+                    return;
+                }
+            }
+        }
+
         document.execCommand(command, false, value);
     };
 

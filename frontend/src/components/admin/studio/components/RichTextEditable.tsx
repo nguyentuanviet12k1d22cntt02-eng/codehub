@@ -9,7 +9,7 @@ interface RichTextEditableProps {
     autoFocus?: boolean;
 }
 
-// Convert markdown symbols (like **bold**, *italic*, `code`) into clean HTML for WYSIWYG
+// Convert markdown symbols into clean HTML for WYSIWYG
 export const markdownToHtml = (md: string = ''): string => {
     if (!md) return '';
     let html = md;
@@ -27,63 +27,47 @@ export const markdownToHtml = (md: string = ''): string => {
     
     // Inline code `code`
     html = html.replace(/`([^`]+)`/g, '<code style="background-color: rgba(147, 51, 234, 0.1); color: #7e22ce; padding: 2px 5px; border-radius: 4px; font-family: monospace;">$1</code>');
-    
-    // Newlines to <br/> if not wrapped in block tags
-    if (!/<(div|p|ul|ol|li|h[1-6]|table)/i.test(html)) {
-        html = html.replace(/\n/g, '<br/>');
-    }
 
     return html;
 };
 
-// Convert innerHTML back to clean Markdown while preserving alignment and formatting
+// Convert innerHTML back to clean Markdown with accurate DOM traversal
 export const htmlToMarkdown = (html: string = ''): string => {
     if (!html) return '';
-    let md = html;
 
-    // Preserve text alignment divs before stripping
-    md = md.replace(/<div\s+align=["']center["'][\s\S]*?>([\s\S]*?)<\/div>/gi, '<div align="center">$1</div>');
-    md = md.replace(/<div\s+align=["']right["'][\s\S]*?>([\s\S]*?)<\/div>/gi, '<div align="right">$1</div>');
-    md = md.replace(/<div\s+align=["']left["'][\s\S]*?>([\s\S]*?)<\/div>/gi, '<div align="left">$1</div>');
-    md = md.replace(/<div\s+style=["'][^"']*text-align:\s*center[^"']*["']>([\s\S]*?)<\/div>/gi, '<div align="center">$1</div>');
-    md = md.replace(/<div\s+style=["'][^"']*text-align:\s*right[^"']*["']>([\s\S]*?)<\/div>/gi, '<div align="right">$1</div>');
-    md = md.replace(/<p\s+style=["'][^"']*text-align:\s*center[^"']*["']>([\s\S]*?)<\/p>/gi, '<div align="center">$1</div>');
-    md = md.replace(/<p\s+style=["'][^"']*text-align:\s*right[^"']*["']>([\s\S]*?)<\/p>/gi, '<div align="right">$1</div>');
-    md = md.replace(/<center>([\s\S]*?)<\/center>/gi, '<div align="center">$1</div>');
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
 
-    // Convert plain <br> and non-aligned <div> to newlines
-    md = md.replace(/<br\s*[\/]?>/gi, '\n');
-    md = md.replace(/<div>/gi, '\n');
-    md = md.replace(/<\/div>(?!\s*<\/div>)/gi, '');
-    md = md.replace(/<\/p>/gi, '\n\n');
-    md = md.replace(/<p>/gi, '');
+    const serializeNode = (node: Node): string => {
+        if (node.nodeType === Node.TEXT_NODE) {
+            return node.textContent || '';
+        }
+        if (node.nodeType !== Node.ELEMENT_NODE) return '';
 
-    // Bold <strong> / <b>
-    md = md.replace(/<strong>([\s\S]*?)<\/strong>/gi, '**$1**');
-    md = md.replace(/<b>([\s\S]*?)<\/b>/gi, '**$1**');
+        const el = node as HTMLElement;
+        const tagName = el.tagName.toLowerCase();
+        const inner = Array.from(el.childNodes).map(serializeNode).join('');
 
-    // Italic <em> / <i>
-    md = md.replace(/<em>([\s\S]*?)<\/em>/gi, '*$1*');
-    md = md.replace(/<i>([\s\S]*?)<\/i>/gi, '*$1*');
+        if (tagName === 'strong' || tagName === 'b') return `**${inner}**`;
+        if (tagName === 'em' || tagName === 'i') return `*${inner}*`;
+        if (tagName === 'del' || tagName === 's') return `~~${inner}~~`;
+        if (tagName === 'code') return `\`${inner}\``;
+        if (tagName === 'br') return '\n';
 
-    // Strikethrough <del> / <s>
-    md = md.replace(/<del>([\s\S]*?)<\/del>/gi, '~~$1~~');
-    md = md.replace(/<s>([\s\S]*?)<\/s>/gi, '~~$1~~');
+        // Alignment check
+        const align = el.getAttribute('align') || el.style.textAlign;
+        if (align === 'center') return `<div align="center">${inner.trim()}</div>`;
+        if (align === 'right') return `<div align="right">${inner.trim()}</div>`;
+        if (align === 'left' || align === 'justify') return inner.trim();
 
-    // Code <code>
-    md = md.replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, '`$1`');
+        if (tagName === 'p') return `${inner}\n\n`;
+        if (tagName === 'div') return inner ? `${inner}\n` : '';
 
-    // Strip any other unwanted tags EXCEPT <div align="...">
-    md = md.replace(/<(?!\/?div\b)[^>]+>/gi, '');
+        return inner;
+    };
 
-    // Decode HTML entities
-    md = md.replace(/&nbsp;/g, ' ');
-    md = md.replace(/&amp;/g, '&');
-    md = md.replace(/&lt;/g, '<');
-    md = md.replace(/&gt;/g, '>');
-    md = md.replace(/&quot;/g, '"');
-
-    return md.trim();
+    let md = Array.from(tempDiv.childNodes).map(serializeNode).join('').trim();
+    return md;
 };
 
 export const RichTextEditable: React.FC<RichTextEditableProps> = ({
