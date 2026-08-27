@@ -61,6 +61,72 @@ export const StudioCanvas: React.FC<StudioCanvasProps> = ({
             return;
         }
 
+        if (command === 'insertUnorderedList' || command === 'insertOrderedList') {
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                let container: Node | null = range.commonAncestorContainer;
+                if (container && container.nodeType === Node.TEXT_NODE) {
+                    container = container.parentElement;
+                }
+                const activeEditable = (container as HTMLElement)?.closest('[contenteditable="true"]') as HTMLElement;
+                if (activeEditable) {
+                    const listTag = command === 'insertUnorderedList' ? 'ul' : 'ol';
+                    const listClass = command === 'insertUnorderedList' ? 'list-disc pl-5 my-1 space-y-1' : 'list-decimal pl-5 my-1 space-y-1';
+                    const existingList = (container as HTMLElement)?.closest('ul, ol') as HTMLElement;
+
+                    if (existingList && activeEditable.contains(existingList)) {
+                        // Toggle off: unwrap list items
+                        const lis = Array.from(existingList.querySelectorAll('li'));
+                        const frag = document.createDocumentFragment();
+                        lis.forEach((li, idx) => {
+                            while (li.firstChild) frag.appendChild(li.firstChild);
+                            if (idx < lis.length - 1) frag.appendChild(document.createElement('br'));
+                        });
+                        existingList.parentNode?.replaceChild(frag, existingList);
+                    } else {
+                        // Convert selected contents or activeEditable into bullet list
+                        const isWholeBlock = range.collapsed || activeEditable.innerText.trim() === range.toString().trim();
+                        const sourceHtml = isWholeBlock ? activeEditable.innerHTML : (() => {
+                            const d = document.createElement('div');
+                            d.appendChild(range.cloneContents());
+                            return d.innerHTML;
+                        })();
+
+                        const temp = document.createElement('div');
+                        temp.innerHTML = sourceHtml;
+                        const lines = temp.innerHTML.split(/<br\s*\/?>|\n/gi).map(l => l.trim()).filter(Boolean);
+
+                        const listEl = document.createElement(listTag);
+                        listEl.className = listClass;
+
+                        if (lines.length > 0) {
+                            lines.forEach(line => {
+                                const li = document.createElement('li');
+                                li.innerHTML = line;
+                                listEl.appendChild(li);
+                            });
+                        } else {
+                            const li = document.createElement('li');
+                            li.innerHTML = sourceHtml || '&nbsp;';
+                            listEl.appendChild(li);
+                        }
+
+                        if (isWholeBlock) {
+                            activeEditable.innerHTML = '';
+                            activeEditable.appendChild(listEl);
+                        } else {
+                            range.deleteContents();
+                            range.insertNode(listEl);
+                        }
+                    }
+
+                    activeEditable.dispatchEvent(new Event('input', { bubbles: true }));
+                    return;
+                }
+            }
+        }
+
         if (command === 'code') {
             const selection = window.getSelection();
             if (selection && selection.rangeCount > 0) {
