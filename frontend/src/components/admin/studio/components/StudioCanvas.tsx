@@ -30,6 +30,37 @@ export const StudioCanvas: React.FC<StudioCanvasProps> = ({
     const activeBlock = blocks.find(b => b.id === selectedBlockId);
 
     const handleApplyFormat = (command: string, value?: string) => {
+        if (command === 'fontSize') {
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                if (!range.collapsed) {
+                    let container: Node | null = range.commonAncestorContainer;
+                    if (container && container.nodeType === Node.TEXT_NODE) {
+                        container = container.parentElement;
+                    }
+                    const activeEditable = (container as HTMLElement)?.closest('[contenteditable="true"]') as HTMLElement;
+                    if (activeEditable) {
+                        const span = document.createElement('span');
+                        span.style.fontSize = value || '16px';
+                        try {
+                            span.appendChild(range.extractContents());
+                            range.insertNode(span);
+                            selection.removeAllRanges();
+                            const newRange = document.createRange();
+                            newRange.selectNodeContents(span);
+                            selection.addRange(newRange);
+                        } catch (err) {
+                            console.error('Error applying font size:', err);
+                        }
+                        activeEditable.dispatchEvent(new Event('input', { bubbles: true }));
+                        return;
+                    }
+                }
+            }
+            return;
+        }
+
         if (command === 'code') {
             const selection = window.getSelection();
             if (selection && selection.rangeCount > 0) {

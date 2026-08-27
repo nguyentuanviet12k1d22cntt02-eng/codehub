@@ -98,6 +98,23 @@ export const htmlToMarkdown = (html: string = ''): string => {
 
         const inner = Array.from(el.childNodes).map(serializeNode).join('');
 
+        if (tagName === 'span' && (el.style.fontSize || el.style.color)) {
+            let styles = '';
+            if (el.style.fontSize) styles += `font-size: ${el.style.fontSize};`;
+            if (el.style.color) styles += ` color: ${el.style.color};`;
+            return `<span style="${styles.trim()}">${inner}</span>`;
+        }
+
+        if (tagName === 'font') {
+            const size = el.getAttribute('size');
+            const pxMap: Record<string, string> = { '1': '10px', '2': '12px', '3': '14px', '4': '16px', '5': '18px', '6': '24px', '7': '32px' };
+            const fontSize = pxMap[size || ''] || el.style.fontSize;
+            if (fontSize) {
+                return `<span style="font-size: ${fontSize}">${inner}</span>`;
+            }
+            return inner;
+        }
+
         if (tagName === 'strong' || tagName === 'b') return `**${inner}**`;
         if (tagName === 'em' || tagName === 'i') return `*${inner}*`;
         if (tagName === 'del' || tagName === 's') return `~~${inner}~~`;

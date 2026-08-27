@@ -17,6 +17,8 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
     onInsertBlock
 }) => {
     const [headingMenuOpen, setHeadingMenuOpen] = useState(false);
+    const [fontSizeMenuOpen, setFontSizeMenuOpen] = useState(false);
+    const [currentFontSize, setCurrentFontSize] = useState('14px');
 
     const handleCommand = (cmd: string, val?: string) => {
         onApplyFormat(cmd, val);
@@ -32,7 +34,7 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                     <button
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => setHeadingMenuOpen(!headingMenuOpen)}
+                        onClick={() => { setHeadingMenuOpen(!headingMenuOpen); setFontSizeMenuOpen(false); }}
                         className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
                             isDarkTheme
                                 ? 'bg-white/5 hover:bg-white/10 text-white'
@@ -73,6 +75,55 @@ export const StudioFormattingToolbar: React.FC<StudioFormattingToolbarProps> = (
                             >
                                 H3 (Nhỏ)
                             </button>
+                        </div>
+                    )}
+                </div>
+
+                {/* 1.5 Font Size Dropdown for Selected Text */}
+                <div className="relative">
+                    <button
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => { setFontSizeMenuOpen(!fontSizeMenuOpen); setHeadingMenuOpen(false); }}
+                        className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all ${
+                            isDarkTheme
+                                ? 'bg-white/5 hover:bg-white/10 text-white'
+                                : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+                        }`}
+                        title="Đổi cỡ chữ cho phần văn bản đang bôi đen"
+                    >
+                        <span>{currentFontSize}</span>
+                        <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    {fontSizeMenuOpen && (
+                        <div className={`absolute top-8 left-0 mt-1 w-32 rounded-xl border shadow-xl py-1 z-50 text-xs font-semibold ${
+                            isDarkTheme ? 'bg-[#181820] border-white/10 text-white' : 'bg-white border-slate-200 text-slate-800'
+                        }`}>
+                            {[
+                                { label: '12px (Nhỏ)', val: '12px' },
+                                { label: '14px (Chuẩn)', val: '14px' },
+                                { label: '16px (Vừa)', val: '16px' },
+                                { label: '18px (Lớn)', val: '18px' },
+                                { label: '20px (Rất lớn)', val: '20px' },
+                                { label: '24px (Tiêu đề)', val: '24px' }
+                            ].map((item) => (
+                                <button
+                                    key={item.val}
+                                    type="button"
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onClick={() => {
+                                        setCurrentFontSize(item.val);
+                                        handleCommand('fontSize', item.val);
+                                        setFontSizeMenuOpen(false);
+                                    }}
+                                    className="w-full text-left px-3 py-1.5 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
                         </div>
                     )}
                 </div>
