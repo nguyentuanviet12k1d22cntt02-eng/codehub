@@ -62,7 +62,8 @@ const runCodeLocally = async (
         let isFinished = false;
 
         if (inputData) {
-            child.stdin.write(inputData);
+            const formattedInput = inputData.endsWith('\n') ? inputData : inputData + '\n';
+            child.stdin.write(formattedInput);
         }
         child.stdin.end();
 
@@ -297,7 +298,8 @@ export const runCodeInDocker = async (
         let isFinished = false;
 
         if (inputData) {
-            child.stdin.write(inputData);
+            const formattedInput = inputData.endsWith('\n') ? inputData : inputData + '\n';
+            child.stdin.write(formattedInput);
         }
         child.stdin.end();
 

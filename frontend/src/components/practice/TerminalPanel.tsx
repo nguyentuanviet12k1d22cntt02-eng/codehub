@@ -207,49 +207,58 @@ export const TerminalPanel: React.FC<TerminalPanelProps> = ({
                 <span className="text-[10px] text-text-tertiary font-sans">
                     Nhấn Nộp bài để kiểm tra toàn bộ testcases
                 </span>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2">
                     {exercise && (
                         <button
-                            className="bg-bg-tertiary hover:bg-bg-tertiary/85 text-text-primary border border-border-custom px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer active:scale-95 transition-all disabled:opacity-50 font-sans"
+                            className="bg-bg-tertiary hover:bg-bg-tertiary/85 text-text-primary border border-border-custom px-4 py-2 rounded-[5px] text-xs font-semibold cursor-pointer active:scale-95 transition-all disabled:opacity-50 font-sans"
                             onClick={onRunCode}
                             disabled={isRunning || isSubmitting}
                         >
                             {isRunning ? 'Đang chạy...' : 'Chạy thử'}
                         </button>
                     )}
-                    {exercise && completedExercises[exercise.id] && currentExerciseIdx < exercisesCount - 1 && (
+
+                    {exercise && (
                         <button
-                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
-                            onClick={onNextExercise}
-                        >
-                            Bài tập tiếp theo →
-                        </button>
-                    )}
-                    {isCompleted && nextLessonId ? (
-                        <button
-                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all animate-pulse border-none font-sans"
-                            onClick={() => navigate(`/lesson/${nextLessonId}`)}
-                        >
-                            Bài học tiếp theo →
-                        </button>
-                    ) : isCompleted ? (
-                        <button
-                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
-                            onClick={() => navigate('/dashboard')}
-                        >
-                            Quay lại Dashboard 🎉
-                        </button>
-                    ) : exercise ? (
-                        <button
-                            className="bg-accent-custom hover:bg-accent-hover text-white dark:text-[#030303] px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all disabled:opacity-50 border-none font-sans"
+                            className="bg-accent-custom hover:bg-accent-hover text-white dark:text-[#030303] px-5 py-2 rounded-[5px] text-xs font-bold cursor-pointer active:scale-95 transition-all disabled:opacity-50 border-none font-sans"
                             onClick={onSubmitCode}
                             disabled={isRunning || isSubmitting}
                         >
                             {isSubmitting ? 'Đang nộp...' : 'Nộp bài'}
                         </button>
-                    ) : (
+                    )}
+
+                    {/* NÚT QUA BÀI RIÊNG BIỆT KHI ĐÃ HOÀN THÀNH */}
+                    {exercise && completedExercises[exercise.id] && currentExerciseIdx < exercisesCount - 1 && (
                         <button
-                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
+                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-[5px] text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
+                            onClick={onNextExercise}
+                        >
+                            Bài tập tiếp theo →
+                        </button>
+                    )}
+
+                    {isCompleted && currentExerciseIdx >= exercisesCount - 1 && nextLessonId && (
+                        <button
+                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-[5px] text-xs font-bold cursor-pointer active:scale-95 transition-all animate-pulse border-none font-sans"
+                            onClick={() => navigate(`/lesson/${nextLessonId}`)}
+                        >
+                            Bài học tiếp theo →
+                        </button>
+                    )}
+
+                    {isCompleted && currentExerciseIdx >= exercisesCount - 1 && !nextLessonId && (
+                        <button
+                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-[5px] text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
+                            onClick={() => navigate('/dashboard')}
+                        >
+                            Quay lại Dashboard 🎉
+                        </button>
+                    )}
+
+                    {!exercise && (
+                        <button
+                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-[5px] text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
                             onClick={onCompleteWithoutExercise}
                         >
                             Hoàn thành

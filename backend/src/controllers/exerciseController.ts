@@ -48,6 +48,12 @@ function validateCodeConstraints(exerciseTitle: string, code: string): string | 
     const cleanCode = code.replace(/#.*$/gm, '').replace(/'''[\s\S]*?'''/g, '').replace(/"""[\s\S]*?"""/g, '');
 
     switch (exerciseTitle) {
+        case 'Viết chú thích và in nhiều dòng':
+            if (!/#.+/.test(code)) {
+                return "Đề bài yêu cầu bạn phải viết ít nhất một dòng chú thích bắt đầu bằng ký tự `#`.";
+            }
+            break;
+
         case 'Khai báo biến cơ bản':
             if (!/course_title\s*=/i.test(cleanCode)) {
                 return "Đề bài yêu cầu bạn phải khai báo biến chính xác tên là `course_title`.";
@@ -124,6 +130,58 @@ function validateCodeConstraints(exerciseTitle: string, code: string): string | 
     return null;
 }
 
+interface CodeConstraintConfig {
+    requireComment?: boolean;
+    requiredKeywords?: string[];
+    forbiddenKeywords?: string[];
+    customErrorMessage?: string;
+}
+
+function parseAndValidateConstraints(problemDescription: string, exerciseTitle: string, code: string): string | null {
+    // 1. Kiểm tra nếu có metadata CONSTRAINTS trong problemDescription
+    const match = /<!--\s*CONSTRAINTS:\s*(\{[\s\S]*?\})\s*-->/.exec(problemDescription || '');
+    if (match) {
+        try {
+            const config: CodeConstraintConfig = JSON.parse(match[1]);
+            const cleanCode = code.replace(/#.*$/gm, '').replace(/'''[\s\S]*?'''/g, '').replace(/"""[\s\S]*?"""/g, '');
+
+            // 1.1 Kiểm tra bắt buộc có comment (#)
+            if (config.requireComment && !/#.+/.test(code)) {
+                return config.customErrorMessage || "Đề bài yêu cầu bạn phải viết ít nhất một dòng chú thích bắt đầu bằng ký tự `#`.";
+            }
+
+            // 1.2 Kiểm tra các từ khóa bắt buộc
+            if (config.requiredKeywords && config.requiredKeywords.length > 0) {
+                for (const kw of config.requiredKeywords) {
+                    const trimmed = kw.trim();
+                    if (!trimmed) continue;
+                    const kwRegex = new RegExp(trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+                    if (!kwRegex.test(code)) {
+                        return config.customErrorMessage || `Mã nguồn của bạn bắt buộc phải sử dụng cú pháp/từ khóa \`${trimmed}\`.`;
+                    }
+                }
+            }
+
+            // 1.3 Kiểm tra các từ khóa bị cấm
+            if (config.forbiddenKeywords && config.forbiddenKeywords.length > 0) {
+                for (const kw of config.forbiddenKeywords) {
+                    const trimmed = kw.trim();
+                    if (!trimmed) continue;
+                    const kwRegex = new RegExp(trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+                    if (kwRegex.test(cleanCode)) {
+                        return config.customErrorMessage || `Đề bài cấm sử dụng cú pháp/hàm \`${trimmed}\`. Bạn hãy tự cài đặt thuật toán nhé!`;
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('Lỗi khi parse cấu hình constraints:', e);
+        }
+    }
+
+    // 2. Fallback sang kiểm tra các bài tập đã định nghĩa cố định
+    return validateCodeConstraints(exerciseTitle, code);
+}
+
 // Nộp bài chấm điểm (có lưu vào DB, có tính runtime beats & distribution chart)
 export const submitExercise = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -155,9 +213,9 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
         const isSqlExercise = exercise.lesson?.lessonId?.startsWith('SQL-') || /SELECT|FROM|WHERE/i.test(code);
         const execLanguage = isSqlExercise ? 'SQL' : 'PYTHON';
 
-        // 2. Kiểm tra ràng buộc biến tĩnh (Review 3) chỉ khi là bài tập Python
+        // 2. Kiểm tra ràng buộc biến tĩnh & dynamic constraints chỉ khi là bài tập Python
         if (!isSqlExercise) {
-            const constraintError = validateCodeConstraints(exercise.title, code);
+            const constraintError = parseAndValidateConstraints(exercise.problemDescription || '', exercise.title, code);
             if (constraintError) {
                 res.status(200).json({
                     success: true,

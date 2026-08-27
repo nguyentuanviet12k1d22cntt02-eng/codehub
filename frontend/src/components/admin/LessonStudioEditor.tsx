@@ -19,7 +19,11 @@ import {
     Check,
     CheckCircle2,
     Laptop,
-    Edit3
+    Edit3,
+    Shield,
+    Search,
+    Ban,
+    MessageSquare
 } from 'lucide-react';
 
 import type { BlockType, LessonBlock } from './studio/types';
@@ -248,6 +252,37 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
     const [deletedTestCaseIds, setDeletedTestCaseIds] = useState<string[]>([]);
     const [isSavingExercise, setIsSavingExercise] = useState(false);
 
+    // ============ CODE CONSTRAINT RULES STATES ============
+    const [requireComment, setRequireComment] = useState<boolean>(false);
+    const [requiredKeywords, setRequiredKeywords] = useState<string>('');
+    const [forbiddenKeywords, setForbiddenKeywords] = useState<string>('');
+    const [customErrorMessage, setCustomErrorMessage] = useState<string>('');
+
+    const loadExerciseConstraints = (ex: CodingExercise | null) => {
+        if (!ex) {
+            setRequireComment(false);
+            setRequiredKeywords('');
+            setForbiddenKeywords('');
+            setCustomErrorMessage('');
+            return;
+        }
+        const match = /<!--\s*CONSTRAINTS:\s*(\{[\s\S]*?\})\s*-->/.exec(ex.problemDescription || '');
+        if (match) {
+            try {
+                const cfg = JSON.parse(match[1]);
+                setRequireComment(Boolean(cfg.requireComment));
+                setRequiredKeywords(Array.isArray(cfg.requiredKeywords) ? cfg.requiredKeywords.join(', ') : '');
+                setForbiddenKeywords(Array.isArray(cfg.forbiddenKeywords) ? cfg.forbiddenKeywords.join(', ') : '');
+                setCustomErrorMessage(cfg.customErrorMessage || '');
+                return;
+            } catch {}
+        }
+        setRequireComment(false);
+        setRequiredKeywords('');
+        setForbiddenKeywords('');
+        setCustomErrorMessage('');
+    };
+
     // ============ QUIZZES STATES ============
     const [quizzes, setQuizzes] = useState<QuizQuestion[]>([]);
     const [editingQuiz, setEditingQuiz] = useState<QuizQuestion | null>(null);
@@ -278,9 +313,11 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                 const target = list.find(e => e.id === selectedExerciseId) || list[0];
                 setSelectedExerciseId(target.id);
                 setEditingExercise(JSON.parse(JSON.stringify(target)));
+                loadExerciseConstraints(target);
             } else {
                 setSelectedExerciseId('');
                 setEditingExercise(null);
+                loadExerciseConstraints(null);
             }
             setDeletedTestCaseIds([]);
         } catch (err) {
@@ -433,6 +470,7 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
         setEditingExercise(newEx);
         setSelectedExerciseId('NEW');
         setDeletedTestCaseIds([]);
+        loadExerciseConstraints(newEx);
     };
 
     const handleSaveExercise = async () => {
@@ -445,10 +483,26 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                 : `${API_BASE_URL}/api/admin/exercises`;
             const method = isEdit ? 'PUT' : 'POST';
 
+            // Construct clean problemDescription with CONSTRAINTS metadata
+            const cleanDesc = (editingExercise.problemDescription || '').replace(/<!--\s*CONSTRAINTS:\s*(\{[\s\S]*?\})\s*-->/g, '').trim();
+            const reqArr = requiredKeywords.split(',').map(s => s.trim()).filter(Boolean);
+            const forbArr = forbiddenKeywords.split(',').map(s => s.trim()).filter(Boolean);
+            
+            let finalDescription = cleanDesc;
+            if (requireComment || reqArr.length > 0 || forbArr.length > 0 || customErrorMessage.trim()) {
+                const constraintObj = {
+                    requireComment,
+                    requiredKeywords: reqArr,
+                    forbiddenKeywords: forbArr,
+                    customErrorMessage: customErrorMessage.trim() || undefined
+                };
+                finalDescription = `${cleanDesc}\n\n<!-- CONSTRAINTS: ${JSON.stringify(constraintObj)} -->`;
+            }
+
             const payload = {
                 title: editingExercise.title,
                 difficulty: editingExercise.difficulty,
-                problemDescription: editingExercise.problemDescription,
+                problemDescription: finalDescription,
                 starterCode: editingExercise.starterCode,
                 solutionCode: editingExercise.solutionCode,
                 lessonId: lesson.id
@@ -733,7 +787,9 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                 key={ex.id}
                                                 onClick={() => {
                                                     setSelectedExerciseId(ex.id);
-                                                    setEditingExercise(ex);
+                                                    const copy = JSON.parse(JSON.stringify(ex));
+                                                    setEditingExercise(copy);
+                                                    loadExerciseConstraints(copy);
                                                 }}
                                                 className={`p-3 rounded-[5px] border cursor-pointer transition-all ${
                                                     selectedExerciseId === ex.id
@@ -937,6 +993,82 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                                 onChange={(e) => setEditingExercise({ ...editingExercise, solutionCode: e.target.value })}
                                                 rows={6}
                                                 className="w-full p-3 text-xs rounded-[4px] border border-slate-200 dark:border-white/10 bg-[#12131a] text-[#60a5fa] font-mono focus:outline-none focus:border-purple-500"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* 3.3 CODE CONSTRAINTS & RULES CONFIGURATION */}
+                                    <div className="p-4 rounded-[5px] border border-purple-200/80 dark:border-purple-900/40 bg-purple-50/20 dark:bg-purple-950/10 space-y-3.5 shadow-xs">
+                                        <div className="flex items-center justify-between pb-2 border-b border-purple-200/60 dark:border-purple-900/30">
+                                            <div className="flex items-center gap-2">
+                                                <Shield className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                                                <h3 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
+                                                    Ràng buộc cú pháp &amp; Quy tắc chấm mã nguồn
+                                                </h3>
+                                            </div>
+                                            <span className="text-[10px] font-semibold text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/50 px-2 py-0.5 rounded-[4px]">
+                                                Tự động kiểm tra trước khi chạy Test Cases
+                                            </span>
+                                        </div>
+
+                                        {/* Rule 1: Require Comment */}
+                                        <div className="flex items-center gap-2">
+                                            <label className="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200 cursor-pointer select-none">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={requireComment}
+                                                    onChange={(e) => setRequireComment(e.target.checked)}
+                                                    className="w-4 h-4 rounded text-purple-600 focus:ring-0 cursor-pointer"
+                                                />
+                                                <span>Bắt buộc học viên phải viết chú thích (Comment có dấu <code>#</code>)</span>
+                                            </label>
+                                        </div>
+
+                                        {/* Rule 2 & 3: Required & Forbidden Keywords */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
+                                            <div>
+                                                <label className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                                    <Search className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                                                    <span>Từ khóa / Cú pháp bắt buộc (Cách nhau bằng dấu phẩy)</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={requiredKeywords}
+                                                    onChange={(e) => setRequiredKeywords(e.target.value)}
+                                                    placeholder="VD: def, course_title, for, while, print"
+                                                    className="w-full px-3 py-1.5 text-xs rounded-[4px] border border-slate-200 dark:border-white/10 bg-white dark:bg-[#12131a] text-slate-900 dark:text-white focus:outline-none focus:border-purple-500 font-mono"
+                                                />
+                                                <span className="text-[10px] text-slate-400 mt-0.5 block">Học viên bắt buộc phải dùng các từ khóa này trong code</span>
+                                            </div>
+
+                                            <div>
+                                                <label className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                                    <Ban className="w-3.5 h-3.5 text-rose-500" />
+                                                    <span>Từ khóa / Hàm cấm sử dụng (Cách nhau bằng dấu phẩy)</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={forbiddenKeywords}
+                                                    onChange={(e) => setForbiddenKeywords(e.target.value)}
+                                                    placeholder="VD: sum, sort, sorted, eval, exec"
+                                                    className="w-full px-3 py-1.5 text-xs rounded-[4px] border border-slate-200 dark:border-white/10 bg-white dark:bg-[#12131a] text-slate-900 dark:text-white focus:outline-none focus:border-purple-500 font-mono"
+                                                />
+                                                <span className="text-[10px] text-slate-400 mt-0.5 block">Chặn học viên dùng hàm tắt/mẹo để bắt tự viết thuật toán</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Rule 4: Custom Error Message */}
+                                        <div>
+                                            <label className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                                <MessageSquare className="w-3.5 h-3.5 text-slate-500" />
+                                                <span>Lời nhắc lỗi tùy chỉnh khi vi phạm quy tắc (Tùy chọn)</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={customErrorMessage}
+                                                onChange={(e) => setCustomErrorMessage(e.target.value)}
+                                                placeholder="VD: Đề bài yêu cầu bạn phải viết chú thích # và tự cài đặt thuật toán tính tổng..."
+                                                className="w-full px-3 py-1.5 text-xs rounded-[4px] border border-slate-200 dark:border-white/10 bg-white dark:bg-[#12131a] text-slate-900 dark:text-white focus:outline-none focus:border-purple-500"
                                             />
                                         </div>
                                     </div>

@@ -61,7 +61,7 @@ export default function CurriculumManagement() {
     const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
     const [pageSize, setPageSize] = useState<number>(10);
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'title'>('newest');
+    const [sortBy, setSortBy] = useState<'id_asc' | 'id_desc' | 'newest' | 'oldest' | 'title'>('id_asc');
 
     // Lessons state
     const [lessons, setLessons] = useState<any[]>([]);
@@ -268,12 +268,30 @@ export default function CurriculumManagement() {
             list = list.filter(l => Boolean(l.isDraft));
         }
 
-        if (sortBy === 'title') {
+        if (sortBy === 'id_asc') {
+            list.sort((a, b) => {
+                const idA = a.lessonId || '';
+                const idB = b.lessonId || '';
+                return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' });
+            });
+        } else if (sortBy === 'id_desc') {
+            list.sort((a, b) => {
+                const idA = a.lessonId || '';
+                const idB = b.lessonId || '';
+                return idB.localeCompare(idA, undefined, { numeric: true, sensitivity: 'base' });
+            });
+        } else if (sortBy === 'title') {
             list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
         } else if (sortBy === 'oldest') {
             list.sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
-        } else {
+        } else if (sortBy === 'newest') {
             list.sort((a, b) => (b.orderIndex || 0) - (a.orderIndex || 0));
+        } else {
+            list.sort((a, b) => {
+                const idA = a.lessonId || '';
+                const idB = b.lessonId || '';
+                return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' });
+            });
         }
 
         return list;
@@ -677,23 +695,36 @@ export default function CurriculumManagement() {
                     <select
                         value={sortBy}
                         onChange={(e: any) => setSortBy(e.target.value)}
-                        className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-bg-secondary text-xs font-semibold text-slate-800 dark:text-white cursor-pointer"
+                        className="px-3 py-1.5 rounded-[4px] border border-slate-200 dark:border-white/10 bg-white dark:bg-bg-secondary text-xs font-semibold text-slate-800 dark:text-white cursor-pointer"
                     >
-                        <option value="newest">Mới nhất</option>
-                        <option value="oldest">Cũ nhất</option>
+                        <option value="id_asc">ID Nội dung (Tăng dần)</option>
+                        <option value="id_desc">ID Nội dung (Giảm dần)</option>
+                        <option value="newest">Mới nhất (Thứ tự)</option>
+                        <option value="oldest">Cũ nhất (Thứ tự)</option>
                         <option value="title">Theo tên A-Z</option>
                     </select>
                 </div>
             </div>
 
             {/* 5. MAIN DATA TABLE */}
-            <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-bg-secondary overflow-hidden shadow-xs">
+            <div className="rounded-[5px] border border-slate-200/80 dark:border-white/10 bg-white dark:bg-bg-secondary overflow-hidden shadow-xs">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="border-b border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-bg-tertiary text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-bold">
                                 <th className="py-3.5 px-4 w-12 text-center">STT</th>
-                                <th className="py-3.5 px-4 w-28">ID Nội dung</th>
+                                <th 
+                                    onClick={() => setSortBy(sortBy === 'id_asc' ? 'id_desc' : 'id_asc')}
+                                    className="py-3.5 px-4 w-32 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors select-none"
+                                    title="Bấm để đổi chiều sắp xếp theo ID Nội dung"
+                                >
+                                    <div className="flex items-center gap-1.5">
+                                        <span>ID Nội dung</span>
+                                        <span className="text-[10px] text-purple-600 dark:text-purple-400 font-bold">
+                                            {sortBy === 'id_asc' ? '▲' : sortBy === 'id_desc' ? '▼' : '⇅'}
+                                        </span>
+                                    </div>
+                                </th>
                                 <th className="py-3.5 px-4 min-w-[220px]">Tiêu đề nội dung</th>
                                 <th className="py-3.5 px-4 min-w-[180px]">Khóa học / Module / Chương</th>
                                 <th className="py-3.5 px-4 w-24 text-center">Loại</th>

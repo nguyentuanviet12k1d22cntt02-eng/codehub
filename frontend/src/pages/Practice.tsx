@@ -279,10 +279,20 @@ const Practice: React.FC = () => {
                     }
                 } else {
                     setSubmitStats(null);
-                    setConsoleOutput(`❌ Kết quả: Vượt qua ${results.filter((r: any) => r.passed).length}/${results.length} testcases. ${message || 'Vui lòng kiểm tra lại logic.'}`);
+                    const updatedCompleted = { ...completedExercises, [exercise.id]: false };
+                    setCompletedExercises(updatedCompleted);
+                    setIsCompleted(false);
+                    if (message) {
+                        setConsoleOutput(`❌ [Lỗi ràng buộc cú pháp]: ${message}`);
+                    } else {
+                        setConsoleOutput(`❌ Kết quả: Vượt qua ${results.filter((r: any) => r.passed).length}/${results.length} testcases. Vui lòng kiểm tra lại logic.`);
+                    }
                 }
             } else {
                 setSubmitStats(null);
+                const updatedCompleted = { ...completedExercises, [exercise.id]: false };
+                setCompletedExercises(updatedCompleted);
+                setIsCompleted(false);
                 setConsoleOutput(`❌ Lỗi biên dịch/thực thi:\n${response.data.output || 'Không xác định'}`);
             }
         } catch (err: any) {
