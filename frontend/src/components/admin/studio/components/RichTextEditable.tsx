@@ -5,6 +5,7 @@ interface RichTextEditableProps {
     onChange: (val: string) => void;
     placeholder?: string;
     className?: string;
+    fontSize?: string;
     isDarkTheme?: boolean;
     autoFocus?: boolean;
 }
@@ -126,6 +127,7 @@ export const RichTextEditable: React.FC<RichTextEditableProps> = ({
     onChange,
     placeholder = 'Nhập nội dung...',
     className = '',
+    fontSize,
     isDarkTheme = false
 }) => {
     const editorRef = useRef<HTMLDivElement>(null);
@@ -160,6 +162,7 @@ export const RichTextEditable: React.FC<RichTextEditableProps> = ({
             onInput={handleInput}
             onBlur={handleInput}
             data-placeholder={placeholder}
+            style={{ fontSize: fontSize || undefined }}
             className={`outline-none min-h-[1.5rem] leading-relaxed cursor-text whitespace-pre-wrap ${
                 isDarkTheme ? 'text-white/90 focus:text-white' : 'text-slate-800 focus:text-slate-900'
             } empty:before:content-[attr(data-placeholder)] empty:before:text-slate-400 empty:before:pointer-events-none ${className}`}

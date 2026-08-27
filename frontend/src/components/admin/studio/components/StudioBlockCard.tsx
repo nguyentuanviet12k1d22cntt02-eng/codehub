@@ -222,7 +222,7 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                             value={block.content || ''}
                             onChange={(val) => onUpdateActiveBlock({ content: val })}
                             placeholder="Nhập mô tả chi tiết..."
-                            className="text-xs"
+                            fontSize={block.fontSize || '14px'}
                             isDarkTheme={isDarkTheme}
                         />
                     </div>
@@ -234,7 +234,7 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                         value={block.content || ''}
                         onChange={(val) => onUpdateActiveBlock({ content: val })}
                         placeholder="Nhập nội dung đoạn văn..."
-                        className="text-xs"
+                        fontSize={block.fontSize || '14px'}
                         isDarkTheme={isDarkTheme}
                     />
                 )}
@@ -413,7 +413,8 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                         value={block.content || ''}
                         onChange={(val) => onUpdateActiveBlock({ content: val })}
                         placeholder="• SELECT: chọn các cột...&#10;• FROM: chỉ định bảng..."
-                        className={`text-xs ${isDarkTheme ? 'text-white/80' : 'text-slate-800'}`}
+                        fontSize={block.fontSize || '14px'}
+                        className={isDarkTheme ? 'text-white/80' : 'text-slate-800'}
                         isDarkTheme={isDarkTheme}
                     />
                 )}
@@ -425,7 +426,8 @@ export const StudioBlockCard: React.FC<StudioBlockCardProps> = ({
                             value={block.content || ''}
                             onChange={(val) => onUpdateActiveBlock({ content: val })}
                             placeholder="Mô tả yêu cầu bài tập..."
-                            className={`text-xs ${isDarkTheme ? 'text-white/80' : 'text-slate-800'}`}
+                            fontSize={block.fontSize || '14px'}
+                            className={isDarkTheme ? 'text-white/80' : 'text-slate-800'}
                             isDarkTheme={isDarkTheme}
                         />
 
