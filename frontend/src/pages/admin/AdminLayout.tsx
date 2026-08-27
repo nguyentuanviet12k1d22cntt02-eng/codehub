@@ -277,22 +277,6 @@ export default function AdminLayout() {
                         >
                             Submit review
                         </SidebarLink>
-
-                        {/* 6. Bài tập */}
-                        <SidebarLink
-                            to="/admin/practice-problems"
-                            active={location.pathname.startsWith('/admin/practice-problems')}
-                            badge="89"
-                            icon={
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-                                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-                                </svg>
-                            }
-                            collapsed={isSidebarCollapsed}
-                        >
-                            Bài tập
-                        </SidebarLink>
                     </nav>
                 </div>
 
