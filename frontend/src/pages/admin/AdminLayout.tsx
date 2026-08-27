@@ -8,7 +8,6 @@ export default function AdminLayout() {
     const [user, setUser] = useState<any>(null);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isLessonsOpen, setIsLessonsOpen] = useState(true);
-    const [isContentMgmtOpen, setIsContentMgmtOpen] = useState(true);
 
     useEffect(() => {
         const userData = localStorage.getItem('user');
@@ -187,77 +186,45 @@ export default function AdminLayout() {
                                 )}
                             </button>
 
-                            {/* Submenu for Bài học */}
+                            {/* Submenu for Bài học: 3 direct children */}
                             {isLessonsOpen && !isSidebarCollapsed && (
                                 <div className="pl-3 pr-1 pt-1 space-y-1">
-                                    {/* Quản lý nội dung Card Container */}
-                                    <div className="bg-[#f5f3ff]/60 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/30 rounded-2xl p-2 space-y-1">
-                                        <button
-                                            type="button"
-                                            onClick={() => setIsContentMgmtOpen(!isContentMgmtOpen)}
-                                            className="w-full px-2.5 py-1.5 rounded-lg flex items-center justify-between text-xs font-bold text-indigo-700 dark:text-indigo-300 hover:bg-white/60 dark:hover:bg-white/5 transition-all"
+                                    <div className="bg-[#f5f3ff]/60 dark:bg-purple-950/20 border border-purple-100/80 dark:border-purple-900/30 rounded-2xl p-1.5 space-y-0.5">
+                                        {/* 1. Nội dung & Bài tập */}
+                                        <Link
+                                            to="/admin/curriculum"
+                                            className={`block px-3 py-2 rounded-xl text-xs font-bold transition-all no-underline ${
+                                                location.pathname.startsWith('/admin/curriculum')
+                                                    ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 shadow-xs'
+                                                    : 'text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20'
+                                            }`}
                                         >
-                                            <div className="flex items-center gap-2">
-                                                <svg className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                                                    <line x1="16" y1="2" x2="16" y2="6" />
-                                                    <line x1="8" y1="2" x2="8" y2="6" />
-                                                    <line x1="3" y1="10" x2="21" y2="10" />
-                                                </svg>
-                                                <span>Quản lý nội dung</span>
-                                            </div>
-                                            <svg
-                                                className={`w-3 h-3 text-indigo-400 transition-transform duration-200 ${
-                                                    isContentMgmtOpen ? 'rotate-180' : ''
-                                                }`}
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="2"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                                            </svg>
-                                        </button>
+                                            Nội dung & Bài tập
+                                        </Link>
 
-                                        {isContentMgmtOpen && (
-                                            <div className="pl-6 space-y-0.5 pt-1">
-                                                {/* Active Sub-item: Nội dung & Bài tập */}
-                                                <Link
-                                                    to="/admin/curriculum"
-                                                    className={`block px-3 py-1.5 rounded-lg text-xs font-bold transition-all no-underline ${
-                                                        location.pathname.startsWith('/admin/curriculum')
-                                                            ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 shadow-xs'
-                                                            : 'text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20'
-                                                    }`}
-                                                >
-                                                    Nội dung & Bài tập
-                                                </Link>
+                                        {/* 2. Danh mục */}
+                                        <Link
+                                            to="/admin/courses"
+                                            className={`block px-3 py-2 rounded-xl text-xs font-medium transition-all no-underline ${
+                                                location.pathname === '/admin/courses'
+                                                    ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 font-bold shadow-xs'
+                                                    : 'text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20'
+                                            }`}
+                                        >
+                                            Danh mục
+                                        </Link>
 
-                                                {/* Danh mục */}
-                                                <Link
-                                                    to="/admin/courses"
-                                                    className={`block px-3 py-1.5 rounded-lg text-xs font-medium transition-all no-underline ${
-                                                        location.pathname === '/admin/courses'
-                                                            ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 font-bold'
-                                                            : 'text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20'
-                                                    }`}
-                                                >
-                                                    Danh mục
-                                                </Link>
-
-                                                {/* Ngân hàng câu hỏi */}
-                                                <Link
-                                                    to="/admin/practice-problems"
-                                                    className={`block px-3 py-1.5 rounded-lg text-xs font-medium transition-all no-underline ${
-                                                        location.pathname === '/admin/practice-problems'
-                                                            ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 font-bold'
-                                                            : 'text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20'
-                                                    }`}
-                                                >
-                                                    Ngân hàng câu hỏi
-                                                </Link>
-                                            </div>
-                                        )}
+                                        {/* 3. Ngân hàng câu hỏi */}
+                                        <Link
+                                            to="/admin/practice-problems"
+                                            className={`block px-3 py-2 rounded-xl text-xs font-medium transition-all no-underline ${
+                                                location.pathname === '/admin/practice-problems'
+                                                    ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 font-bold shadow-xs'
+                                                    : 'text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20'
+                                            }`}
+                                        >
+                                            Ngân hàng câu hỏi
+                                        </Link>
                                     </div>
                                 </div>
                             )}
