@@ -38,9 +38,15 @@ export const ProblemDescriptionPanel: React.FC<ProblemDescriptionPanelProps> = (
             <div className="flex justify-between items-center border-b border-border-custom bg-bg-tertiary shrink-0 px-2 transition-colors duration-200">
                 <button
                     className="text-xs text-accent-custom hover:text-accent-hover bg-transparent border-none cursor-pointer py-2.5 px-2 font-semibold flex items-center gap-1 transition-colors"
-                    onClick={() => navigate(`/lesson/${lessonId}`)}
+                    onClick={() => {
+                        if (window.history.length > 1) {
+                            navigate(-1);
+                        } else {
+                            navigate(`/lesson/${lessonId}`);
+                        }
+                    }}
                 >
-                    <span>←</span> Quay lại học lý thuyết
+                    <span>←</span> Quay lại
                 </button>
 
                 <div className="flex gap-1">

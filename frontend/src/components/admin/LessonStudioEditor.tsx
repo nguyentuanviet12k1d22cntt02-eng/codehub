@@ -453,8 +453,68 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
         }
     };
 
+    // Helper to get current full snapshot of editingExercise with latest constraint inputs
+    const getSnapshotOfCurrentExercise = (): CodingExercise | null => {
+        if (!editingExercise) return null;
+        const cleanDesc = (editingExercise.problemDescription || '').replace(/<!--\s*CONSTRAINTS:\s*(\{[\s\S]*?\})\s*-->/g, '').trim();
+        const reqArr = requiredKeywords.split(',').map(s => s.trim()).filter(Boolean);
+        const forbArr = forbiddenKeywords.split(',').map(s => s.trim()).filter(Boolean);
+        
+        let finalDescription = cleanDesc;
+        if (requireComment || reqArr.length > 0 || forbArr.length > 0 || customErrorMessage.trim()) {
+            const constraintObj = {
+                requireComment,
+                requiredKeywords: reqArr,
+                forbiddenKeywords: forbArr,
+                customErrorMessage: customErrorMessage.trim() || undefined
+            };
+            finalDescription = `${cleanDesc}\n\n<!-- CONSTRAINTS: ${JSON.stringify(constraintObj)} -->`;
+        }
+
+        return {
+            ...editingExercise,
+            problemDescription: finalDescription
+        };
+    };
+
+    const handleSelectExercise = (targetEx: CodingExercise) => {
+        let latestList = [...exercises];
+        if (editingExercise) {
+            const currentSnapshot = getSnapshotOfCurrentExercise();
+            if (currentSnapshot) {
+                const idx = latestList.findIndex(e => e.id === currentSnapshot.id);
+                if (idx >= 0) {
+                    latestList[idx] = currentSnapshot;
+                } else if (currentSnapshot.id) {
+                    latestList.push(currentSnapshot);
+                }
+                setExercises(latestList);
+            }
+        }
+
+        const refreshedTarget = latestList.find(e => e.id === targetEx.id) || targetEx;
+        setSelectedExerciseId(refreshedTarget.id);
+        const copy = JSON.parse(JSON.stringify(refreshedTarget));
+        setEditingExercise(copy);
+        loadExerciseConstraints(copy);
+    };
+
     // ============ EXERCISE CRUD HANDLERS ============
     const handleCreateNewExercise = () => {
+        let latestList = [...exercises];
+        if (editingExercise) {
+            const currentSnapshot = getSnapshotOfCurrentExercise();
+            if (currentSnapshot && currentSnapshot.id) {
+                const idx = latestList.findIndex(e => e.id === currentSnapshot.id);
+                if (idx >= 0) {
+                    latestList[idx] = currentSnapshot;
+                } else {
+                    latestList.push(currentSnapshot);
+                }
+                setExercises(latestList);
+            }
+        }
+
         const newEx: CodingExercise = {
             id: '',
             lessonId: lesson.id,
@@ -785,12 +845,7 @@ export const LessonStudioEditor: React.FC<LessonStudioEditorProps> = ({ lesson, 
                                         {exercises.map((ex) => (
                                             <div
                                                 key={ex.id}
-                                                onClick={() => {
-                                                    setSelectedExerciseId(ex.id);
-                                                    const copy = JSON.parse(JSON.stringify(ex));
-                                                    setEditingExercise(copy);
-                                                    loadExerciseConstraints(copy);
-                                                }}
+                                                onClick={() => handleSelectExercise(ex)}
                                                 className={`p-3 rounded-[5px] border cursor-pointer transition-all ${
                                                     selectedExerciseId === ex.id
                                                         ? 'border-purple-500 bg-purple-50/60 dark:bg-purple-950/40 text-purple-900 dark:text-purple-200 shadow-xs'

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 import axios from 'axios';
 import { useQueryClient } from '@tanstack/react-query';
@@ -15,6 +15,8 @@ import { TerminalPanel } from '../components/practice/TerminalPanel';
 
 const Practice: React.FC = () => {
     const { id } = useParams<{ id: string }>();
+    const [searchParams] = useSearchParams();
+    const difficultyFilter = searchParams.get('difficulty');
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(getInitialTheme());
@@ -72,55 +74,80 @@ const Practice: React.FC = () => {
                 setLesson(data);
 
                 if (data.codingExercises && data.codingExercises.length > 0) {
-                    setExercises(data.codingExercises);
-                    setCurrentExerciseIdx(0);
+                    let exList = [...data.codingExercises];
 
-                    const initialCodes: Record<string, string> = {};
-                    data.codingExercises.forEach((ex: any) => {
-                        initialCodes[ex.id] = ex.starterCode || '# Viết code Python của bạn ở đây\n';
-                    });
-                    setUserCodes(initialCodes);
-
-                    const firstEx = data.codingExercises[0];
-                    setExercise({
-                        id: firstEx.id,
-                        title: firstEx.title,
-                        difficulty: firstEx.difficulty,
-                        problemDescription: firstEx.problemDescription,
-                        starterCode: firstEx.starterCode || '# Viết code Python của bạn ở đây\n',
-                        testCases: firstEx.testCases || []
-                    });
-                    setCode(firstEx.starterCode || '# Viết code Python của bạn ở đây\n');
-
-                    if (firstEx.testCases && firstEx.testCases.length > 0) {
-                        setCustomInput(firstEx.testCases[0].input || '');
-                    } else {
-                        setCustomInput('');
+                    // Lọc theo độ khó nếu có query param ?difficulty=EASY/MEDIUM/HARD
+                    if (difficultyFilter) {
+                        exList = exList.filter((ex: any) => (ex.difficulty || '').toUpperCase() === difficultyFilter.toUpperCase());
                     }
 
-                    // Tải trạng thái hoàn thành bài nộp
-                    const token = localStorage.getItem('token');
-                    if (token) {
-                        const compStatus: Record<string, boolean> = {};
-                        await Promise.all(
-                            data.codingExercises.map(async (ex: any) => {
-                                try {
-                                    const resSub = await axios.get(`${API_BASE_URL}/api/auth/exercises/${ex.id}/submissions`, {
-                                        headers: { Authorization: `Bearer ${token}` }
-                                    });
-                                    const hasPassed = resSub.data.some((sub: any) => sub.status === 'PASSED');
-                                    compStatus[ex.id] = hasPassed;
-                                } catch (e) {
-                                    console.error('Lỗi khi lấy lịch sử bài nộp cho bài tập:', ex.id, e);
-                                }
-                            })
-                        );
-                        setCompletedExercises(compStatus);
-
-                        const allExPassed = data.codingExercises.every((ex: any) => compStatus[ex.id]);
-                        if (allExPassed) {
-                            setIsCompleted(true);
+                    // Sắp xếp tự nhiên theo thứ tự bài học từ 1 đến hết
+                    exList.sort((a: any, b: any) => {
+                        const matchA = /Bài\s*(\d+)/i.exec(a.problemDescription || '') || /Bài\s*(\d+)/i.exec(a.title || '');
+                        const matchB = /Bài\s*(\d+)/i.exec(b.problemDescription || '') || /Bài\s*(\d+)/i.exec(b.title || '');
+                        if (matchA && matchB) {
+                            return parseInt(matchA[1], 10) - parseInt(matchB[1], 10);
                         }
+                        return (a.title || '').localeCompare(b.title || '', undefined, { numeric: true, sensitivity: 'base' });
+                    });
+
+                    if (exList.length > 0) {
+                        setExercises(exList);
+                        setCurrentExerciseIdx(0);
+
+                        const initialCodes: Record<string, string> = {};
+                        exList.forEach((ex: any) => {
+                            initialCodes[ex.id] = ex.starterCode || '# Viết code Python của bạn ở đây\n';
+                        });
+                        setUserCodes(initialCodes);
+
+                        const firstEx = exList[0];
+                        setExercise({
+                            id: firstEx.id,
+                            title: firstEx.title,
+                            difficulty: firstEx.difficulty,
+                            problemDescription: firstEx.problemDescription,
+                            starterCode: firstEx.starterCode || '# Viết code Python của bạn ở đây\n',
+                            testCases: firstEx.testCases || []
+                        });
+                        setCode(firstEx.starterCode || '# Viết code Python của bạn ở đây\n');
+
+                        if (firstEx.testCases && firstEx.testCases.length > 0) {
+                            setCustomInput(firstEx.testCases[0].input || '');
+                        } else {
+                            setCustomInput('');
+                        }
+
+                        // Tải trạng thái hoàn thành bài nộp
+                        const token = localStorage.getItem('token');
+                        if (token) {
+                            const compStatus: Record<string, boolean> = {};
+                            await Promise.all(
+                                exList.map(async (ex: any) => {
+                                    try {
+                                        const resSub = await axios.get(`${API_BASE_URL}/api/auth/exercises/${ex.id}/submissions`, {
+                                            headers: { Authorization: `Bearer ${token}` }
+                                        });
+                                        const hasPassed = resSub.data.some((sub: any) => sub.status === 'PASSED');
+                                        compStatus[ex.id] = hasPassed;
+                                    } catch (e) {
+                                        console.error('Lỗi khi lấy lịch sử bài nộp cho bài tập:', ex.id, e);
+                                    }
+                                })
+                            );
+                            setCompletedExercises(compStatus);
+
+                            const allExPassed = exList.every((ex: any) => compStatus[ex.id]);
+                            if (allExPassed) {
+                                setIsCompleted(true);
+                            }
+                        }
+                    } else {
+                        setExercises([]);
+                        setCurrentExerciseIdx(0);
+                        setExercise(null);
+                        setCode('');
+                        setCustomInput('');
                     }
                 } else {
                     setExercises([]);
@@ -140,7 +167,7 @@ const Practice: React.FC = () => {
         };
 
         fetchLessonData();
-    }, [id]);
+    }, [id, difficultyFilter]);
 
     const selectExercise = (idx: number) => {
         if (idx < 0 || idx >= exercises.length) return;
