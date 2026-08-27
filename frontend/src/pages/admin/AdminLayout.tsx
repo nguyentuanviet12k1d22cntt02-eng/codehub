@@ -186,46 +186,44 @@ export default function AdminLayout() {
                                 )}
                             </button>
 
-                            {/* Submenu for Bài học: 3 direct children */}
+                            {/* Submenu for Bài học: Clean indented list items with hover effects */}
                             {isLessonsOpen && !isSidebarCollapsed && (
-                                <div className="pl-3 pr-1 pt-1 space-y-1">
-                                    <div className="bg-[#f5f3ff]/60 dark:bg-purple-950/20 border border-purple-100/80 dark:border-purple-900/30 rounded-2xl p-1.5 space-y-0.5">
-                                        {/* 1. Nội dung & Bài tập */}
-                                        <Link
-                                            to="/admin/curriculum"
-                                            className={`block px-3 py-2 rounded-xl text-xs font-bold transition-all no-underline ${
-                                                location.pathname.startsWith('/admin/curriculum')
-                                                    ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 shadow-xs'
-                                                    : 'text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20'
-                                            }`}
-                                        >
-                                            Nội dung & Bài tập
-                                        </Link>
+                                <div className="pl-6 pr-1 py-1 space-y-0.5 border-l border-slate-200/80 dark:border-white/10 ml-4 my-1">
+                                    {/* 1. Nội dung & Bài tập */}
+                                    <Link
+                                        to="/admin/curriculum"
+                                        className={`block px-3 py-2 rounded-xl text-xs font-semibold transition-all no-underline ${
+                                            location.pathname.startsWith('/admin/curriculum')
+                                                ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-bold'
+                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/5'
+                                        }`}
+                                    >
+                                        Nội dung & Bài tập
+                                    </Link>
 
-                                        {/* 2. Danh mục */}
-                                        <Link
-                                            to="/admin/courses"
-                                            className={`block px-3 py-2 rounded-xl text-xs font-medium transition-all no-underline ${
-                                                location.pathname === '/admin/courses'
-                                                    ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 font-bold shadow-xs'
-                                                    : 'text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20'
-                                            }`}
-                                        >
-                                            Danh mục
-                                        </Link>
+                                    {/* 2. Danh mục */}
+                                    <Link
+                                        to="/admin/courses"
+                                        className={`block px-3 py-2 rounded-xl text-xs font-semibold transition-all no-underline ${
+                                            location.pathname === '/admin/courses'
+                                                ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-bold'
+                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/5'
+                                        }`}
+                                    >
+                                        Danh mục
+                                    </Link>
 
-                                        {/* 3. Ngân hàng câu hỏi */}
-                                        <Link
-                                            to="/admin/practice-problems"
-                                            className={`block px-3 py-2 rounded-xl text-xs font-medium transition-all no-underline ${
-                                                location.pathname === '/admin/practice-problems'
-                                                    ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 font-bold shadow-xs'
-                                                    : 'text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20'
-                                            }`}
-                                        >
-                                            Ngân hàng câu hỏi
-                                        </Link>
-                                    </div>
+                                    {/* 3. Ngân hàng câu hỏi */}
+                                    <Link
+                                        to="/admin/practice-problems"
+                                        className={`block px-3 py-2 rounded-xl text-xs font-semibold transition-all no-underline ${
+                                            location.pathname === '/admin/practice-problems'
+                                                ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-bold'
+                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/5'
+                                        }`}
+                                    >
+                                        Ngân hàng câu hỏi
+                                    </Link>
                                 </div>
                             )}
                         </div>
