@@ -70,32 +70,31 @@ uvicorn main:app --reload --port 8000
 
 ```text
 LearnPython/
-├── backend/                  # EXPRESS & PRISMA BACKEND
+├── backend/                  # EXPRESS & PRISMA BACKEND (Feature-Based Architecture)
+│   ├── prisma/               # Schema (schema.prisma), Migrations & Seed data
 │   ├── src/
-│   │   ├── config/           # Prisma client config
-│   │   ├── controllers/      # Business logic (Auth, Courses, Exercises, Practice)
-│   │   ├── middlewares/      # JWT authentication middleware
-│   │   ├── prisma/           # Schema & seed scripts (seed.ts, seed_problems.ts)
-│   │   ├── routes/           # REST API routes
-│   │   ├── services/         # Sandbox (Docker) & Concurrency Queue Services
+│   │   ├── modules/          # Domain features (auth, courses, practice, learning-path, admin...)
+│   │   ├── infrastructure/   # Sandbox runner (Docker), database, email, queue
+│   │   ├── shared/           # Common middleware (auth, adminAuth), types
 │   │   └── app.ts            # Express entrypoint
+│   ├── scripts/              # Helper admin & database scripts
 │   ├── .env                  # Backend environment variables
 │   └── package.json
 │
-├── frontend/                 # REACT & VITE FRONTEND
+├── frontend/                 # REACT & VITE FRONTEND (Feature-Based Architecture)
 │   ├── src/
-│   │   ├── components/       # Monaco Editor, Navbar, UI Components
-│   │   ├── pages/            # Home, Dashboard, CourseDetail, Lesson, Practice
-│   │   ├── services/         # API HTTP handlers
+│   │   ├── features/         # Feature modules (admin, auth, course, lesson, practice, adaptive...)
+│   │   ├── components/       # Shared UI components (ThemeToggle, UserMenuDropdown)
 │   │   ├── App.tsx           # React Router & TanStack Query Setup
 │   │   └── main.tsx          # Application entrypoint
 │   └── package.json
 │
-├── ai-service/               # FASTAPI AI RECOMMENDATION MICROSERVICE (PAL-Net / BKT / DKT)
-│   ├── core/                 # PAL-Net, DKT, BKT PyTorch models
-│   ├── data/                 # Skill graphs, parameters, model weights (.pth)
-│   ├── database_test.py      # Database connection & training data inspector
-│   ├── main.py               # FastAPI microservice entrypoint (/recommend)
+├── ai-service/               # FASTAPI AI MICROSERVICE (PAL-Net / BKT / DKT / Multi-Agent)
+│   ├── app/                  # Modular domains (agents, adaptive, knowledge_tracing, llm)
+│   ├── models/               # PyTorch weights (.pth)
+│   ├── data/                 # Skill graphs, parameters, mock data
+│   ├── scripts/              # Training, data generation & testing
+│   ├── main.py               # FastAPI microservice entrypoint (/recommend, /pal-net)
 │   ├── requirements.txt      # Python dependencies
 │   └── venv/                 # Python virtual environment
 │
@@ -125,7 +124,7 @@ npm install
 # DATABASE_URL="postgresql://postgres:password@localhost:5432/learnpython_db?schema=public"
 # AI_SERVICE_URL="http://localhost:8000"
 
-npx prisma generate --schema=src/prisma/schema.prisma
+npx prisma generate
 npx prisma db seed
 ```
 

@@ -13,17 +13,12 @@
     ],
     "typeRoots": [
       "./node_modules/@types",
+      "./src/shared/types",
       "./src/types"
     ]
   },
   "include": [
-    "src/app.ts",
-    "src/config/**/*",
-    "src/controllers/**/*",
-    "src/middlewares/**/*",
-    "src/routes/**/*",
-    "src/services/**/*",
-    "src/types/**/*"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",

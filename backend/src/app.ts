@@ -5,13 +5,14 @@ import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 
-import authRoutes from './routes/authRoutes';
-import courseRoutes from './routes/courseRoutes';
-import exerciseRoutes from './routes/exerciseRoutes';
-import practiceRoutes from './routes/practiceRoutes';
-import recommendationRoutes from './routes/recommendationRoutes';
-import adminRoutes from "./routes/adminRoutes";
-import learningPathRoutes from './routes/learningPathRoutes';
+import authRoutes from './modules/auth/authRoutes';
+import courseRoutes from './modules/courses/courseRoutes';
+import exerciseRoutes from './modules/exercises/exerciseRoutes';
+import practiceRoutes from './modules/practice/practiceRoutes';
+import recommendationRoutes from './modules/recommendations/recommendationRoutes';
+import adminRoutes from "./modules/admin/adminRoutes";
+import learningPathRoutes from './modules/learning-path/learningPathRoutes';
+import { aiKeyAdminRouter, aiKeyInternalRouter } from './modules/ai-keys/aiKey.routes';
 
 dotenv.config();
 
@@ -41,8 +42,10 @@ app.use('/api/auth', exerciseRoutes)
 app.use('/api/auth', practiceRoutes)
 app.use('/api/auth', recommendationRoutes)
 
-// Cài đặt route admin
+// Cài đặt route admin & AI Key pool
 app.use('/api/admin', adminRoutes)
+app.use('/api/admin/ai-keys', aiKeyAdminRouter)
+app.use('/api/internal/ai-keys', aiKeyInternalRouter)
 
 app.get('/ping', (req, res) => {
     res.send('pong');

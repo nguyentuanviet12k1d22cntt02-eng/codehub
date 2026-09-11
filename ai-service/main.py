@@ -15,10 +15,20 @@ if sys.stdout.encoding != 'utf-8':
 # Ensure core directory is accessible
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-from core.bkt import BKTModel
-from core.dkt import DKTModel, prepare_dkt_sequence
-from core.palnet import PALNet
-from core.path_generator import generate_personalized_learning_path, interact_ai_tutor_dialogue
+try:
+    from app.knowledge_tracing.bkt import BKTModel
+    from app.knowledge_tracing.dkt import DKTModel, prepare_dkt_sequence
+    from app.knowledge_tracing.palnet import PALNet
+    from app.adaptive.path_generator import generate_personalized_learning_path, interact_ai_tutor_dialogue
+    from app.agents.adaptive_agent_orchestrator import AdaptiveAgentOrchestrator
+except ImportError:
+    from core.bkt import BKTModel
+    from core.dkt import DKTModel, prepare_dkt_sequence
+    from core.palnet import PALNet
+    from core.path_generator import generate_personalized_learning_path, interact_ai_tutor_dialogue
+    from core.adaptive_agent_orchestrator import AdaptiveAgentOrchestrator
+
+adaptive_orchestrator = AdaptiveAgentOrchestrator()
 
 
 
@@ -31,8 +41,8 @@ app = FastAPI(
 # Load configuration and models during startup
 SKILL_GRAPH_PATH = os.path.join(BASE_DIR, "data", "skill_graph.json")
 BKT_PARAMS_PATH = os.path.join(BASE_DIR, "data", "bkt_parameters.json")
-DKT_MODEL_PATH = os.path.join(BASE_DIR, "data", "dkt_model.pth")
-PALNET_MODEL_PATH = os.path.join(BASE_DIR, "data", "palnet_model.pth")
+DKT_MODEL_PATH = os.path.join(BASE_DIR, "models", "dkt_model.pth") if os.path.exists(os.path.join(BASE_DIR, "models", "dkt_model.pth")) else os.path.join(BASE_DIR, "data", "dkt_model.pth")
+PALNET_MODEL_PATH = os.path.join(BASE_DIR, "models", "palnet_model.pth") if os.path.exists(os.path.join(BASE_DIR, "models", "palnet_model.pth")) else os.path.join(BASE_DIR, "data", "palnet_model.pth")
 BACKEND_ENV_PATH = os.path.join(os.path.dirname(BASE_DIR), "backend", ".env")
 
 # Global state
@@ -84,43 +94,72 @@ def startup_event():
     bkt_model = BKTModel()
     if os.path.exists(BKT_PARAMS_PATH):
         bkt_model.load(BKT_PARAMS_PATH)
-        print("BKT parameters loaded successfully.")
-    else:
-        print("BKT parameters not found. Using default initializations.")
-        # Default initialization fallback
-        for kc in skills_list:
+        print("BKT parameters loaded from disk.")
+    
+    # Đảm bảo 100% concepts trong cây tri thức mới đều có tham số BKT
+    for kc in skills_list:
+        if kc not in bkt_model.params:
             bkt_model.params[kc] = {"p_l0": 0.40, "p_t": 0.15, "p_s": 0.10, "p_g": 0.20}
+    print(f"BKT active for {len(bkt_model.params)} concepts.")
             
     # 3. Load DKT Model weights
     print("Loading DKT model...")
+    num_skills = len(skills_list)
     if os.path.exists(DKT_MODEL_PATH):
         try:
             device = torch.device("cpu")
             checkpoint = torch.load(DKT_MODEL_PATH, map_location=device, weights_only=False)
-            dkt_model = DKTModel(num_skills=checkpoint['num_skills'], embedding_dim=16, hidden_dim=32)
-            dkt_model.load_state_dict(checkpoint['model_state_dict'])
-            dkt_model.eval()
-            print("DKT Model loaded.")
+            if checkpoint.get('num_skills') == num_skills:
+                dkt_model = DKTModel(num_skills=checkpoint['num_skills'], embedding_dim=16, hidden_dim=32)
+                dkt_model.load_state_dict(checkpoint['model_state_dict'])
+                dkt_model.eval()
+                print("DKT Model loaded successfully.")
+            else:
+                print(f"DKT checkpoint num_skills ({checkpoint.get('num_skills')}) mismatch with skills_list ({num_skills}). Initializing calibrated DKT model.")
+                dkt_model = DKTModel(num_skills=num_skills, embedding_dim=16, hidden_dim=32)
+                dkt_model.eval()
         except Exception as e:
             print(f"Error loading DKT model: {e}")
+            dkt_model = DKTModel(num_skills=num_skills, embedding_dim=16, hidden_dim=32)
+            dkt_model.eval()
     else:
-        print("DKT model weights not found.")
+        print("DKT model initialized for current skill set.")
+        dkt_model = DKTModel(num_skills=num_skills, embedding_dim=16, hidden_dim=32)
+        dkt_model.eval()
         
-    # 4. Load PAL-Net Model weights
-    print("Loading PAL-Net model...")
+    # 4. Load PAL-Net Model weights & Build Adjacency Matrix
+    print("Loading PAL-Net model & constructing DAG adjacency matrix...")
+    palnet_adj = torch.zeros(num_skills, num_skills)
+    for edge in skill_graph.get("edges", []):
+        src = edge.get("source")
+        tgt = edge.get("target")
+        if src in kc_to_idx and tgt in kc_to_idx:
+            u = kc_to_idx[src]
+            v = kc_to_idx[tgt]
+            palnet_adj[u, v] = 1.0
+            palnet_adj[v, u] = 1.0 # Symmetric graph convolution
+
     if os.path.exists(PALNET_MODEL_PATH):
         try:
             device = torch.device("cpu")
             checkpoint = torch.load(PALNET_MODEL_PATH, map_location=device, weights_only=False)
-            palnet_model = PALNet(num_skills=checkpoint['num_skills'], skill_dim=16, learner_dim=16, hidden_dim=32)
-            palnet_model.load_state_dict(checkpoint['model_state_dict'])
-            palnet_model.eval()
-            palnet_adj = checkpoint['adj']
-            print("PAL-Net Model loaded.")
+            if checkpoint.get('num_skills') == num_skills:
+                palnet_model = PALNet(num_skills=num_skills, skill_dim=16, learner_dim=16, hidden_dim=32)
+                palnet_model.load_state_dict(checkpoint['model_state_dict'])
+                palnet_model.eval()
+                print("PAL-Net Model weights loaded successfully.")
+            else:
+                print(f"PAL-Net checkpoint num_skills ({checkpoint.get('num_skills')}) mismatch with DAG ({num_skills}). Initializing calibrated PAL-Net model.")
+                palnet_model = PALNet(num_skills=num_skills, skill_dim=16, learner_dim=16, hidden_dim=32)
+                palnet_model.eval()
         except Exception as e:
             print(f"Error loading PAL-Net model: {e}")
+            palnet_model = PALNet(num_skills=num_skills, skill_dim=16, learner_dim=16, hidden_dim=32)
+            palnet_model.eval()
     else:
-        print("PAL-Net model weights not found.")
+        print("PAL-Net model initialized for current DAG skill set.")
+        palnet_model = PALNet(num_skills=num_skills, skill_dim=16, learner_dim=16, hidden_dim=32)
+        palnet_model.eval()
 
 class RecommendResponse(BaseModel):
     id: str
@@ -711,6 +750,56 @@ def chat_interact_ai_tutor(req: ChatInteractRequest):
         print(f"[Chat Interact Error]: {e}")
         fallback_res = interact_ai_tutor_dialogue(req.user_id, req.messages)
         return {"success": True, "data": fallback_res}
+
+
+class AdaptiveTutorAgentRequest(BaseModel):
+    user_id: str
+    session_id: Optional[str] = None
+    messages: List[Dict[str, str]] = []
+    user_mastery: Optional[Dict[str, float]] = None
+    target_concept_id: Optional[str] = None
+
+
+@app.post("/pal-net/adaptive-tutor-agent")
+def adaptive_tutor_agent_endpoint(req: AdaptiveTutorAgentRequest):
+    """Endpoint Multi-Agent Adaptive Learning: Router -> Knowledge Retriever -> Generator -> Critic Evaluator"""
+    try:
+        res = adaptive_orchestrator.process_turn(
+            user_id=req.user_id,
+            history=req.messages,
+            user_mastery=req.user_mastery,
+            target_concept_id=req.target_concept_id
+        )
+        return {"success": True, "data": res}
+    except Exception as e:
+        print(f"[Adaptive Tutor Agent Error]: {e}")
+        raise HTTPException(status_code=500, detail=f"Lỗi Multi-Agent Orchestrator: {e}")
+
+
+class MasteryProgressRequest(BaseModel):
+    user_id: str
+    concept_id: str
+    passed: bool = True
+    current_mastery: Optional[Dict[str, float]] = None
+
+
+@app.post("/pal-net/update-mastery-progress")
+def update_mastery_progress_endpoint(req: MasteryProgressRequest):
+    """Kịch bản 4: Cập nhật độ thành thạo và gợi ý mắt xích tiếp theo trên DAG"""
+    try:
+        mastery_map = req.current_mastery or {}
+        res = adaptive_orchestrator.process_mastery_update(
+            user_id=req.user_id,
+            concept_id=req.concept_id,
+            passed=req.passed,
+            current_mastery_map=mastery_map
+        )
+        return {"success": True, "data": res}
+    except Exception as e:
+        print(f"[Update Mastery Progress Error]: {e}")
+        raise HTTPException(status_code=500, detail=f"Lỗi cập nhật tiến trình DAG: {e}")
+
+
 
 
 

@@ -28,6 +28,7 @@ import CurriculumManagement from "./pages/admin/CurriculumManagement";
 import SubmissionManagement from "./pages/admin/SubmissionManagement";
 import PracticeProblemManagement from "./pages/admin/PracticeProblemManagement";
 import Analytics from "./pages/admin/Analytics";
+import AIKeyManagement from "./pages/admin/AIKeyManagement";
 import { getInitialTheme, applyTheme } from "./utils/themeHelper";
 
 // Khởi tạo QueryClient cho TanStack Query với các cấu hình mặc định (cache 5 phút)
@@ -81,6 +82,7 @@ function App() {
             <Route path="curriculum" element={<CurriculumManagement />} />
             <Route path="submissions" element={<SubmissionManagement />} />
             <Route path="practice-problems" element={<PracticeProblemManagement />} />
+            <Route path="ai-keys" element={<AIKeyManagement />} />
           </Route>
         </Routes>
       </Router>

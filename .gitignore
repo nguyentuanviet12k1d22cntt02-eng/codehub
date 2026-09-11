@@ -30,3 +30,6 @@ Thumbs.db
 DEVOPS_PLAN.md
 .devops/
 
+# Graphify Knowledge Graph artifacts
+graphify-out/
+

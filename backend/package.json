@@ -9,8 +9,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "dev": "nodemon --watch src --ext ts,json --exec ts-node src/app.ts",
-    "admin:create": "ts-node src/scripts/createAdminUser.ts",
-    "admin:seed": "ts-node src/scripts/adminSeeder.ts"
+    "admin:create": "ts-node scripts/createAdminUser.ts",
+    "admin:seed": "ts-node scripts/adminSeeder.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
@@ -25,7 +25,7 @@
     "zod": "^4.4.3"
   },
   "prisma": {
-    "seed": "ts-node src/prisma/seed.ts"
+    "seed": "ts-node prisma/seed/seed.ts"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
