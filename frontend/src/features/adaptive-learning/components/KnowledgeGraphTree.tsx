@@ -21,7 +21,10 @@ import {
     SlidersHorizontal,
     GraduationCap,
     BarChart2,
-    Compass
+    Compass,
+    ChevronLeft,
+    PanelRightClose,
+    PanelRightOpen
 } from 'lucide-react';
 import defaultSkillGraph from '../../../data/pythonSkillGraph.json';
 import { MascotWavingBannerIllustration } from '../../ai-tutor/components/AITutorIllustrations';
@@ -173,6 +176,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
     const [selectedTopicPill, setSelectedTopicPill] = useState<string>('ALL');
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [selectedConceptId, setSelectedConceptId] = useState<string>('PY-BASICS-02');
+    const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
     const [zoomLevel, setZoomLevel] = useState<number>(1);
     const [copiedSyntax, setCopiedSyntax] = useState<boolean>(false);
     const [isExecuting, setIsExecuting] = useState<boolean>(false);
@@ -573,6 +577,21 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                             <span className="w-2.5 h-2.5 rounded-full bg-purple-500 ring-4 ring-purple-100" />
                             <span>Đề xuất tiếp theo</span>
                         </div>
+
+                        {/* Quick Toggle Panel Button */}
+                        <div className="h-4 w-px bg-slate-200 ml-1 hidden sm:block" />
+                        <button
+                            onClick={() => setIsDrawerOpen(prev => !prev)}
+                            className={`hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
+                                isDrawerOpen 
+                                    ? 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 hover:text-slate-900' 
+                                    : 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 shadow-2xs'
+                            }`}
+                            title={isDrawerOpen ? "Thu gọn bảng chi tiết (hoặc nhấn nút X)" : "Mở bảng chi tiết bài học"}
+                        >
+                            {isDrawerOpen ? <PanelRightClose className="w-3.5 h-3.5 text-slate-500" /> : <PanelRightOpen className="w-3.5 h-3.5 text-blue-600" />}
+                            <span>{isDrawerOpen ? 'Thu gọn' : 'Chi tiết'}</span>
+                        </button>
                     </div>
                 </div>
 
@@ -692,7 +711,10 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                     return (
                                         <div
                                             key={skill.id}
-                                            onClick={() => setSelectedConceptId(skill.id)}
+                                            onClick={() => {
+                                                setSelectedConceptId(skill.id);
+                                                setIsDrawerOpen(true);
+                                            }}
                                             style={{
                                                 position: 'absolute',
                                                 left: `${pos.x}px`,
@@ -768,8 +790,32 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                     {/* ========================================================================= */}
                     {/* 3.3 SLIDE-OUT CONCEPT DETAIL DRAWER (Right Inspector Panel)                */}
                     {/* ========================================================================= */}
+                    {/* Floating Toggle Button to reopen Drawer when collapsed */}
+                    <button
+                        onClick={() => setIsDrawerOpen(true)}
+                        className={`absolute right-0 top-1/2 -translate-y-1/2 z-30 flex items-center gap-1.5 py-3.5 px-2 rounded-l-xl bg-white border-y border-l border-slate-200/90 shadow-md hover:shadow-xl hover:bg-blue-50 text-slate-700 hover:text-blue-600 transition-all duration-300 cursor-pointer group ${
+                            isDrawerOpen ? 'translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100'
+                        }`}
+                        title="Mở bảng chi tiết bài học"
+                    >
+                        <ChevronLeft className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:-translate-x-0.5 transition-transform" />
+                        <div className="flex flex-col items-center gap-1">
+                            <BookOpen className="w-3.5 h-3.5 text-blue-600" />
+                            <span className="[writing-mode:vertical-rl] rotate-180 text-[11px] font-bold text-slate-600 group-hover:text-blue-600 tracking-wider select-none">
+                                Chi tiết bài học
+                            </span>
+                        </div>
+                    </button>
+
                     {activeConcept && (
-                        <div className="w-[360px] lg:w-[400px] border-l border-slate-200/90 bg-white p-5 flex flex-col justify-between overflow-y-auto shadow-lg z-20 transition-all shrink-0">
+                        <aside
+                            aria-label="Chi tiết bài học"
+                            className={`w-[360px] lg:w-[400px] border-l border-slate-200/90 bg-white p-5 flex flex-col justify-between overflow-y-auto shadow-xl z-20 shrink-0 transition-all duration-300 ease-in-out ${
+                                isDrawerOpen 
+                                    ? 'mr-0 opacity-100 visible' 
+                                    : '-mr-[360px] lg:-mr-[400px] opacity-0 invisible pointer-events-none'
+                            }`}
+                        >
                             <div className="space-y-4">
                                 
                                 {/* Header: Status Pill + Concept ID + Close Button */}
@@ -783,9 +829,9 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                         </span>
                                     </div>
                                     <button
-                                        onClick={() => setSelectedConceptId('')}
+                                        onClick={() => setIsDrawerOpen(false)}
                                         className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
-                                        title="Đóng bảng chi tiết"
+                                        title="Thu gọn bảng chi tiết"
                                     >
                                         <X className="w-4 h-4" />
                                     </button>
@@ -945,7 +991,10 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                             Bài học tiếp theo (Đề xuất)
                                         </span>
                                         <div 
-                                            onClick={() => setSelectedConceptId(recommendedNextConcept.id)}
+                                            onClick={() => {
+                                                setSelectedConceptId(recommendedNextConcept.id);
+                                                setIsDrawerOpen(true);
+                                            }}
                                             className="p-3 rounded-xl bg-purple-50/80 hover:bg-purple-100/90 border border-purple-200 flex items-center justify-between transition-all cursor-pointer group shadow-2xs"
                                         >
                                             <div className="flex items-center gap-2.5 min-w-0">
@@ -968,7 +1017,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                     </div>
                                 )}
                             </div>
-                        </div>
+                        </aside>
                     )}
                 </div>
 

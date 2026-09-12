@@ -17,23 +17,27 @@ interface CourseCardProps {
 }
 
 export const CourseCard: React.FC<CourseCardProps> = ({ course, onClick }) => {
-    // Danh sách các gradient đẹp mắt
-    const gradients = [
-        'from-[#c084fc] to-[#6366f1]', // Tím - Indigo
-        'from-[#ff9f0a] to-[#ff3b30]', // Cam - Đỏ
-        'from-[#00d2ff] to-[#0066ff]', // Xanh dương - Cyan
-        'from-[#30d158] to-[#00a86b]', // Xanh lá - Emerald
-    ];
-    // Chọn gradient cố định dựa trên độ dài của tiêu đề khóa học để không bị thay đổi ngẫu nhiên mỗi lần render
-    const gradientIndex = course.title.length % gradients.length;
-    const bannerGradient = gradients[gradientIndex];
+    const isCpp = /c\+\+/i.test(course.title);
+    const isSql = /sql/i.test(course.title);
+
+    const bannerGradient = isCpp
+        ? 'from-[#0B1E38] via-[#004482] to-[#0284C7]'
+        : isSql
+        ? 'from-[#0B1727] via-[#0C4A6E] to-[#0D9488]'
+        : 'from-[#1E3A8A] via-[#2563EB] to-[#7C5CFC]';
+
     return (
         <div
-            className="bg-bg-secondary border border-border-custom rounded-2xl overflow-hidden hover:border-text-tertiary/20 transition-all duration-200 cursor-pointer flex flex-col text-left hover:-translate-y-1 shadow-sm"
+            className="bg-bg-secondary border border-border-custom rounded-2xl overflow-hidden hover:border-text-tertiary/20 transition-all duration-200 cursor-pointer flex flex-col text-left hover:-translate-y-1 shadow-sm group"
             onClick={onClick}
         >
             {/* Banner đầu thẻ với gradient */}
-            <div className={`h-[140px] p-6 flex flex-col justify-end text-white bg-gradient-to-br ${bannerGradient} relative`}>
+            <div className={`h-[140px] p-6 flex flex-col justify-end text-white bg-gradient-to-br ${bannerGradient} relative overflow-hidden`}>
+                <div className="absolute top-3 right-3">
+                    <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md border border-white/25 uppercase tracking-wider text-white shadow-xs">
+                        {isCpp ? 'C++ 17' : isSql ? 'SQL' : 'PYTHON'}
+                    </span>
+                </div>
                 <div className="font-bold text-lg leading-tight uppercase line-clamp-1">{course.title}</div>
                 <div className="text-xs text-white/85 mt-1 line-clamp-1">{course.description}</div>
             </div>

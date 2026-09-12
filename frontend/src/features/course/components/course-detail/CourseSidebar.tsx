@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Clock, BookOpen, BarChart3, Globe, Award, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
 
 interface CourseSidebarProps {
+    courseTitle?: string;
     firstLessonId?: string;
     totalDuration: number;
     totalLessons: number;
@@ -10,12 +11,15 @@ interface CourseSidebarProps {
 }
 
 export const CourseSidebar: React.FC<CourseSidebarProps> = ({
+    courseTitle,
     firstLessonId,
     totalDuration,
     totalLessons,
     level,
 }) => {
     const navigate = useNavigate();
+    const isCpp = /c\+\+/i.test(courseTitle || '');
+    const isSql = /sql/i.test(courseTitle || '');
 
     return (
         <div className="w-full lg:w-[320px] xl:w-[340px] shrink-0 lg:sticky lg:top-[88px] self-start">
@@ -38,7 +42,13 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
 
                 {/* Primary CTA Button */}
                 <button
-                    className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-[#7C5CFC] hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer text-sm border-none select-none group"
+                    className={`w-full text-white font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer text-sm border-none select-none group ${
+                        isCpp
+                            ? 'bg-gradient-to-r from-[#00599C] via-[#0284C7] to-[#0077CC] hover:from-[#004B85] hover:via-[#0275B0] hover:to-[#0066B3] shadow-lg shadow-sky-600/30'
+                            : isSql
+                            ? 'bg-gradient-to-r from-teal-600 via-cyan-600 to-teal-700 hover:from-teal-700 hover:via-cyan-700 hover:to-teal-800 shadow-lg shadow-teal-500/25'
+                            : 'bg-gradient-to-r from-blue-600 via-indigo-600 to-[#7C5CFC] hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 shadow-lg shadow-blue-500/25'
+                    }`}
                     onClick={() => {
                         if (firstLessonId) {
                             navigate(`/lesson/${firstLessonId}`);
@@ -57,15 +67,21 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
                         <span className="font-semibold text-slate-700 dark:text-slate-300">
                             Tiến độ học tập
                         </span>
-                        <span className="font-bold text-blue-600 dark:text-blue-400">
+                        <span className={`font-bold ${isCpp ? 'text-sky-600 dark:text-sky-400' : isSql ? 'text-teal-600 dark:text-teal-400' : 'text-blue-600 dark:text-blue-400'}`}>
                             0% hoàn thành
                         </span>
                     </div>
                     <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full w-[4%]" />
+                        <div className={`h-full rounded-full w-[4%] ${
+                            isCpp
+                                ? 'bg-gradient-to-r from-[#00599C] to-[#38BDF8]'
+                                : isSql
+                                ? 'bg-gradient-to-r from-teal-500 to-cyan-500'
+                                : 'bg-gradient-to-r from-blue-500 to-indigo-500'
+                        }`} />
                     </div>
                     <span className="text-[11px] text-slate-400 dark:text-slate-500">
-                        Chưa bắt đầu • Sẵn sàng học bài 1
+                        {isCpp ? 'Chưa bắt đầu • Sẵn sàng học C++ Bài 1' : 'Chưa bắt đầu • Sẵn sàng học bài 1'}
                     </span>
                 </div>
 

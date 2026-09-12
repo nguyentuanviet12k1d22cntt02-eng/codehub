@@ -12,11 +12,23 @@ import {
     parseRuntimeStderr
 } from '../utils/docker.utils';
 
+let isGccDockerImageAvailable: boolean | null = null;
+
 export class CppRunner implements ICodeRunner {
     public readonly language: SupportedLanguage;
 
     constructor(language: 'CPP' | 'C' = 'CPP') {
         this.language = language;
+    }
+
+    private checkDockerImage(): Promise<boolean> {
+        if (isGccDockerImageAvailable !== null) return Promise.resolve(isGccDockerImageAvailable);
+        return new Promise((resolve) => {
+            exec('docker images -q gcc:12-alpine', { timeout: 1500 }, (err, stdout) => {
+                isGccDockerImageAvailable = !err && !!stdout && stdout.trim().length > 0;
+                resolve(isGccDockerImageAvailable);
+            });
+        });
     }
 
     public async run(code: string, options?: ExecutionOptions): Promise<ExecuteResult> {
@@ -34,7 +46,9 @@ export class CppRunner implements ICodeRunner {
         await fs.writeFile(filePath, code, 'utf-8');
 
         const hasDocker = await checkDockerDaemon();
-        if (!hasDocker) {
+        const hasImage = hasDocker ? await this.checkDockerImage() : false;
+
+        if (!hasDocker || !hasImage) {
             return this.runLocally(filePath, inputData, timeoutMs);
         }
 
@@ -126,8 +140,8 @@ export class CppRunner implements ICodeRunner {
                 isFinished = true;
                 clearTimeout(timer);
 
-                if (code !== 0 && /docker API|Cannot connect to the Docker daemon|docker\.sock|no such file or directory/i.test(stderr)) {
-                    setDockerDaemonStatus(false);
+                if (code !== 0 && /docker API|Cannot connect to the Docker daemon|docker\.sock|no such file or directory|Unable to find image|failed to resolve reference|pull access denied/i.test(stderr)) {
+                    console.log(`[CppRunner] Docker không có sẵn image phù hợp, tự động fallback sang compiler cục bộ (${this.language})`);
                     const localResult = await this.runLocally(filePath, inputData, timeoutMs);
                     return resolve(localResult);
                 }

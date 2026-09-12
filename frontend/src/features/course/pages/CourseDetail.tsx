@@ -113,13 +113,20 @@ const CourseDetail: React.FC = () => {
                         totalDuration={totalDuration}
                     />
 
-                    <CourseOverview description={course.description} />
+                    <CourseOverview
+                        description={course.description}
+                        courseTitle={course.title}
+                    />
 
-                    <CourseCurriculum modules={course.modules} />
+                    <CourseCurriculum
+                        modules={course.modules}
+                        courseTitle={course.title}
+                    />
                 </div>
 
                 {/* Cột phải: Sticky Sidebar đăng ký & Thông tin */}
                 <CourseSidebar
+                    courseTitle={course.title}
                     firstLessonId={firstLessonId}
                     totalDuration={totalDuration}
                     totalLessons={totalLessons}

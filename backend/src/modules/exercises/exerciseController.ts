@@ -14,7 +14,9 @@ export const runCodeDynamic = async (req: Request, res: Response): Promise<void>
             return;
         }
 
-        const execLanguage = language || (/SELECT|FROM|WHERE|INSERT|UPDATE|DELETE/i.test(code) ? 'SQL' : 'PYTHON');
+        const isCpp = /#include\s*<|std::/i.test(code);
+        const isSql = /SELECT|FROM|WHERE|INSERT|UPDATE|DELETE/i.test(code);
+        const execLanguage = language || (isCpp ? 'CPP' : isSql ? 'SQL' : 'PYTHON');
         const result = await exerciseService.runDynamicCode(code, execLanguage as any, input || '', 5000);
 
         if (result.status === 'TIMEOUT') {
@@ -211,11 +213,13 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
             return;
         }
 
-        const isSqlExercise = exercise.lesson?.lessonId?.startsWith('SQL-') || /SELECT|FROM|WHERE/i.test(code);
-        const execLanguage = isSqlExercise ? 'SQL' : 'PYTHON';
+        const lessonCode = exercise.lesson?.lessonId || '';
+        const isCppExercise = lessonCode.startsWith('CPP-') || /#include\s*<|std::/i.test(code);
+        const isSqlExercise = !isCppExercise && (lessonCode.startsWith('SQL-') || /SELECT|FROM|WHERE/i.test(code));
+        const execLanguage = isCppExercise ? 'CPP' : isSqlExercise ? 'SQL' : 'PYTHON';
 
         // 2. Kiểm tra ràng buộc biến tĩnh & dynamic constraints chỉ khi là bài tập Python
-        if (!isSqlExercise) {
+        if (execLanguage === 'PYTHON') {
             const constraintError = parseAndValidateConstraints(exercise.problemDescription || '', exercise.title, code);
             if (constraintError) {
                 res.status(200).json({

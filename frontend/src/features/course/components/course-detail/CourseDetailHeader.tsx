@@ -25,16 +25,36 @@ export const CourseDetailHeader: React.FC<CourseDetailHeaderProps> = ({
                         className="flex items-center gap-2.5 cursor-pointer select-none group"
                         onClick={() => navigate('/dashboard')}
                     >
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-sm shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform ${
+                            /c\+\+/i.test(courseTitle)
+                                ? 'bg-gradient-to-tr from-[#00599C] to-[#0284C7] shadow-sky-500/25'
+                                : /sql/i.test(courseTitle)
+                                ? 'bg-gradient-to-tr from-teal-600 to-cyan-600 shadow-teal-500/25'
+                                : 'bg-gradient-to-tr from-blue-600 to-indigo-600 shadow-blue-500/20'
+                        }`}>
                             <Code2 className="w-4.5 h-4.5" />
                         </div>
                         <span className="text-xl font-extrabold tracking-tight text-[#172033] dark:text-white">
                             MCODE
                         </span>
                     </div>
-                    <span className="hidden sm:inline-flex items-center text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-full border border-blue-200/60 dark:border-blue-800/60 tracking-wider uppercase">
-                        SQL & PYTHON
-                    </span>
+
+                    {/c\+\+/i.test(courseTitle) ? (
+                        <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-0.5 rounded-full border border-sky-200/60 dark:border-sky-800/60 tracking-wider uppercase">
+                            <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+                            C++ MODERN
+                        </span>
+                    ) : /sql/i.test(courseTitle) ? (
+                        <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/60 px-2.5 py-0.5 rounded-full border border-teal-200/60 dark:border-teal-800/60 tracking-wider uppercase">
+                            <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
+                            SQL SERVER
+                        </span>
+                    ) : (
+                        <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2.5 py-0.5 rounded-full border border-blue-200/60 dark:border-blue-800/60 tracking-wider uppercase">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                            PYTHON CORE
+                        </span>
+                    )}
                 </div>
 
                 {/* Navigation Links */}

@@ -241,11 +241,13 @@ const Practice: React.FC = () => {
         setActiveTerminalTab('console');
 
         try {
-            const isSql = lesson?.lessonId?.startsWith('SQL-') || /SELECT|FROM/i.test(code);
+            const isCpp = lesson?.lessonId?.startsWith('CPP-') || /#include\s*<|std::/i.test(code);
+            const isSql = !isCpp && (lesson?.lessonId?.startsWith('SQL-') || /SELECT|FROM/i.test(code));
+            const language = isCpp ? 'CPP' : isSql ? 'SQL' : 'PYTHON';
             const response = await axios.post(`${API_BASE_URL}/api/auth/compiler/run`, {
                 code,
                 input: customInput,
-                language: isSql ? 'SQL' : 'PYTHON'
+                language
             });
             setIsRunning(false);
             if (response.data.success) {
@@ -365,7 +367,8 @@ const Practice: React.FC = () => {
         );
     }
 
-    const isSql = lesson?.lessonId?.startsWith('SQL-') || /SELECT|FROM/i.test(code);
+    const isCpp = lesson?.lessonId?.startsWith('CPP-') || /#include\s*<|std::/i.test(code);
+    const isSql = !isCpp && (lesson?.lessonId?.startsWith('SQL-') || /SELECT|FROM/i.test(code));
 
     return (
         <div className="bg-bg-primary text-text-primary min-h-screen flex flex-col font-sans select-none overflow-hidden h-screen transition-colors duration-200">
@@ -401,6 +404,7 @@ const Practice: React.FC = () => {
                             <Panel defaultSize={65} minSize={30}>
                                 <CodeEditorPanel
                                     isSql={isSql}
+                                    isCpp={isCpp}
                                     currentTheme={currentTheme}
                                     code={code}
                                     exercise={exercise}

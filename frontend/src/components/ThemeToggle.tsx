@@ -5,8 +5,12 @@ export const ThemeToggle: React.FC = () => {
     const [theme, setTheme] = useState<'light' | 'dark'>(getInitialTheme());
 
     useEffect(() => {
-        // Đồng bộ theme ban đầu
-        setTheme(getInitialTheme());
+        // Đồng bộ theme ban đầu & lắng nghe khi theme thay đổi
+        const syncTheme = () => setTheme(getInitialTheme());
+        syncTheme();
+
+        window.addEventListener('theme-change', syncTheme);
+        return () => window.removeEventListener('theme-change', syncTheme);
     }, []);
 
     const toggleTheme = () => {

@@ -130,8 +130,33 @@ const StudentCodeBlockView: React.FC<{ code: string; language: string }> = ({ co
     );
 };
 
+const sanitizeMathAndFormatting = (markdown: string): string => {
+    if (!markdown) return '';
+    return markdown
+        // Replace LaTeX multiplications, divisions, plusminus, inequalities
+        .replace(/\\times/g, '×')
+        .replace(/\\div/g, '÷')
+        .replace(/\\pm/g, '±')
+        .replace(/\\le\b|\\leq\b/g, '≤')
+        .replace(/\\ge\b|\\geq\b/g, '≥')
+        .replace(/\\approx/g, '≈')
+        .replace(/\\neq/g, '≠')
+        .replace(/\\cdot/g, '·')
+        .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+        .replace(/\\sqrt/g, '√')
+        // Superscripts
+        .replace(/10\^\{?18\}?/g, '10¹⁸')
+        .replace(/10\^\{?9\}?/g, '10⁹')
+        .replace(/10\^\{?6\}?/g, '10⁶')
+        .replace(/10\^\{?5\}?/g, '10⁵')
+        .replace(/2\^\{?31\}?/g, '2³¹')
+        .replace(/2\^\{?63\}?/g, '2⁶³')
+        // Strip single $ delimiters around inline math expressions
+        .replace(/\$([^\$\n]+)\$/g, '$1');
+};
+
 export const LessonContentRenderer: React.FC<LessonContentRendererProps> = ({ content }) => {
-    const cleanedContent = stripQuizSectionFromMarkdown(stripFrontmatter(content || ''));
+    const cleanedContent = sanitizeMathAndFormatting(stripQuizSectionFromMarkdown(stripFrontmatter(content || '')));
 
     return (
         <div className="select-text prose max-w-none text-[15px] leading-7">

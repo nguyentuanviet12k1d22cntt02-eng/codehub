@@ -249,7 +249,7 @@ export const parseMarkdownToBlocks = (markdown: string, lessonTitle: string): Le
             blocks.push({
                 id: `b-${blockCounter++}`,
                 type: 'code',
-                language: codeLang.toUpperCase() === 'SQL' ? 'SQL' : 'Python',
+                language: (codeLang.toUpperCase() === 'CPP' || codeLang.toUpperCase() === 'C++') ? 'C++' : codeLang.toUpperCase() === 'SQL' ? 'SQL' : (codeLang.toUpperCase() === 'JS' || codeLang.toUpperCase() === 'JAVASCRIPT') ? 'JavaScript' : 'Python',
                 showLineNumbers: true,
                 allowCopy: true,
                 theme: 'Dark',
@@ -417,8 +417,11 @@ export const convertBlocksToMarkdown = (blocks: LessonBlock[]): string => {
                 return b.content;
             case 'list':
                 return b.content;
-            case 'code':
-                return `\`\`\`${(b.language || 'python').toLowerCase()}\n${b.content}\n\`\`\``;
+            case 'code': {
+                const lang = (b.language || 'python').toLowerCase();
+                const langTag = (lang === 'c++' || lang === 'cpp') ? 'cpp' : lang;
+                return `\`\`\`${langTag}\n${b.content}\n\`\`\``;
+            }
             case 'callout':
             case 'explanation':
             case 'note':

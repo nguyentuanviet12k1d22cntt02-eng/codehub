@@ -33,11 +33,28 @@ export const tokenizeAndHighlight = (rawCode: string, lang: string = 'Python'): 
     const jsKeywords = new Set(['const', 'let', 'var', 'function', 'return', 'if', 'else', 'switch', 'case', 'break', 'for', 'while', 'do', 'import', 'export', 'default', 'class', 'extends', 'new', 'this', 'async', 'await', 'try', 'catch', 'finally', 'throw', 'typeof', 'instanceof', 'true', 'false', 'null', 'undefined']);
     const jsBuiltins = new Set(['console', 'log', 'document', 'window', 'Math', 'JSON', 'Promise', 'Array', 'Object', 'String', 'Number', 'fetch', 'setTimeout', 'setInterval']);
 
+    const cppKeywords = new Set([
+        'int', 'long', 'float', 'double', 'char', 'bool', 'void', 'auto', 'short', 'signed', 'unsigned',
+        'const', 'constexpr', 'static', 'extern', 'inline', 'virtual', 'explicit', 'friend',
+        'static_cast', 'dynamic_cast', 'reinterpret_cast', 'const_cast', 'sizeof', 'alignof', 'decltype',
+        'return', 'if', 'else', 'while', 'for', 'do', 'switch', 'case', 'break', 'continue', 'default',
+        'using', 'namespace', 'struct', 'class', 'public', 'private', 'protected', 'template', 'typename',
+        'nullptr', 'true', 'false', 'new', 'delete', 'try', 'catch', 'throw', 'typedef', 'operator'
+    ]);
+    const cppBuiltins = new Set([
+        'std', 'cout', 'cin', 'cerr', 'clog', 'endl', 'vector', 'string', 'pair', 'make_pair',
+        'map', 'set', 'unordered_map', 'unordered_set', 'queue', 'deque', 'stack', 'priority_queue',
+        'algorithm', 'sort', 'min', 'max', 'abs', 'swap', 'reverse', 'fill', 'iota', 'clamp', 'fmod',
+        'size_t', 'int64_t', 'uint64_t', 'int32_t', 'uint32_t', 'ifstream', 'ofstream', 'stringstream'
+    ]);
+
     let regex: RegExp;
     if (l === 'SQL') {
         regex = /(--[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")|(\b\d+(?:\.\d+)?\b)|(\b[a-zA-Z_][a-zA-Z0-9_]*\b)|([^\s\w])/g;
     } else if (l === 'PYTHON') {
         regex = /(#[^\n]*)|(f?'''[\s\S]*?'''|f?"""[\s\S]*?"""|f?'(?:[^'\\]|\\.)*'|f?"(?:[^"\\]|\\.)*")|(\b\d+(?:\.\d+)?\b)|(\b[a-zA-Z_][a-zA-Z0-9_]*\b)|([^\s\w])/g;
+    } else if (l === 'C++' || l === 'CPP') {
+        regex = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")|(\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?(?:LL|ULL|ll|ull|f|F|u|U|l|L)?\b)|(#[a-zA-Z_]\w*|\b[a-zA-Z_][a-zA-Z0-9_]*\b)|([^\s\w])/g;
     } else {
         regex = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:[^`\\]|\\.)*`|'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")|(\b\d+(?:\.\d+)?\b)|(\b[a-zA-Z_][a-zA-Z0-9_]*\b)|([^\s\w])/g;
     }
@@ -70,6 +87,16 @@ export const tokenizeAndHighlight = (rawCode: string, lang: string = 'Python'): 
                 if (pythonKeywords.has(word)) {
                     htmlResult += `<span style="color: #f59e0b; font-weight: 700;">${escapeHtml(word)}</span>`;
                 } else if (pythonBuiltins.has(word)) {
+                    htmlResult += `<span style="color: #c084fc; font-weight: 600;">${escapeHtml(word)}</span>`;
+                } else {
+                    htmlResult += `<span style="color: #f8fafc;">${escapeHtml(word)}</span>`;
+                }
+            } else if (l === 'C++' || l === 'CPP') {
+                if (word.startsWith('#')) {
+                    htmlResult += `<span style="color: #f43f5e; font-weight: 700;">${escapeHtml(word)}</span>`;
+                } else if (cppKeywords.has(word)) {
+                    htmlResult += `<span style="color: #38bdf8; font-weight: 700;">${escapeHtml(word)}</span>`;
+                } else if (cppBuiltins.has(word)) {
                     htmlResult += `<span style="color: #c084fc; font-weight: 600;">${escapeHtml(word)}</span>`;
                 } else {
                     htmlResult += `<span style="color: #f8fafc;">${escapeHtml(word)}</span>`;
