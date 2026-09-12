@@ -67,8 +67,8 @@ const lessonsToSeed: LessonSeedItem[] = [
             title: 'Kiểm tra độ tuổi lái xe hợp lệ',
             difficulty: 'EASY',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào một số nguyên $age$ đại diện cho tuổi của một người.
-Sử dụng toán tử so sánh để kiểm tra xem người này có đủ điều kiện thi bằng lái xe máy tại Việt Nam hay không (yêu cầu từ 18 tuổi trở lên, tức $age \\ge 18$).
+Nhập vào một số nguyên age đại diện cho tuổi của một người từ bàn phím.
+Sử dụng toán tử so sánh để kiểm tra xem người này có đủ điều kiện thi bằng lái xe máy tại Việt Nam hay không (yêu cầu từ 18 tuổi trở lên, tức age ≥ 18).
 * Nếu đủ điều kiện, in ra: \`Du dieu kien\`
 * Nếu chưa đủ điều kiện, in ra: \`Chua du dieu kien\`
 
@@ -76,7 +76,13 @@ Sử dụng toán tử so sánh để kiểm tra xem người này có đủ đi
 * **Đầu vào:** \`20\`
 * **Đầu ra:** \`Du dieu kien\`
 * **Đầu vào:** \`16\`
-* **Đầu ra:** \`Chua du dieu kien\``,
+* **Đầu ra:** \`Chua du dieu kien\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng cấu trúc rẽ nhánh \`if-else\` để kiểm tra điều kiện độ tuổi.
+* Bắt buộc sử dụng \`std::cin\` để đọc và \`std::cout\` để in kết quả kết thúc bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["if","else","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng cấu trúc if-else để kiểm tra điều kiện độ tuổi."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -135,17 +141,26 @@ int main() {
             title: 'Xếp loại học lực học sinh',
             difficulty: 'EASY',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào một số thực $score$ đại diện cho điểm trung bình ($0 \\le score \\le 10$).
-Hãy xếp loại học lực theo quy tắc:
-* Điểm $\\ge 8.0$: in ra \`Gioi\`
-* Điểm $\\ge 6.5$ và $< 8.0$: in ra \`Kha\`
-* Điểm $\\ge 5.0$ và $< 6.5$: in ra \`Trung binh\`
-* Điểm $< 5.0$: in ra \`Yeu\`
+Nhập vào điểm trung bình dtb (số thực từ 0.0 đến 10.0) của một học sinh.
+Hãy sử dụng cấu trúc rẽ nhánh nhiều nhánh (\`if - else if - else\`) để xếp loại học lực:
+* Nếu dtb ≥ 8.0: In ra \`Gioi\`
+* Nếu 6.5 ≤ dtb < 8.0: In ra \`Kha\`
+* Nếu 5.0 ≤ dtb < 6.5: In ra \`Trung binh\`
+* Nếu dtb < 5.0: In ra \`Yeu\`
 
 ### Ví dụ:
-* **Đầu vào:** \`8.5\` -> **Đầu ra:** \`Gioi\`
-* **Đầu vào:** \`7.2\` -> **Đầu ra:** \`Kha\`
-* **Đầu vào:** \`4.8\` -> **Đầu ra:** \`Yeu\``,
+* **Đầu vào:** \`8.5\`
+* **Đầu ra:** \`Gioi\`
+* **Đầu vào:** \`7.2\`
+* **Đầu ra:** \`Kha\`
+* **Đầu vào:** \`4.0\`
+* **Đầu ra:** \`Yeu\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng cấu trúc \`if - else if - else\` theo đúng thứ tự logic.
+* Bắt buộc sử dụng \`std::cin\` để đọc dữ liệu và \`std::cout\` để in kết quả.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["if","else","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng cấu trúc if - else if - else để phân loại học lực."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -208,16 +223,28 @@ int main() {
             title: 'Kiểm tra điều kiện rút tiền ATM với Early Return',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào 2 số nguyên $balance$ (số dư tài khoản) và $amount$ (số tiền cần rút).
-Áp dụng kỹ thuật Early Return để kiểm tra:
-1. Nếu $amount \\le 0$: in ra \`So tien khong hop le\`
-2. Nếu $amount > balance$: in ra \`So du khong du\`
-3. Nếu $amount$ không chia hết cho 50000: in ra \`Phai la boi so cua 50000\`
-4. Nếu tất cả đều thỏa mãn: in ra \`Rut tien thanh cong: <so_tien_con_lai>\`
+Nhập vào 2 số nguyên dương trên cùng một dòng:
+* \`soDu\`: Số dư hiện tại trong tài khoản ngân hàng.
+* \`soTien\`: Số tiền khách hàng muốn rút.
+
+Kiểm tra điều kiện rút tiền theo thứ tự ưu tiên bằng kỹ thuật Early Return (thoát sớm):
+1. Số tiền rút phải là bội số của 50.000 VNĐ. Nếu không thỏa mãn, in ra \`So tien phai la boi cua 50000\` và kết thúc ngay.
+2. Số tiền rút không được vượt quá số dư tài khoản. Nếu vượt quá, in ra \`So du khong du\` và kết thúc ngay.
+3. Nếu thỏa mãn cả hai điều kiện trên, in ra \`Rut tien thanh cong\`.
 
 ### Ví dụ:
-* **Đầu vào:** \`500000 200000\` -> **Đầu ra:** \`Rut tien thanh cong: 300000\`
-* **Đầu vào:** \`500000 600000\` -> **Đầu ra:** \`So du khong du\``,
+* **Đầu vào:** \`500000 200000\`
+* **Đầu ra:** \`Rut tien thanh cong\`
+* **Đầu vào:** \`100000 150000\`
+* **Đầu ra:** \`So du khong du\`
+* **Đầu vào:** \`500000 120000\`
+* **Đầu ra:** \`So tien phai la boi cua 50000\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng kỹ thuật Early Return với lệnh \`return\` để thoát chương trình sớm khi gặp lỗi.
+* Sử dụng \`std::cin\` để đọc dữ liệu và \`std::cout\` để in kết quả.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["return","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng kỹ thuật Early Return (lệnh return sớm) để xử lý điều kiện."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -285,15 +312,25 @@ int main() {
             title: 'Máy tính mini 4 phép toán cơ bản bằng switch-case',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào 2 số thực $a$, $b$ và một ký tự toán tử $op$ ($+$, $-$, $*$, $/$) trên cùng một dòng (ngăn cách bởi dấu cách).
+Nhập vào 2 số thực a, b và một ký tự toán tử op (\`+\`, \`-\`, \`*\`, \`/\`) trên cùng một dòng (ngăn cách bởi dấu cách).
 Sử dụng cấu trúc \`switch-case\` để thực hiện phép tính tương ứng:
-* Nếu là phép chia và $b = 0$, in ra: \`Khong the chia cho 0\`
-* Nếu toán tử không hợp lệ, in ra: \`Phep toan khong hop le\`
+* Nếu op là phép chia \`/\` và b = 0: in ra \`Khong the chia cho 0\`
+* Nếu ký tự op không hợp lệ: in ra \`Phep toan khong hop le\`
 * Các trường hợp hợp lệ in ra kết quả số thực tương ứng.
 
 ### Ví dụ:
-* **Đầu vào:** \`10 5 +\` -> **Đầu ra:** \`15\`
-* **Đầu vào:** \`8 0 /\` -> **Đầu ra:** \`Khong the chia cho 0\``,
+* **Đầu vào:** \`10 5 +\`
+* **Đầu ra:** \`15\`
+* **Đầu vào:** \`8 0 /\`
+* **Đầu ra:** \`Khong the chia cho 0\`
+* **Đầu vào:** \`20 4 /\`
+* **Đầu ra:** \`5\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng cấu trúc \`switch-case\` để phân nhánh xử lý toán tử.
+* Sử dụng \`std::cin\` và \`std::cout\` kết thúc bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["switch","case","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu bắt buộc phải sử dụng cấu trúc switch-case!"} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -376,11 +413,20 @@ int main() {
             problemDescription: `### Yêu Cầu Đề Bài:
 Viết chương trình sử dụng vòng lặp \`while\` để liên tục nhận các số nguyên từ bàn phím.
 Chương trình dừng lại khi người dùng nhập số \`0\`.
-In ra màn hình tổng của tất cả các số đã nhập.
+In ra màn hình tổng của tất cả các số đã nhập theo định dạng:
+\`Tong: <ket_qua>\`
 
 ### Ví dụ:
 * **Đầu vào:** \`5 10 15 0\`
-* **Đầu ra:** \`Tong: 30\``,
+* **Đầu ra:** \`Tong: 30\`
+* **Đầu vào:** \`0\`
+* **Đầu ra:** \`Tong: 0\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng vòng lặp \`while\` để đọc dữ liệu liên tục cho đến khi gặp số 0.
+* Sử dụng \`std::cin\` để đọc và \`std::cout\` để in kết quả theo đúng định dạng.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["while","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng vòng lặp while để đọc dữ liệu liên tục cho đến khi gặp số 0."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -436,13 +482,22 @@ int main() {
             title: 'Tính tổng các số lẻ từ 1 đến N bỏ qua bội số của 5',
             difficulty: 'EASY',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào một số nguyên dương $N$ ($1 \\le N \\le 10^5$).
-Sử dụng vòng lặp \`for\` kết hợp lệnh \`continue\` để tính tổng tất cả các số lẻ trong đoạn $[1, N]$, nhưng **bỏ qua** các số là bội của 5.
+Nhập vào một số nguyên dương N (1 ≤ N ≤ 10⁵).
+Sử dụng vòng lặp \`for\` kết hợp lệnh \`continue\` để tính tổng tất cả các số lẻ trong đoạn [1, N], nhưng **bỏ qua** các số là bội của 5.
+In ra kết quả tổng tìm được.
 
 ### Ví dụ:
 * **Đầu vào:** \`10\`
-* Các số lẻ: 1, 3, 5, 7, 9 -> Bỏ số 5 -> Tổng: 1 + 3 + 7 + 9 = 20
-* **Đầu ra:** \`20\``,
+* Giải thích: Các số lẻ là 1, 3, 5, 7, 9; bỏ qua số 5; tổng = 1 + 3 + 7 + 9 = 20.
+* **Đầu ra:** \`20\`
+* **Đầu vào:** \`20\`
+* **Đầu ra:** \`80\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng vòng lặp \`for\` và câu lệnh \`continue\` để bỏ qua các số chia hết cho 5.
+* Sử dụng kiểu \`long long\` cho biến tổng để chống tràn số.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["for","continue","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu sử dụng vòng lặp for và lệnh continue để bỏ qua các bội số của 5."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -502,11 +557,11 @@ int main() {
             title: 'Vẽ tam giác vuông dấu sao chiều cao N',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào một số nguyên dương $N$ ($1 \\le N \\le 20$).
-Sử dụng 2 vòng lặp \`for\` lồng nhau để vẽ một hình tam giác vuông cạnh góc vuông kích thước $N$:
+Nhập vào một số nguyên dương N (1 ≤ N ≤ 20).
+Sử dụng 2 vòng lặp \`for\` lồng nhau để vẽ một hình tam giác vuông cân cạnh góc vuông kích thước N:
 * Hàng 1 có 1 dấu sao \`*\`
 * Hàng 2 có 2 dấu sao \`**\`
-* Hàng $i$ có $i$ dấu sao...
+* Hàng i có i dấu sao...
 
 ### Ví dụ:
 * **Đầu vào:** \`3\`
@@ -515,7 +570,18 @@ Sử dụng 2 vòng lặp \`for\` lồng nhau để vẽ một hình tam giác v
 *
 **
 ***
-\`\`\``,
+\`\`\`
+* **Đầu vào:** \`1\`
+* **Đầu ra:**
+\`\`\`text
+*
+\`\`\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng 2 vòng lặp \`for\` lồng nhau (vòng ngoài quản lý hàng, vòng trong in dấu sao).
+* Mỗi hàng in xong phải xuống dòng bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["for","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng vòng lặp for lồng nhau để in tam giác dấu sao."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -575,12 +641,20 @@ int main() {
             title: 'Tìm Ước chung lớn nhất (GCD) bằng thuật toán Euclid',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào hai số nguyên dương $a$ và $b$ ($1 \\le a, b \\le 10^9$).
+Nhập vào hai số nguyên dương a và b (1 ≤ a, b ≤ 10⁹).
 Hãy tìm và in ra Ước chung lớn nhất (Greatest Common Divisor - GCD) của hai số bằng Thuật toán chia lấy dư Euclid.
 
 ### Ví dụ:
-* **Đầu vào:** \`24 36\` -> **Đầu ra:** \`12\`
-* **Đầu vào:** \`17 5\` -> **Đầu ra:** \`1\``,
+* **Đầu vào:** \`24 36\`
+* **Đầu ra:** \`12\`
+* **Đầu vào:** \`17 5\`
+* **Đầu ra:** \`1\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc tự cài đặt thuật toán chia lấy dư Euclid bằng vòng lặp \`while\` và phép chia dư \`%\`.
+* Nghiêm cấm sử dụng các hàm thư viện có sẵn như \`std::gcd\` hoặc \`__gcd\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["while","%","cin","cout"],"forbiddenKeywords":["std::gcd","__gcd"],"customErrorMessage":"Vui lòng tự cài đặt thuật toán Euclid bằng vòng lặp, cấm sử dụng hàm thư viện có sẵn std::gcd."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -640,14 +714,22 @@ int main() {
             title: 'Kiểm tra số đối xứng (Palindrome Number)',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào một số nguyên dương $N$ ($1 \\le N \\le 10^9$).
-Sử dụng kỹ thuật tách chữ số để đảo ngược số $N$.
-* Nếu số đảo ngược bằng chính số ban đầu, in ra: \`YES\` (là số Palindrome)
+Nhập vào một số nguyên dương N (1 ≤ N ≤ 10⁹).
+Sử dụng kỹ thuật tách chữ số để đảo ngược số N.
+* Nếu số đảo ngược bằng chính số ban đầu, in ra: \`YES\` (là số Palindrome đối xứng)
 * Ngược lại, in ra: \`NO\`
 
 ### Ví dụ:
-* **Đầu vào:** \`12321\` -> **Đầu ra:** \`YES\`
-* **Đầu vào:** \`12345\` -> **Đầu ra:** \`NO\``,
+* **Đầu vào:** \`12321\`
+* **Đầu ra:** \`YES\`
+* **Đầu vào:** \`12345\`
+* **Đầu ra:** \`NO\`
+
+### Ràng buộc kỹ thuật:
+* Sử dụng vòng lặp \`while\` cùng các phép toán chia dư \`%\` và chia nguyên \`/\` để tách từng chữ số.
+* Sử dụng biến đảo ngược kiểu \`long long\` để tránh tràn số.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["while","%","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng vòng lặp while và toán tử tách chữ số để kiểm tra số đối xứng."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -716,13 +798,21 @@ int main() {
             title: 'Hàm tính lũy thừa base^exp',
             difficulty: 'EASY',
             problemDescription: `### Yêu Cầu Đề Bài:
-Viết một hàm \`long long power(int base, int exp)\` nhận vào cơ số $base$ và số mũ $exp \\ge 0$.
-Hàm trả về kết quả $base^{exp}$ (với quy ước $base^0 = 1$).
-Trong hàm \`main()\`, nhập 2 số $base$ và $exp$, gọi hàm và in ra kết quả.
+Viết hàm \`long long power(long long base, int exp)\` nhận vào cơ số base và số mũ exp (exp ≥ 0) để tính giá trị lũy thừa base^exp.
+Trong hàm \`main()\`, nhập 2 số nguyên base và exp từ bàn phím, gọi hàm \`power\` và in kết quả ra màn hình.
 
 ### Ví dụ:
-* **Đầu vào:** \`2 10\` -> **Đầu ra:** \`1024\`
-* **Đầu vào:** \`5 0\` -> **Đầu ra:** \`1\``,
+* **Đầu vào:** \`2 10\`
+* **Đầu ra:** \`1024\`
+* **Đầu vào:** \`3 4\`
+* **Đầu ra:** \`81\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc tự định nghĩa hàm tính lũy thừa bằng vòng lặp hoặc đệ quy.
+* Nghiêm cấm sử dụng hàm thư viện có sẵn \`std::pow\` hoặc \`pow()\`.
+* Sử dụng kiểu \`long long\` cho giá trị trả về để chống tràn số.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["long long","cin","cout"],"forbiddenKeywords":["std::pow","pow("],"customErrorMessage":"Bài toán yêu cầu tự cài đặt hàm tính lũy thừa, cấm sử dụng hàm thư viện pow()."} -->`,
             starterCode: `#include <iostream>
 
 // Khai báo Function Prototype
@@ -790,12 +880,20 @@ int main() {
             title: 'Hàm hoán đổi giá trị hai số nguyên (Custom Swap)',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Viết hàm \`void swapValues(int& x, int& y)\` sử dụng tham chiếu \`&\` để hoán đổi trực tiếp giá trị của 2 biến được truyền vào.
-Trong hàm \`main()\`, nhập 2 số nguyên $a$ và $b$, gọi hàm \`swapValues(a, b)\` và in ra giá trị của $a$ và $b$ sau khi hoán đổi.
+Viết hàm \`void customSwap(int& a, int& b)\` để hoán đổi giá trị của 2 biến số nguyên sử dụng cơ chế truyền tham chiếu (\`&\`).
+Trong hàm \`main()\`, nhập vào 2 số nguyên a và b. Gọi hàm \`customSwap\` và in ra giá trị của 2 biến sau khi hoán đổi (ngăn cách bởi dấu cách).
 
 ### Ví dụ:
-* **Đầu vào:** \`10 99\`
-* **Đầu ra:** \`99 10\``,
+* **Đầu vào:** \`5 10\`
+* **Đầu ra:** \`10 5\`
+* **Đầu vào:** \`100 -50\`
+* **Đầu ra:** \`-50 100\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc tham số của hàm phải sử dụng toán tử tham chiếu \`&\` (\`int& a, int& b\`).
+* Nghiêm cấm sử dụng hàm thư viện \`std::swap\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["&","cin","cout"],"forbiddenKeywords":["std::swap"],"customErrorMessage":"Bài toán yêu cầu tự cài đặt hàm hoán đổi bằng cơ chế tham chiếu &, cấm dùng std::swap."} -->`,
             starterCode: `#include <iostream>
 
 void swapValues(int& x, int& y) {
@@ -862,16 +960,27 @@ int main() {
             title: 'Hàm kiểm tra mật khẩu an toàn với const std::string&',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Viết hàm \`bool isStrongPassword(const std::string& pwd)\` nhận chuỗi tham chiếu hằng:
-Mật khẩu được coi là an toàn nếu:
-* Có độ dài tối thiểu 8 ký tự (\`pwd.length() >= 8\`).
-* Chứa ít nhất một chữ số (\`std::isdigit\`).
-Hàm trả về \`true\` nếu an toàn, ngược lại trả về \`false\`.
-Trong \`main()\`, nhập mật khẩu và in ra \`STRONG\` hoặc \`WEAK\`.
+Viết hàm \`bool isStrongPassword(const std::string& pwd)\` kiểm tra tính an toàn của mật khẩu theo chuẩn:
+* Độ dài tối thiểu 8 ký tự.
+* Có ít nhất 1 chữ cái in hoa.
+* Có ít nhất 1 chữ cái in thường.
+* Có ít nhất 1 chữ số.
+
+Trong \`main()\`, nhập chuỗi mật khẩu không chứa khoảng trắng. Gọi hàm và in ra:
+* \`STRONG\` nếu thỏa mãn tất cả tiêu chí.
+* \`WEAK\` nếu vi phạm bất kỳ tiêu chí nào.
 
 ### Ví dụ:
-* **Đầu vào:** \`Admin123\` -> **Đầu ra:** \`STRONG\`
-* **Đầu vào:** \`hello\` -> **Đầu ra:** \`WEAK\``,
+* **Đầu vào:** \`Pass1234\`
+* **Đầu ra:** \`STRONG\`
+* **Đầu vào:** \`hello\`
+* **Đầu ra:** \`WEAK\`
+
+### Ràng buộc kỹ thuật:
+* Tham số hàm bắt buộc truyền bằng tham chiếu hằng: \`const std::string&\` để tối ưu hiệu năng bộ nhớ.
+* Sử dụng các hàm thư viện \`<cctype>\` (\`isupper\`, \`islower\`, \`isdigit\`).
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["const","&","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Hàm kiểm tra mật khẩu bắt buộc phải truyền tham số dạng tham chiếu hằng: const std::string&."} -->`,
             starterCode: `#include <iostream>
 #include <string>
 #include <cctype>
@@ -955,19 +1064,34 @@ int main() {
             title: 'Nạp chồng hàm tính diện tích hình học',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Cài đặt kỹ thuật Nạp chồng hàm (Function Overloading) với 2 hàm:
-* \`double area(double side)\`: Tính diện tích hình vuông cạnh $side$ ($side \\times side$).
-* \`double area(double length, double width)\`: Tính diện tích hình chữ nhật ($length \\times width$).
-Trong \`main()\`, nhập vào 3 số thực $s$, $l$, $w$.
-Gọi 2 hàm trên và in ra diện tích hình vuông và hình chữ nhật trên 2 dòng.
+Cài đặt kỹ thuật Nạp chồng hàm (Function Overloading) bằng cách định nghĩa 2 hàm cùng tên \`area\`:
+1. \`double area(double side)\`: Tính diện tích hình vuông (side × side).
+2. \`double area(double length, double width)\`: Tính diện tích hình chữ nhật (length × width).
+
+Dòng 1 nhập ký tự hình học: \`'S'\` (Square - Hình vuông) hoặc \`'R'\` (Rectangle - Hình chữ nhật).
+* Nếu là \`'S'\`: Dòng 2 nhập 1 số thực cạnh.
+* Nếu là \`'R'\`: Dòng 2 nhập 2 số thực chiều dài và chiều rộng.
+Gọi đúng hàm tương ứng và in ra diện tích.
 
 ### Ví dụ:
-* **Đầu vào:** \`5 4 6\`
-* **Đầu ra:**
+* **Đầu vào:**
 \`\`\`text
-25
-24
-\`\`\``,
+S
+5
+\`\`\`
+* **Đầu ra:** \`25\`
+* **Đầu vào:**
+\`\`\`text
+R
+4 6
+\`\`\`
+* **Đầu ra:** \`24\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc định nghĩa 2 hàm cùng tên \`area\` với số lượng tham số khác nhau (Function Overloading).
+* Sử dụng \`std::cin\` và \`std::cout\` in kết thúc bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["area","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng định nghĩa hai hàm cùng tên area (Function Overloading) để tính diện tích."} -->`,
             starterCode: `#include <iostream>
 
 // Khai báo và định nghĩa 2 hàm area nạp chồng tại đây
@@ -1033,15 +1157,23 @@ int main() {
             title: 'Tính giai thừa N! bằng hàm đệ quy',
             difficulty: 'HARD',
             problemDescription: `### Yêu Cầu Đề Bài:
-Viết hàm đệ quy \`long long factorial(int n)\` tính giai thừa của số nguyên $n$ ($0 \\le n \\le 20$).
-Quy tắc:
-* $0! = 1$ (Điều kiện dừng - Base Case)
-* $n! = n \\times factorial(n - 1)$ với $n > 0$
-Trong \`main()\`, nhập $n$ và in ra $n!$.
+Viết hàm đệ quy \`long long factorial(int n)\` để tính giá trị giai thừa n! (với 0 ≤ n ≤ 20):
+* Điều kiện dừng: nếu n = 0 hoặc n = 1, trả về 1.
+* Bước đệ quy: trả về n × factorial(n - 1).
+
+Trong hàm \`main()\`, nhập số nguyên n từ bàn phím, gọi hàm đệ quy và in ra kết quả.
 
 ### Ví dụ:
-* **Đầu vào:** \`5\` -> **Đầu ra:** \`120\`
-* **Đầu vào:** \`0\` -> **Đầu ra:** \`1\``,
+* **Đầu vào:** \`5\`
+* **Đầu ra:** \`120\`
+* **Đầu vào:** \`0\`
+* **Đầu ra:** \`1\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng hàm đệ quy (hàm tự gọi lại chính nó) có điều kiện dừng rõ ràng.
+* Sử dụng kiểu dữ liệu \`long long\` để tránh tràn số.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["long long","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu tính giai thừa bằng hàm đệ quy và dùng kiểu long long."} -->`,
             starterCode: `#include <iostream>
 
 long long factorial(int n) {
@@ -1110,17 +1242,29 @@ int main() {
             title: 'Tính trung bình cộng các phần tử trong mảng tĩnh',
             difficulty: 'EASY',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào số nguyên $N$ ($1 \\le N \\le 100$) và dãy $N$ số nguyên tiếp theo.
-Lưu các phần tử vào một mảng tĩnh và tính trung bình cộng của các phần tử trong mảng.
-In ra màn hình kết quả làm tròn lấy phần nguyên (hoặc số thực chuẩn xác).
+Nhập vào một số nguyên dương N (1 ≤ N ≤ 100) đại diện cho số lượng phần tử.
+Tiếp theo là N số nguyên của mảng.
+Hãy tính và in ra giá trị Trung bình cộng của các phần tử trong mảng tĩnh.
 
 ### Ví dụ:
 * **Đầu vào:**
 \`\`\`text
 4
-10 20 30 40
+1 2 3 4
 \`\`\`
-* **Đầu ra:** \`25\``,
+* **Đầu ra:** \`2.5\`
+* **Đầu vào:**
+\`\`\`text
+3
+10 20 30
+\`\`\`
+* **Đầu ra:** \`20\`
+
+### Ràng buộc kỹ thuật:
+* Khai báo mảng tĩnh để lưu trữ các phần tử.
+* Ép kiểu sang \`double\` khi thực hiện phép chia để giữ phần thập phân chính xác.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng mảng tĩnh và ép kiểu sang double khi tính trung bình cộng."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -1181,16 +1325,23 @@ int main() {
             title: 'Tìm giá trị lớn nhất và nhỏ nhất trong mảng',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào số lượng phần tử $N$ ($1 \\le N \\le 1000$) và dãy $N$ số nguyên.
-Hãy tìm và in ra giá trị nhỏ nhất (Min) và giá trị lớn nhất (Max) trong dãy trên cùng một dòng (ngăn cách bởi dấu cách).
+Nhập vào một số nguyên dương N (1 ≤ N ≤ 1000) và N số nguyên của mảng.
+Hãy duyệt mảng để tìm giá trị nhỏ nhất (min) và giá trị lớn nhất (max).
+In ra kết quả trên cùng một dòng theo định dạng: \`<min> <max>\` (ngăn cách bởi một dấu cách).
 
 ### Ví dụ:
 * **Đầu vào:**
 \`\`\`text
 5
-12 45 7 89 23
+10 3 85 2 -4
 \`\`\`
-* **Đầu ra:** \`7 89\``,
+* **Đầu ra:** \`-4 85\`
+
+### Ràng buộc kỹ thuật:
+* Tự cài đặt vòng lặp duyệt mảng để so sánh và cập nhật min, max.
+* Nghiêm cấm sử dụng các hàm thư viện có sẵn như \`std::min_element\` hoặc \`std::max_element\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["cin","cout"],"forbiddenKeywords":["min_element","max_element"],"customErrorMessage":"Vui lòng tự duyệt mảng để tìm min/max, cấm dùng hàm std::min_element hoặc std::max_element."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -1255,17 +1406,23 @@ int main() {
             title: 'Cài đặt thuật toán Bubble Sort sắp xếp tăng dần',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào số nguyên $N$ ($1 \\le N \\le 100$) và dãy $N$ số nguyên.
-Hãy cài đặt thuật toán Nổi bọt (Bubble Sort) để sắp xếp dãy số theo thứ tự tăng dần.
-In ra các phần tử của dãy sau khi sắp xếp trên cùng một dòng (ngăn cách bởi dấu cách).
+Nhập vào một số nguyên dương N (1 ≤ N ≤ 100) và N số nguyên của mảng.
+Hãy tự cài đặt thuật toán Sắp xếp nổi bọt (Bubble Sort) để sắp xếp mảng theo thứ tự tăng dần.
+In ra các phần tử của mảng sau khi sắp xếp trên cùng một dòng (ngăn cách bởi dấu cách).
 
 ### Ví dụ:
 * **Đầu vào:**
 \`\`\`text
 5
-5 1 4 2 8
+64 34 25 12 22
 \`\`\`
-* **Đầu ra:** \`1 2 4 5 8\``,
+* **Đầu ra:** \`12 22 25 34 64\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc tự cài đặt thuật toán Bubble Sort bằng 2 vòng lặp \`for\` lồng nhau.
+* Nghiêm cấm sử dụng hàm sắp xếp có sẵn \`std::sort\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["for","cin","cout"],"forbiddenKeywords":["std::sort","sort("],"customErrorMessage":"Bài toán yêu cầu tự cài đặt thuật toán Bubble Sort, nghiêm cấm sử dụng hàm thư viện std::sort."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -1335,10 +1492,10 @@ int main() {
             title: 'Lọc các số chẵn trong mảng động std::vector',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào số nguyên $N$ và $N$ số nguyên tiếp theo.
-Sử dụng \`std::vector\` để lưu trữ các số này.
-Tạo một vector thứ hai để lọc ra tất cả các số chẵn ($x \\% 2 == 0$).
-In ra các số chẵn tìm được trên cùng một dòng (ngăn cách bởi dấu cách).
+Nhập vào một số nguyên dương N và N số nguyên tiếp theo.
+Sử dụng mảng động \`std::vector\` để lưu trữ các số này.
+Tạo một vector thứ hai để lọc ra tất cả các số chẵn (x % 2 == 0).
+In ra các số chẵn tìm được trên cùng một dòng (ngăn cách bởi dấu cách). Nếu không có số chẵn nào thì in dòng trống.
 
 ### Ví dụ:
 * **Đầu vào:**
@@ -1346,7 +1503,19 @@ In ra các số chẵn tìm được trên cùng một dòng (ngăn cách bởi 
 6
 1 2 3 4 5 6
 \`\`\`
-* **Đầu ra:** \`2 4 6\``,
+* **Đầu ra:** \`2 4 6\`
+* **Đầu vào:**
+\`\`\`text
+3
+1 3 5
+\`\`\`
+* **Đầu ra:** (Dòng trống)
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng mảng động \`std::vector\` từ thư viện \`<vector>\` và phương thức \`push_back\`.
+* Sử dụng \`std::cin\` và \`std::cout\` kết thúc bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["vector","push_back","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu bắt buộc sử dụng mảng động std::vector và phương thức push_back."} -->`,
             starterCode: `#include <iostream>
 #include <vector>
 
@@ -1418,17 +1587,24 @@ int main() {
             title: 'Đếm số lượng chữ cái in hoa và in thường trong chuỗi',
             difficulty: 'EASY',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào một từ hoặc chuỗi không chứa dấu cách.
-Sử dụng các hàm trong thư viện \`<cctype>\` (\`std::isupper\`, \`std::islower\`) để đếm:
-* Số lượng chữ cái in hoa
-* Số lượng chữ cái in thường
-In hai số đếm trên cùng một dòng (ngăn cách bởi dấu cách).
+Nhập vào một chuỗi ký tự không chứa dấu cách từ bàn phím.
+Sử dụng các hàm trong thư viện chuẩn \`<cctype>\` (\`std::isupper\`, \`std::islower\`) để đếm:
+1. Số lượng chữ cái in hoa.
+2. Số lượng chữ cái in thường.
+
+In ra 2 số đếm trên cùng một dòng (ngăn cách bởi dấu cách): \`<so_hoa> <so_thuong>\`.
 
 ### Ví dụ:
 * **Đầu vào:** \`LapTrinhCpp17\`
-* In hoa: L, T, C -> 3
-* In thường: a, p, r, i, n, h, p, p -> 8
-* **Đầu ra:** \`3 8\``,
+* **Đầu ra:** \`3 8\`
+* **Đầu vào:** \`HELLO\`
+* **Đầu ra:** \`5 0\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng các hàm kiểm tra ký tự trong thư viện \`<cctype>\` (\`std::isupper\`, \`std::islower\`).
+* Sử dụng \`std::cin\` và \`std::cout\` kết thúc bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["isupper","islower","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu sử dụng hàm std::isupper và std::islower từ thư viện <cctype>."} -->`,
             starterCode: `#include <iostream>
 #include <string>
 #include <cctype>
@@ -1492,9 +1668,12 @@ int main() {
             title: 'Nhập thông tin sinh viên có khoảng trắng an toàn',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào dòng 1: Mã số sinh viên (số nguyên $id$).
-Nhập vào dòng 2: Họ và tên đầy đủ (chuỗi văn bản có khoảng trắng).
-Hãy xử lý triệt để hiện tượng trôi lệnh bằng \`std::cin.ignore()\` và in ra thông tin theo định dạng:
+Nhập dữ liệu sinh viên gồm 2 dòng:
+* Dòng 1: Mã số sinh viên (số nguyên id).
+* Dòng 2: Họ và tên đầy đủ (chuỗi văn bản có khoảng trắng).
+
+Hãy xử lý triệt để hiện tượng trôi lệnh sau khi nhập số nguyên bằng \`std::cin.ignore()\` và đọc họ tên bằng \`std::getline()\`.
+In ra thông tin theo đúng định dạng:
 \`MSSV: <id> - Ho ten: <name>\`
 
 ### Ví dụ:
@@ -1503,7 +1682,13 @@ Hãy xử lý triệt để hiện tượng trôi lệnh bằng \`std::cin.ignor
 1024
 Nguyen Tuan Viet
 \`\`\`
-* **Đầu ra:** \`MSSV: 1024 - Ho ten: Nguyen Tuan Viet\``,
+* **Đầu ra:** \`MSSV: 1024 - Ho ten: Nguyen Tuan Viet\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng \`std::cin.ignore\` để làm sạch bộ đệm sau khi nhập số nguyên.
+* Bắt buộc sử dụng \`std::getline\` để đọc chuỗi văn bản có chứa khoảng trắng.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["ignore","getline","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu xử lý trôi lệnh bằng std::cin.ignore() và đọc dòng bằng std::getline()."} -->`,
             starterCode: `#include <iostream>
 #include <string>
 
@@ -1563,13 +1748,22 @@ int main() {
             title: 'Tách và đếm số lượng từ trong câu bằng stringstream',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào một dòng văn bản chứa nhiều khoảng trắng thừa ở các vị trí khác nhau.
-Sử dụng \`std::stringstream\` để bóc tách các từ đơn và in ra số lượng từ có trong câu.
+Nhập vào một dòng văn bản chứa nhiều từ với các khoảng trắng thừa ở đầu, cuối và giữa các từ.
+Sử dụng \`std::stringstream\` từ thư viện \`<sstream>\` để bóc tách từng từ đơn và đếm xem câu có bao nhiêu từ.
+In ra số lượng từ tìm được.
 
 ### Ví dụ:
 * **Đầu vào:** \`   Lap   trinh   C++   hien   dai   \`
-* Các từ: "Lap", "trinh", "C++", "hien", "dai" (5 từ)
-* **Đầu ra:** \`5\``,
+* Giải thích: Các từ là "Lap", "trinh", "C++", "hien", "dai" -> có 5 từ.
+* **Đầu ra:** \`5\`
+* **Đầu vào:** \`Hello World\`
+* **Đầu ra:** \`2\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng luồng chuỗi \`std::stringstream\` để phân tách từ tự động.
+* Sử dụng \`std::getline\` để đọc trọn vẹn cả dòng dữ liệu đầu vào.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["stringstream","getline","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu sử dụng std::stringstream để bóc tách và đếm các từ trong dòng."} -->`,
             starterCode: `#include <iostream>
 #include <string>
 #include <sstream>
@@ -1638,8 +1832,8 @@ int main() {
             title: 'Tính tổng tất cả các phần tử trong ma trận 2D',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào 2 số nguyên $R$ và $C$ ($1 \\le R, C \\le 50$) đại diện cho số hàng và số cột của ma trận.
-Tiếp theo là $R$ dòng, mỗi dòng chứa $C$ số nguyên.
+Nhập vào 2 số nguyên R và C (1 ≤ R, C ≤ 50) đại diện cho số hàng và số cột của ma trận 2D.
+Tiếp theo là R dòng, mỗi dòng chứa C số nguyên.
 Hãy tính và in ra tổng của tất cả các phần tử trong ma trận.
 
 ### Ví dụ:
@@ -1649,7 +1843,19 @@ Hãy tính và in ra tổng của tất cả các phần tử trong ma trận.
 1 2 3
 4 5 6
 \`\`\`
-* **Đầu ra:** \`21\``,
+* **Đầu ra:** \`21\`
+* **Đầu vào:**
+\`\`\`text
+1 1
+42
+\`\`\`
+* **Đầu ra:** \`42\`
+
+### Ràng buộc kỹ thuật:
+* Sử dụng 2 vòng lặp \`for\` lồng nhau để nhập và duyệt qua từng phần tử của ma trận 2D.
+* Dùng biến tổng kiểu \`long long\` để chống tràn số.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["for","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng 2 vòng lặp for lồng nhau để duyệt ma trận 2D."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -1712,12 +1918,13 @@ int main() {
             title: 'Tính tổng đường chéo chính và đường chéo phụ ma trận vuông',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào số nguyên $N$ ($1 \\le N \\le 50$) là kích thước của ma trận vuông cấp $N \\times N$.
-Tiếp theo là $N$ dòng, mỗi dòng chứa $N$ số nguyên.
+Nhập vào số nguyên N (1 ≤ N ≤ 50) là kích thước của ma trận vuông cấp N × N.
+Tiếp theo là N dòng, mỗi dòng chứa N số nguyên.
 Hãy tính:
-1. Tổng các phần tử nằm trên Đường chéo chính ($i == j$).
-2. Tổng các phần tử nằm trên Đường chéo phụ ($j == N - 1 - i$).
-In hai tổng trên cùng một dòng (ngăn cách bởi dấu cách).
+1. Tổng các phần tử nằm trên Đường chéo chính (chỉ số hàng = chỉ số cột, tức i == j).
+2. Tổng các phần tử nằm trên Đường chéo phụ (chỉ số cột = N - 1 - i).
+
+In ra 2 tổng trên cùng một dòng (ngăn cách bởi dấu cách): \`<tong_chinh> <tong_phu>\`.
 
 ### Ví dụ:
 * **Đầu vào:**
@@ -1727,9 +1934,14 @@ In hai tổng trên cùng một dòng (ngăn cách bởi dấu cách).
 4 5 6
 7 8 9
 \`\`\`
-* Đường chéo chính: 1 + 5 + 9 = 15
-* Đường chéo phụ: 3 + 5 + 7 = 15
-* **Đầu ra:** \`15 15\``,
+* Giải thích: Chéo chính = 1 + 5 + 9 = 15; Chéo phụ = 3 + 5 + 7 = 15.
+* **Đầu ra:** \`15 15\`
+
+### Ràng buộc kỹ thuật:
+* Tự cài đặt vòng lặp duyệt ma trận vuông và xác định chính xác công thức chỉ số của đường chéo chính và phụ.
+* Sử dụng \`std::cin\` và \`std::cout\` kết thúc bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["for","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng vòng lặp duyệt ma trận và tính tổng 2 đường chéo chính, phụ."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -1795,10 +2007,10 @@ int main() {
             title: 'Kiểm tra trạng thái Thắng thua của bàn cờ Tic-Tac-Toe 3x3',
             difficulty: 'HARD',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào trạng thái của một bàn cờ Tic-Tac-Toe kích thước $3 \\times 3$ gồm các ký tự \`X\`, \`O\` hoặc \`.\` (ô trống).
+Nhập vào trạng thái của một bàn cờ Tic-Tac-Toe kích thước 3 × 3 gồm các ký tự \`X\`, \`O\` hoặc \`.\` (ô trống).
 Kiểm tra xem người chơi \`X\` đã thắng hay chưa (thắng khi có 3 ký tự \`X\` trên cùng 1 hàng, 1 cột hoặc 1 đường chéo).
 * Nếu \`X\` thắng, in ra: \`X THANG\`
-* Ngược lại, in ra: \`CHUA THANG\`
+* Nếu \`X\` chưa thắng, in ra: \`CHUA THANG\`
 
 ### Ví dụ:
 * **Đầu vào:**
@@ -1807,7 +2019,20 @@ X X X
 O . O
 . . .
 \`\`\`
-* **Đầu ra:** \`X THANG\``,
+* **Đầu ra:** \`X THANG\`
+* **Đầu vào:**
+\`\`\`text
+O O O
+X . X
+. . .
+\`\`\`
+* **Đầu ra:** \`CHUA THANG\`
+
+### Ràng buộc kỹ thuật:
+* Viết hàm hoặc điều kiện kiểm tra đầy đủ 3 hàng, 3 cột và 2 đường chéo của bàn cờ 3 × 3.
+* Sử dụng \`std::cin\` để đọc và \`std::cout\` in kết quả kết thúc bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng kiểm tra đầy đủ 3 hàng, 3 cột và 2 đường chéo của bàn cờ Tic-Tac-Toe."} -->`,
             starterCode: `#include <iostream>
 #include <vector>
 

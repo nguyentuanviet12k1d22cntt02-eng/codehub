@@ -140,17 +140,29 @@ interface CodeConstraintConfig {
     customErrorMessage?: string;
 }
 
-function parseAndValidateConstraints(problemDescription: string, exerciseTitle: string, code: string): string | null {
+function parseAndValidateConstraints(problemDescription: string, exerciseTitle: string, code: string, execLanguage: string = 'PYTHON'): string | null {
     // 1. Kiểm tra nếu có metadata CONSTRAINTS trong problemDescription
     const match = /<!--\s*CONSTRAINTS:\s*(\{[\s\S]*?\})\s*-->/.exec(problemDescription || '');
     if (match) {
         try {
             const config: CodeConstraintConfig = JSON.parse(match[1]);
-            const cleanCode = code.replace(/#.*$/gm, '').replace(/'''[\s\S]*?'''/g, '').replace(/"""[\s\S]*?"""/g, '');
+            let cleanCode = code;
+            if (execLanguage === 'CPP') {
+                cleanCode = code.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+            } else {
+                cleanCode = code.replace(/#.*$/gm, '').replace(/'''[\s\S]*?'''/g, '').replace(/"""[\s\S]*?"""/g, '');
+            }
 
-            // 1.1 Kiểm tra bắt buộc có comment (#)
-            if (config.requireComment && !/#.+/.test(code)) {
-                return config.customErrorMessage || "Đề bài yêu cầu bạn phải viết ít nhất một dòng chú thích bắt đầu bằng ký tự `#`.";
+            // 1.1 Kiểm tra bắt buộc có comment
+            if (config.requireComment) {
+                const hasComment = execLanguage === 'CPP'
+                    ? /\/\/|\/\*/.test(code)
+                    : /#.+/.test(code);
+                if (!hasComment) {
+                    return config.customErrorMessage || (execLanguage === 'CPP'
+                        ? "Đề bài yêu cầu bạn phải viết ít nhất một dòng chú thích (bắt đầu bằng `//` hoặc `/*`)."
+                        : "Đề bài yêu cầu bạn phải viết ít nhất một dòng chú thích bắt đầu bằng ký tự `#`.");
+                }
             }
 
             // 1.2 Kiểm tra các từ khóa bắt buộc
@@ -214,13 +226,13 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
         }
 
         const lessonCode = exercise.lesson?.lessonId || '';
-        const isCppExercise = lessonCode.startsWith('CPP-') || /#include\s*<|std::/i.test(code);
-        const isSqlExercise = !isCppExercise && (lessonCode.startsWith('SQL-') || /SELECT|FROM|WHERE/i.test(code));
+        const isCppExercise = lessonCode.startsWith('CPP') || /#include\s*<|std::/i.test(code);
+        const isSqlExercise = !isCppExercise && (lessonCode.startsWith('SQL') || /SELECT|FROM|WHERE/i.test(code));
         const execLanguage = isCppExercise ? 'CPP' : isSqlExercise ? 'SQL' : 'PYTHON';
 
-        // 2. Kiểm tra ràng buộc biến tĩnh & dynamic constraints chỉ khi là bài tập Python
-        if (execLanguage === 'PYTHON') {
-            const constraintError = parseAndValidateConstraints(exercise.problemDescription || '', exercise.title, code);
+        // 2. Kiểm tra ràng buộc biến tĩnh & dynamic constraints cho cả Python và C++
+        if (execLanguage === 'PYTHON' || execLanguage === 'CPP') {
+            const constraintError = parseAndValidateConstraints(exercise.problemDescription || '', exercise.title, code, execLanguage);
             if (constraintError) {
                 res.status(200).json({
                     success: true,

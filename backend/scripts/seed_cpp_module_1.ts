@@ -68,9 +68,20 @@ Hãy viết một chương trình C++ hoàn chỉnh sử dụng \`std::cout\` đ
 * Dòng 1: \`Ho va ten: Nguyen Tuan Viet\`
 * Dòng 2: \`Muc tieu: Lam chu C++ va tro thanh Backend / Game Engineer!\`
 
+### Ví dụ:
+* **Đầu vào:** (Không có)
+* **Đầu ra:**
+\`\`\`text
+Ho va ten: Nguyen Tuan Viet
+Muc tieu: Lam chu C++ va tro thanh Backend / Game Engineer!
+\`\`\`
+
 ### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng \`std::cout\` để in thông tin ra màn hình.
 * Mỗi dòng xuất kết thúc bằng ký tự xuống dòng \`'\\n'\`.
-* Chương trình trả về mã kết thúc \`0\`.`,
+* Chương trình trả về mã kết thúc \`0\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng std::cout để in thông tin ra màn hình."} -->`,
                 starterCode: `// Viết chương trình C++ đầu tiên của bạn tại đây
 #include <iostream>
 
@@ -119,17 +130,21 @@ int main() {
                 title: 'Tính tổng hai số nguyên từ dòng nhập bàn phím',
                 difficulty: 'EASY',
                 problemDescription: `### Yêu Cầu Đề Bài:
-Viết chương trình C++ nhận vào 2 số nguyên $a$ và $b$ từ bàn phím (ngăn cách bởi dấu cách hoặc dấu xuống dòng).
+Viết chương trình C++ nhận vào 2 số nguyên a và b từ bàn phím (ngăn cách bởi dấu cách hoặc dấu xuống dòng).
 Hãy tính tổng của 2 số và in ra màn hình theo đúng định dạng:
 \`Tong: <ket_qua>\`
 
 ### Ví dụ:
 * **Đầu vào:** \`15 27\`
 * **Đầu ra:** \`Tong: 42\`
+* **Đầu vào:** \`100 -25\`
+* **Đầu ra:** \`Tong: 75\`
 
 ### Ràng buộc kỹ thuật:
-* Sử dụng \`std::cin >> a >> b;\` để đọc dữ liệu.
-* In kết quả kết thúc bằng ký tự \`'\\n'\`.`,
+* Bắt buộc sử dụng \`std::cin\` để đọc dữ liệu 2 số nguyên a và b.
+* Bắt buộc sử dụng \`std::cout\` để in kết quả theo đúng định dạng và kết thúc bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng std::cin để đọc dữ liệu và std::cout để in kết quả theo đúng định dạng."} -->`,
                 starterCode: `#include <iostream>
 
 int main() {
@@ -189,10 +204,10 @@ int main() {
                 difficulty: 'EASY',
                 problemDescription: `### Yêu Cầu Đề Bài:
 Hãy khai báo hằng số số thực \`const double PI = 3.14159;\`.
-Viết chương trình nhận vào bán kính $r$ (số thực dương) của hình tròn từ bàn phím.
+Viết chương trình nhận vào bán kính r (số thực dương) của hình tròn từ bàn phím.
 Hãy tính và in ra:
-* Dòng 1: \`Chu vi: <gia_tri>\` (Công thức: $C = 2 \\times PI \\times r$)
-* Dòng 2: \`Dien tich: <gia_tri>\` (Công thức: $S = PI \\times r \\times r$)
+* Dòng 1: \`Chu vi: <gia_tri>\` (Công thức: C = 2 × PI × r)
+* Dòng 2: \`Dien tich: <gia_tri>\` (Công thức: S = PI × r × r)
 
 ### Ví dụ:
 * **Đầu vào:** \`5.0\`
@@ -200,7 +215,13 @@ Hãy tính và in ra:
 \`\`\`text
 Chu vi: 31.4159
 Dien tich: 78.5398
-\`\`\``,
+\`\`\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng từ khóa \`const\` để khai báo hằng số \`PI\`.
+* Bắt buộc sử dụng \`std::cin\` để đọc bán kính và \`std::cout\` để in kết quả.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["const","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu bắt buộc phải sử dụng từ khóa const để khai báo hằng số PI."} -->`,
                 starterCode: `#include <iostream>
 
 int main() {
@@ -260,15 +281,18 @@ int main() {
                 title: 'Tính tích hai số nguyên lớn chống tràn số',
                 difficulty: 'MEDIUM',
                 problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào 2 số nguyên $a$ và $b$ từ bàn phím (với $1 \\le a, b \\le 10^9$).
-Hãy tính và in ra tích của hai số $a \\times b$.
+Nhập vào 2 số nguyên a và b từ bàn phím (với 1 ≤ a, b ≤ 10⁹).
+Hãy tính và in ra tích của hai số a × b.
 
 ### Ví dụ:
-* **Đầu vào:** \`1000000000 1000000000\` (Hai số $10^9$)
-* **Đầu ra:** \`1000000000000000000\` ($10^{18}$)
+* **Đầu vào:** \`1000000000 1000000000\` (Hai số 10⁹)
+* **Đầu ra:** \`1000000000000000000\` (10¹⁸)
 
 ### Ràng buộc kỹ thuật:
-* Vì tích có thể đạt tới $10^{18}$ (vượt xa giới hạn $2 \\times 10^9$ của \`int\`), bắt buộc phải sử dụng kiểu \`long long\` để chống tràn số.`,
+* Vì tích có thể đạt tới 10¹⁸ (vượt xa giới hạn 2 × 10⁹ của kiểu \`int\`), bắt buộc phải sử dụng kiểu dữ liệu \`long long\` để chống tràn số.
+* Sử dụng \`std::cin\` để đọc dữ liệu và \`std::cout\` để in kết quả.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["long long","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu bắt buộc phải sử dụng kiểu dữ liệu long long để chống tràn số!"} -->`,
                 starterCode: `#include <iostream>
 
 int main() {
@@ -324,19 +348,21 @@ int main() {
                 title: 'Quy đổi thời gian từ giây sang Giờ, Phút, Giây',
                 difficulty: 'MEDIUM',
                 problemDescription: `### Yêu Cầu Đề Bài:
-Viết chương trình nhận vào một số nguyên dương $T$ biểu thị tổng số giây.
+Viết chương trình nhận vào một số nguyên dương T biểu thị tổng số giây.
 Hãy quy đổi và in ra thời gian theo định dạng:
 \`<gio> gio <phut> phut <giay> giay\`
 
 ### Ví dụ:
 * **Đầu vào:** \`3665\`
 * **Đầu ra:** \`1 gio 1 phut 5 giay\`
+* **Đầu vào:** \`7200\`
+* **Đầu ra:** \`2 gio 0 phut 0 giay\`
 
-### Gợi ý thuật toán:
-* 1 giờ = 3600 giây.
-* Số giờ = \`T / 3600\`.
-* Số phút = \`(T % 3600) / 60\`.
-* Số giây = \`T % 60\`.`,
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng toán tử chia nguyên \`/\` và chia lấy dư \`%\` để quy đổi thời gian.
+* Sử dụng \`std::cin\` để đọc dữ liệu và \`std::cout\` để in kết quả.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["/","%","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng toán tử chia nguyên / và chia lấy dư % để quy đổi thời gian."} -->`,
                 starterCode: `#include <iostream>
 
 int main() {

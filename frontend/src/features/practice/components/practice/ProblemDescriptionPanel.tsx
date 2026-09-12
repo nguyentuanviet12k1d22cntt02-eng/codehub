@@ -162,7 +162,7 @@ export const ProblemDescriptionPanel: React.FC<ProblemDescriptionPanelProps> = (
                                     td: ({ node, ...props }) => <td className="p-2.5 text-text-secondary border-r border-border-custom/50 last:border-r-0" {...props} />
                                 }}
                             >
-                                {exercise.problemDescription}
+                                {(exercise.problemDescription || '').replace(/<!--\s*CONSTRAINTS:[\s\S]*?-->/g, '').trim()}
                             </ReactMarkdown>
                         </div>
                     </div>

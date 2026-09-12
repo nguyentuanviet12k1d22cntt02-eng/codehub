@@ -71,17 +71,26 @@ const lessonsToSeed: LessonSeedItem[] = [
             title: 'Tối ưu hóa cờ trạng thái thiết bị bằng Bit-fields',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Thiết kế cấu trúc \`DeviceStatus\` sử dụng bit-field gồm:
-* \`power\`: 1 bit (0: Tắt, 1: Bật)
-* \`wifi\`: 1 bit (0: Mất mạng, 1: Đã kết nối)
-* \`batteryLevel\`: 4 bits (Biểu diễn mức pin từ 0 đến 15)
-Nhập vào 3 số nguyên $p, w, b$ đại diện cho 3 trạng thái trên.
-Gán vào struct và in ra kích thước của struct cùng thông báo:
-\`Size: <size> bytes - Power: <p> - Wifi: <w> - Pin: <b>\`
+Định nghĩa một cấu trúc \`DeviceStatus\` sử dụng kỹ thuật Bit-fields trong C++ để tối ưu hóa bộ nhớ:
+* \`power\`: 1 bit (nhận giá trị 0 hoặc 1)
+* \`wifi\`: 1 bit (nhận giá trị 0 hoặc 1)
+* \`battery\`: 4 bits (nhận giá trị từ 0 đến 15)
+
+Nhập vào 3 số nguyên p, w, b từ bàn phím. Gán các giá trị này vào struct và in ra kích thước của struct cùng các trường thông tin theo đúng định dạng:
+\`Size: <bytes> bytes - Power: <p> - Wifi: <w> - Battery: <b>\`
 
 ### Ví dụ:
 * **Đầu vào:** \`1 1 12\`
-* **Đầu ra:** \`Size: 4 bytes - Power: 1 - Wifi: 1 - Pin: 12\``,
+* **Đầu ra:** \`Size: 1 bytes - Power: 1 - Wifi: 1 - Battery: 12\`
+* **Đầu vào:** \`0 1 5\`
+* **Đầu ra:** \`Size: 1 bytes - Power: 0 - Wifi: 1 - Battery: 5\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng cú pháp Bit-fields (\`: 1\`, \`: 4\`) với kiểu số nguyên không dấu (\`uint8_t\` hoặc \`unsigned char\`).
+* Kích thước \`sizeof(DeviceStatus)\` phải đạt chuẩn tối ưu là 1 byte.
+* Sử dụng \`std::cin\` và \`std::cout\` in kết thúc bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":[":","sizeof","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu khai báo struct có sử dụng cú pháp Bit-fields (: 1, : 4) và kiểm tra sizeof."} -->`,
             starterCode: `#include <iostream>
 
 struct DeviceStatus {
@@ -153,7 +162,7 @@ int main() {
             title: 'Sắp xếp trường struct để đạt dung lượng bộ nhớ tối thiểu',
             difficulty: 'HARD',
             problemDescription: `### Yêu Cầu Đề Bài:
-Một struct ban đầu gồm 4 trường được khai báo lộn xộn:
+Một struct ban đầu gồm 4 trường được khai báo lộn xộn gây lãng phí bộ nhớ do cơ chế Alignment & Padding:
 \`\`\`cpp
 struct BadLayout {
     char a;      // 1 byte
@@ -162,14 +171,22 @@ struct BadLayout {
     int d;       // 4 bytes
 };
 \`\`\`
-1. Hãy tạo struct \`GoodLayout\` chứa 4 trường trên nhưng được sắp xếp lại thứ tự tối ưu nhất để kích thước \`sizeof(GoodLayout)\` là nhỏ nhất.
+1. Hãy tạo struct \`GoodLayout\` chứa đầy đủ 4 trường trên nhưng được sắp xếp lại thứ tự tối ưu nhất sao cho \`sizeof(GoodLayout)\` đạt dung lượng nhỏ nhất (16 bytes thay vì 24 bytes).
 2. In ra kích thước \`sizeof(BadLayout)\` và \`sizeof(GoodLayout)\` trên 2 dòng.
 
-### Định dạng đầu ra mong muốn:
+### Ví dụ:
+* **Đầu vào:** (Không có)
+* **Đầu ra:**
 \`\`\`text
 Bad: 24 bytes
 Good: 16 bytes
-\`\`\``,
+\`\`\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc khai báo struct \`GoodLayout\` sắp xếp lại các trường theo quy tắc căn chỉnh bộ nhớ (Data Alignment) để loại bỏ padding thừa.
+* Sử dụng toán tử \`sizeof\` để in kích thước của 2 struct.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["sizeof","GoodLayout","BadLayout","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng khai báo struct GoodLayout và in kích thước bằng toán tử sizeof."} -->`,
             starterCode: `#include <iostream>
 
 struct BadLayout {
@@ -243,14 +260,35 @@ int main() {
             title: 'Hàm xử lý dữ liệu đa kiểu an toàn với std::variant',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào một ký tự $type$ (\`'i'\` cho số nguyên, \`'d'\` cho số thực) và giá trị tương ứng.
-Sử dụng \`std::variant<int, double>\` để lưu trữ giá trị này.
-* Nếu là số nguyên: nhân đôi giá trị và in ra.
-* Nếu là số thực: cộng thêm 0.5 và in ra.
+Sử dụng thư viện chuẩn Modern C++17 \`<variant>\` để định nghĩa:
+\`using DataPacket = std::variant<int, double, std::string>;\`
+Viết hàm in ra thông tin gói dữ liệu theo đúng định dạng:
+* Nếu chứa \`int\`: in ra \`Type: INT - Value: <val>\`
+* Nếu chứa \`double\`: in ra \`Type: DOUBLE - Value: <val>\`
+* Nếu chứa \`std::string\`: in ra \`Type: STRING - Value: <val>\`
+
+Dòng 1 nhập vào một số nguyên đại diện cho kiểu dữ liệu (1: int, 2: double, 3: string).
+Dòng 2 nhập giá trị tương ứng. Gọi hàm và in ra màn hình.
 
 ### Ví dụ:
-* **Đầu vào:** \`i 25\` -> **Đầu ra:** \`50\`
-* **Đầu vào:** \`d 3.5\` -> **Đầu ra:** \`4\``,
+* **Đầu vào:**
+\`\`\`text
+1
+42
+\`\`\`
+* **Đầu ra:** \`Type: INT - Value: 42\`
+* **Đầu vào:**
+\`\`\`text
+3
+ModernCpp
+\`\`\`
+* **Đầu ra:** \`Type: STRING - Value: ModernCpp\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng \`std::variant\` từ thư viện \`<variant>\`.
+* Sử dụng \`std::holds_alternative\` hoặc \`std::get\` để kiểm tra và trích xuất kiểu an toàn.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["variant","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu bắt buộc sử dụng std::variant từ thư viện <variant>."} -->`,
             starterCode: `#include <iostream>
 #include <variant>
 
@@ -324,13 +362,27 @@ int main() {
             title: 'Khám phá sự phân tách địa chỉ giữa Stack và Heap',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Viết chương trình C++ khai báo:
-* Một biến số nguyên cục bộ \`stackVar\` trên Stack.
-* Một biến số nguyên cấp phát động \`heapVar\` bằng toán tử \`new\` trên Heap.
-So sánh hai địa chỉ ô nhớ:
+Viết chương trình C++ khám phá sự phân tách không gian địa chỉ bộ nhớ giữa Stack và Heap:
+* Khai báo một biến số nguyên cục bộ \`stackVar\` trên vùng nhớ Stack.
+* Cấp phát động một biến số nguyên \`heapVar\` bằng toán tử \`new\` trên vùng nhớ Heap.
+
+So sánh địa chỉ ô nhớ giữa hai biến:
 * Nếu địa chỉ của \`stackVar\` lớn hơn địa chỉ của \`heapVar\`, in ra: \`Stack o dia chi cao hon Heap\`
 * Ngược lại, in ra: \`Heap o dia chi cao hon Stack\`
-Đừng quên giải phóng bộ nhớ Heap sau khi kiểm tra!`,
+Giải phóng bộ nhớ Heap bằng toán tử \`delete\` trước khi kết thúc chương trình.
+
+### Ví dụ:
+* **Đầu vào:** (Không có)
+* **Đầu ra:**
+\`\`\`text
+Stack o dia chi cao hon Heap
+\`\`\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng toán tử \`new\` để cấp phát bộ nhớ động trên Heap.
+* Bắt buộc sử dụng toán tử \`delete\` để giải phóng bộ nhớ tránh rò rỉ (Memory Leak).
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["new","delete","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu cấp phát bộ nhớ động bằng 'new' và giải phóng bằng 'delete'."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -393,20 +445,39 @@ int main() {
             title: 'Sắp xếp mảng tùy biến với Con trỏ hàm Callback',
             difficulty: 'HARD',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào số lượng phần tử $N$ và $N$ số nguyên tiếp theo.
-Dòng tiếp theo nhập một ký tự $mode$:
-* Nếu $mode = \`'A'\`$: sắp xếp mảng Tăng dần (Ascending).
-* Nếu $mode = \`'D'\`$: sắp xếp mảng Giảm dần (Descending).
-Hãy viết hàm sắp xếp nhận con trỏ hàm so sánh \`bool (*cmp)(int, int)\` và in mảng sau khi sắp xếp trên một dòng.
+Viết hàm sắp xếp mảng tổng quát nhận một con trỏ hàm so sánh callback \`bool (*cmp)(int, int)\`.
+Định nghĩa 2 hàm so sánh:
+* \`bool ascending(int a, int b)\`: dùng để sắp xếp tăng dần.
+* \`bool descending(int a, int b)\`: dùng để sắp xếp giảm dần.
+
+Đầu vào gồm 3 dòng:
+* Dòng 1: Số phần tử N (1 ≤ N ≤ 100).
+* Dòng 2: N số nguyên của mảng.
+* Dòng 3: Số nguyên mode (1: sắp xếp tăng dần, 2: sắp xếp giảm dần).
+
+In ra mảng sau khi sắp xếp trên cùng một dòng (ngăn cách bởi dấu cách).
 
 ### Ví dụ:
 * **Đầu vào:**
 \`\`\`text
 4
-15 3 8 20
-A
+5 2 9 1
+1
 \`\`\`
-* **Đầu ra:** \`3 8 15 20\``,
+* **Đầu ra:** \`1 2 5 9\`
+* **Đầu vào:**
+\`\`\`text
+4
+5 2 9 1
+2
+\`\`\`
+* **Đầu ra:** \`9 5 2 1\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng con trỏ hàm callback làm tham số truyền vào hàm sắp xếp.
+* Nghiêm cấm sử dụng hàm sắp xếp có sẵn \`std::sort\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["*","cin","cout"],"forbiddenKeywords":["std::sort","sort("],"customErrorMessage":"Bài toán yêu cầu sử dụng con trỏ hàm callback, cấm sử dụng hàm thư viện std::sort."} -->`,
             starterCode: `#include <iostream>
 
 bool cmpAsc(int a, int b) { return a > b; }
@@ -496,18 +567,29 @@ int main() {
             title: 'Cấp phát và Giải phóng Ma trận động 2D an toàn 100%',
             difficulty: 'HARD',
             problemDescription: `### Yêu Cầu Đề Bài:
-Viết chương trình cấp phát động ma trận $R \\times C$ bằng con trỏ cấp 2 \`int**\`.
-Nhập các phần tử, tính tổng toàn bộ ma trận và in ra kết quả.
-Sau đó giải phóng toàn bộ các hàng và mảng con trỏ, gán \`nullptr\` an toàn tuyệt đối.
+Nhập vào 2 số nguyên dương R và C là số hàng và cột của ma trận 2D.
+Cấp phát động ma trận kích thước R × C bằng con trỏ cấp 2 \`int** matrix = new int*[R]\`, sau đó cấp phát từng hàng \`new int[C]\`.
+Nhập các phần tử của ma trận, tính tổng tất cả các phần tử và in ra theo định dạng:
+\`Tong: <sum>\`
+
+Sau khi tính toán xong, giải phóng bộ nhớ động theo đúng quy trình 2 bước:
+1. Giải phóng từng hàng bằng \`delete[] matrix[i]\`.
+2. Giải phóng mảng con trỏ quản lý bằng \`delete[] matrix\`.
 
 ### Ví dụ:
 * **Đầu vào:**
 \`\`\`text
-2 2
-5 10
-15 20
+2 3
+1 2 3
+4 5 6
 \`\`\`
-* **Đầu ra:** \`50\``,
+* **Đầu ra:** \`Tong: 21\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc cấp phát bằng con trỏ cấp 2 với \`new int*\` và \`new int[]\`.
+* Bắt buộc giải phóng đầy đủ bộ nhớ theo đúng thứ tự bằng \`delete[]\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["new","delete[]","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu cấp phát ma trận động bằng new và giải phóng đầy đủ bằng delete[]."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -581,17 +663,26 @@ int main() {
             title: 'Quản lý tài nguyên an toàn bằng std::unique_ptr',
             difficulty: 'HARD',
             problemDescription: `### Yêu Cầu Đề Bài:
-Sử dụng \`std::unique_ptr<int[]>\` để cấp phát một mảng động gồm $N$ số nguyên từ bàn phím.
-Tìm giá trị lớn nhất trong mảng và in ra màn hình.
-Không được sử dụng bất kỳ lệnh \`delete\` hay \`delete[]\` thủ công nào trong toàn bộ chương trình (để Smart Pointer tự thu hồi tự động).
+Nhập vào một số nguyên dương N đại diện cho số lượng phần tử.
+Sử dụng con trỏ thông minh \`std::unique_ptr<int[]>\` từ thư viện \`<memory>\` để cấp phát mảng động:
+\`auto arr = std::make_unique<int[]>(N);\`
+Nhập N số nguyên từ bàn phím, tìm giá trị lớn nhất trong mảng và in ra theo định dạng:
+\`Max: <max>\`
+(Mảng động sẽ tự động được giải phóng an toàn theo nguyên lý RAII khi rời khỏi phạm vi).
 
 ### Ví dụ:
 * **Đầu vào:**
 \`\`\`text
-5
-12 45 7 89 23
+4
+15 82 9 44
 \`\`\`
-* **Đầu ra:** \`89\``,
+* **Đầu ra:** \`Max: 82\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng con trỏ thông minh \`std::unique_ptr\` từ thư viện chuẩn \`<memory>\`.
+* Cấm sử dụng từ khóa \`delete\` thủ công (để con trỏ thông minh tự quản lý tài nguyên).
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["unique_ptr","cin","cout"],"forbiddenKeywords":["delete "],"customErrorMessage":"Bài toán yêu cầu quản lý bộ nhớ bằng con trỏ thông minh std::unique_ptr, không sử dụng delete thủ công."} -->`,
             starterCode: `#include <iostream>
 #include <memory>
 
@@ -661,13 +752,23 @@ int main() {
             title: 'Ghi và đọc số nguyên 64-bit ra file nhị phân',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào một số nguyên 64-bit $X$ (\`long long\`).
-Ghi số $X$ ra tệp nhị phân \`data.bin\` bằng \`write()\`.
-Sau đó mở lại file ở chế độ đọc nhị phân, đọc vào biến mới bằng \`read()\` và in ra màn hình.
+Nhập vào một số nguyên 64-bit X (\`long long\`) từ bàn phím.
+1. Sử dụng luồng \`std::ofstream\` mở file \`data.bin\` ở chế độ nhị phân (\`std::ios::binary\`) và ghi trực tiếp giá trị X vào file bằng phương thức \`write\`.
+2. Đóng file ghi, sau đó sử dụng \`std::ifstream\` mở lại file \`data.bin\` ở chế độ nhị phân, đọc giá trị ra một biến Y bằng phương thức \`read\`.
+3. In ra màn hình giá trị đọc được theo đúng định dạng:
+\`Doc duoc: <Y>\`
 
 ### Ví dụ:
-* **Đầu vào:** \`987654321012345\`
-* **Đầu ra:** \`987654321012345\``,
+* **Đầu vào:** \`9876543210123\`
+* **Đầu ra:** \`Doc duoc: 9876543210123\`
+* **Đầu vào:** \`-1234567890\`
+* **Đầu ra:** \`Doc duoc: -1234567890\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc mở file ở chế độ nhị phân bằng cờ \`std::ios::binary\`.
+* Bắt buộc sử dụng các phương thức \`write\` và \`read\` với \`reinterpret_cast<char*>\` để thao tác nhị phân.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["binary","write","read","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu mở file ở chế độ binary và sử dụng các phương thức write, read để ghi/đọc nhị phân."} -->`,
             starterCode: `#include <iostream>
 #include <fstream>
 
@@ -737,14 +838,29 @@ int main() {
             difficulty: 'HARD',
             problemDescription: `### Yêu Cầu Đề Bài:
 Cho struct \`Item\` gồm \`id\` (\`int\`) và \`price\` (\`double\`).
-File nhị phân \`items.db\` chứa danh sách 5 mặt hàng:
+File nhị phân \`items.db\` lưu trữ danh sách gồm 5 mặt hàng:
 * Index 0: ID 101, Price 10.0
 * Index 1: ID 102, Price 25.5
 * Index 2: ID 103, Price 50.0
 * Index 3: ID 104, Price 75.0
 * Index 4: ID 105, Price 99.9
-Nhập vào một số nguyên $K$ ($0 \\le K < 5$). Sử dụng \`seekg\` nhảy trực tiếp đến bản ghi thứ $K$ và in ra:
-\`ID: <id> - Price: <price>\``,
+
+Nhập vào một số nguyên K (0 ≤ K < 5). Sử dụng phương thức định vị con trỏ tệp \`seekg\` để nhảy trực tiếp đến vị trí bản ghi thứ K, đọc dữ liệu và in ra:
+\`ID: <id> - Price: <price>\`
+
+### Ví dụ:
+* **Đầu vào:** \`2\`
+* **Đầu ra:** \`ID: 103 - Price: 50\`
+* **Đầu vào:** \`0\`
+* **Đầu ra:** \`ID: 101 - Price: 10\`
+* **Đầu vào:** \`4\`
+* **Đầu ra:** \`ID: 105 - Price: 99.9\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng phương thức \`seekg\` với độ lệch tương ứng để định vị ngẫu nhiên bản ghi trong file nhị phân.
+* Sử dụng phương thức \`read\` để nạp dữ liệu bản ghi vào bộ nhớ.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["seekg","read","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu sử dụng seekg để định vị và read để đọc bản ghi từ file nhị phân."} -->`,
             starterCode: `#include <iostream>
 #include <fstream>
 
@@ -826,16 +942,26 @@ int main() {
             title: 'Kiểm tra tính hợp lệ của File Database bằng Magic Number',
             difficulty: 'HARD',
             problemDescription: `### Yêu Cầu Đề Bài:
-Cho cấu trúc File Header của database:
+Cho cấu trúc File Header của một hệ cơ sở dữ liệu nhị phân:
 \`\`\`cpp
 struct Header {
-    char magic[4]; // Phải chính xác là "MDB1"
+    char magic[4]; // Mã định danh, phải chính xác là "MDB1"
     int recordCount;
 };
 \`\`\`
-Viết chương trình kiểm tra file \`test.db\`:
-* Nếu 4 bytes đầu đúng là \`"MDB1"\`, in ra: \`CSDL Hop Le - So ban ghi: <count>\`
-* Ngược lại, in ra: \`CSDL Khong Hop Le\``,
+Viết chương trình đọc tệp nhị phân \`test.db\`:
+* Nếu 4 bytes đầu của file đúng là \`"MDB1"\`, in ra: \`CSDL Hop Le - So ban ghi: <count>\`
+* Nếu Magic Number không khớp, in ra: \`CSDL Khong Hop Le\`
+
+### Ví dụ:
+* **Đầu vào:** (Không có)
+* **Đầu ra:** \`CSDL Hop Le - So ban ghi: 42\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng phương thức \`read\` để đọc khối dữ liệu cấu trúc Header từ file nhị phân.
+* So sánh Magic Number bằng \`std::memcmp\` hoặc so sánh mảng ký tự an toàn.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["read","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu sử dụng read để đọc cấu trúc Header và kiểm tra Magic Number."} -->`,
             starterCode: `#include <iostream>
 #include <fstream>
 #include <cstring>
@@ -919,15 +1045,24 @@ int main() {
             title: 'Viết Macro kiểm tra điều kiện an toàn với đầy đủ ngoặc',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Viết một macro \`CLAMP(val, minVal, maxVal)\` để giới hạn giá trị của \`val\` trong đoạn \`[minVal, maxVal]\`:
-* Nếu \`val < minVal\`, trả về \`minVal\`.
-* Nếu \`val > maxVal\`, trả về \`maxVal\`.
-* Ngược lại trả về \`val\`.
-Nhập 3 số nguyên $v, low, high$. Sử dụng macro và in ra giá trị sau khi clamp.
+Định nghĩa Macro tiền xử lý \`#define IN_RANGE(val, minVal, maxVal)\` kiểm tra xem một giá trị \`val\` có nằm trong đoạn \`[minVal, maxVal]\` hay không.
+Chú ý: Để viết Macro an toàn, bắt buộc phải bọc dấu ngoặc đơn quanh từng tham số và toàn bộ biểu thức logic.
+
+Trong hàm \`main()\`, nhập 3 số thực v, low, high từ bàn phím. Sử dụng Macro vừa định nghĩa:
+* Nếu hợp lệ, in ra: \`HOP LE\`
+* Nếu không hợp lệ, in ra: \`KHONG HOP LE\`
 
 ### Ví dụ:
-* **Đầu vào:** \`15 0 10\` -> **Đầu ra:** \`10\`
-* **Đầu vào:** \`-5 0 10\` -> **Đầu ra:** \`0\``,
+* **Đầu vào:** \`5 1 10\`
+* **Đầu ra:** \`HOP LE\`
+* **Đầu vào:** \`15 1 10\`
+* **Đầu ra:** \`KHONG HOP LE\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng chỉ thị tiền xử lý \`#define\` để tạo Macro có tham số an toàn.
+* Sử dụng \`std::cin\` và \`std::cout\` in kết thúc bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["#define","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu định nghĩa Macro an toàn bằng chỉ thị #define."} -->`,
             starterCode: `#include <iostream>
 
 // Định nghĩa macro CLAMP an toàn tại đây
@@ -988,10 +1123,14 @@ int main() {
             title: 'Tổ chức hàm tính giai thừa và lũy thừa dạng module',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Mô phỏng cấu trúc module toán học:
-* Hàm \`long long fact(int n)\`: Tính giai thừa $n!$.
-* Hàm \`long long power(int base, int exp)\`: Tính $base^{exp}$.
-Trong chương trình, nhập vào 3 số $n, b, e$. Gọi 2 hàm trên và in kết quả trên 2 dòng.
+Tổ chức chương trình theo chuẩn thiết kế mô-đun hóa với nguyên mẫu hàm (Function Prototypes):
+1. \`long long fact(int n)\`: Tính giai thừa n!.
+2. \`long long power(int base, int exp)\`: Tính lũy thừa base^exp.
+
+Trong hàm \`main()\`, nhập vào 3 số nguyên: n (cho giai thừa), b (cơ số) và e (số mũ).
+Gọi 2 hàm và in kết quả trên 2 dòng:
+* Dòng 1: Giá trị giai thừa n!.
+* Dòng 2: Giá trị lũy thừa b^e.
 
 ### Ví dụ:
 * **Đầu vào:** \`5 2 4\`
@@ -999,7 +1138,19 @@ Trong chương trình, nhập vào 3 số $n, b, e$. Gọi 2 hàm trên và in k
 \`\`\`text
 120
 16
-\`\`\``,
+\`\`\`
+* **Đầu vào:** \`3 3 3\`
+* **Đầu ra:**
+\`\`\`text
+6
+27
+\`\`\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc định nghĩa đầy đủ 2 hàm \`fact\` và \`power\` với kiểu trả về \`long long\`.
+* Sử dụng \`std::cin\` để đọc dữ liệu và \`std::cout\` in kết thúc mỗi dòng bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["fact","power","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng định nghĩa đầy đủ 2 hàm fact và power."} -->`,
             starterCode: `#include <iostream>
 
 // Khai báo Function Prototype (mô phỏng .h)
@@ -1076,13 +1227,21 @@ int main() {
             title: 'Mô phỏng quy tắc biến đổi phần mở rộng trong Makefile',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Trong Makefile, quy tắc đổi đuôi từ danh sách file \`.cpp\` sang \`.o\` là: \`$(SRCS:.cpp=.o)\`.
-Nhập vào danh sách gồm 3 tên file mã nguồn C++ (ngăn cách bởi dấu cách).
-Hãy in ra danh sách các file đối tượng \`.o\` tương ứng.
+Trong hệ thống biên dịch Makefile, quy tắc đổi đuôi hàng loạt từ danh sách file nguồn \`.cpp\` sang file đối tượng \`.o\` là \`$(SRCS:.cpp=.o)\`.
+Viết chương trình C++ nhận vào danh sách gồm 3 tên file mã nguồn C++ (ngăn cách bởi dấu cách).
+Hãy biến đổi tất cả các file có đuôi \`.cpp\` thành đuôi \`.o\` và in ra trên cùng một dòng (ngăn cách bởi dấu cách).
 
 ### Ví dụ:
 * **Đầu vào:** \`main.cpp math.cpp utils.cpp\`
-* **Đầu ra:** \`main.o math.o utils.o\``,
+* **Đầu ra:** \`main.o math.o utils.o\`
+* **Đầu vào:** \`app.cpp server.cpp db.cpp\`
+* **Đầu ra:** \`app.o server.o db.o\`
+
+### Ràng buộc kỹ thuật:
+* Sử dụng các phương thức xử lý chuỗi của \`std::string\` (\`substr\` hoặc \`replace\`).
+* Sử dụng \`std::cin\` và \`std::cout\` in kết thúc bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["substr","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng các phương thức xử lý chuỗi như substr để đổi đuôi file sang .o."} -->`,
             starterCode: `#include <iostream>
 #include <string>
 
@@ -1152,13 +1311,23 @@ int main() {
             title: 'Tối ưu hóa đệ quy Fibonacci bằng mảng Memoization',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào một số nguyên $N$ ($0 \\le N \\le 60$).
-Cài đặt hàm tính số Fibonacci thứ $N$ có áp dụng kỹ thuật Đệ quy có nhớ (Memoization) để chương trình chạy tức thì trong $O(N)$.
-In ra kết quả số Fibonacci thứ $N$.
+Nhập vào một số nguyên N (0 ≤ N ≤ 60).
+Cài đặt hàm tính số Fibonacci thứ N có áp dụng kỹ thuật Đệ quy có nhớ (Memoization) bằng mảng lưu trữ để chương trình chạy tức thì trong độ phức tạp O(N).
+In ra kết quả số Fibonacci thứ N.
 
 ### Ví dụ:
-* **Đầu vào:** \`10\` -> **Đầu ra:** \`55\`
-* **Đầu vào:** \`50\` -> **Đầu ra:** \`12586269025\``,
+* **Đầu vào:** \`10\`
+* **Đầu ra:** \`55\`
+* **Đầu vào:** \`50\`
+* **Đầu ra:** \`12586269025\`
+* **Đầu vào:** \`0\`
+* **Đầu ra:** \`0\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng mảng hoặc vector lưu trữ giá trị đã tính (Memoization) để tránh lặp lại tính toán đệ quy.
+* Sử dụng kiểu \`long long\` cho các giá trị Fibonacci để chống tràn số.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["long long","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu áp dụng Memoization để tối ưu hóa đệ quy và dùng kiểu long long."} -->`,
             starterCode: `#include <iostream>
 #include <vector>
 
@@ -1232,8 +1401,8 @@ int main() {
             title: 'Liệt kê tất cả các chuỗi nhị phân độ dài N bằng Quay lui',
             difficulty: 'HARD',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào một số nguyên dương $N$ ($1 \\le N \\le 10$).
-Sử dụng thuật toán Quay lui để sinh và in ra tất cả các chuỗi nhị phân độ dài $N$ theo thứ tự từ điển, mỗi chuỗi trên một dòng.
+Nhập vào một số nguyên dương N (1 ≤ N ≤ 10).
+Sử dụng thuật toán Quay lui (Backtracking) để sinh và in ra tất cả các chuỗi nhị phân độ dài N theo thứ tự từ điển, mỗi chuỗi trên một dòng.
 
 ### Ví dụ:
 * **Đầu vào:** \`2\`
@@ -1243,7 +1412,19 @@ Sử dụng thuật toán Quay lui để sinh và in ra tất cả các chuỗi 
 01
 10
 11
-\`\`\``,
+\`\`\`
+* **Đầu vào:** \`1\`
+* **Đầu ra:**
+\`\`\`text
+0
+1
+\`\`\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc cài đặt thuật toán Quay lui bằng hàm đệ quy thử các giá trị 0 và 1 tại từng vị trí.
+* In ra các chuỗi theo đúng thứ tự từ điển, kết thúc mỗi chuỗi bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu sử dụng thuật toán quay lui (Backtracking) để sinh chuỗi nhị phân."} -->`,
             starterCode: `#include <iostream>
 
 int n;
@@ -1321,13 +1502,23 @@ int main() {
             title: 'Đếm số lượng cách xếp N Quân hậu an toàn trên bàn cờ NxN',
             difficulty: 'HARD',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào số nguyên $N$ ($1 \\le N \\le 10$).
-Sử dụng thuật toán Quay lui có Cắt tỉa nhánh cận để đếm xem có bao nhiêu cách đặt $N$ quân hậu lên bàn cờ $N \\times N$ sao cho không quân nào ăn được quân nào.
+Nhập vào số nguyên dương N (1 ≤ N ≤ 10).
+Sử dụng thuật toán Quay lui có Cắt tỉa nhánh cận (đánh dấu cột, đường chéo chính, đường chéo phụ) để đếm xem có bao nhiêu cách đặt N quân hậu lên bàn cờ N × N sao cho không có hai quân hậu nào ăn được nhau.
 In ra tổng số cách tìm được.
 
 ### Ví dụ:
-* **Đầu vào:** \`4\` -> **Đầu ra:** \`2\`
-* **Đầu vào:** \`8\` -> **Đầu ra:** \`92\``,
+* **Đầu vào:** \`4\`
+* **Đầu ra:** \`2\`
+* **Đầu vào:** \`8\`
+* **Đầu ra:** \`92\`
+* **Đầu vào:** \`1\`
+* **Đầu ra:** \`1\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng các mảng cờ đánh dấu (Cột, Đường chéo chính, Đường chéo phụ) để kiểm tra xung đột trong O(1).
+* Sử dụng \`std::cin\` và \`std::cout\` in kết thúc bằng ký tự \`'\\n'\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu sử dụng thuật toán quay lui giải bài toán N-Queens."} -->`,
             starterCode: `#include <iostream>
 
 int n;
@@ -1415,16 +1606,25 @@ int main() {
             title: 'Bắt ngoại lệ chia cho 0 với std::runtime_error',
             difficulty: 'MEDIUM',
             problemDescription: `### Yêu Cầu Đề Bài:
-Viết hàm \`double safeDivide(double a, double b)\`.
-* Nếu $b == 0$, ném ngoại lệ \`std::runtime_error("Loi chia cho 0")\`.
-* Ngược lại trả về $a / b$.
-Trong \`main()\`, nhập 2 số $a, b$. Gọi hàm trong khối \`try-catch\`:
+Viết hàm \`double safeDivide(double a, double b)\`:
+* Nếu b == 0, ném ngoại lệ \`throw std::runtime_error("Loi chia cho 0");\`
+* Ngược lại trả về giá trị phép chia a / b.
+
+Trong hàm \`main()\`, nhập 2 số thực a, b. Gọi hàm trong khối \`try-catch\`:
 * Nếu thành công: in kết quả phép chia.
-* Nếu bắt được ngoại lệ: in ra thông điệp của \`e.what()\`.
+* Nếu bắt được ngoại lệ \`std::runtime_error\`: in ra nội dung ngoại lệ bằng phương thức \`e.what()\`.
 
 ### Ví dụ:
-* **Đầu vào:** \`10 2\` -> **Đầu ra:** \`5\`
-* **Đầu vào:** \`10 0\` -> **Đầu ra:** \`Loi chia cho 0\``,
+* **Đầu vào:** \`10 2\`
+* **Đầu ra:** \`5\`
+* **Đầu vào:** \`10 0\`
+* **Đầu ra:** \`Loi chia cho 0\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng đầy đủ các cú pháp xử lý ngoại lệ: \`throw\`, \`try\`, và \`catch\`.
+* Bắt ngoại lệ bằng tham chiếu hằng: \`const std::runtime_error&\` hoặc \`const std::exception&\`.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["throw","try","catch","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu sử dụng đầy đủ cú pháp xử lý ngoại lệ: throw, try, catch."} -->`,
             starterCode: `#include <iostream>
 #include <stdexcept>
 
@@ -1496,9 +1696,9 @@ int main() {
             title: 'Duyệt ma trận theo hàng Cache-friendly',
             difficulty: 'HARD',
             problemDescription: `### Yêu Cầu Đề Bài:
-Nhập vào kích thước $R$ và $C$ và ma trận số nguyên kích thước $R \\times C$.
-Viết vòng lặp theo đúng chuẩn **Cache-Friendly (Duyệt theo hàng: Hàng ở ngoài, Cột ở trong)** để tính tổng toàn bộ các phần tử.
-In ra kết quả tổng.
+Nhập vào kích thước R và C (1 ≤ R, C ≤ 50) và một ma trận số nguyên kích thước R × C.
+Viết vòng lặp duyệt ma trận theo đúng chuẩn Cache-Friendly (Duyệt theo hàng: Hàng duyệt ở vòng lặp ngoài, Cột duyệt ở vòng lặp trong) để tính tổng toàn bộ các phần tử.
+In ra kết quả tổng tính được.
 
 ### Ví dụ:
 * **Đầu vào:**
@@ -1507,7 +1707,19 @@ In ra kết quả tổng.
 1 2 3
 4 5 6
 \`\`\`
-* **Đầu ra:** \`21\``,
+* **Đầu ra:** \`21\`
+* **Đầu vào:**
+\`\`\`text
+1 1
+99
+\`\`\`
+* **Đầu ra:** \`99\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc duyệt theo quy chuẩn Cache-Friendly (vòng lặp hàng ở ngoài, cột ở trong) để tối ưu tính cục bộ không gian (Spatial Locality).
+* Dùng biến tổng kiểu \`long long\` để chống tràn số.
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["for","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng duyệt ma trận theo đúng quy chuẩn Cache-Friendly (hàng ở ngoài, cột ở trong)."} -->`,
             starterCode: `#include <iostream>
 
 int main() {
@@ -1578,7 +1790,7 @@ int main() {
             title: 'Cập nhật số dư tài khoản trực tiếp trong file nhị phân (In-place update)',
             difficulty: 'HARD',
             problemDescription: `### Yêu Cầu Đề Bài:
-Cho cấu trúc tài khoản lưu trong file \`acc.dat\`:
+Cho cấu trúc tài khoản lưu trong file nhị phân \`acc.dat\`:
 \`\`\`cpp
 #pragma pack(push, 1)
 struct Account {
@@ -1588,13 +1800,23 @@ struct Account {
 };
 #pragma pack(pop)
 \`\`\`
-Nhập vào chỉ số bản ghi $idx$ và số dư mới $newBal$.
-Sử dụng \`seekp\` nhảy trực tiếp đến trường \`balance\` của bản ghi đó và cập nhật số dư.
-Đọc lại bản ghi và in ra: \`ID: <id> - New Balance: <balance>\`.
+
+Nhập vào chỉ số bản ghi idx (bắt đầu từ 0) và số dư mới newBal.
+Sử dụng phương thức \`seekp\` để nhảy trực tiếp tới vị trí trường \`balance\` của bản ghi thứ idx và ghi đè số dư mới bằng \`write\` (kỹ thuật In-place update mà không cần đọc/ghi lại toàn bộ file).
+Sau đó mở lại file ở chế độ đọc, kiểm tra và in ra màn hình:
+\`ID: <id> - New Balance: <balance>\`
 
 ### Ví dụ:
 * **Đầu vào:** \`1 5500.5\`
-* **Đầu ra:** \`ID: 102 - New Balance: 5500.5\``,
+* **Đầu ra:** \`ID: 102 - New Balance: 5500.5\`
+* **Đầu vào:** \`0 999.0\`
+* **Đầu ra:** \`ID: 101 - New Balance: 999\`
+
+### Ràng buộc kỹ thuật:
+* Bắt buộc sử dụng phương thức \`seekp\` để định vị ngẫu nhiên con trỏ ghi nhị phân.
+* Sử dụng phương thức \`write\` để thực hiện cập nhật tại chỗ (in-place update).
+
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["seekp","write","cin","cout"],"forbiddenKeywords":[],"customErrorMessage":"Bài toán yêu cầu sử dụng seekp và write để thực hiện cập nhật tại chỗ (in-place update) trong file nhị phân."} -->`,
             starterCode: `#include <iostream>
 #include <fstream>
 #include <cstring>
