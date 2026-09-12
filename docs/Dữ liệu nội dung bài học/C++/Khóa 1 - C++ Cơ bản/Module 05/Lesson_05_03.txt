@@ -1,189 +1,88 @@
 ---
 lessonId: "CPP-05.03"
-title: "Các thuật toán sắp xếp cơ bản: Bubble Sort, Selection Sort, Insertion Sort"
+title: "Kỹ thuật Mảng Đếm (Frequency Array / Hash Table Cơ bản)"
 difficulty: "MEDIUM"
-estimatedDuration: 30
-keywords: ["sorting", "bubble sort", "selection sort", "insertion sort", "swap", "on2"]
-prerequisites: ["CPP-05.02"]
+estimatedDuration: 20
+keywords: ["frequency array", "counting", "hash table", "direct addressing"]
+prerequisites: ["CPP-05.01"]
 ---
 
-## 1. Khái niệm & Vấn đề
+# Kỹ thuật Mảng Đếm (Frequency Array / Hash Table Cơ bản)
 
-Dữ liệu trong thế giới thực thường ở trạng thái lộn xộn: danh bạ điện thoại chưa sắp tên, điểm thi chưa xếp hạng, danh sách sản phẩm chưa xếp theo giá. 
+## 1. Khái niệm cốt lõi
 
-Để có thể tìm kiếm dữ liệu siêu tốc bằng thuật toán **Tìm kiếm nhị phân (Binary Search - O(\log N))**, điều kiện tiên quyết bắt buộc là **mảng phải được sắp xếp theo thứ tự**.
+**Bài toán:** Cho một dãy số gồm nhiều phần tử từ 0 đến 9. Hãy cho biết mỗi số xuất hiện bao nhiêu lần?
 
-Ba thuật toán sắp xếp nền tảng nhất mở đầu cho môn Cấu trúc Dữ liệu & Giải thuật (DSA) là:
-1. **Bubble Sort (Sắp xếp nổi bọt):** Các phần tử lớn nổi dần về cuối mảng như các bọt khí nổi lên mặt nước.
-2. **Selection Sort (Sắp xếp chọn):** Tại mỗi lượt, tìm kiếm phần tử nhỏ nhất trong dãy chưa sắp xếp và đưa về vị trí đầu tiên.
-3. **Insertion Sort (Sắp xếp chèn):** Xây dựng dãy đã sắp xếp bằng cách lấy từng phần tử mới chèn vào đúng vị trí thích hợp (tương tự như cách bạn sắp bài tây trên tay).
+Nếu với mỗi số, bạn lại dùng một vòng lặp quét qua toàn bộ mảng để đếm, chương trình sẽ phải lặp đi lặp lại rất nhiều lần.
 
-| Thuật toán | Ý tưởng cốt lõi | Độ phức tạp thời gian | Đánh giá |
-| :--- | :--- | :---: | :--- |
-| **Bubble Sort** | So sánh và hoán đổi 2 phần tử kề nhau: `a[j] > a[j+1]`. | O(N²) | Rất trực quan; dễ tối ưu bằng cờ hiệu `isSorted`. |
-| **Selection Sort** | Tìm phần tử nhỏ nhất đưa về đầu dãy: `min_idx`. | O(N²) | Giảm tối đa số lần hoán đổi bộ nhớ (tối đa N-1 lần swap). |
-| **Insertion Sort** | Dời các phần tử lớn hơn sang phải để chèn `key` vào khe trống. | O(N²) | Chạy cực nhanh trên mảng gần như đã được sắp xếp (O(N)). |
+**Kỹ thuật Mảng đếm (Frequency Array):**
+* Biến **giá trị của phần tử** thành **chỉ số (index)** của một mảng đếm.
+* Ô `dem[x]` sẽ lưu trữ: *Số lần giá trị `x` xuất hiện trong dữ liệu*.
 
----
+| Giá trị xuất hiện trong mảng | Ô nhớ trong mảng đếm | Thao tác |
+| :---: | :---: | :--- |
+| Số `5` xuất hiện | `dem[5]` | `dem[5]++` (Tăng số lượng số 5 lên 1) |
+| Ký tự `'a'` xuất hiện | `dem['a']` | `dem['a']++` (Tăng số lượng ký tự 'a' lên 1) |
 
-## 2. Cú pháp & Vận hành
+## 2. Cú pháp & Quy tắc hoạt động
 
-### 2.1. Cài đặt Bubble Sort (Sắp xếp nổi bọt) có tối ưu cờ hiệu
-Nếu sau 1 lượt duyệt mà không có bất kỳ cặp số nào bị đổi chỗ, mảng đã được sắp xếp xong ➔ Thoát sớm ngay lập tức!
+### Minh họa cơ chế:
+```text
+Dữ liệu đầu vào:  [ 2,  5,  2,  1,  2 ]
 
-```cpp
-#include <iostream>
+Mảng đếm dem[] ban đầu toàn 0:
+Chỉ số:   [0]  [1]  [2]  [3]  [4]  [5]
+Số lượng:  0    0    0    0    0    0
 
-void bubbleSort(int a[], int n) {
-    for (int i = 0; i < n - 1; ++i) {
-        bool daSapXep = true;
-        for (int j = 0; j < n - i - 1; ++j) {
-            if (a[j] > a[j + 1]) {
-                std::swap(a[j], a[j + 1]);
-                daSapXep = false;
-            }
-        }
-        if (daSapXep) break; // Tối ưu: Dừng sớm nếu mảng đã ngăn nắp
-    }
-}
+Gặp số 2 ──► dem[2] tăng lên 1
+Gặp số 5 ──► dem[5] tăng lên 1
+Gặp số 2 ──► dem[2] tăng lên 2
+Gặp số 1 ──► dem[1] tăng lên 1
+Gặp số 2 ──► dem[2] tăng lên 3
+
+Kết quả mảng đếm: dem[1] = 1, dem[2] = 3, dem[5] = 1.
 ```
 
-### 2.2. Cài đặt Selection Sort (Sắp xếp chọn)
+## 3. Ví dụ minh họa tinh gọn
+
+Đếm số lần xuất hiện của các chữ số từ 0 đến 9:
+
 ```cpp
-void selectionSort(int a[], int n) {
-    for (int i = 0; i < n - 1; ++i) {
-        int viTriMin = i;
-        for (int j = i + 1; j < n; ++j) {
-            if (a[j] < a[viTriMin]) {
-                viTriMin = j;
-            }
-        }
-        if (viTriMin != i) {
-            std::swap(a[i], a[viTriMin]);
-        }
+int a[6] = {3, 1, 3, 2, 3, 1};
+int dem[10] = {0}; // Khởi tạo toàn bộ mảng đếm bằng 0
+
+// Bước 1: Ghi nhận số lần xuất hiện
+for (int i = 0; i < 6; ++i) {
+    dem[a[i]]++; // Giá trị a[i] làm chỉ số cho mảng dem
+}
+
+// Bước 2: In kết quả
+for (int x = 0; x < 10; ++x) {
+    if (dem[x] > 0) {
+        std::cout << "So " << x << " xuat hien " << dem[x] << " lan
+";
     }
 }
+// Kết quả:
+// So 1 xuat hien 2 lan
+// So 2 xuat hien 1 lan
+// So 3 xuat hien 3 lan
 ```
 
-### 2.3. Cài đặt Insertion Sort (Sắp xếp chèn)
-```cpp
-void insertionSort(int a[], int n) {
-    for (int i = 1; i < n; ++i) {
-        int key = a[i];
-        int j = i - 1;
-
-        // Dời các phần tử lớn hơn key sang phải 1 vị trí
-        while (j >= 0 && a[j] > key) {
-            a[j + 1] = a[j];
-            j--;
-        }
-        a[j + 1] = key; // Đặt key vào vị trí thích hợp
-    }
-}
-```
-
----
-
-## 3. Lỗi thường gặp & Tối ưu
+## 4. Lỗi học sinh hay gặp & Cách phòng tránh
 
 > [!WARNING]
-> **Các cạm bẫy khi cài đặt thuật toán sắp xếp:**
-> 1. **Lỗi tràn biên trong Bubble Sort:**
->    Vòng lặp trong viết `j < n - i`. Khi `j = n - 1`, phép so sánh `a[j] > a[j + 1]` sẽ truy cập vào `a[n]` (nằm ngoài mảng!). Điều kiện chuẩn xác bắt buộc là: `j < n - i - 1`.
-> 2. **Quên lưu biến `key` trong Insertion Sort:**
->    Nếu không lưu `int key = a[i]`, khi dời mảng `a[j + 1] = a[j]`, giá trị ban đầu của `a[i]` sẽ bị ghi đè và biến mất vĩnh viễn!
+> **1. Quên khởi tạo toàn bộ mảng đếm bằng 0**
+> * *Hậu quả:* Mảng `dem` chứa các giá trị rác ngẫu nhiên. Khi bạn viết `dem[x]++`, kết quả sẽ là một con số khổng lồ vô nghĩa!
+> * *Cách phòng tránh:* Luôn khởi tạo: `int dem[MAX] = {0};`.
 
----
+> [!WARNING]
+> **2. Dữ liệu có giá trị âm hoặc giá trị quá lớn**
+> * *Nguyên nhân:* Chỉ số mảng không được phép là số âm và không thể khai báo mảng có chỉ số hàng tỷ (`dem[1000000000]`).
+> * *Quy tắc:* Mảng đếm trực tiếp chỉ áp dụng cho các số nguyên không âm có phạm vi vừa phải (thường <= 10^6).
 
-## 4. Thực hành phân bậc
+## 5. Ghi nhớ trọng tâm
 
-### Câu hỏi trắc nghiệm (Warm-up)
-Thuật toán sắp xếp nào trong 3 thuật toán trên có hiệu năng tốt nhất đạt độ phức tạp tuyến tính O(N) khi mảng đầu vào **đã được sắp xếp sẵn** từ trước?
-* [ ] A) Selection Sort
-* [x] B) Insertion Sort (Vòng lặp while kiểm tra `a[j] > key` dừng ngay lập tức)
-* [ ] C) Cả 3 đều chạy như nhau
-* [ ] D) Không thuật toán nào đạt được O(N)
-
----
-
-### Thử thách sửa lỗi (Debug)
-Quan sát đoạn mã Selection Sort sau và phát hiện lỗi logic khiến mảng bị sắp xếp sai:
-
-```cpp
-// Code lỗi:
-void selectionSort(int a[], int n) {
-    for (int i = 0; i < n - 1; ++i) {
-        for (int j = i + 1; j < n; ++j) {
-            if (a[j] < a[i]) {
-                std::swap(a[i], a[j]); // LỖI: Hoán đổi quá nhiều lần!
-            }
-        }
-    }
-}
-```
-
-**Phân tích:** Đoạn code trên hoán đổi liên tục mỗi khi thấy số nhỏ hơn, biến Selection Sort thành một biến thể kém hiệu quả. Bản chất Selection Sort chuẩn là **chỉ lưu chỉ số `viTriMin`**, sau khi duyệt hết vòng `j` mới thực hiện duy nhất 1 lần swap!
-
----
-
-### Bài tập lập trình (Mini-task)
-**Đề bài:** Nhập vào số nguyên dương n (1 ≤ n ≤ 1000) và n số nguyên của mảng a. Hãy cài đặt thuật toán **Bubble Sort** để sắp xếp mảng theo thứ tự **Tăng dần**. In ra mảng sau khi sắp xếp, các số cách nhau bởi một dấu cách.
-
-**Ví dụ:**
-* Đầu vào:
-  ```text
-  6
-  5 2 8 1 9 4
-  ```
-* Đầu ra:
-  ```text
-  1 2 4 5 8 9
-  ```
-
-**Mã nguồn chuẩn C++17:**
-```cpp
-#include <iostream>
-
-void bubbleSort(int a[], int n) {
-    for (int i = 0; i < n - 1; ++i) {
-        bool swapped = false;
-        for (int j = 0; j < n - i - 1; ++j) {
-            if (a[j] > a[j + 1]) {
-                int temp = a[j];
-                a[j] = a[j + 1];
-                a[j + 1] = temp;
-                swapped = true;
-            }
-        }
-        if (!swapped) break;
-    }
-}
-
-int main() {
-    int n = 0;
-    if (std::cin >> n && n > 0 && n <= 1000) {
-        int a[1000];
-        for (int i = 0; i < n; ++i) {
-            std::cin >> a[i];
-        }
-
-        bubbleSort(a, n);
-
-        for (int i = 0; i < n; ++i) {
-            std::cout << a[i] << ' ';
-        }
-        std::cout << '\n';
-    }
-    return 0;
-}
-```
-
----
-
-## 5. Đúc kết & Đi tiếp
-
-* Cả 3 thuật toán cơ bản (Bubble, Selection, Insertion) đều có độ phức tạp trung bình là O(N²), phù hợp cho các bài toán dữ liệu nhỏ (N ≤ 1000).
-* **Insertion Sort** là thuật toán thực tế tốt nhất trong nhóm O(N²), đặc biệt hiệu quả trên mảng gần như đã sắp xếp.
-* Để xử lý các mảng lớn hàng triệu phần tử, trong các khóa học sau chúng ta sẽ học các thuật toán nâng cao O(N \log N) như Quick Sort, Merge Sort và hàm chuẩn `std::sort`.
-
-Trong bài học tiếp theo **[Bài 5.4: std::vector trong Modern C++ - Mảng Động chuẩn công nghiệp và Range-based for]**, chúng ta sẽ tạm biệt các hạn chế của mảng tĩnh để làm quen với container mạnh mẽ bậc nhất của C++: `std::vector`.
+- Mảng đếm dùng chính giá trị phần tử làm chỉ số để truy xuất và đếm số lần xuất hiện.
+- Thao tác ghi nhận cực nhanh: `dem[x]++`.
+- Bắt buộc phải khởi tạo toàn bộ mảng đếm bằng `0` trước khi sử dụng.
