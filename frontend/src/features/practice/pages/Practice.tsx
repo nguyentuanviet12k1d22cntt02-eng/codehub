@@ -243,7 +243,8 @@ const Practice: React.FC = () => {
         try {
             const isCpp = lesson?.lessonId?.startsWith('CPP-') || /#include\s*<|std::/i.test(code);
             const isSql = !isCpp && (lesson?.lessonId?.startsWith('SQL-') || /SELECT|FROM/i.test(code));
-            const language = isCpp ? 'CPP' : isSql ? 'SQL' : 'PYTHON';
+            const isJs = !isCpp && !isSql && (lesson?.lessonId?.startsWith('JS-') || /console\.log|function\s*\(|let\s+|const\s+/i.test(code));
+            const language = isJs ? 'JAVASCRIPT' : isCpp ? 'CPP' : isSql ? 'SQL' : 'PYTHON';
             const response = await axios.post(`${API_BASE_URL}/api/auth/compiler/run`, {
                 code,
                 input: customInput,
@@ -312,7 +313,7 @@ const Practice: React.FC = () => {
                     setCompletedExercises(updatedCompleted);
                     setIsCompleted(false);
                     if (message) {
-                        setConsoleOutput(`❌ [Lỗi ràng buộc cú pháp]: ${message}`);
+                        setConsoleOutput(`❌ [Lỗi cấu trúc / logic code]:\n${message}`);
                     } else {
                         setConsoleOutput(`❌ Kết quả: Vượt qua ${results.filter((r: any) => r.passed).length}/${results.length} testcases. Vui lòng kiểm tra lại logic.`);
                     }
@@ -369,6 +370,7 @@ const Practice: React.FC = () => {
 
     const isCpp = lesson?.lessonId?.startsWith('CPP-') || /#include\s*<|std::/i.test(code);
     const isSql = !isCpp && (lesson?.lessonId?.startsWith('SQL-') || /SELECT|FROM/i.test(code));
+    const isJs = !isCpp && !isSql && (lesson?.lessonId?.startsWith('JS-') || /console\.log|function\s*\(|let\s+|const\s+/i.test(code));
 
     return (
         <div className="bg-bg-primary text-text-primary min-h-screen flex flex-col font-sans select-none overflow-hidden h-screen transition-colors duration-200">
@@ -405,6 +407,7 @@ const Practice: React.FC = () => {
                                 <CodeEditorPanel
                                     isSql={isSql}
                                     isCpp={isCpp}
+                                    isJs={isJs}
                                     currentTheme={currentTheme}
                                     code={code}
                                     exercise={exercise}

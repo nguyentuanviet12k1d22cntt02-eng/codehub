@@ -78,6 +78,7 @@ const PracticeWorkspace: React.FC = () => {
         distribution: { range: string; count: number }[];
     } | null>(null);
     const [allPassed, setAllPassed] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
         const handleThemeChange = () => {
@@ -202,6 +203,7 @@ const PracticeWorkspace: React.FC = () => {
 
             setIsSubmitting(false);
             setAllPassed(response.data.allPassed);
+            setErrorMessage(response.data.message || null);
             setTestCaseResults(response.data.results);
 
             if (response.data.allPassed) {
@@ -526,10 +528,10 @@ const PracticeWorkspace: React.FC = () => {
                                                         <h4 className="font-extrabold text-sm flex items-center gap-1.5">
                                                             {allPassed ? '🎉 Chấp nhận bài giải (Accepted)' : '❌ Lỗi kết quả nộp bài (Wrong Answer)'}
                                                         </h4>
-                                                        <p className="text-[11px] font-medium opacity-90">
+                                                        <p className="text-[11px] font-medium opacity-90 whitespace-pre-line">
                                                             {allPassed
                                                                 ? `Chúc mừng! Code của bạn đã vượt qua tất cả ${testcaseResults.length} testcase.`
-                                                                : `Code của bạn chỉ đạt ${testcaseResults.filter(r => r.passed).length}/${testcaseResults.length} testcases. Vui lòng kiểm tra lại.`
+                                                                : (errorMessage || `Code của bạn chỉ đạt ${testcaseResults.filter(r => r.passed).length}/${testcaseResults.length} testcases. Vui lòng kiểm tra lại.`)
                                                             }
                                                         </p>
                                                     </div>

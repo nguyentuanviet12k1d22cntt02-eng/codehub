@@ -1,0 +1,31 @@
+=== TABLE 1 (7 rows, 2 cols) ===
+Row 0: Mã môn | JS-CORE-01
+Row 1: Đối tượng | Học sinh THCS/THPT, sinh viên hoặc người mới học JavaScript
+Row 2: Điều kiện đầu vào | Không bắt buộc; cần tư duy máy tính cơ bản là lợi thế
+Row 3: Phạm vi | JavaScript thuần – ngôn ngữ lập trình
+Row 4: Không bao gồm | HTML/CSS, DOM, Web API, Fetch/REST, Node.js, Express, React và framework
+Row 5: Thời lượng gợi ý | 80–120 giờ
+Row 6: Đầu ra chính | Có thể tự viết, đọc, debug và giải bài toán bằng JavaScript thuần
+
+=== TABLE 2 (6 rows, 3 cols) ===
+Row 0: Cấp độ | Mục tiêu | Ví dụ dạng bài
+Row 1: EASY | Cú pháp + thao tác cơ bản | In dữ liệu, tính toán, kiểm tra điều kiện, vòng lặp đơn
+Row 2: MEDIUM | Kết hợp nhiều kiến thức | Xử lý mảng, chuỗi, object, viết hàm
+Row 3: HARD | Tư duy giải quyết bài toán | Thống kê dữ liệu, mô phỏng, xử lý cấu trúc dữ liệu
+Row 4: DEBUG | Đọc và sửa code | Tìm lỗi scope, type, logic, this, array method
+Row 5: CHALLENGE | Tổng hợp | Bài toán quản lý dữ liệu bằng Array + Object + Function
+
+=== TABLE 3 (5 rows, 3 cols) ===
+Row 0: Project | Kiến thức chính | Sản phẩm
+Row 1: Quản lý sinh viên | Array + Object + Function + String | CRUD dữ liệu trong bộ nhớ
+Row 2: Quản lý kho hàng | Object + Array + Function + sort/filter/reduce | Thống kê và tìm kiếm dữ liệu
+Row 3: Mini Banking | Condition + Loop + Function + Object + Error handling | Mô phỏng tài khoản và giao dịch
+Row 4: Quiz Engine | Array + Object + Function + Module | Chương trình trắc nghiệm chạy bằng JS thuần
+
+=== TABLE 4 (5 rows, 3 cols) ===
+Row 0: Giai đoạn | Module | Tỷ trọng
+Row 1: Nền tảng | 1–5 | 35%
+Row 2: Xử lý dữ liệu | 6–9 | 30%
+Row 3: JS hiện đại + Core | 10–12 | 25%
+Row 4: Debug + Module + Project | 13–14 + Project | 10%
+

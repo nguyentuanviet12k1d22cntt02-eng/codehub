@@ -3,6 +3,7 @@ import { prisma } from '../../infrastructure/database/prisma';
 import { codeExecutionQueue } from '../../infrastructure/queue/queueService';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
 import { ProgrammingLanguage, ExerciseDifficulty, SubmissionStatus } from '@prisma/client';
+import { StaticCodeAnalyzer } from '../../infrastructure/analysis/staticCodeAnalyzer';
 
 // 1. Lấy danh sách bài tập luyện tập độc lập kèm bộ lọc
 export const getPracticeProblems = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -157,9 +158,17 @@ export const runPracticeCode = async (req: Request, res: Response, next: NextFun
             return;
         }
 
+        let finalOutput = result.stdout;
+        if (language === 'JAVASCRIPT' || language === 'PYTHON') {
+            const astCheck = StaticCodeAnalyzer.analyze(code, language);
+            if (!astCheck.isValid && astCheck.error) {
+                finalOutput = `⚠️ [Cảnh báo phân tích cú pháp/logic AST]: ${astCheck.error}\n----------------------------------------\n` + (finalOutput || '');
+            }
+        }
+
         res.status(200).json({
             success: true,
-            output: result.stdout
+            output: finalOutput
         });
     } catch (err: any) {
         res.status(500).json({ error: "Lỗi Server", details: err.message });
@@ -192,6 +201,12 @@ export const submitPracticeCode = async (req: AuthenticatedRequest, res: Respons
         if (!problem) {
             res.status(404).json({ error: "Không tìm thấy bài tập này." });
             return;
+        }
+
+        // Phân tích AST & cấu trúc logic code
+        let astResult = { isValid: true, error: null as string | null, warnings: [] as string[] };
+        if (language === 'PYTHON' || language === 'CPP' || language === 'C' || language === 'JAVASCRIPT') {
+            astResult = StaticCodeAnalyzer.analyze(code, language, problem.description || '', problem.title);
         }
 
         // Thực thi song song tất cả các testcase
@@ -264,7 +279,8 @@ export const submitPracticeCode = async (req: AuthenticatedRequest, res: Respons
             return;
         }
 
-        const allPassed = results.every(r => r.passed);
+        const allTestsPassed = results.every(r => r.passed);
+        const allPassed = allTestsPassed && astResult.isValid;
 
         // Tính toán thời gian chạy thực tế trung bình cho các testcase
         const avgRuntime = problem.testCases.length > 0 ? totalRuntime / problem.testCases.length : 15;
@@ -317,9 +333,17 @@ export const submitPracticeCode = async (req: AuthenticatedRequest, res: Respons
             if (bucket) bucket.count++;
         });
 
+        let returnMessage: string | null = null;
+        if (!astResult.isValid) {
+            returnMessage = astResult.error;
+        } else if (!allTestsPassed) {
+            returnMessage = `Chưa vượt qua tất cả các testcase (${results.filter(r => r.passed).length}/${results.length}).`;
+        }
+
         res.status(200).json({
             success: true,
             allPassed,
+            message: returnMessage,
             submissionId: submission.id,
             results,
             runtimeMs: parseFloat(normalizedRuntime.toFixed(1)),

@@ -94,8 +94,12 @@ const CourseDetail: React.FC = () => {
 
     const firstLessonId = course.modules?.[0]?.chapters?.[0]?.lessons?.[0]?.id;
 
+    const isJs = /javascript|js\b/i.test(course.title);
+    const isSql = /sql/i.test(course.title);
+    const pageBg = isJs ? 'bg-[#FFFDF2]' : isSql ? 'bg-[#F4F6F9]' : 'bg-[#F6F8FC]';
+
     return (
-        <div className="bg-[#F6F8FC] dark:bg-[#0B0F19] text-[#172033] dark:text-white min-h-screen w-full relative overflow-x-hidden flex flex-col font-sans transition-colors duration-200">
+        <div className={`${pageBg} dark:bg-[#0B0F19] text-[#24292E] dark:text-white min-h-screen w-full relative overflow-x-hidden flex flex-col font-sans transition-colors duration-200`}>
             {/* 1. Header & Breadcrumb */}
             <CourseDetailHeader
                 courseTitle={course.title}

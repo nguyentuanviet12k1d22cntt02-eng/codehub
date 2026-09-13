@@ -31,8 +31,8 @@ import { MascotWavingBannerIllustration } from '../../ai-tutor/components/AITuto
 
 export interface KnowledgeGraphTreeProps {
     userMastery: Record<string, number>;
-    activeModel: 'PAL-Net' | 'BKT' | 'DKT';
-    onModelChange?: (model: 'PAL-Net' | 'BKT' | 'DKT') => void;
+    activeModel?: 'PAL-Net';
+    onModelChange?: (model: 'PAL-Net') => void;
     overallScore: number;
     streakDays?: number;
     studentMeta?: {
@@ -163,8 +163,8 @@ const CONCEPT_CODE_SNIPPETS: Record<string, { lines: { text: string; comment?: s
 
 export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
     userMastery,
-    activeModel,
-    onModelChange,
+    activeModel: _activeModel,
+    onModelChange: _onModelChange,
     overallScore,
     streakDays = 3,
     studentMeta,
@@ -1060,32 +1060,12 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                         </button>
                     </div>
 
-                    {/* Right: Cognitive Engine Model Switcher & Mini-Map Overview */}
+                    {/* Right: Cognitive Engine Model Badge & Mini-Map Overview */}
                     <div className="flex items-center gap-3">
-                        {onModelChange && (
-                            <div className="flex items-center bg-slate-50 p-1 rounded-xl border border-slate-200/80 text-[11px] font-semibold">
-                                <span className="text-[10px] text-slate-400 px-1.5 uppercase font-mono">Engine</span>
-                                {(
-                                    [
-                                        { id: 'PAL-Net', label: 'PAL-Net' },
-                                        { id: 'BKT', label: 'BKT' },
-                                        { id: 'DKT', label: 'DKT' }
-                                    ] as const
-                                ).map((item) => (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => onModelChange(item.id)}
-                                        className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${
-                                            activeModel === item.id
-                                                ? 'bg-blue-600 text-white font-bold shadow-xs'
-                                                : 'text-slate-500 hover:text-slate-800'
-                                        }`}
-                                    >
-                                        {item.label}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
+                        <div className="flex items-center bg-blue-50 px-2.5 py-1 rounded-xl border border-blue-200/80 text-[11px] font-semibold text-blue-700">
+                            <span className="text-[10px] text-blue-400 mr-1.5 uppercase font-mono">Engine</span>
+                            <span className="font-bold">PAL-Net (GCN & Attention)</span>
+                        </div>
 
                         {/* Mini-map Box matching image */}
                         <div className="hidden sm:flex items-center justify-center w-14 h-8 bg-blue-50/80 border border-blue-200 rounded-lg p-1" title="Mini-map">

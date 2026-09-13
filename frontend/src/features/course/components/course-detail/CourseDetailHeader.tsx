@@ -25,12 +25,14 @@ export const CourseDetailHeader: React.FC<CourseDetailHeaderProps> = ({
                         className="flex items-center gap-2.5 cursor-pointer select-none group"
                         onClick={() => navigate('/dashboard')}
                     >
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform ${
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform ${
                             /c\+\+/i.test(courseTitle)
-                                ? 'bg-gradient-to-tr from-[#00599C] to-[#0284C7] shadow-sky-500/25'
+                                ? 'bg-gradient-to-tr from-[#0B2948] to-[#0089C9] text-white shadow-sky-500/25'
                                 : /sql/i.test(courseTitle)
-                                ? 'bg-gradient-to-tr from-teal-600 to-cyan-600 shadow-teal-500/25'
-                                : 'bg-gradient-to-tr from-blue-600 to-indigo-600 shadow-blue-500/20'
+                                ? 'bg-gradient-to-tr from-[#003366] to-[#00758F] text-white shadow-teal-500/25'
+                                : /javascript|js\b/i.test(courseTitle)
+                                ? 'bg-[#111111] text-[#F7DF1E] font-black border border-black shadow-xs'
+                                : 'bg-gradient-to-tr from-[#306998] to-[#4B8BBE] text-white shadow-sky-500/20'
                         }`}>
                             <Code2 className="w-4.5 h-4.5" />
                         </div>
@@ -40,18 +42,23 @@ export const CourseDetailHeader: React.FC<CourseDetailHeaderProps> = ({
                     </div>
 
                     {/c\+\+/i.test(courseTitle) ? (
-                        <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-0.5 rounded-full border border-sky-200/60 dark:border-sky-800/60 tracking-wider uppercase">
-                            <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+                        <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-0.5 rounded-full border border-sky-200/60 dark:border-sky-800/60 tracking-wider uppercase">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#0089C9] animate-pulse" />
                             C++ MODERN
                         </span>
                     ) : /sql/i.test(courseTitle) ? (
-                        <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/60 px-2.5 py-0.5 rounded-full border border-teal-200/60 dark:border-teal-800/60 tracking-wider uppercase">
-                            <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
-                            SQL SERVER
+                        <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold text-[#00758F] dark:text-teal-300 bg-[#F4F6F9] dark:bg-slate-900 px-2.5 py-0.5 rounded-full border border-[#00758F]/30 dark:border-teal-800/60 tracking-wider uppercase">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#F29111] animate-pulse" />
+                            SQL DATABASE
+                        </span>
+                    ) : /javascript|js\b/i.test(courseTitle) ? (
+                        <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-black text-[#F7DF1E] bg-[#111111] px-2.5 py-0.5 rounded-full border border-black tracking-wider uppercase shadow-xs">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#F7DF1E] animate-pulse" />
+                            JS ES6+
                         </span>
                     ) : (
-                        <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2.5 py-0.5 rounded-full border border-blue-200/60 dark:border-blue-800/60 tracking-wider uppercase">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                        <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold text-[#306998] dark:text-[#FFE873] bg-sky-50 dark:bg-slate-900 px-2.5 py-0.5 rounded-full border border-[#306998]/30 dark:border-sky-800/60 tracking-wider uppercase">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#FFE873] animate-pulse" />
                             PYTHON CORE
                         </span>
                     )}
@@ -81,7 +88,13 @@ export const CourseDetailHeader: React.FC<CourseDetailHeaderProps> = ({
             </div>
 
             {/* Breadcrumb điều hướng hiện đại */}
-            <div className="bg-[#F8FAFC]/90 dark:bg-[#0D121F]/90 border-t border-slate-200/50 dark:border-slate-800/50 px-4 sm:px-6 md:px-8 py-2.5">
+            <div className={`${
+                /sql/i.test(courseTitle)
+                    ? 'bg-[#F4F6F9]/90'
+                    : /javascript|js\b/i.test(courseTitle)
+                    ? 'bg-[#FFFDF2]/90'
+                    : 'bg-[#F8FAFC]/90'
+            } dark:bg-[#0D121F]/90 border-t border-slate-200/50 dark:border-slate-800/50 px-4 sm:px-6 md:px-8 py-2.5`}>
                 <div className="max-w-[1240px] mx-auto flex items-center flex-wrap gap-1.5 text-[12px] text-slate-500 dark:text-slate-400">
                     <Link
                         to="/dashboard"

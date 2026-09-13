@@ -270,7 +270,7 @@ export default function AdminDashboard() {
                                 <div className="p-4 bg-bg-tertiary rounded-2xl border border-border-custom flex flex-col gap-2">
                                     <span className="text-[9px] text-accent-custom font-black uppercase tracking-widest">Tiêu chí phân cấp lý thuyết</span>
                                     <p className="text-[11px] text-text-secondary leading-relaxed">
-                                        Học viên được xác định là <strong className="text-emerald-555">Vượt qua</strong> thành phần kiến thức nếu Chỉ số thông thạo dự đoán bởi mô phỏng AI (DKT/BKT/PAL-Net) đạt từ <strong className="text-text-primary">75% trở lên</strong>.
+                                        Học viên được xác định là <strong className="text-emerald-555">Vượt qua</strong> thành phần kiến thức nếu Chỉ số thông thạo dự đoán bởi mô phỏng AI (Mạng nơ-ron đồ thị PALNet) đạt từ <strong className="text-text-primary">75% trở lên</strong>.
                                     </p>
                                 </div>
 

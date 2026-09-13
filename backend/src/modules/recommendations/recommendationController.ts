@@ -316,10 +316,8 @@ export async function getDynamicUserMasteryFallback(userId: string) {
         }
     }
 
-    // 6. Calculate mastery values for each model (varying standard baselines)
+    // 6. Calculate mastery values for PAL-Net
     const palNetMastery: Record<string, number> = {};
-    const bktMastery: Record<string, number> = {};
-    const dktMastery: Record<string, number> = {};
 
     kcs.forEach((kc: string) => {
         const total = totalByKC[kc];
@@ -327,17 +325,13 @@ export async function getDynamicUserMasteryFallback(userId: string) {
         const pct = total > 0 ? (completed / total) : 0;
 
         palNetMastery[kc] = 0.4 + 0.55 * pct;
-        bktMastery[kc] = 0.35 + 0.55 * pct;
-        dktMastery[kc] = 0.45 + 0.5 * pct;
     });
 
     return {
         success: true,
         student_meta: { username, email, profile },
         mastery: {
-            "PAL-Net": palNetMastery,
-            "BKT": bktMastery,
-            "DKT": dktMastery
+            "PAL-Net": palNetMastery
         },
         stats: {
             lessons_completed: passedExerciseIds.size,

@@ -3,6 +3,7 @@ import { prisma } from '../../infrastructure/database/prisma';
 import { codeExecutionQueue } from '../../infrastructure/queue/queueService';
 import { exerciseService } from './exercise.service';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
+import { StaticCodeAnalyzer } from '../../infrastructure/analysis/staticCodeAnalyzer';
 
 // Chạy thử code (không lưu database)
 export const runCodeDynamic = async (req: Request, res: Response): Promise<void> => {
@@ -16,7 +17,8 @@ export const runCodeDynamic = async (req: Request, res: Response): Promise<void>
 
         const isCpp = /#include\s*<|std::/i.test(code);
         const isSql = /SELECT|FROM|WHERE|INSERT|UPDATE|DELETE/i.test(code);
-        const execLanguage = language || (isCpp ? 'CPP' : isSql ? 'SQL' : 'PYTHON');
+        const isJs = /console\.log|function\s*\(|let\s+|const\s+|var\s+/i.test(code);
+        const execLanguage = language || (isCpp ? 'CPP' : isSql ? 'SQL' : isJs ? 'JAVASCRIPT' : 'PYTHON');
         const result = await exerciseService.runDynamicCode(code, execLanguage as any, input || '', 5000);
 
         if (result.status === 'TIMEOUT') {
@@ -35,9 +37,17 @@ export const runCodeDynamic = async (req: Request, res: Response): Promise<void>
             return;
         }
 
+        let finalOutput = result.stdout;
+        if (execLanguage === 'JAVASCRIPT' || execLanguage === 'PYTHON') {
+            const astCheck = StaticCodeAnalyzer.analyze(code, execLanguage);
+            if (!astCheck.isValid && astCheck.error) {
+                finalOutput = `⚠️ [Cảnh báo phân tích cú pháp/logic AST]: ${astCheck.error}\n----------------------------------------\n` + (finalOutput || '');
+            }
+        }
+
         res.status(200).json({
             success: true,
-            output: result.stdout
+            output: finalOutput
         });
 
     } catch (err: any) {
@@ -147,7 +157,7 @@ function parseAndValidateConstraints(problemDescription: string, exerciseTitle: 
         try {
             const config: CodeConstraintConfig = JSON.parse(match[1]);
             let cleanCode = code;
-            if (execLanguage === 'CPP') {
+            if (execLanguage === 'CPP' || execLanguage === 'JAVASCRIPT') {
                 cleanCode = code.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
             } else {
                 cleanCode = code.replace(/#.*$/gm, '').replace(/'''[\s\S]*?'''/g, '').replace(/"""[\s\S]*?"""/g, '');
@@ -155,11 +165,11 @@ function parseAndValidateConstraints(problemDescription: string, exerciseTitle: 
 
             // 1.1 Kiểm tra bắt buộc có comment
             if (config.requireComment) {
-                const hasComment = execLanguage === 'CPP'
+                const hasComment = (execLanguage === 'CPP' || execLanguage === 'JAVASCRIPT')
                     ? /\/\/|\/\*/.test(code)
                     : /#.+/.test(code);
                 if (!hasComment) {
-                    return config.customErrorMessage || (execLanguage === 'CPP'
+                    return config.customErrorMessage || ((execLanguage === 'CPP' || execLanguage === 'JAVASCRIPT')
                         ? "Đề bài yêu cầu bạn phải viết ít nhất một dòng chú thích (bắt đầu bằng `//` hoặc `/*`)."
                         : "Đề bài yêu cầu bạn phải viết ít nhất một dòng chú thích bắt đầu bằng ký tự `#`.");
                 }
@@ -228,25 +238,19 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
         const lessonCode = exercise.lesson?.lessonId || '';
         const isCppExercise = lessonCode.startsWith('CPP') || /#include\s*<|std::/i.test(code);
         const isSqlExercise = !isCppExercise && (lessonCode.startsWith('SQL') || /SELECT|FROM|WHERE/i.test(code));
-        const execLanguage = isCppExercise ? 'CPP' : isSqlExercise ? 'SQL' : 'PYTHON';
+        const isJsExercise = !isCppExercise && !isSqlExercise && (lessonCode.startsWith('JS') || /console\.log|function\s*\(|let\s+|const\s+/i.test(code));
+        const execLanguage = isCppExercise ? 'CPP' : isSqlExercise ? 'SQL' : isJsExercise ? 'JAVASCRIPT' : 'PYTHON';
 
-        // 2. Kiểm tra ràng buộc biến tĩnh & dynamic constraints cho cả Python và C++
-        if (execLanguage === 'PYTHON' || execLanguage === 'CPP') {
-            const constraintError = parseAndValidateConstraints(exercise.problemDescription || '', exercise.title, code, execLanguage);
-            if (constraintError) {
-                res.status(200).json({
-                    success: true,
-                    allPassed: false,
-                    message: constraintError,
-                    results: (exercise.testCases || []).map((tc: any) => ({
-                        id: tc.id,
-                        input: tc.input,
-                        expectedOutput: tc.expectedOutput,
-                        actualOutput: `[Lỗi chấm bài] ${constraintError}`,
-                        passed: false
-                    }))
-                });
-                return;
+        // 2. Phân tích tĩnh AST & cấu trúc logic code (không chặn testcase chạy để học viên vẫn xem được output)
+        let astResult = { isValid: true, error: null as string | null, warnings: [] as string[] };
+        if (execLanguage === 'PYTHON' || execLanguage === 'CPP' || execLanguage === 'JAVASCRIPT') {
+            astResult = StaticCodeAnalyzer.analyze(code, execLanguage, exercise.problemDescription || '', exercise.title);
+            // Fallback kiểm tra ràng buộc cũ nếu AST chưa báo lỗi
+            if (astResult.isValid) {
+                const legacyConstraintError = parseAndValidateConstraints(exercise.problemDescription || '', exercise.title, code, execLanguage);
+                if (legacyConstraintError) {
+                    astResult = { isValid: false, error: legacyConstraintError, warnings: [] };
+                }
             }
         }
 
@@ -315,7 +319,9 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
             return;
         }
 
-        const allPassed = results.every((r: any) => r.passed);
+        const allTestsPassed = results.every((r: any) => r.passed);
+        // Bắt buộc thỏa mãn đồng thời: Tất cả testcases đều ĐÚNG output VÀ mã nguồn ĐẠT chuẩn cấu trúc AST
+        const allPassed = allTestsPassed && astResult.isValid;
 
         // Đo lường thời gian chạy trung bình thực tế cho 1 testcase
         const avgRuntime = (exercise.testCases || []).length > 0 ? totalRuntime / exercise.testCases.length : 15;
@@ -394,9 +400,17 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
             if (bucket) bucket.count++;
         });
 
+        let returnMessage: string | null = null;
+        if (!astResult.isValid) {
+            returnMessage = astResult.error;
+        } else if (!allTestsPassed) {
+            returnMessage = `Mã nguồn chưa vượt qua tất cả testcases (${results.filter((r: any) => r.passed).length}/${results.length}). Vui lòng kiểm tra lại logic.`;
+        }
+
         res.status(200).json({
             success: true,
             allPassed,
+            message: returnMessage,
             submissionId: submission.id,
             results,
             runtimeMs: parseFloat(normalizedRuntime.toFixed(1)),

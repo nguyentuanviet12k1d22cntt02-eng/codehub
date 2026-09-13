@@ -5,6 +5,7 @@ import type { ExerciseMock } from './types';
 interface CodeEditorPanelProps {
     isSql: boolean;
     isCpp?: boolean;
+    isJs?: boolean;
     currentTheme: 'light' | 'dark';
     code: string;
     exercise: ExerciseMock | null;
@@ -15,6 +16,7 @@ interface CodeEditorPanelProps {
 export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
     isSql,
     isCpp,
+    isJs,
     currentTheme,
     code,
     exercise,
@@ -27,7 +29,7 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
             <div className="bg-bg-tertiary border-b border-border-custom px-4 py-2 flex justify-between items-center shrink-0 transition-colors duration-200">
                 <div className="flex items-center gap-2">
                     <span className="text-[10px] font-bold bg-accent-bg text-accent-custom px-1.5 py-0.5 rounded border border-accent-border tracking-wider uppercase">
-                        {isCpp ? 'C++ 17' : isSql ? 'SQL SERVER (T-SQL)' : 'PYTHON 3'}
+                        {isJs ? 'JAVASCRIPT (ES6+)' : isCpp ? 'C++ 17' : isSql ? 'SQL SERVER (T-SQL)' : 'PYTHON 3'}
                     </span>
                 </div>
                 {exercise && (
@@ -44,7 +46,7 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
             <div className="flex-1 w-full overflow-hidden pt-2 bg-bg-primary">
                 <Editor
                     height="100%"
-                    language={isCpp ? 'cpp' : isSql ? 'sql' : 'python'}
+                    language={isJs ? 'javascript' : isCpp ? 'cpp' : isSql ? 'sql' : 'python'}
                     theme={currentTheme === 'dark' ? 'vs-dark' : 'light'}
                     value={code}
                     onChange={(val) => onCodeChange(val || '')}

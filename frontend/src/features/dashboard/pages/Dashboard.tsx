@@ -49,7 +49,7 @@ const Dashboard: React.FC = () => {
     const [role, setRole] = useState<string>('STUDENT');
     const [recommendations, setRecommendations] = useState<any[]>([]);
     const [recsLoading, setRecsLoading] = useState<boolean>(true);
-    const [selectedAlgo, setSelectedAlgo] = useState<string>('PAL-Net');
+    const [selectedAlgo] = useState<string>('PAL-Net');
     const [serviceEngine, setServiceEngine] = useState<string>('');
 
     // Sử dụng useQuery để tự động gọi API, lưu cache và phục hồi dữ liệu tức thì
@@ -185,18 +185,12 @@ const Dashboard: React.FC = () => {
                             <p className="text-xs text-text-tertiary m-0">Đề xuất thử thách phù hợp nhất dựa trên vùng phát triển gần nhất (ZPD Zone) của bạn.</p>
                         </div>
 
-                        {/* Selector Algorithm */}
-                        <div className="flex items-center gap-2.5">
-                            <span className="text-xs font-semibold text-text-secondary select-none">Thuật toán:</span>
-                            <select
-                                className="bg-bg-primary text-text-primary text-xs font-semibold border border-border-custom rounded-lg px-3 py-1.5 focus:outline-none focus:border-accent-custom cursor-pointer transition-colors duration-200"
-                                value={selectedAlgo}
-                                onChange={(e) => setSelectedAlgo(e.target.value)}
-                            >
-                                <option value="PAL-Net">PAL-Net (Khuyên dùng)</option>
-                                <option value="BKT">BKT (Thời gian thực)</option>
-                                <option value="DKT">DKT (Mạng LSTM)</option>
-                            </select>
+                        {/* Cognitive Engine Badge */}
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs font-semibold text-text-secondary select-none">Mô hình AI:</span>
+                            <span className="bg-accent-custom/10 text-accent-custom text-xs font-bold border border-accent-custom/30 rounded-lg px-2.5 py-1">
+                                PAL-Net (GCN & Attention)
+                            </span>
                         </div>
                     </div>
 

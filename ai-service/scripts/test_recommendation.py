@@ -55,44 +55,14 @@ def run_tests():
     except Exception as e:
         print(f"❌ Error requesting recommendations: {e}")
 
-    # 3. Test BKT Recommendations
-    print(f"\n[Test 3] Requesting BKT Recommendations...")
-    try:
-        rec_url = f"{BACKEND_URL}/recommendations?algo=BKT&limit=3"
-        response = requests.get(rec_url, headers=headers, timeout=5)
-        
-        if response.status_code == 200:
-            data = response.json()
-            print(f"✅ Success! Engine used: {data.get('engine')}")
-            print(json.dumps(data.get("data"), indent=2, ensure_ascii=False))
-        else:
-            print(f"❌ Recommendations failed: {response.status_code} - {response.text}")
-    except Exception as e:
-        print(f"❌ Error requesting recommendations: {e}")
-
-    # 4. Test DKT Recommendations
-    print(f"\n[Test 4] Requesting DKT Recommendations...")
-    try:
-        rec_url = f"{BACKEND_URL}/recommendations?algo=DKT&limit=3"
-        response = requests.get(rec_url, headers=headers, timeout=5)
-        
-        if response.status_code == 200:
-            data = response.json()
-            print(f"✅ Success! Engine used: {data.get('engine')}")
-            print(json.dumps(data.get("data"), indent=2, ensure_ascii=False))
-        else:
-            print(f"❌ Recommendations failed: {response.status_code} - {response.text}")
-    except Exception as e:
-        print(f"❌ Error requesting recommendations: {e}")
-
-    # 5. Test Fallback Mechanism (AI Service Timeout / Offline Simulation)
+    # 3. Test Fallback Mechanism (AI Service Timeout / Offline Simulation)
     # We can query with a fake algo or fake server url, but we can also simulate it
     print(f"\n[Test 5] Simulating AI Service Offline fallback check:")
     print("Testing local rule-based recommendations on backend...")
     # To test fallback directly without stopping server, we can query backend with a fake algorithm name
     # which will cause the AI service to return an error, trigger the backend fallback
     try:
-        # FastAPI /recommend checks algo regex="^(BKT|DKT|PAL-Net)$", if other is passed it returns 422 error
+        # FastAPI /recommend checks algo regex="PAL-Net", if other is passed it returns 422 error
         # which triggers the catch-block in recommendController and falls back to rule-based!
         rec_url = f"{BACKEND_URL}/recommendations?algo=INVALID_ALGO&limit=3"
         response = requests.get(rec_url, headers=headers, timeout=5)

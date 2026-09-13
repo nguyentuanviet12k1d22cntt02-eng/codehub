@@ -16,14 +16,10 @@ if sys.stdout.encoding != 'utf-8':
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 try:
-    from app.knowledge_tracing.bkt import BKTModel
-    from app.knowledge_tracing.dkt import DKTModel, prepare_dkt_sequence
     from app.knowledge_tracing.palnet import PALNet
     from app.adaptive.path_generator import generate_personalized_learning_path, interact_ai_tutor_dialogue
     from app.agents.adaptive_agent_orchestrator import AdaptiveAgentOrchestrator
 except ImportError:
-    from core.bkt import BKTModel
-    from core.dkt import DKTModel, prepare_dkt_sequence
     from core.palnet import PALNet
     from core.path_generator import generate_personalized_learning_path, interact_ai_tutor_dialogue
     from core.adaptive_agent_orchestrator import AdaptiveAgentOrchestrator
@@ -34,14 +30,12 @@ adaptive_orchestrator = AdaptiveAgentOrchestrator()
 
 app = FastAPI(
     title="PAL-Net Recommendation AI Service",
-    description="Microservice AI gợi ý bài tập thích ứng dựa trên BKT, DKT và PAL-Net",
+    description="Microservice AI gợi ý bài tập thích ứng dựa trên Mạng nơ-ron đồ thị PALNet",
     version="1.0"
 )
 
 # Load configuration and models during startup
 SKILL_GRAPH_PATH = os.path.join(BASE_DIR, "data", "skill_graph.json")
-BKT_PARAMS_PATH = os.path.join(BASE_DIR, "data", "bkt_parameters.json")
-DKT_MODEL_PATH = os.path.join(BASE_DIR, "models", "dkt_model.pth") if os.path.exists(os.path.join(BASE_DIR, "models", "dkt_model.pth")) else os.path.join(BASE_DIR, "data", "dkt_model.pth")
 PALNET_MODEL_PATH = os.path.join(BASE_DIR, "models", "palnet_model.pth") if os.path.exists(os.path.join(BASE_DIR, "models", "palnet_model.pth")) else os.path.join(BASE_DIR, "data", "palnet_model.pth")
 BACKEND_ENV_PATH = os.path.join(os.path.dirname(BASE_DIR), "backend", ".env")
 
@@ -50,8 +44,6 @@ skill_graph = {}
 skills_list = []
 kc_to_idx = {}
 idx_to_kc = {}
-bkt_model = None
-dkt_model = None
 palnet_model = None
 palnet_adj = None
 
@@ -75,7 +67,7 @@ def get_db_connection():
 
 @app.on_event("startup")
 def startup_event():
-    global skill_graph, skills_list, kc_to_idx, idx_to_kc, bkt_model, dkt_model, palnet_model, palnet_adj
+    global skill_graph, skills_list, kc_to_idx, idx_to_kc, palnet_model, palnet_adj
     
     # 1. Load skill graph
     print("Loading skill graph config...")
@@ -89,45 +81,8 @@ def startup_event():
     else:
         print("Error: skill_graph.json not found!")
         
-    # 2. Init BKT Model
-    print("Loading BKT parameters...")
-    bkt_model = BKTModel()
-    if os.path.exists(BKT_PARAMS_PATH):
-        bkt_model.load(BKT_PARAMS_PATH)
-        print("BKT parameters loaded from disk.")
-    
-    # Đảm bảo 100% concepts trong cây tri thức mới đều có tham số BKT
-    for kc in skills_list:
-        if kc not in bkt_model.params:
-            bkt_model.params[kc] = {"p_l0": 0.40, "p_t": 0.15, "p_s": 0.10, "p_g": 0.20}
-    print(f"BKT active for {len(bkt_model.params)} concepts.")
-            
-    # 3. Load DKT Model weights
-    print("Loading DKT model...")
+    # 2. Load PAL-Net Model weights & Build Adjacency Matrix
     num_skills = len(skills_list)
-    if os.path.exists(DKT_MODEL_PATH):
-        try:
-            device = torch.device("cpu")
-            checkpoint = torch.load(DKT_MODEL_PATH, map_location=device, weights_only=False)
-            if checkpoint.get('num_skills') == num_skills:
-                dkt_model = DKTModel(num_skills=checkpoint['num_skills'], embedding_dim=16, hidden_dim=32)
-                dkt_model.load_state_dict(checkpoint['model_state_dict'])
-                dkt_model.eval()
-                print("DKT Model loaded successfully.")
-            else:
-                print(f"DKT checkpoint num_skills ({checkpoint.get('num_skills')}) mismatch with skills_list ({num_skills}). Initializing calibrated DKT model.")
-                dkt_model = DKTModel(num_skills=num_skills, embedding_dim=16, hidden_dim=32)
-                dkt_model.eval()
-        except Exception as e:
-            print(f"Error loading DKT model: {e}")
-            dkt_model = DKTModel(num_skills=num_skills, embedding_dim=16, hidden_dim=32)
-            dkt_model.eval()
-    else:
-        print("DKT model initialized for current skill set.")
-        dkt_model = DKTModel(num_skills=num_skills, embedding_dim=16, hidden_dim=32)
-        dkt_model.eval()
-        
-    # 4. Load PAL-Net Model weights & Build Adjacency Matrix
     print("Loading PAL-Net model & constructing DAG adjacency matrix...")
     palnet_adj = torch.zeros(num_skills, num_skills)
     for edge in skill_graph.get("edges", []):
@@ -179,17 +134,10 @@ def read_root():
 @app.get("/model-status")
 def model_status():
     return {
-        "bkt_active": len(bkt_model.params) > 0 if bkt_model else False,
-        "dkt_active": dkt_model is not None,
         "palnet_active": palnet_model is not None,
         "knowledge_graph_skills": skills_list,
         "total_skills": len(skills_list)
     }
-
-def get_p_correct_bkt(masteries, kc):
-    p = bkt_model.params.get(kc, {"p_l0": 0.40, "p_t": 0.15, "p_s": 0.10, "p_g": 0.20})
-    m = masteries.get(kc, p["p_l0"])
-    return m * (1.0 - p["p_s"]) + (1.0 - m) * p["p_g"]
 
 def query_student_history(conn, user_id):
     cursor = conn.cursor()
@@ -319,7 +267,7 @@ def get_cold_start_recommendations(conn, limit):
 @app.get("/recommend", response_model=List[RecommendResponse])
 def recommend(
     user_id: str,
-    algo: str = Query(default="PAL-Net", regex="^(BKT|DKT|PAL-Net)$"),
+    algo: str = Query(default="PAL-Net"),
     limit: int = Query(default=5, ge=1, le=20)
 ):
     conn = get_db_connection()
@@ -340,101 +288,50 @@ def recommend(
             conn.close()
             return recs
             
-        # 3. Calculate mastery scores per skill depending on algorithm
+        # 3. Calculate mastery scores per skill using PAL-Net (GCN & Attention)
         num_skills = len(skills_list)
         p_correct_by_kc = {}
         
-        # BKT Model Inference
-        if algo == "BKT":
-            # Run sequential BKT update
-            current_masteries = {}
-            for kc in skills_list:
-                p = bkt_model.params.get(kc, {"p_l0": 0.40, "p_t": 0.15, "p_s": 0.10, "p_g": 0.20})
-                current_masteries[kc] = p["p_l0"]
-                
-            # Filter matches for each KC and run updates
-            for a in actions:
-                kc = a["kc_id"]
-                p = bkt_model.params.get(kc, {"p_l0": 0.40, "p_t": 0.15, "p_s": 0.10, "p_g": 0.20})
-                m = current_masteries[kc]
-                p_correct = m * (1.0 - p["p_s"]) + (1.0 - m) * p["p_g"]
-                
-                if a["correct"] == 1:
-                    m_updated = (m * (1.0 - p["p_s"])) / max(p_correct, 1e-9)
-                else:
-                    m_updated = (m * p["p_s"]) / max(1.0 - p_correct, 1e-9)
-                current_masteries[kc] = m_updated + (1.0 - m_updated) * p["p_t"]
-                
-            # Predicted correctness score for next step
-            for kc in skills_list:
-                p_correct_by_kc[kc] = get_p_correct_bkt(current_masteries, kc)
-                
-        # DKT Model Inference
-        elif algo == "DKT":
-            if dkt_model is None:
-                raise HTTPException(status_code=503, detail="DKT Model is currently offline. Train the DKT model first.")
-                
-            # Prepare input sequence for LSTM
-            tokens = prepare_dkt_sequence(
-                [a["kc_id"] for a in actions], 
-                [a["correct"] for a in actions], 
-                num_skills, 
-                kc_to_idx
-            )
+        if palnet_model is None:
+            raise HTTPException(status_code=503, detail="PAL-Net Model is currently offline. Train the model first.")
             
-            x_tensor = torch.tensor([tokens], dtype=torch.long) # shape [1, seq_len]
-            with torch.no_grad():
-                preds_seq = dkt_model(x_tensor) # shape [1, seq_len, num_skills]
-                # We extract target prediction from the final timestep
-                last_preds = preds_seq[0, -1, :].numpy()
-                
+        profile_map = {"STRUGGLING": 0, "AVERAGE": 1, "EXCELLENT": 2}
+        profile_idx_val = profile_map[student_meta["profile"]]
+        
+        # Cumulative user stats
+        attempts = np.zeros(num_skills)
+        corrects = np.zeros(num_skills)
+        raw_masteries = np.full(num_skills, 0.5)
+        
+        for a in actions:
+            k_idx = kc_to_idx[a["kc_id"]]
+            attempts[k_idx] += 1
+            if a["correct"] == 1:
+                corrects[k_idx] += 1
+            # EMA update
+            raw_masteries[k_idx] = 0.7 * raw_masteries[k_idx] + 0.3 * a["correct"]
+            
+        stats = np.zeros(num_skills * 2)
+        for k in range(num_skills):
+            stats[k * 2] = attempts[k]
+            stats[k * 2 + 1] = corrects[k] / attempts[k] if attempts[k] > 0 else 0.0
+            
+        # Forward pass through model for each skill
+        stats_tensor = torch.tensor([stats], dtype=torch.float)
+        profile_tensor = torch.tensor([profile_idx_val], dtype=torch.long)
+        masteries_tensor = torch.tensor([raw_masteries], dtype=torch.float)
+        adj_tensor = palnet_adj
+        
+        with torch.no_grad():
             for kc in skills_list:
                 k_idx = kc_to_idx[kc]
-                p_correct_by_kc[kc] = float(last_preds[k_idx])
+                k_idx_tensor = torch.tensor([k_idx], dtype=torch.long)
+                # Predict correctness probability
+                pred_prob = palnet_model(
+                    k_idx_tensor, stats_tensor, profile_tensor, masteries_tensor, adj_tensor
+                )
+                p_correct_by_kc[kc] = float(pred_prob[0].item())
                 
-        # PAL-Net Model Inference
-        elif algo == "PAL-Net":
-            if palnet_model is None:
-                raise HTTPException(status_code=503, detail="PAL-Net Model is currently offline. Train the model first.")
-                
-            # Calculate features for target user
-            profile_map = {"STRUGGLING": 0, "AVERAGE": 1, "EXCELLENT": 2}
-            profile_idx_val = profile_map[student_meta["profile"]]
-            
-            # Cumulative user stats
-            attempts = np.zeros(num_skills)
-            corrects = np.zeros(num_skills)
-            raw_masteries = np.full(num_skills, 0.5)
-            
-            for a in actions:
-                k_idx = kc_to_idx[a["kc_id"]]
-                attempts[k_idx] += 1
-                if a["correct"] == 1:
-                    corrects[k_idx] += 1
-                # EMA update
-                raw_masteries[k_idx] = 0.7 * raw_masteries[k_idx] + 0.3 * a["correct"]
-                
-            stats = np.zeros(num_skills * 2)
-            for k in range(num_skills):
-                stats[k * 2] = attempts[k]
-                stats[k * 2 + 1] = corrects[k] / attempts[k] if attempts[k] > 0 else 0.0
-                
-            # Forward pass through model for each skill
-            stats_tensor = torch.tensor([stats], dtype=torch.float)
-            profile_tensor = torch.tensor([profile_idx_val], dtype=torch.long)
-            masteries_tensor = torch.tensor([raw_masteries], dtype=torch.float)
-            adj_tensor = palnet_adj
-            
-            with torch.no_grad():
-                for kc in skills_list:
-                    k_idx = kc_to_idx[kc]
-                    k_idx_tensor = torch.tensor([k_idx], dtype=torch.long)
-                    # Predict correctness probability
-                    pred_prob = palnet_model(
-                        k_idx_tensor, stats_tensor, profile_tensor, masteries_tensor, adj_tensor
-                    )
-                    p_correct_by_kc[kc] = float(pred_prob[0].item())
-                    
         # 4. Score skills based on ZPD (Zone of Proximal Development: Range 0.70 - 0.85)
         # We calculate the absolute distance of predicted masteries to the target median (0.775)
         # ZPD_Score = 1.0 - |P(correct) - 0.775|
@@ -530,31 +427,19 @@ def recommend(
 
 # Optional retrain endpoint
 @app.post("/train")
-def trigger_training(model_type: str = Query(default="all", regex="^(all|BKT|DKT|PAL-Net)$")):
+def trigger_training(model_type: str = Query(default="PAL-Net")):
     try:
-        # Trigger scripts asynchronously or sub-processed
         import subprocess
         results = {}
-        
-        scripts_to_run = []
-        if model_type in ["all", "BKT"]:
-            scripts_to_run.append(("BKT", "scripts/train_bkt.py"))
-        if model_type in ["all", "DKT"]:
-            scripts_to_run.append(("DKT", "scripts/train_dkt.py"))
-        if model_type in ["all", "PAL-Net"]:
-            scripts_to_run.append(("PAL-Net", "scripts/train_palnet.py"))
+        script = "scripts/train_palnet.py"
+        print(f"Triggering training script: {script}")
+        p = subprocess.run([sys.executable, script], capture_output=True, text=True, cwd=BASE_DIR)
+        if p.returncode == 0:
+            results["PAL-Net"] = "Success"
+        else:
+            results["PAL-Net"] = f"Failed (Code {p.returncode}): {p.stderr}"
             
-        for name, script in scripts_to_run:
-            print(f"Triggering training script: {script}")
-            p = subprocess.run([sys.executable, script], capture_output=True, text=True, cwd=BASE_DIR)
-            if p.returncode == 0:
-                results[name] = "Success"
-            else:
-                results[name] = f"Failed (Code {p.returncode}): {p.stderr}"
-                
-        # Reload models after successful training
         startup_event()
-        
         return {"status": "Training cycle complete", "details": results}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Training Trigger Error: {e}")
@@ -573,47 +458,12 @@ def get_user_mastery(user_id: str):
                 "error": "User footprint not found."
             }
             
-        # Initialize default maps
+        # Initialize default maps (PAL-Net)
         masteries = {
-            "BKT": {kc: 0.40 for kc in skills_list},
-            "DKT": {kc: 0.50 for kc in skills_list},
             "PAL-Net": {kc: 0.50 for kc in skills_list}
         }
         
-        # 1. BKT calculation if actions present
-        current_bkt = {kc: 0.40 for kc in skills_list}
-        for kc in skills_list:
-            p = bkt_model.params.get(kc, {"p_l0": 0.40, "p_t": 0.15, "p_s": 0.10, "p_g": 0.20})
-            current_bkt[kc] = p["p_l0"]
-        for a in actions:
-            kc = a["kc_id"]
-            p = bkt_model.params.get(kc, {"p_l0": 0.40, "p_t": 0.15, "p_s": 0.10, "p_g": 0.20})
-            m = current_bkt[kc]
-            p_correct = m * (1.0 - p["p_s"]) + (1.0 - m) * p["p_g"]
-            if a["correct"] == 1:
-                m_updated = (m * (1.0 - p["p_s"])) / max(p_correct, 1e-9)
-            else:
-                m_updated = (m * p["p_s"]) / max(1.0 - p_correct, 1e-9)
-            current_bkt[kc] = m_updated + (1.0 - m_updated) * p["p_t"]
-        for kc in skills_list:
-            masteries["BKT"][kc] = float(get_p_correct_bkt(current_bkt, kc))
-            
-        # 2. DKT calculation
-        if len(actions) >= 2 and dkt_model is not None:
-            tokens = prepare_dkt_sequence(
-                [a["kc_id"] for a in actions], 
-                [a["correct"] for a in actions], 
-                len(skills_list), 
-                kc_to_idx
-            )
-            x_tensor = torch.tensor([tokens], dtype=torch.long)
-            with torch.no_grad():
-                preds_seq = dkt_model(x_tensor)
-                last_preds = preds_seq[0, -1, :].numpy()
-            for kc in skills_list:
-                masteries["DKT"][kc] = float(last_preds[kc_to_idx[kc]])
-                
-        # 3. PAL-Net calculation
+        # PAL-Net GCN & Attention inference
         if len(actions) >= 2 and palnet_model is not None:
             profile_map = {"STRUGGLING": 0, "AVERAGE": 1, "EXCELLENT": 2}
             profile_idx_val = profile_map[student_meta["profile"]]

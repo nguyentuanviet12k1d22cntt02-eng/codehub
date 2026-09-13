@@ -113,10 +113,13 @@ const ModulePracticeSelect: React.FC = () => {
         );
     }
 
+    const isJsModule = lesson?.lessonId?.startsWith('JS-');
+    const isCppModule = lesson?.lessonId?.startsWith('CPP-');
+
     return (
         <div className="bg-bg-primary text-text-primary min-h-screen font-sans transition-colors duration-200">
             {/* Header navbar */}
-            <header className="flex justify-between items-center px-6 py-4 md:px-10 border-b border-border-custom bg-bg-secondary sticky top-0 z-50 transition-colors duration-200">
+            <header className="flex justify-between items-center px-6 py-4 md:px-10 border-border-custom bg-bg-secondary sticky top-0 z-50 transition-colors duration-200">
                 <div className="flex items-center gap-3">
                     <span
                         className="text-2xl font-extrabold tracking-tight text-text-primary cursor-pointer hover:opacity-85 no-underline"
@@ -125,7 +128,7 @@ const ModulePracticeSelect: React.FC = () => {
                         MCODE
                     </span>
                     <span className="text-[9px] font-bold bg-accent-bg text-accent-custom px-1.5 py-0.5 rounded border border-accent-border tracking-wider uppercase">
-                        PYTHON
+                        {isJsModule ? 'JAVASCRIPT' : isCppModule ? 'C++' : 'PYTHON'}
                     </span>
                 </div>
                 <nav className="hidden md:flex gap-8">

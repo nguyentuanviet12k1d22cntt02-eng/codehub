@@ -26,8 +26,6 @@ interface UserMasteryData {
     };
     mastery: {
         'PAL-Net': Record<string, number>;
-        'BKT': Record<string, number>;
-        'DKT': Record<string, number>;
     };
     stats: {
         lessons_completed: number;
@@ -42,7 +40,7 @@ const Profile: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
     const [data, setData] = useState<UserMasteryData | null>(null);
-    const [activeModel, setActiveModel] = useState<'PAL-Net' | 'BKT' | 'DKT'>('PAL-Net');
+    const [activeModel, setActiveModel] = useState<'PAL-Net'>('PAL-Net');
     const [topSearch, setTopSearch] = useState<string>('');
 
     useEffect(() => {

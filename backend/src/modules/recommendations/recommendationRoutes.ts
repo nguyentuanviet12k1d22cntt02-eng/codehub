@@ -4,7 +4,7 @@ import { authenticateToken } from "../../shared/middleware/auth";
 
 const router = Router();
 
-// Gợi ý bài học thích ứng qua PAL-Net / BKT / DKT
+// Gợi ý bài học thích ứng qua mô hình mạng đồ thị PAL-Net
 router.get('/recommendations', authenticateToken, getRecommendations);
 
 // Lấy năng lực của người dùng theo KCs

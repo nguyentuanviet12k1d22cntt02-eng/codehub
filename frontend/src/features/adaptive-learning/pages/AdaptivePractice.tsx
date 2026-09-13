@@ -29,7 +29,7 @@ interface RecommendItem {
 
 const AdaptivePractice: React.FC = () => {
     const navigate = useNavigate();
-    const [selectedAlgo, setSelectedAlgo] = useState<string>('PAL-Net');
+    const [selectedAlgo] = useState<string>('PAL-Net');
     const [recommendations, setRecommendations] = useState<RecommendItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [engineName, setEngineName] = useState<string>('');
@@ -133,17 +133,11 @@ const AdaptivePractice: React.FC = () => {
                     </div>
 
                     {/* Engine selection controller */}
-                    <div className="flex items-center gap-3 bg-bg-secondary p-1.5 rounded-xl border border-border-custom text-xs font-semibold self-stretch md:self-auto justify-between">
-                        <span className="text-text-tertiary pl-2">Chọn mô hình:</span>
-                        <select
-                            value={selectedAlgo}
-                            onChange={(e) => setSelectedAlgo(e.target.value)}
-                            className="bg-bg-primary text-text-primary border border-border-custom rounded-lg px-3 py-1.5 outline-none focus:border-accent-custom cursor-pointer"
-                        >
-                            <option value="PAL-Net">PAL-Net (Khuyên dùng)</option>
-                            <option value="BKT">Bayesian (BKT)</option>
-                            <option value="DKT">Deep Network (DKT)</option>
-                        </select>
+                    <div className="flex items-center gap-2.5 bg-bg-secondary p-1.5 px-3 rounded-xl border border-border-custom text-xs font-semibold self-stretch md:self-auto">
+                        <span className="text-text-tertiary">Mô hình AI:</span>
+                        <span className="text-accent-custom font-bold">
+                            PAL-Net (GCN & Attention)
+                        </span>
                     </div>
                 </section>
 
