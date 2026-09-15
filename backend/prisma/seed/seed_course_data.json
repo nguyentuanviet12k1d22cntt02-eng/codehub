@@ -617,19 +617,35 @@
                 "lessonId": "a4be3464-c6ad-46ea-9407-589b359650a1",
                 "title": "Chào hỏi người dùng",
                 "difficulty": "EASY",
-                "problemDescription": "Viết chương trình nhận tên của người dùng từ bàn phím bằng hàm `input()`. In ra màn hình câu chào có dạng `\"Xin chào, [tên]!\"`.",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "name = input()\nprint(f\"Xin chào, {name}!\")",
+                "problemDescription": "### Chào hỏi người dùng\n\n- **Mô tả:** Viết chương trình nhận tên của người dùng từ bàn phím bằng hàm `input()`. In ra màn hình câu chào có dạng `\"Xin chào, [tên]!\"`.\n- **Input:** Một dòng chứa chuỗi tên người dùng.\n- **Output:** Câu chào theo đúng định dạng `Xin chào, [tên]!`.\n- **Ví dụ:**\n```text\nInput:\nNam\nOutput:\nXin chào, Nam!\n```",
+                "starterCode": "ten = input()\n# In câu chào ra màn hình\n",
+                "solutionCode": "ten = input()\nprint(f\"Xin chào, {ten}!\")\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "ddc4b6c5-bf4d-406c-bd88-66b59ac309a9",
+                    "id": "df86ea92-065c-4ba5-acf8-55b82e82cf54",
                     "exerciseId": "f5972e9b-601f-4075-b80b-4dcc0754ffc6",
                     "input": "Nam\n",
                     "expectedOutput": "Xin chào, Nam!\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T13:25:24.505Z"
+                  },
+                  {
+                    "id": "02df84b6-e7a7-41a8-87b0-77a40e48eba4",
+                    "exerciseId": "f5972e9b-601f-4075-b80b-4dcc0754ffc6",
+                    "input": "Minh Tuấn\n",
+                    "expectedOutput": "Xin chào, Minh Tuấn!\n",
+                    "isHidden": true,
+                    "createdAt": "2026-09-15T13:25:24.505Z"
+                  },
+                  {
+                    "id": "458d43cb-c18c-48a1-bb24-be4c70de8945",
+                    "exerciseId": "f5972e9b-601f-4075-b80b-4dcc0754ffc6",
+                    "input": "Alice\n",
+                    "expectedOutput": "Xin chào, Alice!\n",
+                    "isHidden": true,
+                    "createdAt": "2026-09-15T13:25:24.505Z"
                   }
                 ]
               },
