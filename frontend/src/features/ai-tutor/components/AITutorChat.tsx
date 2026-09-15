@@ -10,7 +10,12 @@ import {
     MoreVertical,
     CheckCheck,
     Layers,
-    PlusCircle
+    PlusCircle,
+    Sparkles,
+    BookOpen,
+    AlertTriangle,
+    Code2,
+    CheckCircle2
 } from 'lucide-react';
 import { RobotAvatar, UserAvatar, RobotStandingMascot } from './AITutorIllustrations';
 
@@ -22,10 +27,13 @@ export interface ChatMessage {
     metadata?: {
         step?: string;
         suggestedOptions?: string[];
+        intent?: string;
+        agentTraces?: any[];
         exercise?: {
             title: string;
             concept_id?: string;
             concept_name?: string;
+            language?: string;
             quick_theory?: string;
             problem_statement?: string;
             sample_input?: string;
@@ -55,19 +63,61 @@ interface AITutorChatProps {
     onBack?: () => void;
     onNewChat?: () => void;
     loading: boolean;
+    currentAgentStep?: {
+        agent?: string;
+        title?: string;
+        desc?: string;
+        icon?: string;
+        step?: string;
+    } | null;
 }
+
+export const cleanLatexAndArtifacts = (text: any): any => {
+    if (!text || typeof text !== 'string') return text;
+    return text
+        .replace(/\$\s*\\rightarrow\s*\$/g, '→')
+        .replace(/\\rightarrow/g, '→')
+        .replace(/\$\s*\\Rightarrow\s*\$/g, '⇒')
+        .replace(/\\Rightarrow/g, '⇒')
+        .replace(/\$\s*\\le\s*\$/g, '≤')
+        .replace(/\\le/g, '≤')
+        .replace(/\$\s*\\ge\s*\$/g, '≥')
+        .replace(/\\ge/g, '≥')
+        .replace(/\$\s*\\neq\s*\$/g, '≠')
+        .replace(/\\neq/g, '≠')
+        .replace(/在这里写代码|在此处编写代码|在下方编写代码|在下方写代码|请在此处编写代码/g, 'Viết mã tại đây')
+        .replace(/写代码|编写代码/g, 'Viết mã')
+        .replace(/你的代码/g, 'Mã của bạn')
+        .replace(/代码/g, 'mã nguồn')
+        .replace(/输入/g, 'Đầu vào')
+        .replace(/输出/g, 'Đầu ra')
+        .replace(/[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff]/g, '');
+};
+
+export const cleanChineseArtifacts = cleanLatexAndArtifacts;
+
+export const normalizeCodeLanguage = (lang?: string, codeSnippet?: string): string => {
+    const raw = (lang || '').toLowerCase();
+    if (raw.includes('c++') || raw.includes('cpp') || raw === 'c') return 'cpp';
+    if (raw.includes('js') || raw.includes('javascript') || raw.includes('ts') || raw.includes('typescript')) return 'javascript';
+    if (raw.includes('sql')) return 'sql';
+    if (codeSnippet && /#include\s*<|using\s+namespace\s+std|std::/i.test(codeSnippet)) return 'cpp';
+    if (codeSnippet && /console\.log|function\s*\(|let\s+|const\s+/i.test(codeSnippet)) return 'javascript';
+    return 'python';
+};
 
 // Custom Terminal Code Block with Line Numbers & Copy Button
 const CodeBlock: React.FC<{ language: string; value: string }> = ({ language, value }) => {
     const [copied, setCopied] = useState(false);
+    const cleanedValue = cleanChineseArtifacts(value);
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(value);
+        navigator.clipboard.writeText(cleanedValue);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const lines = value.replace(/\n$/, '').split('\n');
+    const lines = cleanedValue.replace(/\n$/, '').split('\n');
 
     return (
         <div className="my-3 rounded-xl overflow-hidden bg-[#1E293B] border border-slate-700/60 shadow-md">
@@ -100,7 +150,7 @@ const CodeBlock: React.FC<{ language: string; value: string }> = ({ language, va
             {/* Code Content with Line Numbers */}
             <div className="p-3 overflow-x-auto flex text-xs font-mono leading-relaxed">
                 <div className="select-none pr-3 text-right text-slate-500 border-r border-slate-700/50 mr-3 min-w-[22px]">
-                    {lines.map((_, i) => (
+                    {lines.map((_: string, i: number) => (
                         <div key={i}>{i + 1}</div>
                     ))}
                 </div>
@@ -112,6 +162,49 @@ const CodeBlock: React.FC<{ language: string; value: string }> = ({ language, va
     );
 };
 
+const AGENT_THEMES: Record<string, { bg: string; badge: string; border: string }> = {
+    IntentRouterAgent: {
+        bg: 'from-blue-50/90 to-indigo-50/90',
+        badge: 'bg-blue-100 text-blue-800 border-blue-300',
+        border: 'border-blue-300'
+    },
+    KnowledgeRetrievalAgent: {
+        bg: 'from-emerald-50/90 to-teal-50/90',
+        badge: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+        border: 'border-emerald-300'
+    },
+    AdaptiveExercisePlanner: {
+        bg: 'from-purple-50/90 to-indigo-50/90',
+        badge: 'bg-purple-100 text-purple-800 border-purple-300',
+        border: 'border-purple-300'
+    },
+    ExplanationTutorAgent: {
+        bg: 'from-amber-50/90 to-orange-50/90',
+        badge: 'bg-amber-100 text-amber-800 border-amber-300',
+        border: 'border-amber-300'
+    },
+    ExerciseGeneratorAgent: {
+        bg: 'from-cyan-50/90 to-sky-50/90',
+        badge: 'bg-cyan-100 text-cyan-800 border-cyan-300',
+        border: 'border-cyan-300'
+    },
+    DeterministicValidators: {
+        bg: 'from-slate-50/90 to-zinc-50/90',
+        badge: 'bg-slate-100 text-slate-800 border-slate-300',
+        border: 'border-slate-300'
+    },
+    CriticEvaluatorAgent: {
+        bg: 'from-rose-50/90 to-pink-50/90',
+        badge: 'bg-rose-100 text-rose-800 border-rose-300',
+        border: 'border-rose-300'
+    },
+    DeliveryAgent: {
+        bg: 'from-teal-50/90 to-emerald-50/90',
+        badge: 'bg-teal-100 text-teal-800 border-teal-300',
+        border: 'border-teal-300'
+    }
+};
+
 export const AITutorChat: React.FC<AITutorChatProps> = ({
     sessionId: _sessionId,
     messages,
@@ -120,7 +213,8 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
     onStartExercise,
     onBack,
     onNewChat,
-    loading
+    loading,
+    currentAgentStep
 }) => {
     const [inputText, setInputText] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -128,7 +222,7 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
     // Auto scroll to latest message
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages, loading]);
+    }, [messages, loading, currentAgentStep]);
 
     const handleSend = () => {
         if (!inputText.trim() || loading) return;
@@ -269,7 +363,7 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
 
                                                         return (
                                                             <CodeBlock
-                                                                language={match ? match[1] : 'python'}
+                                                                language={match ? match[1] : normalizeCodeLanguage(undefined, codeString)}
                                                                 value={codeString}
                                                             />
                                                         );
@@ -291,63 +385,147 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                                     }
                                                 }}
                                             >
-                                                {msg.content}
+                                                {cleanLatexAndArtifacts(msg.content)}
                                             </ReactMarkdown>
                                         </div>
 
+                                        {/* Multi-Agent Coordination Traces (Collapsible Badge) */}
+                                        {!isUser && meta?.agentTraces && meta.agentTraces.length > 0 && (
+                                            <div className="mt-3 pt-2.5 border-t border-slate-100">
+                                                <details className="group text-[11px] text-slate-500">
+                                                    <summary className="cursor-pointer font-semibold flex items-center justify-between select-none hover:text-blue-600 transition-colors py-0.5">
+                                                        <span className="flex items-center gap-1.5">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                                                            <span className="text-slate-600 font-medium">Đa tác tử đã phối hợp:</span>
+                                                            <span className="font-mono text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
+                                                                {meta.agentTraces.length} tác tử
+                                                            </span>
+                                                        </span>
+                                                        <span className="text-[10px] text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                                                    </summary>
+                                                    <div className="mt-2 space-y-1.5 pl-2.5 border-l-2 border-slate-200">
+                                                        {meta.agentTraces.map((tr: any, tIdx: number) => (
+                                                            <div key={tIdx} className="flex items-start gap-2">
+                                                                <span className="font-mono font-bold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded text-[10px] shrink-0">
+                                                                    {tr.agent || tr.step}
+                                                                </span>
+                                                                <span className="text-slate-600 text-[11px] leading-tight">
+                                                                    {tr.step === 'INTENT_ROUTED' && `Định tuyến: ${tr.intent} (${tr.language || ''})`}
+                                                                    {tr.step === 'KNOWLEDGE_RETRIEVED' && `Tri thức: ${tr.concept_id || tr.concept || 'Đã truy xuất'}`}
+                                                                    {tr.step === 'DECISION_MADE' && `Quyết định ZPD: ${tr.decision || tr.concept || 'Đã tính toán'}`}
+                                                                    {tr.step === 'THEORY_GENERATED' && 'Biên soạn lý thuyết cốt lõi'}
+                                                                    {tr.step === 'EXERCISE_GENERATED' && `Sinh bài tập: ${cleanLatexAndArtifacts(tr.title || 'Hoàn tất')}`}
+                                                                    {tr.step === 'CRITIC_EVALUATED' && `Thẩm định Critic: ${tr.score !== undefined ? `${tr.score}/100` : 'Đạt chuẩn'}`}
+                                                                    {!['INTENT_ROUTED', 'KNOWLEDGE_RETRIEVED', 'DECISION_MADE', 'THEORY_GENERATED', 'EXERCISE_GENERATED', 'CRITIC_EVALUATED'].includes(tr.step) && (tr.step || JSON.stringify(tr))}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </details>
+                                            </div>
+                                        )}
+
                                         {/* Embedded Adaptive Exercise Card */}
                                         {meta?.exercise && (
-                                            <div className="mt-4 p-4 bg-[#F8FAFC] border-2 border-emerald-500/30 rounded-2xl space-y-3 shadow-xs">
+                                            <div className="mt-4 p-4 bg-[#F8FAFC] border-2 border-emerald-500/30 rounded-2xl space-y-3.5 shadow-xs">
+                                                {/* Header Badges */}
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
-                                                        🎯 Thử Thách Thích Ứng ZPD
-                                                    </span>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5">
+                                                            <Sparkles className="w-3 h-3 text-emerald-600" />
+                                                            Thử Thách Thích Ứng ZPD
+                                                        </span>
+                                                        {meta.exercise.language && (
+                                                            <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200 font-mono">
+                                                                {meta.exercise.language}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                     <span className="text-xs text-amber-500 font-semibold flex items-center gap-1">
                                                         {'⭐'.repeat(meta.exercise.difficulty_stars || 1)}
                                                         <span className="text-slate-500 text-[11px] ml-1">
-                                                            {meta.exercise.difficulty_stars === 1 ? 'Cơ bản' : 'Vừa sức'}
+                                                            {meta.exercise.difficulty_stars === 1 ? 'Cơ bản' : meta.exercise.difficulty_stars === 3 ? 'Nâng cao' : 'Vừa sức'}
                                                         </span>
                                                     </span>
                                                 </div>
 
+                                                {/* Title & Topic */}
                                                 <div>
-                                                    <h4 className="text-sm font-extrabold text-slate-900">
-                                                        {meta.exercise.title}
+                                                    <h4 className="text-sm font-extrabold text-slate-900 leading-snug">
+                                                        {cleanLatexAndArtifacts(meta.exercise.title)}
                                                     </h4>
                                                     {meta.exercise.concept_name && (
                                                         <span className="text-xs text-blue-600 font-medium">
-                                                            Chủ đề: {meta.exercise.concept_name}
+                                                            Chủ đề: {cleanLatexAndArtifacts(meta.exercise.concept_name)}
                                                         </span>
                                                     )}
                                                 </div>
 
+                                                {/* Section 1: Nội dung cơ sở tri thức trọng tâm (Knowledge Base) */}
                                                 {meta.exercise.quick_theory && (
-                                                    <div className="text-xs text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200">
-                                                        <strong className="text-emerald-600">💡 Lý thuyết cốt lõi:</strong>{' '}
-                                                        {meta.exercise.quick_theory}
-                                                    </div>
-                                                )}
-
-                                                {meta.exercise.common_pitfall_warning && (
-                                                    <div className="text-xs text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200">
-                                                        <strong className="text-amber-600">⚠️ Lưu ý bẫy lỗi:</strong>{' '}
-                                                        {meta.exercise.common_pitfall_warning}
-                                                    </div>
-                                                )}
-
-                                                {meta.exercise.starter_code && (
-                                                    <div className="space-y-1">
-                                                        <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">
-                                                            Mã khung gợi ý (Starter Code):
+                                                    <div className="text-xs text-slate-700 bg-white p-3 rounded-xl border border-slate-200/90 shadow-xs space-y-1">
+                                                        <div className="flex items-center gap-1.5 font-bold text-emerald-700 text-xs">
+                                                            <BookOpen className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                                            <span>Cơ sở tri thức trọng tâm:</span>
                                                         </div>
-                                                        <CodeBlock
-                                                            language="python"
-                                                            value={meta.exercise.starter_code}
-                                                        />
+                                                        <p className="leading-relaxed text-slate-700 pl-5">
+                                                            {cleanLatexAndArtifacts(meta.exercise.quick_theory)}
+                                                        </p>
                                                     </div>
                                                 )}
 
-                                                <div className="pt-2">
+                                                {/* Pitfall Warning */}
+                                                {meta.exercise.common_pitfall_warning && (
+                                                    <div className="text-xs text-amber-900 bg-amber-50/90 p-2.5 rounded-xl border border-amber-200/80 flex items-start gap-2">
+                                                        <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                                                        <div className="leading-relaxed">
+                                                            <span className="font-bold text-amber-800">Lưu ý cạm bẫy: </span>
+                                                            {cleanLatexAndArtifacts(meta.exercise.common_pitfall_warning)}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Section 2: Nội dung thử thách đã tạo (Created Content / Problem Statement) */}
+                                                {meta.exercise.problem_statement && (
+                                                    <div className="text-xs text-slate-800 bg-blue-50/40 p-3 rounded-xl border border-blue-100/90 shadow-xs space-y-2">
+                                                        <div className="flex items-center gap-1.5 font-bold text-blue-800 text-xs">
+                                                            <Code2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                                                            <span>Yêu cầu thử thách đã tạo:</span>
+                                                        </div>
+                                                        <div className="leading-relaxed text-slate-700 whitespace-pre-line pl-5">
+                                                            {cleanLatexAndArtifacts(meta.exercise.problem_statement)}
+                                                        </div>
+
+                                                        {/* Sample Input & Output if provided */}
+                                                        {(meta.exercise.sample_input || meta.exercise.sample_output) && (
+                                                            <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono pl-5">
+                                                                {meta.exercise.sample_input && (
+                                                                    <div className="bg-white p-2 rounded-lg border border-slate-200">
+                                                                        <span className="text-slate-400 font-sans font-medium text-[10px] block mb-0.5">Đầu vào mẫu:</span>
+                                                                        <span className="text-slate-800">{cleanLatexAndArtifacts(meta.exercise.sample_input)}</span>
+                                                                    </div>
+                                                                )}
+                                                                {meta.exercise.sample_output && (
+                                                                    <div className="bg-white p-2 rounded-lg border border-slate-200">
+                                                                        <span className="text-slate-400 font-sans font-medium text-[10px] block mb-0.5">Đầu ra kỳ vọng:</span>
+                                                                        <span className="text-emerald-700 font-bold">{cleanLatexAndArtifacts(meta.exercise.sample_output)}</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        {/* Test cases count */}
+                                                        {meta.exercise.test_cases && meta.exercise.test_cases.length > 0 && (
+                                                            <div className="pl-5 pt-0.5 flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
+                                                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                                                                <span>Đã chuẩn bị sẵn {meta.exercise.test_cases.length} bộ kiểm thử tự động (test cases).</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                {/* Action Button: Open Code Editor */}
+                                                <div className="pt-1">
                                                     <button
                                                         onClick={() =>
                                                             onStartExercise
@@ -357,7 +535,7 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                                         disabled={loading}
                                                         className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-600 hover:opacity-95 disabled:opacity-50 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                                                     >
-                                                        🚀 Mở Code Editor Thực Hành Ngay
+                                                        🚀 Mở Code Editor Thực Hành Ngay (Nạp sẵn mã khung & Test cases)
                                                     </button>
                                                 </div>
                                             </div>
@@ -376,10 +554,10 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                                 </div>
 
                                                 <h4 className="text-sm font-extrabold text-slate-900">
-                                                    {meta.previewData.title}
+                                                    {cleanLatexAndArtifacts(meta.previewData.title)}
                                                 </h4>
                                                 <p className="text-xs text-slate-600 leading-relaxed">
-                                                    {meta.previewData.description}
+                                                    {cleanLatexAndArtifacts(meta.previewData.description)}
                                                 </p>
 
                                                 <div className="pt-1 flex flex-wrap gap-1.5">
@@ -467,15 +645,63 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                         );
                     })}
 
-                    {/* AI Thinking Animation */}
+                    {/* Dynamic Real-Time Multi-Agent Execution Telemetry */}
                     {loading && (
                         <div className="flex items-start gap-3 animate-fade-in">
-                            <RobotAvatar size={34} />
-                            <div className="bg-white border border-slate-200/80 rounded-2xl rounded-tl-none p-4 shadow-xs flex items-center gap-3">
-                                <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-ping" />
-                                <span className="text-xs text-slate-600 font-medium">
-                                    AI Tutor đang suy nghĩ và chuẩn bị nội dung học cho bạn...
-                                </span>
+                            <div className="mt-1 shrink-0">
+                                <RobotAvatar size={34} />
+                            </div>
+                            <div className="bg-white border border-slate-200/90 rounded-2xl rounded-tl-none p-4 shadow-sm max-w-[85%] space-y-3">
+                                {/* Header with Real-Time Pipeline Status */}
+                                <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-2.5">
+                                    <div className="flex items-center gap-2">
+                                        <span className="relative flex h-2.5 w-2.5">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
+                                        </span>
+                                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                                            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+                                            Tác Tử Đang Xử Lý Thời Gian Thực
+                                        </span>
+                                    </div>
+                                    {currentAgentStep?.step && (
+                                        <span className="text-[10px] font-mono font-bold text-blue-600 bg-blue-50 border border-blue-200/60 px-2 py-0.5 rounded-full">
+                                            {currentAgentStep.step}
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Active Agent Card (Live from Python backend) */}
+                                {(() => {
+                                    const agentName = currentAgentStep?.agent || 'AdaptiveOrchestrator';
+                                    const theme = AGENT_THEMES[agentName] || {
+                                        bg: 'from-blue-50/80 to-indigo-50/80',
+                                        badge: 'bg-blue-100 text-blue-800 border-blue-200',
+                                        border: 'border-blue-200'
+                                    };
+                                    const icon = currentAgentStep?.icon || '⚡';
+                                    const title = currentAgentStep?.title || (loading ? 'Đang kết nối tới Hệ thống Đa Tác Tử...' : 'Đang xử lý...');
+                                    const desc = currentAgentStep?.desc || 'Đang điều phối các tác tử chuyên biệt để phân tích và chuẩn bị câu trả lời...';
+
+                                    return (
+                                        <div className={`p-3.5 rounded-xl border ${theme.border} bg-gradient-to-r ${theme.bg} transition-all duration-300 shadow-xs`}>
+                                            <div className="flex items-center justify-between gap-2 mb-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-lg">{icon}</span>
+                                                    <span className="text-xs font-bold text-slate-900">
+                                                        {title}
+                                                    </span>
+                                                </div>
+                                                <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border ${theme.badge}`}>
+                                                    {agentName}
+                                                </span>
+                                            </div>
+                                            <p className="text-[12px] text-slate-600 leading-relaxed font-normal">
+                                                {desc}
+                                            </p>
+                                        </div>
+                                    );
+                                })()}
                             </div>
                         </div>
                     )}

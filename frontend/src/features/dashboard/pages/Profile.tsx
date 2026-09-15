@@ -2,7 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import UserMenuDropdown from '../../../components/UserMenuDropdown';
 import { KnowledgeGraphTree } from '../../adaptive-learning/components/KnowledgeGraphTree';
-import defaultSkillGraph from '../../../data/pythonSkillGraph.json';
+import type { SupportedLanguage } from '../../adaptive-learning/components/KnowledgeGraphTree';
+import pythonSkillGraph from '../../../data/pythonSkillGraph.json';
+import javascriptSkillGraph from '../../../data/javascriptSkillGraph.json';
+import cppSkillGraph from '../../../data/cppSkillGraph.json';
+import sqlSkillGraph from '../../../data/sqlSkillGraph.json';
 import { 
     AlertTriangle,
     Home,
@@ -19,6 +23,7 @@ import { API_BASE_URL } from '../../../config/api';
 
 interface UserMasteryData {
     success: boolean;
+    language?: string;
     student_meta: {
         username: string;
         email: string;
@@ -37,9 +42,11 @@ interface UserMasteryData {
 
 const Profile: React.FC = () => {
     const navigate = useNavigate();
+    const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage>('PYTHON');
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
     const [data, setData] = useState<UserMasteryData | null>(null);
+    const [masteryCache, setMasteryCache] = useState<Partial<Record<SupportedLanguage, UserMasteryData>>>({});
     const [activeModel, setActiveModel] = useState<'PAL-Net'>('PAL-Net');
     const [topSearch, setTopSearch] = useState<string>('');
 
@@ -50,12 +57,25 @@ const Profile: React.FC = () => {
                 navigate('/login');
                 return;
             }
+
+            // If already cached, switch instantly!
+            if (masteryCache[selectedLanguage]) {
+                setData(masteryCache[selectedLanguage]!);
+                setLoading(false);
+                return;
+            }
+
             try {
                 setLoading(true);
                 const response = await axios.get(`${API_BASE_URL}/api/auth/user-mastery`, {
+                    params: { language: selectedLanguage },
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setData(response.data);
+                setMasteryCache(prev => ({
+                    ...prev,
+                    [selectedLanguage]: response.data
+                }));
             } catch (err: any) {
                 console.error(err);
                 setError('Không thể tải thông tin tri thức người học.');
@@ -65,10 +85,20 @@ const Profile: React.FC = () => {
         };
 
         fetchMastery();
-    }, [navigate]);
+    }, [navigate, selectedLanguage, masteryCache]);
 
-    // Calculate overall mastery score across all 33 DAG skills
-    const skillsList = useMemo(() => defaultSkillGraph.skills || [], []);
+    // Resolve active skill graph for overall score calculation
+    const activeGraph = useMemo(() => {
+        switch (selectedLanguage) {
+            case 'JAVASCRIPT': return javascriptSkillGraph;
+            case 'CPP': return cppSkillGraph;
+            case 'SQL': return sqlSkillGraph;
+            case 'PYTHON':
+            default: return pythonSkillGraph;
+        }
+    }, [selectedLanguage]);
+
+    const skillsList = useMemo(() => activeGraph.skills || [], [activeGraph]);
     const currentModelMasteries = useMemo(() => {
         return data?.mastery?.[activeModel] || {};
     }, [data, activeModel]);
@@ -79,16 +109,7 @@ const Profile: React.FC = () => {
         return Math.max(0.32, total / skillsList.length);
     }, [skillsList, currentModelMasteries]);
 
-    if (loading) {
-        return (
-            <div className="bg-[#F4F7FC] text-slate-800 min-h-screen flex flex-col items-center justify-center font-sans">
-                <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-                <div className="text-sm font-bold text-slate-600">Đang tải bản đồ tri thức Python cá nhân...</div>
-            </div>
-        );
-    }
-
-    if (error || !data) {
+    if (error && !data) {
         return (
             <div className="bg-[#F4F7FC] text-slate-800 min-h-screen flex flex-col items-center justify-center p-6 text-center font-sans">
                 <AlertTriangle className="w-12 h-12 text-amber-500 mb-3 animate-pulse" />
@@ -104,7 +125,17 @@ const Profile: React.FC = () => {
         );
     }
 
-    const { student_meta, stats } = data;
+    const student_meta = data?.student_meta || {
+        username: 'Nguyễn Tuấn Việt',
+        email: '',
+        profile: 'AVERAGE' as const
+    };
+    const stats = data?.stats || {
+        lessons_completed: 0,
+        practice_completed: 0,
+        streak_days: 3,
+        total_actions: 0
+    };
 
     return (
         <div className="bg-[#F4F7FC] text-slate-800 min-h-screen flex flex-col font-sans antialiased selection:bg-blue-500 selection:text-white">
@@ -225,6 +256,9 @@ const Profile: React.FC = () => {
             <main className="flex-1 flex flex-col w-full max-w-[1850px] mx-auto p-4 md:p-6 overflow-hidden">
                 <KnowledgeGraphTree
                     userMastery={currentModelMasteries}
+                    activeLanguage={selectedLanguage}
+                    onLanguageChange={setSelectedLanguage}
+                    isLoading={loading}
                     activeModel={activeModel}
                     onModelChange={setActiveModel}
                     overallScore={overallScore}

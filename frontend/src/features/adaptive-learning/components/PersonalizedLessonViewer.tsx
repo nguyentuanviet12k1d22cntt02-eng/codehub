@@ -32,6 +32,7 @@ interface Exercise {
     problemDescription: string;
     starterCode: string;
     solutionCode: string;
+    language?: string;
     testCases: TestCase[];
 }
 
@@ -52,8 +53,20 @@ interface PersonalizedLessonViewerProps {
     onLessonCompleted?: () => void;
 }
 
+export function cleanChineseArtifacts(text: any): any {
+    if (!text || typeof text !== 'string') return text;
+    return text
+        .replace(/在这里写代码|在此处编写代码|在下方编写代码|在下方写代码|请在此处编写代码/g, 'Viết mã tại đây')
+        .replace(/写代码|编写代码/g, 'Viết mã')
+        .replace(/你的代码/g, 'Mã của bạn')
+        .replace(/代码/g, 'mã nguồn')
+        .replace(/输入/g, 'Đầu vào')
+        .replace(/输出/g, 'Đầu ra')
+        .replace(/[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff]/g, '');
+}
+
 function getStandardizedTheory(lesson: Lesson): string {
-    const raw = stripQuizSectionFromMarkdown(lesson.theoryContent || '');
+    const raw = cleanChineseArtifacts(stripQuizSectionFromMarkdown(lesson.theoryContent || ''));
     if (raw && raw.includes('Bảng theo dõi thực thi') && raw.includes('Trạng thái bộ nhớ RAM')) {
         return raw;
     }
@@ -61,7 +74,20 @@ function getStandardizedTheory(lesson: Lesson): string {
     const title = lesson.title || 'Bài Học Trọng Tâm';
     const skill = lesson.targetSkillId || 'Kỹ năng cốt lõi';
     const ex = lesson.exercise;
-    const starter = ex?.starterCode || 'def solution():\n    pass';
+    const rawLang = String(ex?.language || '').toUpperCase();
+    const isCpp = rawLang === 'CPP' || rawLang.includes('C++') || (ex?.starterCode && /#include\s*<|std::/i.test(ex.starterCode));
+    const isJs = !isCpp && (rawLang === 'JAVASCRIPT' || rawLang.includes('JS') || (ex?.starterCode && /console\.log|function\s*\(|let\s+|const\s+/i.test(ex.starterCode)));
+
+    const langCode = isCpp ? 'cpp' : (isJs ? 'javascript' : 'python');
+    const langName = isCpp ? 'C++' : (isJs ? 'JavaScript' : 'Python');
+    const guidelineName = isCpp ? 'C++ Core Guidelines & RAII' : (isJs ? 'Clean Code & ESLint Modern' : 'PEP 8');
+    const namingConv = isCpp ? 'camelCase / PascalCase' : (isJs ? 'camelCase' : 'snake_case');
+
+    const defaultStarter = isCpp
+        ? '#include <iostream>\nusing namespace std;\n\nint main() {\n    // Code của bạn tại đây\n    return 0;\n}'
+        : (isJs ? '// Viết code JavaScript tại đây\n' : 'def solution():\n    pass');
+
+    const starter = ex?.starterCode || defaultStarter;
     const solution = ex?.solutionCode || starter;
 
     if (raw.length > 80) {
@@ -71,16 +97,16 @@ function getStandardizedTheory(lesson: Lesson): string {
 ---
 
 ## 2. Cú pháp & Vận hành
-Dưới đây là mã nguồn mẫu và bảng theo dõi luồng thực thi:
+Dưới đây là mã nguồn mẫu và bảng theo dõi luồng thực thi trong ${langName}:
 
-\`\`\`python
+\`\`\`${langCode}
 ${solution}
 \`\`\`
 
 **Bảng theo dõi thực thi (Execution Trace Table):**
 | DÒNG MÃ | LỆNH ĐƯỢC CHẠY | TRẠNG THÁI BIẾN | HÀNH ĐỘNG CỦA MÁY TÍNH |
 |:---:|:---|:---|:---|
-| 1 | Khởi tạo hàm / dữ liệu | \`data\`: Đã nạp | Nạp cấu trúc dữ liệu vào bộ nhớ Heap |
+| 1 | Khởi tạo hàm / dữ liệu | \`data\`: Đã nạp | Nạp cấu trúc dữ liệu vào bộ nhớ ${isCpp ? 'Stack/Heap' : 'Heap'} |
 | 2 | Thực thi thuật toán | \`result\`: Đang tính toán | Đọc biến và áp dụng logic xử lý |
 | 3 | Trả về kết quả | \`result\`: Hoàn tất | Xuất dữ liệu đã tính toán ra màn hình hoặc caller |
 
@@ -95,10 +121,10 @@ result ──────────────────────► [ G
 > [!WARNING]
 > **Các lỗi thường gặp cần tránh:**
 > * **Không kiểm tra kiểu dữ liệu và ngoại lệ**: Dẫn đến sập chương trình khi dữ liệu rỗng.
-> * **Đặt tên biến cẩu thả**: Không tuân thủ chuẩn snake_case, gây khó khăn khi bảo trì.
+> * **Đặt tên biến cẩu thả**: Không tuân thủ chuẩn ${namingConv}, gây khó khăn khi bảo trì.
 
 > [!TIP]
-> Luôn giữ phong cách lập trình chuẩn **PEP 8**, ưu tiên giải pháp tối ưu và kiểm thử đầy đủ các test cases biên!
+> Luôn giữ phong cách lập trình chuẩn **${guidelineName}**, ưu tiên giải pháp tối ưu và kiểm thử đầy đủ các test cases biên!
 
 ## 4. Đúc kết & Đi tiếp
 * Nắm vững nguyên lý và luồng dữ liệu của **${title}** trước khi bắt tay vào viết code.
@@ -109,23 +135,23 @@ result ──────────────────────► [ G
     }
 
     return `## 1. Khái niệm & Vấn đề
-Trong lập trình Python thực tế, việc nắm vững **${title}** (${skill}) là điều kiện tiên quyết để xây dựng phần mềm ổn định, chạy nhanh và an toàn.
+Trong lập trình ${langName} thực tế, việc nắm vững **${title}** (${skill}) là điều kiện tiên quyết để xây dựng phần mềm ổn định, chạy nhanh và an toàn.
 
 | Thuật ngữ | Định nghĩa thực tế | Phép ẩn dụ |
 | :--- | :--- | :--- |
 | **${title}** | Kỹ năng lập trình nền tảng giúp kiểm soát luồng dữ liệu và thuật toán. | Như việc xây móng nhà kiên cố trước khi dựng các tầng cao. |
 
 ## 2. Cú pháp & Vận hành
-Cú pháp triển khai giải thuật trong Python:
+Cú pháp triển khai giải thuật trong ${langName}:
 
-\`\`\`python
+\`\`\`${langCode}
 ${solution}
 \`\`\`
 
 **Bảng theo dõi thực thi (Execution Trace Table):**
 | DÒNG MÃ | LỆNH ĐƯỢC CHẠY | TRẠNG THÁI BIẾN | HÀNH ĐỘNG CỦA MÁY TÍNH |
 |:---:|:---|:---|:---|
-| 1 | Khởi tạo giải thuật | \`input\`: Nạp tham số | Khởi tạo không gian bộ nhớ trong RAM Heap |
+| 1 | Khởi tạo giải thuật | \`input\`: Nạp tham số | Khởi tạo không gian bộ nhớ trong ${isCpp ? 'RAM Stack/Heap' : 'RAM Heap'} |
 | 2 | Xử lý logic nghiệp vụ | \`process\`: Tính toán | Duyệt qua dữ liệu và áp dụng điều kiện |
 | 3 | Hoàn tất & Trả về | \`output\`: Kết quả | Trả kết quả chuẩn xác cho caller |
 
@@ -140,10 +166,10 @@ output ──────────────────────► [ D
 > [!WARNING]
 > **Các lỗi thường gặp cần tránh:**
 > * **Lỗi chỉ số hoặc khóa khuyết thiếu**: Luôn kiểm tra điều kiện biên trước khi truy xuất dữ liệu.
-> * **Không khởi tạo biến đúng cách**: Dẫn đến lỗi NameError hoặc UnboundLocalError.
+> * **Không khởi tạo biến đúng cách**: Dẫn đến lỗi không xác định hoặc truy xuất bộ nhớ không hợp lệ.
 
 > [!TIP]
-> Luôn giữ phong cách viết code chuẩn **PEP 8**, đặt tên hàm tường minh theo chuẩn **snake_case**.
+> Luôn giữ phong cách viết code chuẩn **${guidelineName}**, đặt tên hàm tường minh theo chuẩn **${namingConv}**.
 
 ## 4. Đúc kết & Đi tiếp
 * Hiểu sâu bản chất luồng thực thi từng dòng mã thông qua Execution Trace Table.
@@ -162,10 +188,29 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
     const [quizAnswers, setQuizAnswers] = useState<{ [quizId: string]: 'A' | 'B' | 'C' | 'D' }>({});
     const [quizResults, setQuizResults] = useState<{ [quizId: string]: { isCorrect: boolean; explanation: string } }>({});
     
+    // Language detection for Editor & Code
+    const rawLang = String(lesson.exercise?.language || '').toUpperCase();
+    const isCpp = rawLang === 'CPP' || rawLang.includes('C++') || (lesson.exercise?.starterCode && /#include\s*<|std::/i.test(lesson.exercise.starterCode));
+    const isJs = !isCpp && (rawLang === 'JAVASCRIPT' || rawLang.includes('JS') || (lesson.exercise?.starterCode && /console\.log|function\s*\(|let\s+|const\s+/i.test(lesson.exercise.starterCode)));
+    const monacoLang = isCpp ? 'cpp' : (isJs ? 'javascript' : 'python');
+    const fileLabel = isCpp ? 'solution.cpp (GCC C++17)' : (isJs ? 'solution.js (Node.js v20)' : 'solution.py (Python 3.12)');
+    const defaultStarter = isCpp 
+        ? '#include <iostream>\nusing namespace std;\n\nint main() {\n    // Code của bạn tại đây\n    return 0;\n}'
+        : (isJs ? '// Viết code JavaScript tại đây\n' : 'def solution():\n    pass');
+
     // Practice States
-    const [code, setCode] = useState<string>(lesson.exercise?.starterCode || 'def solution():\n    pass');
+    const [code, setCode] = useState<string>(cleanChineseArtifacts(lesson.exercise?.starterCode) || defaultStarter);
     const [submittingCode, setSubmittingCode] = useState<boolean>(false);
     const [executionOutput, setExecutionOutput] = useState<any>(null);
+
+    React.useEffect(() => {
+        if (lesson.exercise?.starterCode) {
+            setCode(cleanChineseArtifacts(lesson.exercise.starterCode));
+        } else {
+            setCode(defaultStarter);
+        }
+        setExecutionOutput(null);
+    }, [lesson.exercise?.id, lesson.exercise?.starterCode, defaultStarter]);
 
     const handleSelectQuizOption = (quizId: string, option: 'A' | 'B' | 'C' | 'D') => {
         setQuizAnswers(prev => ({ ...prev, [quizId]: option }));
@@ -518,7 +563,7 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                                 <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block" />
                                 <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block" />
                                 <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block" />
-                                <span className="ml-2 text-xs font-mono font-semibold text-slate-300">solution.py (Python 3.12)</span>
+                                <span className="ml-2 text-xs font-mono font-semibold text-slate-300">{fileLabel}</span>
                             </div>
                             <button
                                 onClick={handleSubmitExercise}
@@ -540,7 +585,7 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
 
                         <Editor
                             height="340px"
-                            language="python"
+                            language={monacoLang}
                             theme="vs-dark"
                             value={code}
                             onChange={(val) => setCode(val || '')}

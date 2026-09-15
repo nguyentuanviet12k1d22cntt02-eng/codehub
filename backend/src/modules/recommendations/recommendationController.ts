@@ -18,34 +18,57 @@ interface RecommendItem {
     slug?: string;
 }
 
-// Load lesson mappings to map coding exercises to KCs if we fall back
-const skillGraphPath = path.resolve(__dirname, '../../../ai-service/data/skill_graph.json');
-let lessonMappings: Record<string, string> = {};
-let practiceMappings: Record<string, string> = {};
-let graphCache: any = null;
+// Multi-language Skill Graph resolution
+export function getSkillGraphData(language: string = 'PYTHON'): any {
+    const lang = (language || 'PYTHON').toUpperCase();
+    const filename = (lang === 'JAVASCRIPT' || lang === 'JS') ? 'javascriptSkillGraph.json'
+                   : (lang === 'CPP' || lang === 'C++') ? 'cppSkillGraph.json'
+                   : (lang === 'SQL') ? 'sqlSkillGraph.json'
+                   : 'pythonSkillGraph.json';
 
-try {
-    if (fs.existsSync(skillGraphPath)) {
-        graphCache = JSON.parse(fs.readFileSync(skillGraphPath, 'utf-8'));
-        lessonMappings = graphCache.lesson_mappings || {};
-        practiceMappings = graphCache.practice_problem_mappings || {};
+    const localInfraPath = path.resolve(__dirname, `../../infrastructure/data/${filename}`);
+    if (fs.existsSync(localInfraPath)) {
+        try {
+            return JSON.parse(fs.readFileSync(localInfraPath, 'utf-8'));
+        } catch (e) {
+            console.error(`Error reading skill graph from infra: ${localInfraPath}`, e);
+        }
     }
-} catch (e) {
-    console.error("Could not load skill graph mapping inside Express backend:", e);
+
+    const aiServicePath = path.resolve(__dirname, `../../../ai-service/data/${filename}`);
+    if (fs.existsSync(aiServicePath)) {
+        try {
+            return JSON.parse(fs.readFileSync(aiServicePath, 'utf-8'));
+        } catch (e) {
+            console.error(`Error reading skill graph from ai-service: ${aiServicePath}`, e);
+        }
+    }
+
+    const legacyPath = path.resolve(__dirname, '../../../ai-service/data/skill_graph.json');
+    if (fs.existsSync(legacyPath)) {
+        try {
+            return JSON.parse(fs.readFileSync(legacyPath, 'utf-8'));
+        } catch (e) {
+            console.error(`Error reading legacy skill graph: ${legacyPath}`, e);
+        }
+    }
+
+    return null;
 }
 
 export const getSkillGraph = async (
-    _req: any,
+    req: any,
     res: Response,
     next: NextFunction
 ): Promise<void> => {
     try {
-        if (fs.existsSync(skillGraphPath)) {
-            const graph = JSON.parse(fs.readFileSync(skillGraphPath, 'utf-8'));
+        const language = (req.query.language as string || 'PYTHON');
+        const graph = getSkillGraphData(language);
+        if (graph) {
             res.status(200).json({ success: true, data: graph });
             return;
         }
-        res.status(404).json({ success: false, error: 'Skill graph file not found' });
+        res.status(404).json({ success: false, error: `Skill graph file not found for language: ${language}` });
     } catch (err) {
         next(err);
     }
@@ -54,6 +77,10 @@ export const getSkillGraph = async (
 // Rule-based absolute fallback recommendation
 async function getRuleBasedFallback(userId: string, limit: number): Promise<RecommendItem[]> {
     console.log(`Executing rule-based fallback recommendation for user: ${userId}`);
+
+    const pythonGraph = getSkillGraphData('PYTHON');
+    const lessonMappings: Record<string, string> = pythonGraph?.lesson_mappings || {};
+    const practiceMappings: Record<string, string> = pythonGraph?.practice_problem_mappings || {};
 
     // 1. Fetch completed items to filter out
     const passedSubmissions = await prisma.submission.findMany({
@@ -226,7 +253,7 @@ export const getRecommendations = async (
     }
 };
 
-export async function getDynamicUserMasteryFallback(userId: string) {
+export async function getDynamicUserMasteryFallback(userId: string, language: string = 'PYTHON') {
     // 1. Fetch user info
     const user = await prisma.user.findUnique({
         where: { id: userId },
@@ -236,16 +263,21 @@ export async function getDynamicUserMasteryFallback(userId: string) {
     const username = user?.username || "Học viên";
     const email = user?.email || "";
 
-    // 2. Fetch all lesson exercises and practice problems
+    // 2. Load skill graph for the requested language
+    const graph = getSkillGraphData(language);
+    const kcs = (graph?.skills && Array.isArray(graph.skills))
+        ? graph.skills.map((s: any) => s.id)
+        : ['KC_VAR', 'KC_COND', 'KC_LOOP', 'KC_LIST', 'KC_DICT', 'KC_FUNC', 'KC_OOP'];
+    const lessonMappings = graph?.lesson_mappings || {};
+    const practiceMappings = graph?.practice_problem_mappings || {};
+
+    // 3. Fetch all lesson exercises and practice problems
     const codingExercises = await prisma.codingExercise.findMany({
         include: { lesson: true }
     });
     const practiceProblems = await prisma.practiceProblem.findMany();
 
-    // 3. Group by Knowledge Component (KC)
-    const kcs = (graphCache?.skills && Array.isArray(graphCache.skills))
-        ? graphCache.skills.map((s: any) => s.id)
-        : ['KC_VAR', 'KC_COND', 'KC_LOOP', 'KC_LIST', 'KC_DICT', 'KC_FUNC', 'KC_OOP'];
+    // 4. Group by Knowledge Component (KC) for this language
     const totalByKC: Record<string, number> = {};
     kcs.forEach((kc: string) => { totalByKC[kc] = 0; });
 
@@ -254,22 +286,22 @@ export async function getDynamicUserMasteryFallback(userId: string) {
 
     codingExercises.forEach((ex: any) => {
         const lessonCode = ex.lesson?.lessonId || '';
-        const kc = lessonMappings[lessonCode] || 'KC_VAR';
-        exerciseToKCMap[ex.id] = kc;
-        if (kcs.includes(kc)) {
+        const kc = lessonMappings[lessonCode];
+        if (kc && kcs.includes(kc)) {
+            exerciseToKCMap[ex.id] = kc;
             totalByKC[kc]++;
         }
     });
 
     practiceProblems.forEach((prob: any) => {
-        const kc = practiceMappings[prob.slug] || 'KC_LIST';
-        problemToKCMap[prob.id] = kc;
-        if (kcs.includes(kc)) {
+        const kc = practiceMappings[prob.slug];
+        if (kc && kcs.includes(kc)) {
+            problemToKCMap[prob.id] = kc;
             totalByKC[kc]++;
         }
     });
 
-    // 4. Fetch passed submissions
+    // 5. Fetch passed submissions
     const passedSubmissions = await prisma.submission.findMany({
         where: { userId, status: 'PASSED' },
         select: { exerciseId: true }
@@ -282,20 +314,21 @@ export async function getDynamicUserMasteryFallback(userId: string) {
     const completedByKC: Record<string, number> = {};
     kcs.forEach((kc: string) => { completedByKC[kc] = 0; });
 
-    const passedExerciseIds = new Set(passedSubmissions.map(s => s.exerciseId));
-    const passedPracticeIds = new Set(passedPractice.map(p => p.problemId));
-
-    passedExerciseIds.forEach(id => {
-        const kc = exerciseToKCMap[id];
+    let langCompletedExercises = 0;
+    passedSubmissions.forEach(s => {
+        const kc = exerciseToKCMap[s.exerciseId];
         if (kc && kcs.includes(kc)) {
             completedByKC[kc]++;
+            langCompletedExercises++;
         }
     });
 
-    passedPracticeIds.forEach(id => {
-        const kc = problemToKCMap[id];
+    let langCompletedPractice = 0;
+    passedPractice.forEach(p => {
+        const kc = problemToKCMap[p.problemId];
         if (kc && kcs.includes(kc)) {
             completedByKC[kc]++;
+            langCompletedPractice++;
         }
     });
 
@@ -304,24 +337,23 @@ export async function getDynamicUserMasteryFallback(userId: string) {
     const totalPracticeSubmitsCount = await prisma.practiceSubmission.count({ where: { userId } });
     const totalActions = totalSubmitsCount + totalPracticeSubmitsCount;
 
-    // 5. Estimate profile status
-    const totalCompleted = passedExerciseIds.size + passedPracticeIds.size;
+    // 6. Estimate profile status
+    const totalCompleted = langCompletedExercises + langCompletedPractice;
     let profile: 'STRUGGLING' | 'AVERAGE' | 'EXCELLENT' = "AVERAGE";
     if (totalActions > 0) {
-        const successRate = totalCompleted / totalActions;
-        if (successRate >= 0.8 && totalCompleted >= 5) {
+        const successRate = totalCompleted / Math.max(1, totalActions);
+        if (successRate >= 0.8 && totalCompleted >= 3) {
             profile = "EXCELLENT";
         } else if (successRate < 0.4 && totalActions >= 5) {
             profile = "STRUGGLING";
         }
     }
 
-    // 6. Calculate mastery values for PAL-Net
+    // 7. Calculate mastery values for PAL-Net
     const palNetMastery: Record<string, number> = {};
-
     kcs.forEach((kc: string) => {
-        const total = totalByKC[kc];
-        const completed = completedByKC[kc];
+        const total = totalByKC[kc] || 0;
+        const completed = completedByKC[kc] || 0;
         const pct = total > 0 ? (completed / total) : 0;
 
         palNetMastery[kc] = 0.4 + 0.55 * pct;
@@ -329,13 +361,14 @@ export async function getDynamicUserMasteryFallback(userId: string) {
 
     return {
         success: true,
+        language: language.toUpperCase(),
         student_meta: { username, email, profile },
         mastery: {
             "PAL-Net": palNetMastery
         },
         stats: {
-            lessons_completed: passedExerciseIds.size,
-            practice_completed: passedPracticeIds.size,
+            lessons_completed: langCompletedExercises,
+            practice_completed: langCompletedPractice,
             streak_days: 5,
             total_actions: totalActions
         }
@@ -349,44 +382,42 @@ export const getUserMastery = async (
 ): Promise<void> => {
     try {
         const userId = req.user?.id as string;
+        const language = (req.query.language as string || 'PYTHON').toUpperCase();
+
         if (!userId) {
             res.status(401).json({ error: "Người dùng chưa đăng nhập" });
             return;
         }
 
-        const aiServiceUrl = process.env.AI_SERVICE_URL || 'http://localhost:8000';
-        const url = `${aiServiceUrl}/user_mastery?user_id=${userId}`;
+        // Nếu là Python và AI service khả dụng
+        if (language === 'PYTHON') {
+            const aiServiceUrl = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+            const url = `${aiServiceUrl}/user_mastery?user_id=${userId}`;
 
-        console.log(`Connecting to AI Service for user mastery: ${url}`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000);
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    signal: controller.signal,
+                    headers: { 'Accept': 'application/json' }
+                });
+                clearTimeout(timeoutId);
 
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-                signal: controller.signal,
-                headers: {
-                    'Accept': 'application/json'
+                if (response.ok) {
+                    const data = await response.json();
+                    res.status(200).json(data);
+                    return;
                 }
-            });
-
-            clearTimeout(timeoutId);
-
-            if (response.ok) {
-                const data = await response.json();
-                res.status(200).json(data);
-            } else {
-                console.warn(`AI Service returned unexpected status: ${response.status}. Triggering database-driven fallback...`);
-                const fallbackData = await getDynamicUserMasteryFallback(userId);
-                res.status(200).json(fallbackData);
+            } catch {
+                clearTimeout(timeoutId);
             }
-        } catch (fetchErr: any) {
-            clearTimeout(timeoutId);
-            console.error(`Could not reach AI Service for user mastery. Using database-driven fallback.`, fetchErr);
-            const fallbackData = await getDynamicUserMasteryFallback(userId);
-            res.status(200).json(fallbackData);
         }
+
+        // Với JS, C++, SQL hoặc fallback Python
+        const fallbackData = await getDynamicUserMasteryFallback(userId, language);
+        res.status(200).json(fallbackData);
     } catch (err) {
         next(err);
     }

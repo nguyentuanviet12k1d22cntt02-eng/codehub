@@ -1,0 +1,1441 @@
+{
+  "version": "2.0",
+  "domain": {
+    "id": "PYTHON",
+    "name": "Lập trình Python Căn bản đến Nâng cao",
+    "description": "Khung chương trình đào tạo năng lực lập trình Python toàn diện dựa trên Cây tri thức định hướng DAG thích ứng."
+  },
+  "modules": [
+    {
+      "id": "MOD-BASICS",
+      "name": "Cơ bản & Kiểu dữ liệu nền tảng",
+      "description": "Cú pháp cơ bản, biến, kiểu dữ liệu nguyên thủy (int, float, bool), ép kiểu và thao tác chuỗi.",
+      "order_index": 1
+    },
+    {
+      "id": "MOD-FLOW",
+      "name": "Cấu trúc điều khiển luồng",
+      "description": "Khối lệnh điều kiện rẽ nhánh (if-elif-else) và các cấu trúc vòng lặp tuần hoàn (while, for, range, break, continue).",
+      "order_index": 2
+    },
+    {
+      "id": "MOD-COLLECTIONS",
+      "name": "Cấu trúc dữ liệu tích hợp",
+      "description": "Các kiểu dữ liệu tập hợp danh sách, bộ giá trị, bảng băm và tập hợp: List, Tuple, Dictionary, Set.",
+      "order_index": 3
+    },
+    {
+      "id": "MOD-FUNC",
+      "name": "Lập trình hàm & Phạm vi",
+      "description": "Định nghĩa hàm, truyền tham số, đối số linh hoạt (*args, **kwargs), phạm vi biến LEGB và hàm lambda.",
+      "order_index": 4
+    },
+    {
+      "id": "MOD-EXC-IO",
+      "name": "Xử lý ngoại lệ & File I/O",
+      "description": "Bắt lỗi và ném ngoại lệ với try-except-finally, quản lý ngữ cảnh đọc ghi file an toàn with open.",
+      "order_index": 5
+    },
+    {
+      "id": "MOD-OOP",
+      "name": "Lập trình hướng đối tượng (OOP)",
+      "description": "Mô hình lập trình hướng đối tượng: Class, Object, Constructor __init__, Kế thừa, Đóng gói, Đa hình và Magic methods.",
+      "order_index": 6
+    }
+  ],
+  "topics": [
+    {
+      "id": "TOPIC-SYNTAX",
+      "module_id": "MOD-BASICS",
+      "name": "Cú pháp & Biến",
+      "description": "Biến, quy tắc định danh và các kiểu dữ liệu nguyên thủy."
+    },
+    {
+      "id": "TOPIC-CASTING",
+      "module_id": "MOD-BASICS",
+      "name": "Ép kiểu & Toán tử",
+      "description": "Chuyển đổi kiểu dữ liệu và các toán tử số học, so sánh, logic."
+    },
+    {
+      "id": "TOPIC-STRING",
+      "module_id": "MOD-BASICS",
+      "name": "Thao tác Chuỗi ký tự",
+      "description": "Indexing, Slicing, định dạng f-string và các phương thức xử lý chuỗi."
+    },
+    {
+      "id": "TOPIC-COND",
+      "module_id": "MOD-FLOW",
+      "name": "Rẽ nhánh Điều kiện",
+      "description": "Cấu trúc điều kiện if, elif, else và biểu thức điều kiện lồng nhau."
+    },
+    {
+      "id": "TOPIC-LOOP",
+      "module_id": "MOD-FLOW",
+      "name": "Vòng lặp & Điều hướng lặp",
+      "description": "Vòng lặp for, while, hàm range(), câu lệnh break và continue."
+    },
+    {
+      "id": "TOPIC-LIST",
+      "module_id": "MOD-COLLECTIONS",
+      "name": "Danh sách (List)",
+      "description": "Thao tác CRUD, List slicing và List Comprehension."
+    },
+    {
+      "id": "TOPIC-TUPLE",
+      "module_id": "MOD-COLLECTIONS",
+      "name": "Bộ dữ liệu bất biến (Tuple)",
+      "description": "Tính chất Immutable và kỹ thuật Unpacking dữ liệu."
+    },
+    {
+      "id": "TOPIC-DICT",
+      "module_id": "MOD-COLLECTIONS",
+      "name": "Bảng kết hợp (Dictionary)",
+      "description": "Cấu trúc Key-Value, truy xuất an toàn, kiểm tra hashable và Dict Comprehension."
+    },
+    {
+      "id": "TOPIC-SET",
+      "module_id": "MOD-COLLECTIONS",
+      "name": "Tập hợp duy nhất (Set)",
+      "description": "Tính độc nhất và các phép toán tập hợp hợp, giao, hiệu."
+    },
+    {
+      "id": "TOPIC-FUNC-BASIC",
+      "module_id": "MOD-FUNC",
+      "name": "Định nghĩa & Lời gọi hàm",
+      "description": "Cú pháp def, trả về giá trị return và đóng gói logic tái sử dụng."
+    },
+    {
+      "id": "TOPIC-FUNC-ARGS",
+      "module_id": "MOD-FUNC",
+      "name": "Tham số & Đối số",
+      "description": "Positional, Keyword, Default arguments, *args và **kwargs."
+    },
+    {
+      "id": "TOPIC-SCOPE",
+      "module_id": "MOD-FUNC",
+      "name": "Phạm vi biến & Functional Tools",
+      "description": "Quy tắc phạm vi LEGB (Local, Enclosing, Global, Built-in) và hàm Lambda."
+    },
+    {
+      "id": "TOPIC-EXCEPTION",
+      "module_id": "MOD-EXC-IO",
+      "name": "Ngoại lệ & Bắt lỗi",
+      "description": "Cấu trúc try-except-else-finally và ném lỗi có chủ đích raise."
+    },
+    {
+      "id": "TOPIC-FILE",
+      "module_id": "MOD-EXC-IO",
+      "name": "Đọc ghi File văn bản",
+      "description": "Thao tác tệp tin văn bản với context manager with open()."
+    },
+    {
+      "id": "TOPIC-OOP-BASIC",
+      "module_id": "MOD-OOP",
+      "name": "Class, Object & Constructor",
+      "description": "Định nghĩa lớp, khởi tạo đối tượng qua __init__ và con trỏ self."
+    },
+    {
+      "id": "TOPIC-OOP-INHERIT",
+      "module_id": "MOD-OOP",
+      "name": "Kế thừa & Đa hình",
+      "description": "Kế thừa đơn, hàm super(), ghi đè phương thức và đa hình."
+    },
+    {
+      "id": "TOPIC-OOP-ENCAP",
+      "module_id": "MOD-OOP",
+      "name": "Đóng gói & Magic Methods",
+      "description": "Thuộc tính private/protected và các phương thức đặc biệt __str__, __len__,... "
+    }
+  ],
+  "skills": [
+    {
+      "id": "PY-BASICS-01",
+      "concept_id": "PY-BASICS-01",
+      "name": "Biến, Quy tắc đặt tên & Kiểu nguyên thủy",
+      "concept_name": "Biến, Quy tắc đặt tên & Kiểu nguyên thủy",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-BASICS",
+      "topic_id": "TOPIC-SYNTAX",
+      "prerequisites": [],
+      "learning_objectives": [
+        "Hiểu cơ chế cấp phát biến động trong Python và quy tắc đặt tên chuẩn PEP 8 (snake_case)",
+        "Nắm vững các kiểu dữ liệu nguyên thủy: int, float, bool, str",
+        "Sử dụng thành thạo hàm print() và input() để giao tiếp I/O"
+      ],
+      "associated_errors": [
+        "NameError",
+        "SyntaxError"
+      ],
+      "difficulty_level": 1,
+      "bloom_level": "Remember",
+      "code_signatures": [
+        "x = 10",
+        "is_valid = True",
+        "print(x, type(x))",
+        "name = input()"
+      ],
+      "description": "Khởi tạo biến, các quy tắc định danh không hợp lệ và quản lý kiểu dữ liệu nguyên thủy cơ bản trong Python."
+    },
+    {
+      "id": "PY-BASICS-02",
+      "concept_id": "PY-BASICS-02",
+      "name": "Ép kiểu (Type Casting) & Kiểm tra kiểu dữ liệu",
+      "concept_name": "Ép kiểu (Type Casting) & Kiểm tra kiểu dữ liệu",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-BASICS",
+      "topic_id": "TOPIC-CASTING",
+      "prerequisites": [
+        "PY-BASICS-01"
+      ],
+      "learning_objectives": [
+        "Phân biệt ép kiểu ngầm định (Implicit) và ép kiểu tường minh (Explicit)",
+        "Chuyển đổi an toàn giữa chuỗi và số bằng int(), float(), str()",
+        "Bắt và xử lý lỗi ValueError khi chuỗi không thể chuyển thành số"
+      ],
+      "associated_errors": [
+        "TypeError",
+        "ValueError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Understand",
+      "code_signatures": [
+        "int('123')",
+        "float('3.14')",
+        "str(42)",
+        "isinstance(val, int)"
+      ],
+      "description": "Kỹ thuật chuyển đổi giữa các kiểu dữ liệu trong Python và cách phòng ngừa ngoại lệ TypeError, ValueError."
+    },
+    {
+      "id": "PY-BASICS-03",
+      "concept_id": "PY-BASICS-03",
+      "name": "Toán tử số học, so sánh và logic Boolean",
+      "concept_name": "Toán tử số học, so sánh và logic Boolean",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-BASICS",
+      "topic_id": "TOPIC-CASTING",
+      "prerequisites": [
+        "PY-BASICS-01"
+      ],
+      "learning_objectives": [
+        "Sử dụng thành thạo các toán tử số học (+, -, *, /, //, %, **)",
+        "Áp dụng các toán tử so sánh (==, !=, <, <=, >, >=) để hình thành biểu thức chân trị",
+        "Kết hợp logic phức hợp với and, or, not và hiểu cơ chế Short-circuit evaluation"
+      ],
+      "associated_errors": [
+        "ZeroDivisionError",
+        "TypeError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "a // b",
+        "a % b",
+        "a ** b",
+        "x > 0 and y < 10",
+        "not is_active"
+      ],
+      "description": "Các phép toán số học nâng cao, phép so sánh và biểu thức logic tạo nền tảng cho điều khiển luồng rẽ nhánh."
+    },
+    {
+      "id": "PY-STRING-01",
+      "concept_id": "PY-STRING-01",
+      "name": "Indexing, Slicing chuỗi & Lỗi IndexError",
+      "concept_name": "Indexing, Slicing chuỗi & Lỗi IndexError",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-BASICS",
+      "topic_id": "TOPIC-STRING",
+      "prerequisites": [
+        "PY-BASICS-01",
+        "PY-BASICS-03"
+      ],
+      "learning_objectives": [
+        "Hiểu tính chất chuỗi là một chuỗi ký tự bất biến (Immutable sequence)",
+        "Truy xuất phần tử qua chỉ mục thuận (0, 1, 2) và chỉ mục âm (-1, -2)",
+        "Cắt chuỗi linh hoạt với cú pháp string[start:stop:step] và đảo ngược chuỗi s[::-1]",
+        "Ngăn chặn lỗi IndexError khi chỉ mục vượt quá biên len(s) - 1"
+      ],
+      "associated_errors": [
+        "IndexError",
+        "TypeError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "s[0]",
+        "s[-1]",
+        "s[1:5]",
+        "s[::-1]",
+        "len(s)"
+      ],
+      "description": "Kỹ thuật đánh chỉ mục và cắt lát chuỗi ký tự, quản lý biên độ dài và đảo ngược chuỗi."
+    },
+    {
+      "id": "PY-STRING-02",
+      "concept_id": "PY-STRING-02",
+      "name": "Phương thức xử lý chuỗi & Định dạng F-string",
+      "concept_name": "Phương thức xử lý chuỗi & Định dạng F-string",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-BASICS",
+      "topic_id": "TOPIC-STRING",
+      "prerequisites": [
+        "PY-STRING-01"
+      ],
+      "learning_objectives": [
+        "Biến đổi và làm sạch văn bản bằng .strip(), .lower(), .upper(), .replace()",
+        "Tách và ghép chuỗi bằng .split() và 'delimiter'.join()",
+        "Áp dụng định dạng f-string hiện đại để nhúng biểu thức động vào văn bản"
+      ],
+      "associated_errors": [
+        "AttributeError",
+        "ValueError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "s.strip()",
+        "s.split(',')",
+        "','.join(lst)",
+        "f'Hello {name}, age {age}'"
+      ],
+      "description": "Các phương thức chuẩn hóa văn bản, phân tách/ghép chuỗi và nội suy biến với f-string."
+    },
+    {
+      "id": "PY-FLOW-01",
+      "concept_id": "PY-FLOW-01",
+      "name": "Khối lệnh điều kiện if - elif - else",
+      "concept_name": "Khối lệnh điều kiện if - elif - else",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-FLOW",
+      "topic_id": "TOPIC-COND",
+      "prerequisites": [
+        "PY-BASICS-03"
+      ],
+      "learning_objectives": [
+        "Viết đúng cú pháp thụt đầu dòng (Indentation) cho các khối điều kiện",
+        "Xây dựng cấu trúc rẽ nhiều nhánh tuần tự với if - elif - else",
+        "Hiểu nguyên lý dừng ngay khi một nhánh điều kiện đầu tiên thỏa mãn"
+      ],
+      "associated_errors": [
+        "IndentationError",
+        "SyntaxError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "if condition:",
+        "elif condition:",
+        "else:",
+        "val = a if cond else b"
+      ],
+      "description": "Điều khiển luồng chương trình rẽ nhánh dựa trên điều kiện Boolean và toán tử ba ngôi (Ternary Operator)."
+    },
+    {
+      "id": "PY-FLOW-02",
+      "concept_id": "PY-FLOW-02",
+      "name": "Vòng lặp while & Kiểm soát vòng lặp vô tận",
+      "concept_name": "Vòng lặp while & Kiểm soát vòng lặp vô tận",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-FLOW",
+      "topic_id": "TOPIC-LOOP",
+      "prerequisites": [
+        "PY-FLOW-01"
+      ],
+      "learning_objectives": [
+        "Hiểu khi nào sử dụng vòng lặp while khi số lần lặp chưa xác định trước",
+        "Đảm bảo cập nhật biến điều kiện dừng để không gây lỗi lặp vô tận (Infinite loop)",
+        "Kết hợp vòng lặp while True với cơ chế thoát bằng break"
+      ],
+      "associated_errors": [
+        "TimeoutError",
+        "RecursionError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Analyze",
+      "code_signatures": [
+        "while condition:",
+        "while True:\n    if cond:\n        break"
+      ],
+      "description": "Vòng lặp lặp lại theo điều kiện Boolean, kiểm soát điều kiện dừng và phòng tránh timeout CPU."
+    },
+    {
+      "id": "PY-FLOW-03",
+      "concept_id": "PY-FLOW-03",
+      "name": "Vòng lặp for ... in range() & Duyệt phần tử",
+      "concept_name": "Vòng lặp for ... in range() & Duyệt phần tử",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-FLOW",
+      "topic_id": "TOPIC-LOOP",
+      "prerequisites": [
+        "PY-FLOW-01",
+        "PY-STRING-01"
+      ],
+      "learning_objectives": [
+        "Duyệt qua các phần tử của chuỗi, danh sách hoặc tập hợp bằng for item in sequence",
+        "Sử dụng hàm range(start, stop, step) để tạo chuỗi chỉ số tuần hoàn",
+        "Kết hợp hàm enumerate() để lấy đồng thời chỉ số và giá trị phần tử"
+      ],
+      "associated_errors": [
+        "TypeError",
+        "IndexError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "for i in range(n):",
+        "for ch in text:",
+        "for idx, val in enumerate(lst):"
+      ],
+      "description": "Cơ chế duyệt tuần tự các đối tượng lặp (Iterables) bằng vòng lặp for và tạo dải số bằng range()."
+    },
+    {
+      "id": "PY-FLOW-04",
+      "concept_id": "PY-FLOW-04",
+      "name": "Điều hướng vòng lặp: break, continue & pass",
+      "concept_name": "Điều hướng vòng lặp: break, continue & pass",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-FLOW",
+      "topic_id": "TOPIC-LOOP",
+      "prerequisites": [
+        "PY-FLOW-02",
+        "PY-FLOW-03"
+      ],
+      "learning_objectives": [
+        "Dùng break để thoát lập tức khỏi vòng lặp lồng gần nhất khi đạt điều kiện thỏa mãn",
+        "Dùng continue để bỏ qua phần còn lại của bước lặp hiện tại và nhảy sang bước lặp kế tiếp",
+        "Dùng pass làm câu lệnh giữ chỗ (placeholder) khi chưa triển khai logic"
+      ],
+      "associated_errors": [
+        "SyntaxError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "break",
+        "continue",
+        "pass",
+        "for ... else:"
+      ],
+      "description": "Can thiệp bước nhảy và điều hướng luồng lặp linh hoạt với break, continue và khối for...else."
+    },
+    {
+      "id": "PY-LIST-01",
+      "concept_id": "PY-LIST-01",
+      "name": "Thao tác CRUD trên List (Danh sách)",
+      "concept_name": "Thao tác CRUD trên List (Danh sách)",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-COLLECTIONS",
+      "topic_id": "TOPIC-LIST",
+      "prerequisites": [
+        "PY-FLOW-03"
+      ],
+      "learning_objectives": [
+        "Khởi tạo danh sách động và thêm phần tử bằng .append(), .insert(), .extend()",
+        "Xóa phần tử qua .pop(), .remove() và từ khóa del",
+        "Kiểm tra sự tồn tại của phần tử với toán tử in"
+      ],
+      "associated_errors": [
+        "IndexError",
+        "ValueError",
+        "AttributeError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "lst.append(x)",
+        "lst.insert(idx, x)",
+        "lst.pop()",
+        "lst.remove(x)",
+        "item in lst"
+      ],
+      "description": "Các thao tác thêm, đọc, sửa, xóa phần tử trên danh sách động List trong Python."
+    },
+    {
+      "id": "PY-LIST-02",
+      "concept_id": "PY-LIST-02",
+      "name": "Slicing trên List & Tính Mutable (Tham chiếu vs Bản sao)",
+      "concept_name": "Slicing trên List & Tính Mutable (Tham chiếu vs Bản sao)",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-COLLECTIONS",
+      "topic_id": "TOPIC-LIST",
+      "prerequisites": [
+        "PY-LIST-01"
+      ],
+      "learning_objectives": [
+        "Áp dụng slicing trên danh sách để trích xuất hoặc thay thế dải phần tử",
+        "Hiểu bản chất tính biến đổi (Mutable) của List: gán b = a trỏ chung địa chỉ ô nhớ",
+        "Tạo bản sao độc lập qua slicing lst[:] hoặc phương thức lst.copy()"
+      ],
+      "associated_errors": [
+        "IndexError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Analyze",
+      "code_signatures": [
+        "sub = lst[1:4]",
+        "lst[1:3] = [99, 100]",
+        "copy_lst = lst.copy()",
+        "copy_lst = lst[:]"
+      ],
+      "description": "Cắt lát danh sách nâng cao và hiểu cơ chế gán tham chiếu bộ nhớ của dữ liệu Mutable."
+    },
+    {
+      "id": "PY-LIST-03",
+      "concept_id": "PY-LIST-03",
+      "name": "List Comprehension (Cú pháp rút gọn tạo danh sách)",
+      "concept_name": "List Comprehension (Cú pháp rút gọn tạo danh sách)",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-COLLECTIONS",
+      "topic_id": "TOPIC-LIST",
+      "prerequisites": [
+        "PY-LIST-02",
+        "PY-FLOW-01"
+      ],
+      "learning_objectives": [
+        "Viết biểu thức tạo danh sách 1 dòng lệnh bằng cú pháp [expr for item in iterable]",
+        "Kết hợp mệnh đề lọc điều kiện [expr for item in iterable if condition]",
+        "Tối ưu hóa tốc độ thực thi và làm gọn code so với việc dùng vòng lặp for và .append() thông thường"
+      ],
+      "associated_errors": [
+        "SyntaxError",
+        "NameError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "[x * 2 for x in nums]",
+        "[x for x in nums if x % 2 == 0]"
+      ],
+      "description": "Kỹ thuật tạo danh sách ngắn gọn, biểu cảm và tối ưu hóa hiệu năng bằng List Comprehension."
+    },
+    {
+      "id": "PY-TUPLE-01",
+      "concept_id": "PY-TUPLE-01",
+      "name": "Tính Immutable của Tuple & Kỹ thuật Unpacking",
+      "concept_name": "Tính Immutable của Tuple & Kỹ thuật Unpacking",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-COLLECTIONS",
+      "topic_id": "TOPIC-TUPLE",
+      "prerequisites": [
+        "PY-LIST-01"
+      ],
+      "learning_objectives": [
+        "Hiểu tính chất bất biến (Immutable) của Tuple để bảo vệ tính toàn vẹn dữ liệu",
+        "Áp dụng kỹ thuật mở gói (Tuple Unpacking) gán nhanh nhiều biến: a, b = b, a",
+        "Hiểu tại sao Tuple có thể làm key cho Dictionary còn List thì không"
+      ],
+      "associated_errors": [
+        "TypeError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Understand",
+      "code_signatures": [
+        "t = (1, 2, 3)",
+        "a, b = (10, 20)",
+        "first, *rest = (1, 2, 3, 4)"
+      ],
+      "description": "Cấu trúc dữ liệu bất biến Tuple, kỹ thuật unpack biến và ứng dụng trong trả về nhiều giá trị."
+    },
+    {
+      "id": "PY-DICT-01",
+      "concept_id": "PY-DICT-01",
+      "name": "Cú pháp Key-Value & Điều kiện Hashable của Key",
+      "concept_name": "Cú pháp Key-Value & Điều kiện Hashable của Key",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-COLLECTIONS",
+      "topic_id": "TOPIC-DICT",
+      "prerequisites": [
+        "PY-LIST-01",
+        "PY-TUPLE-01"
+      ],
+      "learning_objectives": [
+        "Khởi tạo từ điển bằng cú pháp {key: value} hoặc hàm dict()",
+        "Hiểu nguyên lý bảng băm (Hash Table) và điều kiện key bắt buộc phải là đối tượng Hashable (str, int, tuple)",
+        "Tránh lỗi phổ biến khi dùng List làm key (TypeError: unhashable type: 'list')"
+      ],
+      "associated_errors": [
+        "TypeError",
+        "KeyError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "d = {'name': 'An', 'age': 20}",
+        "d['name'] = 'Binh'",
+        "del d['age']"
+      ],
+      "description": "Khởi tạo từ điển Key-Value, cơ chế bảng băm và điều kiện bất biến bắt buộc của Key."
+    },
+    {
+      "id": "PY-DICT-02",
+      "concept_id": "PY-DICT-02",
+      "name": "Truy xuất giá trị an toàn trong Dictionary & KeyError",
+      "concept_name": "Truy xuất giá trị an toàn trong Dictionary & KeyError",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-COLLECTIONS",
+      "topic_id": "TOPIC-DICT",
+      "prerequisites": [
+        "PY-DICT-01",
+        "PY-FLOW-01"
+      ],
+      "learning_objectives": [
+        "Phân biệt khi nào dùng truy xuất trực tiếp d[key] và phương thức an toàn d.get(key, default)",
+        "Sử dụng toán tử 'key in dict' để kiểm tra sự tồn tại của khóa trước khi thao tác",
+        "Phòng chống triệt để lỗi crash chương trình do KeyError khi truy cập khóa không tồn tại"
+      ],
+      "associated_errors": [
+        "KeyError",
+        "AttributeError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "val = d.get(key, default)",
+        "if key in d:",
+        "d.setdefault(key, [])"
+      ],
+      "description": "Kỹ thuật truy xuất giá trị từ điển an toàn bằng .get() và toán tử in nhằm ngăn ngừa biệt lệ KeyError."
+    },
+    {
+      "id": "PY-DICT-03",
+      "concept_id": "PY-DICT-03",
+      "name": "Duyệt Dictionary & Dictionary Comprehension",
+      "concept_name": "Duyệt Dictionary & Dictionary Comprehension",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-COLLECTIONS",
+      "topic_id": "TOPIC-DICT",
+      "prerequisites": [
+        "PY-DICT-02",
+        "PY-FLOW-03"
+      ],
+      "learning_objectives": [
+        "Duyệt qua khóa, giá trị hoặc cặp khóa-giá trị qua .keys(), .values(), .items()",
+        "Áp dụng Dictionary Comprehension để biến đổi hoặc lọc từ điển: {k: v for k, v in d.items() if ...}",
+        "Tránh lỗi RuntimeError: dictionary changed size during iteration khi xóa phần tử trong lúc lặp"
+      ],
+      "associated_errors": [
+        "RuntimeError",
+        "KeyError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "for k, v in d.items():",
+        "{k: v*2 for k, v in d.items()}",
+        "d.update(other_dict)"
+      ],
+      "description": "Duyệt từ điển với .items() và kỹ thuật biến đổi dữ liệu một dòng bằng Dictionary Comprehension."
+    },
+    {
+      "id": "PY-SET-01",
+      "concept_id": "PY-SET-01",
+      "name": "Tập hợp duy nhất (Set) & Các phép toán tập hợp",
+      "concept_name": "Tập hợp duy nhất (Set) & Các phép toán tập hợp",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-COLLECTIONS",
+      "topic_id": "TOPIC-SET",
+      "prerequisites": [
+        "PY-LIST-01",
+        "PY-DICT-01"
+      ],
+      "learning_objectives": [
+        "Sử dụng set để loại bỏ phần tử trùng lặp tức thì từ danh sách bằng set(lst)",
+        "Thực hiện các phép toán tập hợp: hợp (|), giao (&), hiệu (-), hiệu đối xứng (^)",
+        "Tận dụng tốc độ kiểm tra 'item in set' đạt O(1) so với O(N) của List"
+      ],
+      "associated_errors": [
+        "TypeError",
+        "KeyError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "s = {1, 2, 3}",
+        "s.add(4)",
+        "union = s1 | s2",
+        "intersect = s1 & s2"
+      ],
+      "description": "Tập hợp không trùng lặp Set, loại bỏ phần tử trùng và tối ưu hóa thời gian tìm kiếm O(1)."
+    },
+    {
+      "id": "PY-FUNC-01",
+      "concept_id": "PY-FUNC-01",
+      "name": "Định nghĩa hàm def, gọi hàm & giá trị return",
+      "concept_name": "Định nghĩa hàm def, gọi hàm & giá trị return",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-FUNC",
+      "topic_id": "TOPIC-FUNC-BASIC",
+      "prerequisites": [
+        "PY-FLOW-01",
+        "PY-FLOW-03"
+      ],
+      "learning_objectives": [
+        "Khởi tạo hàm bằng từ khóa def và tài liệu hóa bằng Docstring",
+        "Phân biệt giữa việc in ra màn hình print() và trả về giá trị cho caller qua return",
+        "Hiểu rằng hàm không có return rõ ràng sẽ mặc định trả về None"
+      ],
+      "associated_errors": [
+        "TypeError",
+        "UnboundLocalError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "def my_func():\n    return result",
+        "res = my_func()"
+      ],
+      "description": "Đóng gói mã nguồn tái sử dụng với lệnh def, tham số đầu vào và giá trị trả về qua lệnh return."
+    },
+    {
+      "id": "PY-FUNC-02",
+      "concept_id": "PY-FUNC-02",
+      "name": "Phân biệt Tham số (Parameters) vs Đối số (Arguments)",
+      "concept_name": "Phân biệt Tham số (Parameters) vs Đối số (Arguments)",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-FUNC",
+      "topic_id": "TOPIC-FUNC-ARGS",
+      "prerequisites": [
+        "PY-FUNC-01"
+      ],
+      "learning_objectives": [
+        "Phân biệt khái niệm Tham số hình thức (Parameter) và Đối số thực tế (Argument)",
+        "Sử dụng đối số theo vị trí (Positional arguments) và đối số theo tên (Keyword arguments)",
+        "Hiểu thứ tự truyền đối số: positional arguments luôn phải đứng trước keyword arguments"
+      ],
+      "associated_errors": [
+        "TypeError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Understand",
+      "code_signatures": [
+        "def greet(name, msg):\n    ...",
+        "greet('An', msg='Chao')"
+      ],
+      "description": "Quy tắc truyền đối số theo vị trí và theo tên (Keyword Arguments) khi gọi hàm."
+    },
+    {
+      "id": "PY-FUNC-03",
+      "concept_id": "PY-FUNC-03",
+      "name": "Tham số mặc định & Bẫy Mutable Default Argument",
+      "concept_name": "Tham số mặc định & Bẫy Mutable Default Argument",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-FUNC",
+      "topic_id": "TOPIC-FUNC-ARGS",
+      "prerequisites": [
+        "PY-FUNC-02",
+        "PY-LIST-01"
+      ],
+      "learning_objectives": [
+        "Khai báo giá trị mặc định cho tham số để hàm linh hoạt khi gọi",
+        "Nhận diện cạm bẫy kinh điển: dùng đối tượng Mutable (như List, Dict) làm default argument",
+        "Áp dụng chuẩn sửa lỗi: dùng param=None và khởi tạo bên trong thân hàm"
+      ],
+      "associated_errors": [
+        "TypeError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Analyze",
+      "code_signatures": [
+        "def add_item(item, lst=None):\n    if lst is None:\n        lst = []\n    lst.append(item)\n    return lst"
+      ],
+      "description": "Cấu hình tham số mặc định và cách khắc phục lỗi rò rỉ trạng thái của Mutable Default Argument."
+    },
+    {
+      "id": "PY-FUNC-04",
+      "concept_id": "PY-FUNC-04",
+      "name": "Biến toàn cục (global), cục bộ (local) & Quy tắc LEGB",
+      "concept_name": "Biến toàn cục (global), cục bộ (local) & Quy tắc LEGB",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-FUNC",
+      "topic_id": "TOPIC-SCOPE",
+      "prerequisites": [
+        "PY-FUNC-01"
+      ],
+      "learning_objectives": [
+        "Hiểu phạm vi hoạt động của biến trong và ngoài hàm theo quy tắc LEGB (Local, Enclosing, Global, Built-in)",
+        "Sử dụng từ khóa global và nonlocal khi cần cập nhật biến từ phạm vi ngoài",
+        "Tránh lỗi phổ biến UnboundLocalError khi vừa đọc vừa gán biến trùng tên"
+      ],
+      "associated_errors": [
+        "UnboundLocalError",
+        "NameError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Analyze",
+      "code_signatures": [
+        "global total",
+        "nonlocal counter"
+      ],
+      "description": "Quản lý phạm vi truy cập biến trong hàm theo thứ tự tìm kiếm LEGB và từ khóa global/nonlocal."
+    },
+    {
+      "id": "PY-FUNC-05",
+      "concept_id": "PY-FUNC-05",
+      "name": "Linh hoạt đối số biến đổi với *args và **kwargs",
+      "concept_name": "Linh hoạt đối số biến đổi với *args và **kwargs",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-FUNC",
+      "topic_id": "TOPIC-FUNC-ARGS",
+      "prerequisites": [
+        "PY-FUNC-02",
+        "PY-DICT-01"
+      ],
+      "learning_objectives": [
+        "Dùng *args để gom số lượng đối số vị trí không giới hạn thành một Tuple",
+        "Dùng **kwargs để gom các đối số từ khóa không giới hạn thành một Dictionary",
+        "Ứng dụng mở gói đối số khi gọi hàm: func(*my_list, **my_dict)"
+      ],
+      "associated_errors": [
+        "TypeError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "def func(*args, **kwargs):",
+        "func(1, 2, a=3, b=4)",
+        "call_api(*params)"
+      ],
+      "description": "Định nghĩa hàm nhận số lượng tham số tùy biến thông qua đóng gói/mở gói *args và **kwargs."
+    },
+    {
+      "id": "PY-FUNC-06",
+      "concept_id": "PY-FUNC-06",
+      "name": "Hàm ẩn danh Lambda & Hàm bậc cao (map, filter, sorted)",
+      "concept_name": "Hàm ẩn danh Lambda & Hàm bậc cao (map, filter, sorted)",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-FUNC",
+      "topic_id": "TOPIC-SCOPE",
+      "prerequisites": [
+        "PY-FUNC-01",
+        "PY-LIST-03"
+      ],
+      "learning_objectives": [
+        "Viết hàm ẩn danh 1 dòng lệnh bằng cú pháp lambda params: expression",
+        "Kết hợp lambda với sorted(lst, key=lambda x: ...)",
+        "Áp dụng các hàm bậc cao (Higher-Order Functions) như map(), filter() để xử lý luồng dữ liệu"
+      ],
+      "associated_errors": [
+        "TypeError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "square = lambda x: x ** 2",
+        "sorted(data, key=lambda item: item['score'])",
+        "list(filter(lambda x: x > 0, nums))"
+      ],
+      "description": "Lập trình hàm ngắn gọn với Lambda expressions và các hàm nhận hàm làm tham số (map, filter, sorted)."
+    },
+    {
+      "id": "PY-EXC-01",
+      "concept_id": "PY-EXC-01",
+      "name": "Khối try - except bắt và xử lý ngoại lệ",
+      "concept_name": "Khối try - except bắt và xử lý ngoại lệ",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-EXC-IO",
+      "topic_id": "TOPIC-EXCEPTION",
+      "prerequisites": [
+        "PY-FLOW-01",
+        "PY-FUNC-01"
+      ],
+      "learning_objectives": [
+        "Bọc khối mã có nguy cơ phát sinh lỗi trong khối try",
+        "Bắt đích danh các ngoại lệ cụ thể (ValueError, KeyError, ZeroDivisionError) thay vì dùng bare except:",
+        "Truy xuất thông tin lỗi qua cú pháp except SpecificError as err:"
+      ],
+      "associated_errors": [
+        "Exception",
+        "ValueError",
+        "TypeError",
+        "ZeroDivisionError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "try:\n    ...\nexcept ValueError as err:\n    ..."
+      ],
+      "description": "Cơ chế bắt và xử lý ngoại lệ lúc runtime, tránh dừng đột ngột chương trình bằng try-except."
+    },
+    {
+      "id": "PY-EXC-02",
+      "concept_id": "PY-EXC-02",
+      "name": "Khối else và finally trong quản trị tài nguyên",
+      "concept_name": "Khối else và finally trong quản trị tài nguyên",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-EXC-IO",
+      "topic_id": "TOPIC-EXCEPTION",
+      "prerequisites": [
+        "PY-EXC-01"
+      ],
+      "learning_objectives": [
+        "Hiểu khi nào khối else chạy: chỉ khi khối try hoàn thành mà KHÔNG có ngoại lệ ném ra",
+        "Hiểu khối finally luôn luôn thực thi bất kể có lỗi hay không, thích hợp để dọn dẹp tài nguyên (close file, release lock)",
+        "Kết hợp hoàn chỉnh bộ 4 từ khóa: try - except - else - finally"
+      ],
+      "associated_errors": [
+        "Exception"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "try:\n    ...\nexcept Error:\n    ...\nelse:\n    ...\nfinally:\n    ..."
+      ],
+      "description": "Hoàn thiện quy trình xử lý lỗi với khối else và đảm bảo giải phóng tài nguyên an toàn trong finally."
+    },
+    {
+      "id": "PY-EXC-03",
+      "concept_id": "PY-EXC-03",
+      "name": "Chủ động ném ngoại lệ với từ khóa raise",
+      "concept_name": "Chủ động ném ngoại lệ với từ khóa raise",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-EXC-IO",
+      "topic_id": "TOPIC-EXCEPTION",
+      "prerequisites": [
+        "PY-EXC-01"
+      ],
+      "learning_objectives": [
+        "Chủ động ném lỗi khi dữ liệu đầu vào không thỏa mãn điều kiện logic nghiệp vụ",
+        "Ném các ngoại lệ chuẩn: raise ValueError('Tuổi không thể là số âm')",
+        "Kế thừa lớp Exception để tạo các ngoại lệ tùy biến (Custom Exceptions)"
+      ],
+      "associated_errors": [
+        "ValueError",
+        "Exception"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "raise ValueError('Invalid argument')",
+        "class CustomError(Exception): pass"
+      ],
+      "description": "Kiểm soát tính hợp lệ của dữ liệu đầu vào bằng cách chủ động ném biệt lệ với từ khóa raise."
+    },
+    {
+      "id": "PY-IO-01",
+      "concept_id": "PY-IO-01",
+      "name": "Đọc/ghi file an toàn với ngữ cảnh with open(...)",
+      "concept_name": "Đọc/ghi file an toàn với ngữ cảnh with open(...)",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-EXC-IO",
+      "topic_id": "TOPIC-FILE",
+      "prerequisites": [
+        "PY-EXC-01",
+        "PY-STRING-02"
+      ],
+      "learning_objectives": [
+        "Mở tệp ở các chế độ khác nhau: đọc ('r'), ghi đè ('w'), ghi nối tiếp ('a')",
+        "Hiểu lợi ích của Context Manager with open() tự động đóng file kể cả khi xảy ra lỗi",
+        "Đọc tệp theo từng dòng để tối ưu bộ nhớ đối với tệp dữ liệu lớn"
+      ],
+      "associated_errors": [
+        "FileNotFoundError",
+        "PermissionError",
+        "IOError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "with open('file.txt', 'r', encoding='utf-8') as f:\n    content = f.read()",
+        "f.readline()",
+        "f.write('text')"
+      ],
+      "description": "Thao tác nhập xuất dữ liệu tập tin với Context Manager with open() tự động giải phóng tài nguyên."
+    },
+    {
+      "id": "PY-OOP-01",
+      "concept_id": "PY-OOP-01",
+      "name": "Class, Object & Hàm khởi tạo __init__, self",
+      "concept_name": "Class, Object & Hàm khởi tạo __init__, self",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-OOP",
+      "topic_id": "TOPIC-OOP-BASIC",
+      "prerequisites": [
+        "PY-FUNC-01",
+        "PY-DICT-01"
+      ],
+      "learning_objectives": [
+        "Hiểu mô hình Class như bản thiết kế (Blueprint) và Object là thực thể cụ thể (Instance)",
+        "Định nghĩa hàm khởi tạo __init__ để thiết lập trạng thái ban đầu của đối tượng",
+        "Hiểu ý nghĩa của tham số self đại diện cho chính thực thể đang được thao tác"
+      ],
+      "associated_errors": [
+        "TypeError",
+        "AttributeError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "class Person:\n    def __init__(self, name):\n        self.name = name",
+        "p = Person('Nam')"
+      ],
+      "description": "Cơ chế định nghĩa lớp Class, khởi tạo đối tượng Instance và vai trò cốt lõi của tham số self."
+    },
+    {
+      "id": "PY-OOP-02",
+      "concept_id": "PY-OOP-02",
+      "name": "Thuộc tính Instance vs Thuộc tính Class (Class Variables)",
+      "concept_name": "Thuộc tính Instance vs Thuộc tính Class (Class Variables)",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-OOP",
+      "topic_id": "TOPIC-OOP-BASIC",
+      "prerequisites": [
+        "PY-OOP-01"
+      ],
+      "learning_objectives": [
+        "Phân biệt biến thuộc về riêng từng thực thể (self.attr) và biến dùng chung cho toàn bộ lớp (Class Variable)",
+        "Nhận biết nguy cơ khi thay đổi Class Variable kiểu Mutable thông qua một Instance cụ thể",
+        "Sử dụng Class Variable để đếm số lượng đối tượng được khởi tạo"
+      ],
+      "associated_errors": [
+        "AttributeError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Analyze",
+      "code_signatures": [
+        "class Student:\n    school = 'VIBECODE'\n    def __init__(self, name):\n        self.name = name"
+      ],
+      "description": "Phân biệt phạm vi và cơ chế bộ nhớ giữa biến thực thể Instance Variable và biến toàn lớp Class Variable."
+    },
+    {
+      "id": "PY-OOP-03",
+      "concept_id": "PY-OOP-03",
+      "name": "Kế thừa đơn (Single Inheritance) & Hàm super()",
+      "concept_name": "Kế thừa đơn (Single Inheritance) & Hàm super()",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-OOP",
+      "topic_id": "TOPIC-OOP-INHERIT",
+      "prerequisites": [
+        "PY-OOP-01"
+      ],
+      "learning_objectives": [
+        "Tạo lớp con (Subclass) kế thừa toàn bộ thuộc tính và phương thức từ lớp cha (Superclass)",
+        "Gọi hàm khởi tạo của lớp cha bằng hàm super().__init__(...)",
+        "Mở rộng thêm thuộc tính và phương thức đặc thù riêng cho lớp con"
+      ],
+      "associated_errors": [
+        "TypeError",
+        "AttributeError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "class Dog(Animal):\n    def __init__(self, name, breed):\n        super().__init__(name)\n        self.breed = breed"
+      ],
+      "description": "Kỹ thuật kế thừa lớp cha, tái sử dụng mã nguồn và liên kết logic khởi tạo qua hàm super()."
+    },
+    {
+      "id": "PY-OOP-04",
+      "concept_id": "PY-OOP-04",
+      "name": "Ghi đè phương thức (Method Overriding)",
+      "concept_name": "Ghi đè phương thức (Method Overriding)",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-OOP",
+      "topic_id": "TOPIC-OOP-INHERIT",
+      "prerequisites": [
+        "PY-OOP-03"
+      ],
+      "learning_objectives": [
+        "Định nghĩa lại phương thức cùng tên ở lớp con để tùy biến hành vi khác biệt so với lớp cha",
+        "Tái sử dụng một phần hành vi của lớp cha và bổ sung logic mới bằng super().method_name()",
+        "Nắm vững thứ tự phân giải phương thức MRO (Method Resolution Order)"
+      ],
+      "associated_errors": [
+        "AttributeError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "class Bird(Animal):\n    def speak(self):\n        return 'Chirp'"
+      ],
+      "description": "Kỹ thuật ghi đè hành vi phương thức của lớp cha tại lớp con nhằm đáp ứng nghiệp vụ chuyên biệt."
+    },
+    {
+      "id": "PY-OOP-05",
+      "concept_id": "PY-OOP-05",
+      "name": "Đóng gói (Encapsulation) & Thuộc tính Private/Protected",
+      "concept_name": "Đóng gói (Encapsulation) & Thuộc tính Private/Protected",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-OOP",
+      "topic_id": "TOPIC-OOP-ENCAP",
+      "prerequisites": [
+        "PY-OOP-01"
+      ],
+      "learning_objectives": [
+        "Hiểu quy ước protected với dấu gạch dưới đơn (_protected_var)",
+        "Hiểu cơ chế Name Mangling khi đặt dấu gạch dưới kép (__private_var)",
+        "Sử dụng decorator @property, @setter để đóng gói và kiểm soát quyền truy xuất thuộc tính"
+      ],
+      "associated_errors": [
+        "AttributeError"
+      ],
+      "difficulty_level": 4,
+      "bloom_level": "Analyze",
+      "code_signatures": [
+        "self._protected = 1",
+        "self.__private = 2",
+        "@property\ndef balance(self):\n    return self._balance"
+      ],
+      "description": "Bảo vệ trạng thái dữ liệu nội bộ qua tính đóng gói, quy ước ẩn thuộc tính và @property getter/setter."
+    },
+    {
+      "id": "PY-OOP-06",
+      "concept_id": "PY-OOP-06",
+      "name": "Đa hình (Polymorphism) & Magic Methods (__str__, __len__)",
+      "concept_name": "Đa hình (Polymorphism) & Magic Methods (__str__, __len__)",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-OOP",
+      "topic_id": "TOPIC-OOP-INHERIT",
+      "prerequisites": [
+        "PY-OOP-04"
+      ],
+      "learning_objectives": [
+        "Hiểu tính Đa hình: các đối tượng thuộc các lớp khác nhau cùng phản hồi một lời gọi phương thức chung (Duck Typing)",
+        "Tùy biến hiển thị văn bản của đối tượng qua __str__ và __repr__",
+        "Hỗ trợ các toán tử và hàm built-in qua __len__, __eq__, __add__"
+      ],
+      "associated_errors": [
+        "TypeError"
+      ],
+      "difficulty_level": 4,
+      "bloom_level": "Application",
+      "code_signatures": [
+        "def __str__(self):\n    return f'Obj({self.name})'",
+        "def __len__(self):\n    return len(self.items)"
+      ],
+      "description": "Tính đa hình theo phong cách Duck Typing và quá tải toán tử/hàm chuẩn thông qua Magic (Dunder) Methods."
+    }
+  ],
+  "edges": [
+    {
+      "source": "PY-BASICS-01",
+      "target": "PY-BASICS-02"
+    },
+    {
+      "source": "PY-BASICS-01",
+      "target": "PY-BASICS-03"
+    },
+    {
+      "source": "PY-BASICS-01",
+      "target": "PY-STRING-01"
+    },
+    {
+      "source": "PY-BASICS-03",
+      "target": "PY-STRING-01"
+    },
+    {
+      "source": "PY-STRING-01",
+      "target": "PY-STRING-02"
+    },
+    {
+      "source": "PY-BASICS-03",
+      "target": "PY-FLOW-01"
+    },
+    {
+      "source": "PY-FLOW-01",
+      "target": "PY-FLOW-02"
+    },
+    {
+      "source": "PY-FLOW-01",
+      "target": "PY-FLOW-03"
+    },
+    {
+      "source": "PY-STRING-01",
+      "target": "PY-FLOW-03"
+    },
+    {
+      "source": "PY-FLOW-02",
+      "target": "PY-FLOW-04"
+    },
+    {
+      "source": "PY-FLOW-03",
+      "target": "PY-FLOW-04"
+    },
+    {
+      "source": "PY-FLOW-03",
+      "target": "PY-LIST-01"
+    },
+    {
+      "source": "PY-LIST-01",
+      "target": "PY-LIST-02"
+    },
+    {
+      "source": "PY-LIST-02",
+      "target": "PY-LIST-03"
+    },
+    {
+      "source": "PY-FLOW-01",
+      "target": "PY-LIST-03"
+    },
+    {
+      "source": "PY-LIST-01",
+      "target": "PY-TUPLE-01"
+    },
+    {
+      "source": "PY-LIST-01",
+      "target": "PY-DICT-01"
+    },
+    {
+      "source": "PY-TUPLE-01",
+      "target": "PY-DICT-01"
+    },
+    {
+      "source": "PY-DICT-01",
+      "target": "PY-DICT-02"
+    },
+    {
+      "source": "PY-FLOW-01",
+      "target": "PY-DICT-02"
+    },
+    {
+      "source": "PY-DICT-02",
+      "target": "PY-DICT-03"
+    },
+    {
+      "source": "PY-FLOW-03",
+      "target": "PY-DICT-03"
+    },
+    {
+      "source": "PY-LIST-01",
+      "target": "PY-SET-01"
+    },
+    {
+      "source": "PY-DICT-01",
+      "target": "PY-SET-01"
+    },
+    {
+      "source": "PY-FLOW-01",
+      "target": "PY-FUNC-01"
+    },
+    {
+      "source": "PY-FLOW-03",
+      "target": "PY-FUNC-01"
+    },
+    {
+      "source": "PY-FUNC-01",
+      "target": "PY-FUNC-02"
+    },
+    {
+      "source": "PY-FUNC-02",
+      "target": "PY-FUNC-03"
+    },
+    {
+      "source": "PY-LIST-01",
+      "target": "PY-FUNC-03"
+    },
+    {
+      "source": "PY-FUNC-01",
+      "target": "PY-FUNC-04"
+    },
+    {
+      "source": "PY-FUNC-02",
+      "target": "PY-FUNC-05"
+    },
+    {
+      "source": "PY-DICT-01",
+      "target": "PY-FUNC-05"
+    },
+    {
+      "source": "PY-FUNC-01",
+      "target": "PY-FUNC-06"
+    },
+    {
+      "source": "PY-LIST-03",
+      "target": "PY-FUNC-06"
+    },
+    {
+      "source": "PY-FLOW-01",
+      "target": "PY-EXC-01"
+    },
+    {
+      "source": "PY-FUNC-01",
+      "target": "PY-EXC-01"
+    },
+    {
+      "source": "PY-EXC-01",
+      "target": "PY-EXC-02"
+    },
+    {
+      "source": "PY-EXC-01",
+      "target": "PY-EXC-03"
+    },
+    {
+      "source": "PY-EXC-01",
+      "target": "PY-IO-01"
+    },
+    {
+      "source": "PY-STRING-02",
+      "target": "PY-IO-01"
+    },
+    {
+      "source": "PY-FUNC-01",
+      "target": "PY-OOP-01"
+    },
+    {
+      "source": "PY-DICT-01",
+      "target": "PY-OOP-01"
+    },
+    {
+      "source": "PY-OOP-01",
+      "target": "PY-OOP-02"
+    },
+    {
+      "source": "PY-OOP-01",
+      "target": "PY-OOP-03"
+    },
+    {
+      "source": "PY-OOP-03",
+      "target": "PY-OOP-04"
+    },
+    {
+      "source": "PY-OOP-01",
+      "target": "PY-OOP-05"
+    },
+    {
+      "source": "PY-OOP-04",
+      "target": "PY-OOP-06"
+    }
+  ],
+  "error_mappings": {
+    "NameError": [
+      "PY-BASICS-01",
+      "PY-LIST-03",
+      "PY-FUNC-04"
+    ],
+    "SyntaxError": [
+      "PY-BASICS-01",
+      "PY-FLOW-01",
+      "PY-FLOW-04",
+      "PY-LIST-03"
+    ],
+    "TypeError": [
+      "PY-BASICS-02",
+      "PY-BASICS-03",
+      "PY-STRING-01",
+      "PY-FLOW-03",
+      "PY-TUPLE-01",
+      "PY-DICT-01",
+      "PY-SET-01",
+      "PY-FUNC-01",
+      "PY-FUNC-02",
+      "PY-FUNC-03",
+      "PY-FUNC-05",
+      "PY-FUNC-06",
+      "PY-EXC-01",
+      "PY-OOP-01",
+      "PY-OOP-03",
+      "PY-OOP-06"
+    ],
+    "ValueError": [
+      "PY-BASICS-02",
+      "PY-STRING-02",
+      "PY-LIST-01",
+      "PY-EXC-01",
+      "PY-EXC-03"
+    ],
+    "ZeroDivisionError": [
+      "PY-BASICS-03",
+      "PY-EXC-01"
+    ],
+    "IndexError": [
+      "PY-STRING-01",
+      "PY-FLOW-03",
+      "PY-LIST-01",
+      "PY-LIST-02"
+    ],
+    "AttributeError": [
+      "PY-STRING-02",
+      "PY-LIST-01",
+      "PY-DICT-02",
+      "PY-OOP-01",
+      "PY-OOP-02",
+      "PY-OOP-03",
+      "PY-OOP-04",
+      "PY-OOP-05"
+    ],
+    "IndentationError": [
+      "PY-FLOW-01"
+    ],
+    "TimeoutError": [
+      "PY-FLOW-02"
+    ],
+    "RecursionError": [
+      "PY-FLOW-02"
+    ],
+    "KeyError": [
+      "PY-DICT-01",
+      "PY-DICT-02",
+      "PY-DICT-03",
+      "PY-SET-01"
+    ],
+    "RuntimeError": [
+      "PY-DICT-03"
+    ],
+    "UnboundLocalError": [
+      "PY-FUNC-01",
+      "PY-FUNC-04"
+    ],
+    "Exception": [
+      "PY-EXC-01",
+      "PY-EXC-02",
+      "PY-EXC-03"
+    ],
+    "FileNotFoundError": [
+      "PY-IO-01"
+    ],
+    "PermissionError": [
+      "PY-IO-01"
+    ],
+    "IOError": [
+      "PY-IO-01"
+    ]
+  },
+  "lesson_mappings": {
+    "LS-01.01": "PY-BASICS-01",
+    "LS-01.02": "PY-BASICS-01",
+    "LS-01.03": "PY-BASICS-01",
+    "LS-01.04": "PY-BASICS-01",
+    "LS-01.05": "PY-BASICS-01",
+    "LS-01.06": "PY-BASICS-03",
+    "LS-01.07": "PY-BASICS-03",
+    "LS-01.08": "PY-BASICS-01",
+    "LS-01.09": "PY-BASICS-01",
+    "LS-01.10": "PY-BASICS-02",
+    "LS-01.MP": "PY-BASICS-03",
+    "LS-02.01": "PY-BASICS-03",
+    "LS-02.02": "PY-FLOW-01",
+    "LS-02.03": "PY-FLOW-01",
+    "LS-02.04": "PY-BASICS-03",
+    "LS-02.05": "PY-FLOW-02",
+    "LS-02.06": "PY-FLOW-03",
+    "LS-02.07": "PY-FLOW-03",
+    "LS-02.08": "PY-FLOW-04",
+    "LS-02.MP": "PY-FLOW-03",
+    "LS-03.01": "PY-STRING-01",
+    "LS-03.02": "PY-STRING-01",
+    "LS-03.03": "PY-STRING-02",
+    "LS-03.04": "PY-STRING-02",
+    "LS-03.05": "PY-LIST-01",
+    "LS-03.06": "PY-LIST-01",
+    "LS-03.07": "PY-LIST-02",
+    "LS-03.08": "PY-LIST-02",
+    "LS-03.09": "PY-TUPLE-01",
+    "LS-03.10": "PY-SET-01",
+    "LS-03.11": "PY-DICT-01",
+    "LS-03.12": "PY-DICT-02",
+    "LS-03.MP_FOR": "PY-FLOW-03",
+    "LS-03.MP_WHILE": "PY-FLOW-02",
+    "LS-04.01": "PY-FUNC-01",
+    "LS-04.02": "PY-FUNC-02",
+    "LS-04.03": "PY-FUNC-03",
+    "LS-04.04": "PY-FUNC-04",
+    "LS-05.01": "PY-FUNC-01",
+    "LS-05.02": "PY-FUNC-02",
+    "LS-05.03": "PY-FUNC-05",
+    "LS-05.04": "PY-FUNC-06",
+    "LS-06.01": "PY-OOP-01",
+    "LS-06.02": "PY-OOP-02",
+    "LS-06.03": "PY-OOP-03",
+    "LS-06.04": "PY-OOP-04"
+  },
+  "practice_problem_mappings": {}
+}

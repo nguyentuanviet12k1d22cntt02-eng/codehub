@@ -4253,19 +4253,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Tạo Dictionary và truy cập giá trị",
                 "difficulty": "EASY",
-                "problemDescription": "**Bài 1: Tạo Dictionary và truy cập giá trị**\n\n- **Mô tả:** Tạo một dictionary lưu trữ thông tin của một người với các key `\"ten\"`, `\"tuoi\"`, `\"thanh_pho\"`. Sau đó, in ra tên và thành phố của người đó.\n- **Input:** Không có (tạo dictionary cố định trong code).\n- **Output:**\n    \n    `Tên: [Tên người]\n    Thành phố: [Thành phố]`\n    \n- **Ví dụ:**\n    \n    **Python**\n    \n    `# Input (trong code):\n    # thong_tin_nguoi = {\"ten\": \"An\", \"tuoi\": 25, \"thanh_pho\": \"Hà Nội\"}\n    \n    # Output:\n    # Tên: An\n    # Thành phố: Hà Nội`\n    \n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"Tên: [Tên người]\\n\")",
+                "problemDescription": "**Bài 1: Tạo Dictionary và truy cập giá trị**\n\n- **Mô tả:** Tạo một dictionary `thong_tin_nguoi` lưu trữ thông tin của bạn An với các cặp key-value sau:\n  - `\"ten\"`: `\"An\"`\n  - `\"tuoi\"`: `25`\n  - `\"thanh_pho\"`: `\"Hà Nội\"`\n- **Yêu cầu:** Truy cập các key tương ứng của dictionary và in thông tin ra màn hình theo đúng 2 dòng:\n```text\nTên: An\nThành phố: Hà Nội\n```\n- **Input:** Không có (khởi tạo dictionary cố định trong code).\n- **Output:** Đúng 2 dòng như trên.",
+                "starterCode": "# Khởi tạo dictionary thong_tin_nguoi\nthong_tin_nguoi = {\"ten\": \"An\", \"tuoi\": 25, \"thanh_pho\": \"Hà Nội\"}\n\n# Truy cập các key tương ứng và in ra màn hình\n",
+                "solutionCode": "thong_tin_nguoi = {\"ten\": \"An\", \"tuoi\": 25, \"thanh_pho\": \"Hà Nội\"}\nprint(f\"Tên: {thong_tin_nguoi['ten']}\")\nprint(f\"Thành phố: {thong_tin_nguoi['thanh_pho']}\")\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "4860faf9-6679-4ccd-99f7-67ea6435bf97",
+                    "id": "6ac91109-ebc0-49e4-ab40-ebeba66150fb",
                     "exerciseId": "536b4922-fad0-433a-8ea2-6041f7adca40",
-                    "input": "Không có (tạo dictionary cố định trong code).\n",
-                    "expectedOutput": "Tên: [Tên người]\n",
+                    "input": "",
+                    "expectedOutput": "Tên: An\nThành phố: Hà Nội\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4274,19 +4274,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Thêm cặp key-value mới",
                 "difficulty": "EASY",
-                "problemDescription": "**Bài 2: Thêm cặp key-value mới**\n\n- **Mô tả:** Cho một dictionary `sinh_vien = {\"ma_sv\": \"SV001\", \"ten\": \"Bình\"}`. Thêm key `\"lop\"` với giá trị `\"K21\"` và key `\"diem_tb\"` với giá trị `8.8` vào dictionary này. Sau đó in toàn bộ dictionary.\n- **Input:** Không có.\n- **Output:**\n    \n    `{'ma_sv': 'SV001', 'ten': 'Bình', 'lop': 'K21', 'diem_tb': 8.8}`\n    \n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"{'ma_sv': 'SV001', 'ten': 'Bình', 'lop': 'K21', 'diem_tb': 8.8}\\n\")",
+                "problemDescription": "**Bài 2: Thêm cặp key-value mới**\n\n- **Mô tả:** Cho một dictionary `sinh_vien = {\"ma_sv\": \"SV001\", \"ten\": \"Bình\"}`.\n- **Yêu cầu:**\n  1. Thêm key `\"lop\"` với giá trị `\"K21\"`.\n  2. Thêm key `\"diem_tb\"` với giá trị số thực `8.8`.\n  3. In toàn bộ dictionary `sinh_vien` ra màn hình.\n- **Input:** Không có.\n- **Output:**\n```python\n{'ma_sv': 'SV001', 'ten': 'Bình', 'lop': 'K21', 'diem_tb': 8.8}\n```",
+                "starterCode": "sinh_vien = {\"ma_sv\": \"SV001\", \"ten\": \"Bình\"}\n\n# Thêm key \"lop\" và \"diem_tb\" vào sinh_vien và in kết quả\n",
+                "solutionCode": "sinh_vien = {\"ma_sv\": \"SV001\", \"ten\": \"Bình\"}\nsinh_vien[\"lop\"] = \"K21\"\nsinh_vien[\"diem_tb\"] = 8.8\nprint(sinh_vien)\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "f8774d9f-bbb6-49fe-b10f-503190b9a91c",
+                    "id": "0253e45d-0f73-4dcf-8b01-68216f82554c",
                     "exerciseId": "7dcc5a96-1e8f-4cd6-8099-2ea87b3e1c6d",
-                    "input": "Không có.\n",
+                    "input": "",
                     "expectedOutput": "{'ma_sv': 'SV001', 'ten': 'Bình', 'lop': 'K21', 'diem_tb': 8.8}\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4295,19 +4295,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Sửa đổi giá trị",
                 "difficulty": "EASY",
-                "problemDescription": "**Bài 3: Sửa đổi giá trị**\n\n- **Mô tả:** Cho dictionary `san_pham = {\"ten\": \"Laptop\", \"gia\": 15000000, \"so_luong\": 5}`. Cập nhật `gia` thành `14500000` và `so_luong` thành `7`. Sau đó in toàn bộ dictionary.\n- **Input:** Không có.\n- **Output:**\n    \n    `{'ten': 'Laptop', 'gia': 14500000, 'so_luong': 7}`\n    \n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"{'ten': 'Laptop', 'gia': 14500000, 'so_luong': 7}\\n\")",
+                "problemDescription": "**Bài 3: Sửa đổi giá trị**\n\n- **Mô tả:** Cho dictionary `san_pham = {\"ten\": \"Laptop\", \"gia\": 15000000, \"so_luong\": 5}`.\n- **Yêu cầu:**\n  1. Cập nhật key `\"gia\"` thành `14500000`.\n  2. Cập nhật key `\"so_luong\"` thành `7`.\n  3. In toàn bộ dictionary `san_pham` ra màn hình.\n- **Input:** Không có.\n- **Output:**\n```python\n{'ten': 'Laptop', 'gia': 14500000, 'so_luong': 7}\n```",
+                "starterCode": "san_pham = {\"ten\": \"Laptop\", \"gia\": 15000000, \"so_luong\": 5}\n\n# Cập nhật gia và so_luong rồi in kết quả\n",
+                "solutionCode": "san_pham = {\"ten\": \"Laptop\", \"gia\": 15000000, \"so_luong\": 5}\nsan_pham[\"gia\"] = 14500000\nsan_pham[\"so_luong\"] = 7\nprint(san_pham)\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "1c0730b6-aab6-4b5e-b678-af3d23124f95",
+                    "id": "521e285d-27e1-439f-9a5d-bbef122a56c9",
                     "exerciseId": "9ed16874-d0f6-4cda-9b4a-b8855fe2d4f9",
-                    "input": "Không có.\n",
+                    "input": "",
                     "expectedOutput": "{'ten': 'Laptop', 'gia': 14500000, 'so_luong': 7}\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4316,19 +4316,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Xóa cặp key-value",
                 "difficulty": "EASY",
-                "problemDescription": "**Bài 4: Xóa cặp key-value**\n\n- **Mô tả:** Cho dictionary `cau_hinh = {\"CPU\": \"i7\", \"RAM\": \"16GB\", \"SSD\": \"512GB\", \"VGA\": \"RTX 3060\"}`. Xóa key `\"VGA\"`. Sau đó in toàn bộ dictionary.\n- **Input:** Không có.\n- **Output:**\n    \n    `{'CPU': 'i7', 'RAM': '16GB', 'SSD': '512GB'}`\n    \n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"{'CPU': 'i7', 'RAM': '16GB', 'SSD': '512GB'}\\n\")",
+                "problemDescription": "**Bài 4: Xóa cặp key-value**\n\n- **Mô tả:** Cho dictionary `cau_hinh = {\"CPU\": \"i7\", \"RAM\": \"16GB\", \"SSD\": \"512GB\", \"VGA\": \"RTX 3060\"}`.\n- **Yêu cầu:**\n  1. Xóa cặp key-value có key là `\"VGA\"` (dùng `del` hoặc `.pop()`).\n  2. In toàn bộ dictionary `cau_hinh` ra màn hình.\n- **Input:** Không có.\n- **Output:**\n```python\n{'CPU': 'i7', 'RAM': '16GB', 'SSD': '512GB'}\n```",
+                "starterCode": "cau_hinh = {\"CPU\": \"i7\", \"RAM\": \"16GB\", \"SSD\": \"512GB\", \"VGA\": \"RTX 3060\"}\n\n# Xóa key \"VGA\" và in toàn bộ dictionary\n",
+                "solutionCode": "cau_hinh = {\"CPU\": \"i7\", \"RAM\": \"16GB\", \"SSD\": \"512GB\", \"VGA\": \"RTX 3060\"}\ncau_hinh.pop(\"VGA\", None)\nprint(cau_hinh)\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "a3cb9bae-2cc4-4774-9713-e1b1788813cd",
+                    "id": "e9baefd2-d3b1-47b3-a0ee-800f773a3cf3",
                     "exerciseId": "7001a67d-a27b-4435-b66c-7c8d7046786b",
-                    "input": "Không có.\n",
+                    "input": "",
                     "expectedOutput": "{'CPU': 'i7', 'RAM': '16GB', 'SSD': '512GB'}\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4337,19 +4337,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Kiểm tra sự tồn tại của key",
                 "difficulty": "EASY",
-                "problemDescription": "**Bài 5: Kiểm tra sự tồn tại của key**\n\n- **Mô tả:** Cho dictionary `thoi_tiet = {\"Ha Noi\": \"Mưa\", \"Sai Gon\": \"Nắng\"}`. Kiểm tra xem key `\"Da Nang\"` có trong dictionary không. In ra thông báo thích hợp.\n- **Input:** Không có.\n- **Output:**\n    \n    `Có thông tin thời tiết của Da Nang. (hoặc) Không có thông tin thời tiết của Da Nang.`\n    \n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"Có thông tin thời tiết của Da Nang. (hoặc) Không có thông tin thời tiết của Da Nang.\\n\")",
+                "problemDescription": "**Bài 5: Kiểm tra sự tồn tại của key**\n\n- **Mô tả:** Cho dictionary `thoi_tiet = {\"Ha Noi\": \"Mưa\", \"Sai Gon\": \"Nắng\"}`.\n- **Yêu cầu:**\n  1. Dùng toán tử `in` kiểm tra xem key `\"Da Nang\"` có trong dictionary không.\n  2. Nếu có, in: `Có thông tin thời tiết của Da Nang.`\n  3. Nếu không có, in: `Không có thông tin thời tiết của Da Nang.`\n- **Input:** Không có.\n- **Output:**\n```text\nKhông có thông tin thời tiết của Da Nang.\n```",
+                "starterCode": "thoi_tiet = {\"Ha Noi\": \"Mưa\", \"Sai Gon\": \"Nắng\"}\n\n# Kiểm tra key \"Da Nang\" có trong thoi_tiet không và in thông báo\n",
+                "solutionCode": "thoi_tiet = {\"Ha Noi\": \"Mưa\", \"Sai Gon\": \"Nắng\"}\nif \"Da Nang\" in thoi_tiet:\n    print(\"Có thông tin thời tiết của Da Nang.\")\nelse:\n    print(\"Không có thông tin thời tiết của Da Nang.\")\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "84150495-71e9-42a8-832b-2cac983f8a3e",
+                    "id": "3b087c38-4c5b-443c-8795-2c57ce18be85",
                     "exerciseId": "fc00e4a3-98b5-414e-b49e-16681c07d10a",
-                    "input": "Không có.\n",
-                    "expectedOutput": "Có thông tin thời tiết của Da Nang. (hoặc) Không có thông tin thời tiết của Da Nang.\n",
+                    "input": "",
+                    "expectedOutput": "Không có thông tin thời tiết của Da Nang.\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4358,19 +4358,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Lặp qua các key",
                 "difficulty": "EASY",
-                "problemDescription": "**Bài 6: Lặp qua các key**\n\n- **Mô tả:** Cho dictionary `khoa_hoc = {\"Python\": 10, \"Java\": 8, \"C++\": 7}` (tên khóa học: số lượng học viên). In ra tất cả các tên khóa học (chỉ key).\n- **Input:** Không có.\n- **Output:**\n    \n    `Python\n    Java\n    C++`\n    \n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"Python\\n\")",
+                "problemDescription": "**Bài 6: Lặp qua các key**\n\n- **Mô tả:** Cho dictionary `khoa_hoc = {\"Python\": 10, \"Java\": 8, \"C++\": 7}`.\n- **Yêu cầu:** Dùng vòng lặp `for` duyệt qua các key của dictionary và in ra tất cả tên khóa học (mỗi tên trên 1 dòng).\n- **Input:** Không có.\n- **Output:**\n```text\nPython\nJava\nC++\n```",
+                "starterCode": "khoa_hoc = {\"Python\": 10, \"Java\": 8, \"C++\": 7}\n\n# Lặp qua các key và in tên từng khóa học\n",
+                "solutionCode": "khoa_hoc = {\"Python\": 10, \"Java\": 8, \"C++\": 7}\nfor ten in khoa_hoc:\n    print(ten)\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "0e7bf55c-8c3a-41b5-afac-25687f057ed2",
+                    "id": "40852bca-5ead-40c8-a5f1-929203626421",
                     "exerciseId": "ea46558b-1634-4511-8d1e-f9587a9609e0",
-                    "input": "Không có.\n",
-                    "expectedOutput": "Python\n",
+                    "input": "",
+                    "expectedOutput": "Python\nJava\nC++\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4379,19 +4379,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Lặp qua các value",
                 "difficulty": "EASY",
-                "problemDescription": "**Bài 7: Lặp qua các value**\n\n- **Mô tả:** Cho dictionary `khoa_hoc` như bài 6. In ra tất cả số lượng học viên (chỉ value).\n- **Input:** Không có.\n- **Output:**\n    \n    `10\n    8\n    7`\n    \n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"10\\n\")",
+                "problemDescription": "**Bài 7: Lặp qua các value**\n\n- **Mô tả:** Cho dictionary `khoa_hoc = {\"Python\": 10, \"Java\": 8, \"C++\": 7}`.\n- **Yêu cầu:** Dùng phương thức `.values()` kết hợp vòng lặp `for` để in ra số lượng học viên của từng khóa học (mỗi số lượng trên 1 dòng).\n- **Input:** Không có.\n- **Output:**\n```text\n10\n8\n7\n```",
+                "starterCode": "khoa_hoc = {\"Python\": 10, \"Java\": 8, \"C++\": 7}\n\n# Lặp qua các value và in số lượng học viên\n",
+                "solutionCode": "khoa_hoc = {\"Python\": 10, \"Java\": 8, \"C++\": 7}\nfor so_luong in khoa_hoc.values():\n    print(so_luong)\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "20ca5ece-3375-474b-ad2d-1018ff5d3195",
+                    "id": "246182d6-7454-46e2-9d58-d8aed8c579c7",
                     "exerciseId": "2fbd8934-ad41-4967-b852-96685309848b",
-                    "input": "Không có.\n",
-                    "expectedOutput": "10\n",
+                    "input": "",
+                    "expectedOutput": "10\n8\n7\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4400,19 +4400,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Lặp qua cả key và value",
                 "difficulty": "EASY",
-                "problemDescription": "**Bài 8: Lặp qua cả key và value**\n\n- **Mô tả:** Cho dictionary `khoa_hoc` như bài 6. In ra từng cặp \"Tên khóa học: Số lượng học viên\".\n- **Input:** Không có.\n- **Output:**\n    \n    `Python: 10\n    Java: 8\n    C++: 7`\n    \n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"Python: 10\\n\")",
+                "problemDescription": "**Bài 8: Lặp qua cả key và value**\n\n- **Mô tả:** Cho dictionary `khoa_hoc = {\"Python\": 10, \"Java\": 8, \"C++\": 7}`.\n- **Yêu cầu:** Dùng phương thức `.items()` để lặp qua từng cặp key-value và in ra màn hình theo định dạng `Tên khóa học: Số lượng`.\n- **Input:** Không có.\n- **Output:**\n```text\nPython: 10\nJava: 8\nC++: 7\n```",
+                "starterCode": "khoa_hoc = {\"Python\": 10, \"Java\": 8, \"C++\": 7}\n\n# Dùng .items() để lặp qua key, value và in định dạng 'Key: Value'\n",
+                "solutionCode": "khoa_hoc = {\"Python\": 10, \"Java\": 8, \"C++\": 7}\nfor ten, so_luong in khoa_hoc.items():\n    print(f\"{ten}: {so_luong}\")\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "9b68a5e8-c7fc-4e23-ba96-4daa79544387",
+                    "id": "2e401a9b-079e-41f2-bee7-c51931962149",
                     "exerciseId": "0e280bdd-4b5b-4b9d-b25f-6137716a2f04",
-                    "input": "Không có.\n",
-                    "expectedOutput": "Python: 10\n",
+                    "input": "",
+                    "expectedOutput": "Python: 10\nJava: 8\nC++: 7\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4421,19 +4421,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Sử dụng .get() với giá trị mặc định",
                 "difficulty": "EASY",
-                "problemDescription": "**Bài 9: Sử dụng `.get()` với giá trị mặc định**\n\n- **Mô tả:** Cho dictionary `diem_thi = {\"Toan\": 9, \"Ly\": 8}`. Lấy điểm môn \"Hoa\". Nếu môn \"Hoa\" không có, trả về `0`. In ra điểm môn \"Hoa\".\n- **Input:** Không có.\n- **Output:**\n    \n    `Điểm môn Hoa: 0`\n    \n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"Điểm môn Hoa: 0\\n\")",
+                "problemDescription": "**Bài 9: Sử dụng .get() với giá trị mặc định**\n\n- **Mô tả:** Cho dictionary `diem_thi = {\"Toan\": 9, \"Ly\": 8}`.\n- **Yêu cầu:** Dùng phương thức `.get()` để lấy điểm môn `\"Hoa\"`. Nếu môn `\"Hoa\"` không có trong dictionary, trả về giá trị mặc định là `0`. In kết quả theo định dạng:\n```text\nĐiểm môn Hoa: 0\n```\n- **Input:** Không có.\n- **Output:** Đúng dòng thông báo trên.",
+                "starterCode": "diem_thi = {\"Toan\": 9, \"Ly\": 8}\n\n# Dùng .get() lấy điểm môn \"Hoa\" với giá trị mặc định là 0\n",
+                "solutionCode": "diem_thi = {\"Toan\": 9, \"Ly\": 8}\ndiem_hoa = diem_thi.get(\"Hoa\", 0)\nprint(f\"Điểm môn Hoa: {diem_hoa}\")\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "0f6de109-791e-4b17-a548-713d028ba879",
+                    "id": "ab0fd10b-58b6-48be-91bb-8574421c2ccf",
                     "exerciseId": "07bb351d-3b73-4bb0-8e00-712d6eb1eb64",
-                    "input": "Không có.\n",
+                    "input": "",
                     "expectedOutput": "Điểm môn Hoa: 0\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4442,19 +4442,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Kích thước của Dictionary",
                 "difficulty": "EASY",
-                "problemDescription": "**Bài 10: Kích thước của Dictionary**\n\n- **Mô tả:** Cho dictionary `danh_ba = {\"An\": \"0912345678\", \"Binh\": \"0987654321\", \"Cuong\": \"0909090909\"}`. In ra tổng số liên lạc trong danh bạ.\n- **Input:** Không có.\n- **Output:**\n    \n    `Tổng số liên lạc: 3`",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"Tổng số liên lạc: 3\\n\")",
+                "problemDescription": "**Bài 10: Kích thước của Dictionary**\n\n- **Mô tả:** Cho dictionary danh bạ: `danh_ba = {\"An\": \"0912345678\", \"Binh\": \"0987654321\", \"Cuong\": \"0909090909\"}`.\n- **Yêu cầu:** Dùng hàm `len()` để lấy tổng số liên lạc và in ra màn hình theo định dạng:\n```text\nTổng số liên lạc: 3\n```\n- **Input:** Không có.\n- **Output:** Đúng dòng thông báo trên.",
+                "starterCode": "danh_ba = {\"An\": \"0912345678\", \"Binh\": \"0987654321\", \"Cuong\": \"0909090909\"}\n\n# In ra tổng số liên lạc dùng hàm len()\n",
+                "solutionCode": "danh_ba = {\"An\": \"0912345678\", \"Binh\": \"0987654321\", \"Cuong\": \"0909090909\"}\nprint(f\"Tổng số liên lạc: {len(danh_ba)}\")\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "2c5c44df-db68-4d1d-996b-ef3ee3a14d5b",
+                    "id": "373e8934-21d3-44bb-a317-d1d9b8d2102f",
                     "exerciseId": "56cbb613-e4b4-4a54-b573-4c440ee959f6",
-                    "input": "Không có.\n",
+                    "input": "",
                     "expectedOutput": "Tổng số liên lạc: 3\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4463,19 +4463,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Phân tích phần tử trùng và độc nhất giữa 2 danh sách khách hàng",
                 "difficulty": "HARD",
-                "problemDescription": "### **Bài 1: Phân tích phần tử trùng và độc nhất giữa 2 danh sách khách hàng**\n\n- **Mô tả:** Cho hai danh sách email đăng ký sự kiện của hai ngày khác nhau: `ngay1` và `ngay2`.\n- **Yêu cầu:** Hãy viết chương trình sử dụng **Set** để:\n    1. Tìm danh sách tất cả các email đã đăng ký tham gia (không trùng lặp).\n    2. Tìm danh sách các email tham gia cả hai ngày.\n    3. Tìm danh sách các email chỉ tham gia ngày thứ nhất mà không tham gia ngày thứ hai.\n    4. Tìm danh sách các email chỉ tham gia duy nhất một trong hai ngày.\n- **Thiết lập ban đầu:**\n    \n    `ngay1 = [\"an@gmail.com\", \"binh@gmail.com\", \"cuong@gmail.com\"]\n    ngay2 = [\"binh@gmail.com\", \"duong@gmail.com\", \"an@gmail.com\"]`\n    \n- **Ví dụ kiểm thử:**\n    - **Dữ liệu trên:**\n        - Tất cả email: `{'an@gmail.com', 'binh@gmail.com', 'cuong@gmail.com', 'duong@gmail.com'}`\n        - Cả hai ngày: `{'an@gmail.com', 'binh@gmail.com'}`\n        - Chỉ ngày 1: `{'cuong@gmail.com'}`\n        - Chỉ duy nhất 1 ngày: `{'cuong@gmail.com', 'duong@gmail.com'}`\n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"- Dữ liệu trên:\\n\")",
+                "problemDescription": "**Bài 11: Phân tích phần tử trùng và độc nhất giữa 2 danh sách khách hàng**\n\n- **Mô tả:** Cho hai danh sách email đăng ký sự kiện:\n```python\nngay1 = [\"an@gmail.com\", \"binh@gmail.com\", \"cuong@gmail.com\"]\nngay2 = [\"binh@gmail.com\", \"duong@gmail.com\", \"an@gmail.com\"]\n```\n- **Yêu cầu:** Sử dụng cấu trúc **Set** (`s1 = set(ngay1)`, `s2 = set(ngay2)`) để tìm:\n  1. Danh sách tất cả email (hợp: `s1 | s2`).\n  2. Danh sách email tham gia cả 2 ngày (giao: `s1 & s2`).\n  3. Danh sách email chỉ tham gia ngày 1 (hiệu: `s1 - s2`).\n  4. Danh sách email chỉ tham gia đúng 1 trong 2 ngày (hiệu đối xứng: `s1 ^ s2`).\n  \n*(Lưu ý: Để đảm bảo thứ tự in ổn định khi chấm bài, hãy chuyển mỗi set kết quả thành list và sắp xếp tăng dần bằng `sorted()` trước khi in)*.\n\n- **Output:**\n```text\nTất cả: ['an@gmail.com', 'binh@gmail.com', 'cuong@gmail.com', 'duong@gmail.com']\nCả hai ngày: ['an@gmail.com', 'binh@gmail.com']\nChỉ ngày 1: ['cuong@gmail.com']\nDuy nhất một ngày: ['cuong@gmail.com', 'duong@gmail.com']\n```",
+                "starterCode": "ngay1 = [\"an@gmail.com\", \"binh@gmail.com\", \"cuong@gmail.com\"]\nngay2 = [\"binh@gmail.com\", \"duong@gmail.com\", \"an@gmail.com\"]\n\ns1 = set(ngay1)\ns2 = set(ngay2)\n\n# In kết quả các phép toán tập hợp (sử dụng sorted(list(...)))\nprint(f\"Tất cả: {sorted(list(s1 | s2))}\")\nprint(f\"Cả hai ngày: {sorted(list(s1 & s2))}\")\nprint(f\"Chỉ ngày 1: {sorted(list(s1 - s2))}\")\nprint(f\"Duy nhất một ngày: {sorted(list(s1 ^ s2))}\")\n",
+                "solutionCode": "ngay1 = [\"an@gmail.com\", \"binh@gmail.com\", \"cuong@gmail.com\"]\nngay2 = [\"binh@gmail.com\", \"duong@gmail.com\", \"an@gmail.com\"]\ns1 = set(ngay1)\ns2 = set(ngay2)\nprint(f\"Tất cả: {sorted(list(s1 | s2))}\")\nprint(f\"Cả hai ngày: {sorted(list(s1 & s2))}\")\nprint(f\"Chỉ ngày 1: {sorted(list(s1 - s2))}\")\nprint(f\"Duy nhất một ngày: {sorted(list(s1 ^ s2))}\")\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "521d081c-3757-4660-9d22-9f8624a6dd40",
+                    "id": "027e4e55-603d-498f-bbfb-dc4c1ac5fb79",
                     "exerciseId": "1c30f742-3922-404a-ad48-66674b688707",
-                    "input": "[\"an@gmail.com\"\n",
-                    "expectedOutput": "- Dữ liệu trên:\n",
+                    "input": "",
+                    "expectedOutput": "Tất cả: ['an@gmail.com', 'binh@gmail.com', 'cuong@gmail.com', 'duong@gmail.com']\nCả hai ngày: ['an@gmail.com', 'binh@gmail.com']\nChỉ ngày 1: ['cuong@gmail.com']\nDuy nhất một ngày: ['cuong@gmail.com', 'duong@gmail.com']\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4484,19 +4484,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Hệ thống quản lý Hashtags bài viết",
                 "difficulty": "HARD",
-                "problemDescription": "### **Bài 2: Hệ thống quản lý Hashtags bài viết**\n\n- **Mô tả:** Cho một dictionary lưu các bài viết và danh sách hashtag tương ứng: `bai_viet = {\"id1\": {\"python\", \"code\"}, \"id2\": {\"code\", \"web\", \"learn\"}, \"id3\": {\"python\", \"data\"}}`. Cho một danh sách tag tìm kiếm `tieu_chi = {\"python\", \"code\"}`.\n- **Yêu cầu:** Hãy tìm ra tất cả ID bài viết thỏa mãn **chứa toàn bộ** các thẻ tag trong `tieu_chi`.\n- **Thiết lập ban đầu:**\n    \n    `bai_viet = {\n        \"id1\": {\"python\", \"code\", \"dev\"},\n        \"id2\": {\"code\", \"web\", \"learn\"},\n        \"id3\": {\"python\", \"data\", \"code\"}\n    }\n    tieu_chi = {\"python\", \"code\"}`\n    \n- **Ví dụ kiểm thử:**\n    - **Input:** `bai_viet`, `tieu_chi` ở trên.\n    - **Output:** `['id1', 'id3']` (vì cả hai bài này đề chứa tag \"python\" và \"code\").\n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"- Input: bai_viet, tieu_chi ở trên.\\n\")",
+                "problemDescription": "**Bài 12: Hệ thống quản lý Hashtags bài viết**\n\n- **Mô tả:** Cho một dictionary lưu các bài viết cùng tập hợp hashtags:\n```python\nbai_viet = {\n    \"id1\": {\"python\", \"code\", \"dev\"},\n    \"id2\": {\"code\", \"web\", \"learn\"},\n    \"id3\": {\"python\", \"data\", \"code\"}\n}\ntieu_chi = {\"python\", \"code\"}\n```\n- **Yêu cầu:** Tìm tất cả mã `id` bài viết thỏa mãn tập hợp hashtag của bài viết đó **chứa toàn bộ** các thẻ trong `tieu_chi` (`tieu_chi.issubset(tags)`).\n- **Output:** In danh sách các `id` tìm được dưới dạng list đã được sắp xếp tăng dần:\n```python\n['id1', 'id3']\n```",
+                "starterCode": "bai_viet = {\n    \"id1\": {\"python\", \"code\", \"dev\"},\n    \"id2\": {\"code\", \"web\", \"learn\"},\n    \"id3\": {\"python\", \"data\", \"code\"}\n}\ntieu_chi = {\"python\", \"code\"}\n\n# Tìm các bài viết chứa toàn bộ tag trong tieu_chi và in kết quả đã sắp xếp\n",
+                "solutionCode": "bai_viet = {\n    \"id1\": {\"python\", \"code\", \"dev\"},\n    \"id2\": {\"code\", \"web\", \"learn\"},\n    \"id3\": {\"python\", \"data\", \"code\"}\n}\ntieu_chi = {\"python\", \"code\"}\nres = [k for k, tags in bai_viet.items() if tieu_chi.issubset(tags)]\nprint(sorted(res))\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "3b96bfde-136a-4d5f-a8cd-446c178c786a",
+                    "id": "e24c3464-8152-43f3-9298-ef33201ab2e6",
                     "exerciseId": "389ba71a-3f3a-47bc-bce4-ed03f9c89e19",
-                    "input": "{\n",
-                    "expectedOutput": "- Input: bai_viet, tieu_chi ở trên.\n",
+                    "input": "",
+                    "expectedOutput": "['id1', 'id3']\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4505,19 +4505,35 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Loại bỏ từ trùng và hiển thị sắp xếp",
                 "difficulty": "HARD",
-                "problemDescription": "### **Bài 3: Loại bỏ từ trùng và hiển thị sắp xếp**\n\n- **Mô tả:** Nhập vào một dòng văn bản chứa các từ phân cách bằng dấu cách.\n- **Yêu cầu:** In ra tất cả các từ duy nhất theo thứ tự chữ cái, cách nhau bằng dấu phẩy.\n- **Thiết lập ban đầu:**\n    \n    `van_ban = \"hoc python va hoc code va hoc lap trinh\"`\n    \n- **Ví dụ kiểm thử:**\n    - **Input:** `\"hoc python va hoc code va hoc lap trinh\"`\n    - **Output:** `code, hoc, lap, python, trinh, va`\n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"- Input: \\\"hoc python va hoc code va hoc lap trinh\\\"\\n\")",
+                "problemDescription": "**Bài 13: Loại bỏ từ trùng và hiển thị sắp xếp**\n\n- **Mô tả:** Nhập vào một dòng văn bản chứa các từ phân tách nhau bằng dấu cách (dùng hàm `input()`).\n- **Yêu cầu:**\n  1. Tách chuỗi thành các từ (`.split()`).\n  2. Dùng `set` để loại bỏ các từ trùng lặp.\n  3. Sắp xếp các từ theo thứ tự bảng chữ cái (A-Z).\n  4. In các từ trên một dòng, phân tách nhau bằng dấu phẩy và khoảng trắng `\", \"`.\n- **Ví dụ:**\n  - Input: `hoc python va hoc code va hoc lap trinh`\n  - Output: `code, hoc, lap, python, trinh, va`",
+                "starterCode": "van_ban = input().strip()\n\n# Tách từ, loại bỏ trùng lặp bằng set, sắp xếp và in ra cách nhau bởi dấu phẩy\n",
+                "solutionCode": "van_ban = input().strip()\nif van_ban:\n    words = van_ban.split()\n    unique_words = sorted(set(words))\n    print(\", \".join(unique_words))\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "5548bd3a-c514-425d-85be-c00b27373fd1",
+                    "id": "b4a99c5e-9150-4952-b5c7-425c2b9d9d2a",
                     "exerciseId": "346b0117-395d-4bf9-b98c-61526d88165c",
-                    "input": "\"hoc\n",
-                    "expectedOutput": "- Input: \"hoc python va hoc code va hoc lap trinh\"\n",
+                    "input": "hoc python va hoc code va hoc lap trinh\n",
+                    "expectedOutput": "code, hoc, lap, python, trinh, va\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
+                  },
+                  {
+                    "id": "f23fa061-b969-4546-a0be-c4e264b73ee4",
+                    "exerciseId": "346b0117-395d-4bf9-b98c-61526d88165c",
+                    "input": "banana apple orange banana apple grape\n",
+                    "expectedOutput": "apple, banana, grape, orange\n",
+                    "isHidden": true,
+                    "createdAt": "2026-09-15T12:27:12.378Z"
+                  },
+                  {
+                    "id": "20a347d4-9e5a-49a8-9bcf-3c12e67767e3",
+                    "exerciseId": "346b0117-395d-4bf9-b98c-61526d88165c",
+                    "input": "mot hai ba bon mot ba\n",
+                    "expectedOutput": "ba, bon, hai, mot\n",
+                    "isHidden": true,
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4526,19 +4542,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Phép toán hiệu đối xứng tùy biến",
                 "difficulty": "HARD",
-                "problemDescription": "### **Bài 4: Phép toán hiệu đối xứng tùy biến**\n\n- **Mô tả:** Cho hai danh sách số nguyên `listA` và `listB`.\n- **Yêu cầu:** Hãy in ra các số nguyên xuất hiện ở `listA` hoặc `listB` nhưng **không thuộc về cả hai** (loại bỏ trùng lặp và sắp xếp tăng dần).\n- **Thiết lập ban đầu:**\n    \n    `listA = [1, 2, 3, 4, 4]\n    listB = [3, 4, 5, 6, 6]`\n    \n- **Ví dụ kiểm thử:**\n    - **Input:** `listA = [1, 2, 3, 4, 4], listB = [3, 4, 5, 6, 6]`\n    - **Output:** `[1, 2, 5, 6]`\n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"- Input: listA = [1, 2, 3, 4, 4], listB = [3, 4, 5, 6, 6]\\n\")",
+                "problemDescription": "**Bài 14: Phép toán hiệu đối xứng tùy biến**\n\n- **Mô tả:** Cho hai danh sách số nguyên:\n```python\nlistA = [1, 2, 3, 4, 4]\nlistB = [3, 4, 5, 6, 6]\n```\n- **Yêu cầu:** Sử dụng `set` và phép hiệu đối xứng (toán tử `^`) để tìm các số nguyên chỉ xuất hiện ở `listA` hoặc `listB` nhưng không thuộc về cả hai. Sắp xếp kết quả tăng dần và in dưới dạng list.\n- **Output:**\n```python\n[1, 2, 5, 6]\n```",
+                "starterCode": "listA = [1, 2, 3, 4, 4]\nlistB = [3, 4, 5, 6, 6]\n\n# Dùng set và phép hiệu đối xứng ^, sau đó sắp xếp và in kết quả dạng list\n",
+                "solutionCode": "listA = [1, 2, 3, 4, 4]\nlistB = [3, 4, 5, 6, 6]\nres = sorted(list(set(listA) ^ set(listB)))\nprint(res)\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "a2af41d2-8256-4bda-984a-fe73f93d8c21",
+                    "id": "aa87a75e-52b5-417f-b4d6-f418fc3400a5",
                     "exerciseId": "8bcd8610-3df4-45f5-8bdb-cc75245eee32",
-                    "input": "[1\n",
-                    "expectedOutput": "- Input: listA = [1, 2, 3, 4, 4], listB = [3, 4, 5, 6, 6]\n",
+                    "input": "",
+                    "expectedOutput": "[1, 2, 5, 6]\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4547,19 +4563,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Tìm mối quan hệ bạn chung (Social Network)",
                 "difficulty": "HARD",
-                "problemDescription": "### **Bài 5: Tìm mối quan hệ bạn chung (Social Network)**\n\n- **Mô tả:** Cho một mạng xã hội đơn giản lưu trữ danh sách bạn bè của từng người dưới dạng dictionary các sets: `friends = {\"An\": {\"Binh\", \"Cuong\", \"Dat\"}, \"Binh\": {\"An\", \"Cuong\", \"Giang\"}, \"Cuong\": {\"An\", \"Binh\"}}`.\n- **Yêu cầu:** Viết hàm `ban_chung(person1, person2, network)` trả về set chứa danh sách bạn chung của `person1` và `person2`.\n- **Thiết lập ban đầu:**\n    \n    `friends = {\n        \"An\": {\"Binh\", \"Cuong\", \"Dat\"},\n        \"Binh\": {\"An\", \"Cuong\", \"Giang\"},\n        \"Cuong\": {\"An\", \"Binh\"}\n    }`\n    \n- **Ví dụ kiểm thử:**\n    - **Input:** `ban_chung(\"An\", \"Binh\", friends)`\n    - **Output:** `{'Cuong'}`",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"- Input: ban_chung(\\\"An\\\", \\\"Binh\\\", friends)\\n\")",
+                "problemDescription": "**Bài 15: Tìm mối quan hệ bạn chung (Social Network)**\n\n- **Mô tả:** Cho mạng xã hội lưu danh sách bạn bè dạng dictionary các sets:\n```python\nfriends = {\n    \"An\": {\"Binh\", \"Cuong\", \"Dat\"},\n    \"Binh\": {\"An\", \"Cuong\", \"Giang\"},\n    \"Cuong\": {\"An\", \"Binh\"}\n}\n```\n- **Yêu cầu:** Viết hàm `ban_chung(person1, person2, network)` trả về một `set` chứa danh sách bạn chung của `person1` và `person2` (dùng phép giao `&`).\n- Sau đó, gọi hàm với `ban_chung(\"An\", \"Binh\", friends)` và in kết quả ra màn hình.\n- **Output:**\n```python\n{'Cuong'}\n```",
+                "starterCode": "friends = {\n    \"An\": {\"Binh\", \"Cuong\", \"Dat\"},\n    \"Binh\": {\"An\", \"Cuong\", \"Giang\"},\n    \"Cuong\": {\"An\", \"Binh\"}\n}\n\ndef ban_chung(person1, person2, network):\n    # Trả về set bạn chung của person1 và person2\n    pass\n\n# Gọi hàm và in kết quả\nprint(ban_chung(\"An\", \"Binh\", friends))\n",
+                "solutionCode": "friends = {\n    \"An\": {\"Binh\", \"Cuong\", \"Dat\"},\n    \"Binh\": {\"An\", \"Cuong\", \"Giang\"},\n    \"Cuong\": {\"An\", \"Binh\"}\n}\n\ndef ban_chung(person1, person2, network):\n    set1 = network.get(person1, set())\n    set2 = network.get(person2, set())\n    return set1 & set2\n\nprint(ban_chung(\"An\", \"Binh\", friends))\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "b3619c9d-9b31-4ec3-a2bc-ea1c79c7c443",
+                    "id": "ddcb24b5-64c2-4b5c-9df1-859ac9728c24",
                     "exerciseId": "1ebb6b2f-157f-49d1-aa97-eeaff985cc94",
-                    "input": "{\n",
-                    "expectedOutput": "- Input: ban_chung(\"An\", \"Binh\", friends)\n",
+                    "input": "",
+                    "expectedOutput": "{'Cuong'}\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4568,19 +4584,35 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Đếm số lần xuất hiện của các từ",
                 "difficulty": "MEDIUM",
-                "problemDescription": "**Bài 11: Đếm số lần xuất hiện của các từ**\n\n- **Mô tả:** Cho một chuỗi văn bản. Viết một hàm `dem_tu(van_ban)` nhận vào chuỗi văn bản và trả về một dictionary, trong đó key là các từ (viết thường) và value là số lần xuất hiện của từ đó. Các từ được phân tách bằng dấu cách.\n- **Input:** `van_ban` (chuỗi)\n- **Output:** `dictionary` (các từ và số lần xuất hiện của chúng)\n- **Ví dụ:**\n    \n    **Python**\n    \n    ```cpp\n    # Input:\n    # van_ban = \"Python la mot ngon ngu lap trinh Python rat pho bien\"\n    \n    # Expected Output (thứ tự các key có thể khác nhau):\n    # {'python': 2, 'la': 1, 'mot': 1, 'ngon': 1, 'ngu': 1, 'lap': 1, 'trinh': 1, 'rat': 1, 'pho': 1, 'bien': 1}\n    ```\n    \n- **Gợi ý:** Dùng `.lower()` và `.split()` cho chuỗi. Dùng `if/else` để kiểm tra từ đã có trong dictionary chưa.\n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"dictionary (các từ và số lần xuất hiện của chúng)\\n\")",
+                "problemDescription": "**Bài 16: Đếm số lần xuất hiện của các từ**\n\n- **Mô tả:** Viết hàm `dem_tu(van_ban)` nhận vào một chuỗi văn bản và trả về một dictionary, trong đó `key` là các từ (viết thường qua `.lower()`), và `value` là số lần xuất hiện của từ đó. Các từ phân tách nhau bằng dấu cách.\n- Đọc một dòng văn bản từ bàn phím (`input()`), gọi hàm `dem_tu()` và in dictionary kết quả ra màn hình.\n- **Ví dụ:**\n  - Input: `Python la mot ngon ngu lap trinh Python rat pho bien`\n  - Output: `{'python': 2, 'la': 1, 'mot': 1, 'ngon': 1, 'ngu': 1, 'lap': 1, 'trinh': 1, 'rat': 1, 'pho': 1, 'bien': 1}`",
+                "starterCode": "def dem_tu(van_ban):\n    # Trả về dictionary đếm số lần xuất hiện của các từ\n    pass\n\ns = input()\nprint(dem_tu(s))\n",
+                "solutionCode": "def dem_tu(van_ban):\n    words = van_ban.lower().split()\n    freq = {}\n    for w in words:\n        freq[w] = freq.get(w, 0) + 1\n    return freq\n\ns = input()\nprint(dem_tu(s))\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "f3c313e6-f17b-4cc7-b027-2951d715a195",
+                    "id": "e280fdfa-b671-4bce-97df-d6b92b38fcb4",
                     "exerciseId": "97be9417-7ed1-4cbf-9bc7-373de359cb7d",
-                    "input": "van_ban (chuỗi)\n",
-                    "expectedOutput": "dictionary (các từ và số lần xuất hiện của chúng)\n",
+                    "input": "Python la mot ngon ngu lap trinh Python rat pho bien\n",
+                    "expectedOutput": "{'python': 2, 'la': 1, 'mot': 1, 'ngon': 1, 'ngu': 1, 'lap': 1, 'trinh': 1, 'rat': 1, 'pho': 1, 'bien': 1}\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
+                  },
+                  {
+                    "id": "c36842fc-bb13-4540-8156-0a50a59ce0b5",
+                    "exerciseId": "97be9417-7ed1-4cbf-9bc7-373de359cb7d",
+                    "input": "apple banana apple orange banana apple\n",
+                    "expectedOutput": "{'apple': 3, 'banana': 2, 'orange': 1}\n",
+                    "isHidden": true,
+                    "createdAt": "2026-09-15T12:27:12.378Z"
+                  },
+                  {
+                    "id": "b28c6172-59b1-45d2-89a2-8f43d714a3d5",
+                    "exerciseId": "97be9417-7ed1-4cbf-9bc7-373de359cb7d",
+                    "input": "mot mot hai hai ba\n",
+                    "expectedOutput": "{'mot': 2, 'hai': 2, 'ba': 1}\n",
+                    "isHidden": true,
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4589,19 +4621,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Quản lý điểm học sinh",
                 "difficulty": "MEDIUM",
-                "problemDescription": "**Bài 12: Quản lý điểm học sinh**\n\n- **Mô tả:** Viết hàm `cap_nhat_diem(diem_hoc_sinh, ten_hoc_sinh, mon_hoc, diem)` để cập nhật điểm cho học sinh.\n    - `diem_hoc_sinh` là một dictionary có cấu trúc: `{ten_hoc_sinh: {mon_hoc: diem, ...}}`.\n    - Nếu học sinh chưa có trong `diem_hoc_sinh`, thêm học sinh đó và điểm môn học.\n    - Nếu học sinh đã có, cập nhật điểm cho môn học đó.\n    - Hàm trả về dictionary đã được cập nhật.\n- **Input:**\n    - `diem_hoc_sinh`: dictionary\n    - `ten_hoc_sinh`: chuỗi\n    - `mon_hoc`: chuỗi\n    - `diem`: số\n- **Output:** `dictionary` đã cập nhật.\n- **Ví dụ:**\n    \n    **Python**\n    \n    ```cpp\n    # Initial:\n    # diem_goc = {\"An\": {\"Toan\": 8, \"Van\": 7}}\n    \n    # Call 1:\n    # diem_cap_nhat = cap_nhat_diem(diem_goc, \"An\", \"Ly\", 9)\n    # Expected Output (diem_cap_nhat): {\"An\": {\"Toan\": 8, \"Van\": 7, \"Ly\": 9}}\n    \n    # Call 2:\n    # diem_cap_nhat = cap_nhat_diem(diem_cap_nhat, \"Binh\", \"Toan\", 7.5)\n    # Expected Output (diem_cap_nhat): {\"An\": {\"Toan\": 8, \"Van\": 7, \"Ly\": 9}, \"Binh\": {\"Toan\": 7.5}}\n    ```\n    \n- **Gợi ý:** Sử dụng `.get()` hoặc kiểm tra `in` để xử lý các trường hợp học sinh/môn học chưa có.\n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"dictionary đã cập nhật.\\n\")",
+                "problemDescription": "**Bài 17: Quản lý điểm học sinh**\n\n- **Mô tả:** Viết hàm `cap_nhat_diem(diem_hoc_sinh, ten_hoc_sinh, mon_hoc, diem)` để cập nhật điểm cho học sinh:\n  - `diem_hoc_sinh` có cấu trúc: `{ten_hoc_sinh: {mon_hoc: diem, ...}}`.\n  - Nếu học sinh chưa có trong dictionary, thêm học sinh đó và điểm môn học.\n  - Nếu học sinh đã có, cập nhật hoặc thêm điểm của môn học đó.\n  - Hàm trả về dictionary sau khi cập nhật.\n- Hãy gọi thử nghiệm với dữ liệu mẫu:\n```python\ndiem_goc = {\"An\": {\"Toan\": 8, \"Van\": 7}}\ndiem_goc = cap_nhat_diem(diem_goc, \"An\", \"Ly\", 9)\ndiem_goc = cap_nhat_diem(diem_goc, \"Binh\", \"Toan\", 7.5)\nprint(diem_goc)\n```\n- **Output:**\n```python\n{'An': {'Toan': 8, 'Van': 7, 'Ly': 9}, 'Binh': {'Toan': 7.5}}\n```",
+                "starterCode": "def cap_nhat_diem(diem_hoc_sinh, ten_hoc_sinh, mon_hoc, diem):\n    # Cập nhật điểm và trả về dictionary\n    pass\n\ndiem_goc = {\"An\": {\"Toan\": 8, \"Van\": 7}}\ndiem_goc = cap_nhat_diem(diem_goc, \"An\", \"Ly\", 9)\ndiem_goc = cap_nhat_diem(diem_goc, \"Binh\", \"Toan\", 7.5)\nprint(diem_goc)\n",
+                "solutionCode": "def cap_nhat_diem(diem_hoc_sinh, ten_hoc_sinh, mon_hoc, diem):\n    if ten_hoc_sinh not in diem_hoc_sinh:\n        diem_hoc_sinh[ten_hoc_sinh] = {}\n    diem_hoc_sinh[ten_hoc_sinh][mon_hoc] = diem\n    return diem_hoc_sinh\n\ndiem_goc = {\"An\": {\"Toan\": 8, \"Van\": 7}}\ndiem_goc = cap_nhat_diem(diem_goc, \"An\", \"Ly\", 9)\ndiem_goc = cap_nhat_diem(diem_goc, \"Binh\", \"Toan\", 7.5)\nprint(diem_goc)\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "788d8942-988b-4777-8d79-b39500193939",
+                    "id": "ebc1c286-3692-4ea6-b70c-498c0941494a",
                     "exerciseId": "a4541365-a7ed-4d3b-b3fb-e4e9abd891f1",
-                    "input": "- diem_hoc_sinh: dictionary\n",
-                    "expectedOutput": "dictionary đã cập nhật.\n",
+                    "input": "",
+                    "expectedOutput": "{'An': {'Toan': 8, 'Van': 7, 'Ly': 9}, 'Binh': {'Toan': 7.5}}\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4610,19 +4642,35 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Đếm số lượng phần tử duy nhất trong danh sách",
                 "difficulty": "MEDIUM",
-                "problemDescription": "**Bài 13: Đếm số lượng phần tử duy nhất trong danh sách**\n\n- **Mô tả:** Viết hàm `dem_phan_tu_duy_nhat(danh_sach)` nhận vào một list các phần tử. Hàm trả về một dictionary, trong đó key là phần tử duy nhất và value là số lần xuất hiện của phần tử đó trong danh sách.\n- **Input:** `danh_sach` (list)\n- **Output:** `dictionary` (phần tử: số lần xuất hiện)\n- **Ví dụ:**\n    \n    **Python**\n    \n    ```cpp\n    # Input:\n    # danh_sach_so = [1, 2, 2, 3, 1, 4, 2, 5]\n    \n    # Expected Output (thứ tự các key có thể khác nhau):\n    # {1: 2, 2: 3, 3: 1, 4: 1, 5: 1}\n    ```\n    \n- **Gợi ý:** Lặp qua list, dùng `if/else` để kiểm tra và cập nhật dictionary.\n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"dictionary (phần tử: số lần xuất hiện)\\n\")",
+                "problemDescription": "**Bài 18: Đếm số lượng phần tử duy nhất trong danh sách**\n\n- **Mô tả:** Viết hàm `dem_phan_tu_duy_nhat(danh_sach)` nhận vào một list các phần tử. Hàm trả về một dictionary, trong đó key là phần tử và value là số lần xuất hiện của phần tử đó trong danh sách.\n- Đọc một dòng các số nguyên từ bàn phím (nếu dòng trống thì dùng danh sách mặc định `[1, 2, 2, 3, 1, 4, 2, 5]`), gọi hàm và in kết quả ra màn hình.\n- **Ví dụ:**\n  - Input: `1 2 2 3 1 4 2 5`\n  - Output: `{1: 2, 2: 3, 3: 1, 4: 1, 5: 1}`",
+                "starterCode": "def dem_phan_tu_duy_nhat(danh_sach):\n    # Trả về dictionary {phần tử: số lần xuất hiện}\n    pass\n\nline = input().strip()\nif line:\n    lst = [int(x) for x in line.split()]\nelse:\n    lst = [1, 2, 2, 3, 1, 4, 2, 5]\n\nprint(dem_phan_tu_duy_nhat(lst))\n",
+                "solutionCode": "def dem_phan_tu_duy_nhat(danh_sach):\n    res = {}\n    for x in danh_sach:\n        res[x] = res.get(x, 0) + 1\n    return res\n\nline = input().strip()\nif line:\n    lst = [int(x) for x in line.split()]\nelse:\n    lst = [1, 2, 2, 3, 1, 4, 2, 5]\nprint(dem_phan_tu_duy_nhat(lst))\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "e10dc935-0c82-43b0-9baf-f061a48ab7f3",
+                    "id": "722e449b-c3bc-4c4b-b178-ec4c16779520",
                     "exerciseId": "6b679acc-8e6f-4f18-aaf9-42b29607e627",
-                    "input": "danh_sach (list)\n",
-                    "expectedOutput": "dictionary (phần tử: số lần xuất hiện)\n",
+                    "input": "1 2 2 3 1 4 2 5\n",
+                    "expectedOutput": "{1: 2, 2: 3, 3: 1, 4: 1, 5: 1}\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
+                  },
+                  {
+                    "id": "e27da4e5-7021-4d90-9e00-863cb9d1d852",
+                    "exerciseId": "6b679acc-8e6f-4f18-aaf9-42b29607e627",
+                    "input": "10 20 30 20 10\n",
+                    "expectedOutput": "{10: 2, 20: 2, 30: 1}\n",
+                    "isHidden": true,
+                    "createdAt": "2026-09-15T12:27:12.378Z"
+                  },
+                  {
+                    "id": "55bd2734-8f3e-4824-aa0c-eeb084f343e9",
+                    "exerciseId": "6b679acc-8e6f-4f18-aaf9-42b29607e627",
+                    "input": "7 7 7 7\n",
+                    "expectedOutput": "{7: 4}\n",
+                    "isHidden": true,
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4631,19 +4679,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Tìm giá trị lớn nhất/nhỏ nhất trong Dictionary",
                 "difficulty": "MEDIUM",
-                "problemDescription": "**Bài 14: Tìm giá trị lớn nhất/nhỏ nhất trong Dictionary**\n\n- **Mô tả:** Viết hàm `tim_san_pham_gia_cao_nhat(danh_sach_san_pham)` nhận vào một dictionary có cấu trúc `{\"ma_sp\": {\"ten\": \"...\", \"gia\": ...}}`. Hàm trả về tên của sản phẩm có giá cao nhất. (Giả sử luôn có ít nhất một sản phẩm).\n- **Input:** `danh_sach_san_pham` (dictionary)\n- **Output:** `string` (tên sản phẩm)\n- **Ví dụ:**\n    \n    **Python**\n    \n    ```cpp\n    # Input:\n    # san_pham_kho = {\n    #     \"SP001\": {\"ten\": \"Chuột\", \"gia\": 200000},\n    #     \"SP002\": {\"ten\": \"Bàn phím\", \"gia\": 700000},\n    #     \"SP003\": {\"ten\": \"Màn hình\", \"gia\": 2500000}\n    # }\n    \n    # Expected Output:\n    # \"Màn hình\"\n    ```\n    \n- **Gợi ý:** Khởi tạo một biến `max_gia` và `ten_san_pham_max`. Lặp qua `.items()` hoặc `.values()` của dictionary để tìm giá trị lớn nhất và cập nhật tên sản phẩm tương ứng.\n\n---",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"string (tên sản phẩm)\\n\")",
+                "problemDescription": "**Bài 19: Tìm giá trị lớn nhất/nhỏ nhất trong Dictionary**\n\n- **Mô tả:** Cho dictionary kho hàng:\n```python\nsan_pham_kho = {\n    \"SP001\": {\"ten\": \"Chuột\", \"gia\": 200000},\n    \"SP002\": {\"ten\": \"Bàn phím\", \"gia\": 700000},\n    \"SP003\": {\"ten\": \"Màn hình\", \"gia\": 2500000}\n}\n```\n- **Yêu cầu:** Viết hàm `tim_san_pham_gia_cao_nhat(danh_sach_san_pham)` trả về tên của sản phẩm có giá cao nhất trong kho.\n- Gọi hàm với `san_pham_kho` và in ra tên sản phẩm tìm được.\n- **Output:**\n```text\nMàn hình\n```",
+                "starterCode": "san_pham_kho = {\n    \"SP001\": {\"ten\": \"Chuột\", \"gia\": 200000},\n    \"SP002\": {\"ten\": \"Bàn phím\", \"gia\": 700000},\n    \"SP003\": {\"ten\": \"Màn hình\", \"gia\": 2500000}\n}\n\ndef tim_san_pham_gia_cao_nhat(danh_sach_san_pham):\n    # Tìm tên sản phẩm có giá cao nhất\n    pass\n\nprint(tim_san_pham_gia_cao_nhat(san_pham_kho))\n",
+                "solutionCode": "san_pham_kho = {\n    \"SP001\": {\"ten\": \"Chuột\", \"gia\": 200000},\n    \"SP002\": {\"ten\": \"Bàn phím\", \"gia\": 700000},\n    \"SP003\": {\"ten\": \"Màn hình\", \"gia\": 2500000}\n}\n\ndef tim_san_pham_gia_cao_nhat(danh_sach_san_pham):\n    max_gia = -1\n    ten_max = \"\"\n    for sp in danh_sach_san_pham.values():\n        if sp[\"gia\"] > max_gia:\n            max_gia = sp[\"gia\"]\n            ten_max = sp[\"ten\"]\n    return ten_max\n\nprint(tim_san_pham_gia_cao_nhat(san_pham_kho))\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "5910dcde-4d7b-4209-8337-3fc71e802c26",
+                    "id": "d8d1f233-f378-4e35-b8f9-227167032d95",
                     "exerciseId": "8653a747-7533-4517-be52-e043c606492a",
-                    "input": "danh_sach_san_pham (dictionary)\n",
-                    "expectedOutput": "string (tên sản phẩm)\n",
+                    "input": "",
+                    "expectedOutput": "Màn hình\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4652,19 +4700,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Chuyển đổi List of Dictionaries sang Dictionary",
                 "difficulty": "MEDIUM",
-                "problemDescription": "**Bài 15: Chuyển đổi List of Dictionaries sang Dictionary**\n\n- **Mô tả:** Viết hàm `chuyen_doi_danh_sach(danh_sach_dict)` nhận vào một list các dictionary. Mỗi dictionary trong list có key `\"id\"` duy nhất. Hàm trả về một dictionary mới, trong đó `key` là giá trị của `\"id\"` và `value` là toàn bộ dictionary gốc đó.\n- **Input:** `danh_sach_dict` (list các dictionary)\n- **Output:** `dictionary` (id: dictionary gốc)\n- **Ví dụ:**\n    \n    **Python**\n    \n    ```cpp\n    # Input:\n    # users = [\n    #     {\"id\": 101, \"name\": \"Alice\", \"age\": 30},\n    #     {\"id\": 102, \"name\": \"Bob\", \"age\": 24},\n    #     {\"id\": 103, \"name\": \"Charlie\", \"age\": 35}\n    # ]\n    \n    # Expected Output:\n    # {\n    #     101: {\"id\": 101, \"name\": \"Alice\", \"age\": 30},\n    #     102: {\"id\": 102, \"name\": \"Bob\", \"age\": 24},\n    #     103: {\"id\": 103, \"name\": \"Charlie\", \"age\": 35}\n    # }\n    ```\n    \n- **Gợi ý:** Dùng vòng lặp `for` để duyệt qua từng dictionary trong list. Lấy giá trị của key `\"id\"` để làm key cho dictionary kết quả.",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "val_0 = input()\nprint(\"dictionary (id: dictionary gốc)\\n\")",
+                "problemDescription": "**Bài 20: Chuyển đổi List of Dictionaries sang Dictionary**\n\n- **Mô tả:** Viết hàm `chuyen_doi_danh_sach(danh_sach_dict)` nhận vào một list các dictionary. Mỗi dictionary có key `\"id\"` duy nhất. Hàm trả về một dictionary mới, trong đó `key` là giá trị của `\"id\"` và `value` là toàn bộ dictionary gốc đó.\n- Cho dữ liệu mẫu:\n```python\nusers = [\n    {\"id\": 101, \"name\": \"Alice\", \"age\": 30},\n    {\"id\": 102, \"name\": \"Bob\", \"age\": 24},\n    {\"id\": 103, \"name\": \"Charlie\", \"age\": 35}\n]\n```\n- Gọi hàm `chuyen_doi_danh_sach(users)` và in kết quả ra màn hình.\n- **Output:**\n```python\n{101: {'id': 101, 'name': 'Alice', 'age': 30}, 102: {'id': 102, 'name': 'Bob', 'age': 24}, 103: {'id': 103, 'name': 'Charlie', 'age': 35}}\n```",
+                "starterCode": "users = [\n    {\"id\": 101, \"name\": \"Alice\", \"age\": 30},\n    {\"id\": 102, \"name\": \"Bob\", \"age\": 24},\n    {\"id\": 103, \"name\": \"Charlie\", \"age\": 35}\n]\n\ndef chuyen_doi_danh_sach(danh_sach_dict):\n    # Chuyển đổi list of dictionaries thành dictionary có key là id\n    pass\n\nprint(chuyen_doi_danh_sach(users))\n",
+                "solutionCode": "users = [\n    {\"id\": 101, \"name\": \"Alice\", \"age\": 30},\n    {\"id\": 102, \"name\": \"Bob\", \"age\": 24},\n    {\"id\": 103, \"name\": \"Charlie\", \"age\": 35}\n]\n\ndef chuyen_doi_danh_sach(danh_sach_dict):\n    return {item[\"id\"]: item for item in danh_sach_dict}\n\nprint(chuyen_doi_danh_sach(users))\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "dc75ec84-52a2-4f62-8a36-0fde9b448f2b",
+                    "id": "1c2422aa-ed5c-468b-89ed-b05cb7395b47",
                     "exerciseId": "de0387d5-8c03-4289-885e-117f1e5e4224",
-                    "input": "danh_sach_dict (list các dictionary)\n",
-                    "expectedOutput": "dictionary (id: dictionary gốc)\n",
+                    "input": "",
+                    "expectedOutput": "{101: {'id': 101, 'name': 'Alice', 'age': 30}, 102: {'id': 102, 'name': 'Bob', 'age': 24}, 103: {'id': 103, 'name': 'Charlie', 'age': 35}}\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               },
@@ -4673,19 +4721,19 @@
                 "lessonId": "e33d4bf5-cbf1-4b74-b7c0-53f95a03fc1e",
                 "title": "Đảo ngược dictionary (có trùng value)",
                 "difficulty": "MEDIUM",
-                "problemDescription": "**Bài 16: Đảo ngược dictionary (có trùng value)**\n\nCho dictionary:\n\nd = {'a': 1, 'b': 2, 'c': 1}\n\nHãy đảo key ↔ value, nhưng:\n\n- Nếu trùng value → gom thành list\n\nKết quả:\n\n{1: ['a', 'c'], 2: ['b']}",
-                "starterCode": "# Viết code của bạn ở đây\n",
-                "solutionCode": "print(\"Kết quả mẫu\\n\")",
+                "problemDescription": "**Bài 21: Đảo ngược dictionary (có trùng value)**\n\n- **Mô tả:** Cho dictionary: `d = {'a': 1, 'b': 2, 'c': 1}`.\n- **Yêu cầu:** Đảo ngược key ↔ value. Nếu nhiều key có cùng value, hãy gom các key đó thành một list theo thứ tự xuất hiện ban đầu.\n- **Output:**\n```python\n{1: ['a', 'c'], 2: ['b']}\n```",
+                "starterCode": "d = {'a': 1, 'b': 2, 'c': 1}\n\n# Đảo key và value, gom các key có cùng value thành list\n",
+                "solutionCode": "d = {'a': 1, 'b': 2, 'c': 1}\nres = {}\nfor k, v in d.items():\n    if v not in res:\n        res[v] = []\n    res[v].append(k)\nprint(res)\n",
                 "createdAt": "2026-08-03T16:30:10.505Z",
                 "updatedAt": "2026-08-03T16:30:10.505Z",
                 "testCases": [
                   {
-                    "id": "a02e031a-81e0-4d73-9da3-0447618b04be",
+                    "id": "311a787e-c2ac-4566-8a69-cade0aa5c14d",
                     "exerciseId": "5acb860a-a8b3-40c9-8cc2-5750345643c8",
                     "input": "",
-                    "expectedOutput": "Kết quả mẫu\n",
+                    "expectedOutput": "{1: ['a', 'c'], 2: ['b']}\n",
                     "isHidden": false,
-                    "createdAt": "2026-08-03T16:30:10.505Z"
+                    "createdAt": "2026-09-15T12:27:12.378Z"
                   }
                 ]
               }

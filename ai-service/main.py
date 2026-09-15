@@ -1,10 +1,14 @@
 import os
 import sys
 import json
+import uuid
 import numpy as np
 import torch
 import psycopg2
+import queue
+import threading
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from dotenv import load_dotenv
@@ -19,12 +23,17 @@ try:
     from app.knowledge_tracing.palnet import PALNet
     from app.adaptive.path_generator import generate_personalized_learning_path, interact_ai_tutor_dialogue
     from app.agents.adaptive_agent_orchestrator import AdaptiveAgentOrchestrator
+    from app.orchestrator.adaptive_learning_orchestrator import AdaptiveLearningOrchestrator
+    from app.contracts.execution import ExecutionResult
 except ImportError:
     from core.palnet import PALNet
     from core.path_generator import generate_personalized_learning_path, interact_ai_tutor_dialogue
     from core.adaptive_agent_orchestrator import AdaptiveAgentOrchestrator
+    from app.orchestrator.adaptive_learning_orchestrator import AdaptiveLearningOrchestrator
+    from app.contracts.execution import ExecutionResult
 
 adaptive_orchestrator = AdaptiveAgentOrchestrator()
+orchestrator_v2 = AdaptiveLearningOrchestrator()
 
 
 
@@ -608,22 +617,83 @@ class AdaptiveTutorAgentRequest(BaseModel):
     messages: List[Dict[str, str]] = []
     user_mastery: Optional[Dict[str, float]] = None
     target_concept_id: Optional[str] = None
+    language: Optional[str] = None
 
 
 @app.post("/pal-net/adaptive-tutor-agent")
 def adaptive_tutor_agent_endpoint(req: AdaptiveTutorAgentRequest):
     """Endpoint Multi-Agent Adaptive Learning: Router -> Knowledge Retriever -> Generator -> Critic Evaluator"""
     try:
-        res = adaptive_orchestrator.process_turn(
+        res = orchestrator_v2.process_turn(
             user_id=req.user_id,
             history=req.messages,
             user_mastery=req.user_mastery,
-            target_concept_id=req.target_concept_id
+            target_concept_id=req.target_concept_id,
+            language=req.language
         )
         return {"success": True, "data": res}
     except Exception as e:
-        print(f"[Adaptive Tutor Agent Error]: {e}")
-        raise HTTPException(status_code=500, detail=f"Lỗi Multi-Agent Orchestrator: {e}")
+        print(f"[Adaptive Tutor Agent V2 Fallback to V1]: {e}")
+        try:
+            res = adaptive_orchestrator.process_turn(
+                user_id=req.user_id,
+                history=req.messages,
+                user_mastery=req.user_mastery,
+                target_concept_id=req.target_concept_id,
+                language=req.language
+            )
+            return {"success": True, "data": res}
+        except Exception as e2:
+            print(f"[Adaptive Tutor Agent Error]: {e2}")
+            raise HTTPException(status_code=500, detail=f"Lỗi Multi-Agent Orchestrator: {e2}")
+
+
+@app.post("/pal-net/adaptive-tutor-agent/stream")
+def adaptive_tutor_agent_stream_endpoint(req: AdaptiveTutorAgentRequest):
+    """
+    Streaming Endpoint: Chuyển tiếp thời gian thực các sự kiện hoạt động của từng Agent
+    ngay khi agent đó đang thực thi (SSE - Server Sent Events).
+    """
+    event_queue: queue.Queue = queue.Queue()
+
+    def worker():
+        try:
+            def on_event(event_payload: Dict[str, Any]):
+                event_queue.put(event_payload)
+
+            res = orchestrator_v2.process_turn(
+                user_id=req.user_id,
+                history=req.messages,
+                user_mastery=req.user_mastery,
+                target_concept_id=req.target_concept_id,
+                language=req.language,
+                event_callback=on_event
+            )
+            event_queue.put({"type": "complete", "data": res})
+        except Exception as e:
+            print(f"[Adaptive Tutor Agent Stream Error]: {e}")
+            event_queue.put({"type": "error", "error": str(e)})
+        finally:
+            event_queue.put(None)
+
+    threading.Thread(target=worker, daemon=True).start()
+
+    def generate_events():
+        while True:
+            item = event_queue.get()
+            if item is None:
+                break
+            yield f"data: {json.dumps(item, ensure_ascii=False)}\n\n"
+
+    return StreamingResponse(
+        generate_events(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"
+        }
+    )
 
 
 class MasteryProgressRequest(BaseModel):
@@ -648,6 +718,81 @@ def update_mastery_progress_endpoint(req: MasteryProgressRequest):
     except Exception as e:
         print(f"[Update Mastery Progress Error]: {e}")
         raise HTTPException(status_code=500, detail=f"Lỗi cập nhật tiến trình DAG: {e}")
+
+
+# ============================================================================
+# MULTI-AGENT ADAPTIVE LEARNING V2.1 ENDPOINTS (CLOSED-LOOP ARCHITECTURE)
+# ============================================================================
+
+@app.post("/pal-net/adaptive-tutor-agent-v2")
+def adaptive_tutor_agent_v2_endpoint(req: AdaptiveTutorAgentRequest):
+    """
+    Endpoint Multi-Agent Adaptive Learning v2.1:
+    IntentRouterAgent -> AdaptiveExercisePlanner -> ExerciseGeneratorAgent -> Multi-tier Validation -> CriticEvaluatorAgent
+    """
+    try:
+        res = orchestrator_v2.process_turn(
+            user_id=req.user_id,
+            history=req.messages,
+            user_mastery=req.user_mastery,
+            target_concept_id=req.target_concept_id,
+            language=req.language
+        )
+        return {"success": True, "data": res}
+    except Exception as e:
+        print(f"[Adaptive Tutor Agent V2 Error]: {e}")
+        # Fallback to v1 if exception occurs
+        res = adaptive_orchestrator.process_turn(
+            user_id=req.user_id,
+            history=req.messages,
+            user_mastery=req.user_mastery,
+            target_concept_id=req.target_concept_id,
+            language=req.language
+        )
+        return {"success": True, "data": res}
+
+
+class SubmissionFeedbackPayload(BaseModel):
+    submission_id: str
+    user_id: Optional[str] = "anonymous_learner"
+    exercise_id: Optional[str] = None
+    concept_id: Optional[str] = "PY-BASICS-01"
+    status: str = "PASSED"
+    passed_count: int = 0
+    total_count: int = 0
+    test_results: List[Dict[str, Any]] = []
+    code: str = ""
+    runtime: str = "python"
+    raw_error: Optional[str] = None
+    trace_id: Optional[str] = None
+
+
+@app.post("/pal-net/submission-feedback")
+def submission_feedback_endpoint(payload: SubmissionFeedbackPayload):
+    """
+    Endpoint Feedback Loop sau khi nộp bài:
+    ExecutionResult -> ErrorAnalyzer -> ConceptAttribution -> Deterministic MasteryUpdater -> LearnerState
+    """
+    try:
+        exec_result = ExecutionResult(
+            submission_id=payload.submission_id,
+            user_id=payload.user_id,
+            exercise_id=payload.exercise_id,
+            concept_id=payload.concept_id,
+            status=payload.status,
+            passed_count=payload.passed_count,
+            total_count=payload.total_count,
+            test_results=payload.test_results,
+            code=payload.code,
+            runtime=payload.runtime,
+            raw_error=payload.raw_error,
+            trace_id=payload.trace_id or f"trace_{uuid.uuid4().hex[:12]}"
+        )
+        res = orchestrator_v2.process_submission_feedback(exec_result)
+        return {"success": True, "data": res}
+    except Exception as e:
+        print(f"[Submission Feedback Error]: {e}")
+        raise HTTPException(status_code=500, detail=f"Lỗi xử lý phản hồi nộp bài: {e}")
 
 
 

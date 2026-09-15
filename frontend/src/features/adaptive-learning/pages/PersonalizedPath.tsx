@@ -68,6 +68,13 @@ const PersonalizedPath: React.FC = () => {
     const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
     const [chatLoading, setChatLoading] = useState<boolean>(false);
+    const [currentAgentStep, setCurrentAgentStep] = useState<{
+        agent?: string;
+        title?: string;
+        desc?: string;
+        icon?: string;
+        step?: string;
+    } | null>(null);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState<boolean>(false);
 
     // Chat History States
@@ -77,6 +84,7 @@ const PersonalizedPath: React.FC = () => {
     const handleNewChat = () => {
         setActiveSessionId(null);
         setChatMessages([]);
+        setCurrentAgentStep(null);
         sessionStorage.removeItem('vibecode_ai_tutor_session');
     };
 
@@ -148,11 +156,12 @@ const PersonalizedPath: React.FC = () => {
         fetchChatSessions(storedToken);
     }, [navigate]);
 
-    // Send or Start Interactive Chat Session
+    // Send or Start Interactive Chat Session (Real-Time SSE Streaming from AI Multi-Agent Pipeline)
     const handleSendMessage = async (msgText: string) => {
         if (!msgText.trim() || chatLoading) return;
 
         const currentSession = activeSessionId;
+        const authToken = token || localStorage.getItem('token');
 
         // Optimistically append user message
         const optimisticUserMsg: ChatMessage = {
@@ -162,50 +171,110 @@ const PersonalizedPath: React.FC = () => {
         };
         setChatMessages(prev => [...prev, optimisticUserMsg]);
         setChatLoading(true);
+        setCurrentAgentStep(null);
 
         try {
-            if (!currentSession) {
-                // Start a new session
-                const res = await axios.post(
-                    `${API_BASE_URL}/api/learning-path/chat/start`,
-                    { goal: msgText },
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
+            const url = !currentSession
+                ? `${API_BASE_URL}/api/learning-path/chat/start-stream`
+                : `${API_BASE_URL}/api/learning-path/chat/reply-stream`;
 
-                if (res.data.success) {
-                    const newId = res.data.sessionId;
-                    setActiveSessionId(newId);
-                    sessionStorage.setItem('vibecode_ai_tutor_session', newId);
-                    setChatMessages(res.data.messages || [optimisticUserMsg]);
-                    fetchChatSessions();
+            const body = !currentSession
+                ? JSON.stringify({ goal: msgText })
+                : JSON.stringify({ sessionId: currentSession, content: msgText });
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${authToken}`
+                },
+                body
+            });
+
+            if (!response.ok || !response.body) {
+                throw new Error(`Máy chủ phản hồi lỗi (${response.status}): ${response.statusText}`);
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const parts = buffer.split('\n\n');
+                buffer = parts.pop() || '';
+
+                for (const part of parts) {
+                    const trimmed = part.trim();
+                    if (!trimmed.startsWith('data: ')) continue;
+                    try {
+                        const data = JSON.parse(trimmed.slice(6));
+                        if (data.type === 'session_created' && data.sessionId) {
+                            setActiveSessionId(data.sessionId);
+                            sessionStorage.setItem('vibecode_ai_tutor_session', data.sessionId);
+                        } else if (data.type === 'agent_step') {
+                            setCurrentAgentStep({
+                                agent: data.agent,
+                                title: data.title,
+                                desc: data.desc,
+                                icon: data.icon,
+                                step: data.step
+                            });
+                        } else if (data.type === 'complete') {
+                            if (data.messages) {
+                                setChatMessages(data.messages);
+                            } else if (data.aiMessage) {
+                                setChatMessages(prev => [
+                                    ...prev.filter(m => m !== optimisticUserMsg),
+                                    data.userMessage,
+                                    data.aiMessage
+                                ]);
+                            }
+                            setCurrentAgentStep(null);
+                            fetchChatSessions(authToken || undefined);
+                        } else if (data.type === 'error') {
+                            throw new Error(data.error || 'Lỗi xử lý luồng AI');
+                        }
+                    } catch (pe) {
+                        // ignore chunk slice parse warning
+                    }
                 }
-            } else {
-                // Reply to existing session
-                const res = await axios.post(
-                    `${API_BASE_URL}/api/learning-path/chat/reply`,
-                    { sessionId: currentSession, content: msgText },
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
+            }
 
-                if (res.data.success) {
-                    setChatMessages(prev => [
-                        ...prev.filter(m => m !== optimisticUserMsg),
-                        res.data.userMessage,
-                        res.data.aiMessage
-                    ]);
-                    fetchChatSessions();
+            // Flush remaining buffer if any
+            if (buffer.trim().startsWith('data: ')) {
+                try {
+                    const data = JSON.parse(buffer.trim().slice(6));
+                    if (data.type === 'complete') {
+                        if (data.messages) {
+                            setChatMessages(data.messages);
+                        } else if (data.aiMessage) {
+                            setChatMessages(prev => [
+                                ...prev.filter(m => m !== optimisticUserMsg),
+                                data.userMessage,
+                                data.aiMessage
+                            ]);
+                        }
+                        setCurrentAgentStep(null);
+                        fetchChatSessions(authToken || undefined);
+                    }
+                } catch {
+                    // ignore
                 }
             }
         } catch (e: any) {
-            console.error('Chat error:', e);
-            // Append fallback message if network error
+            console.error('Chat stream error:', e);
             const errorMsg: ChatMessage = {
                 sender: 'AI_TUTOR',
-                content: `Xin lỗi bạn, kết nối tới AI Tutor tạm thời gián đoạn: ${e.response?.data?.error || e.message}. Bạn vui lòng thử lại nhé!`,
+                content: `Xin lỗi bạn, kết nối tới AI Tutor tạm thời gián đoạn: ${e.message || 'Không có phản hồi'}. Bạn vui lòng thử lại nhé!`,
                 timestamp: new Date().toISOString()
             };
             setChatMessages(prev => [...prev, errorMsg]);
         } finally {
+            setCurrentAgentStep(null);
             setChatLoading(false);
         }
     };
@@ -448,6 +517,7 @@ const PersonalizedPath: React.FC = () => {
                         onBack={() => navigate('/dashboard')}
                         onNewChat={handleNewChat}
                         loading={chatLoading}
+                        currentAgentStep={currentAgentStep}
                     />
                 </main>
 

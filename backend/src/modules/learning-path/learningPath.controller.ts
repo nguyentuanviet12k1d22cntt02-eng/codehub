@@ -262,14 +262,133 @@ export const submitExerciseCode = async (req: AuthenticatedRequest, res: Respons
         const totalCases = exercise.testCases.length;
         const results = [];
 
+        const rawLang = String(exercise.language || '').toUpperCase();
+        const isCpp = rawLang === 'CPP' || rawLang.includes('C++') || /#include\s*<|std::/i.test(code);
+        const isJs = !isCpp && (rawLang === 'JAVASCRIPT' || rawLang.includes('JS') || /console\.log|function\s*\(|let\s+|const\s+/i.test(code));
+        const execLanguage: 'CPP' | 'JAVASCRIPT' | 'PYTHON' = isCpp ? 'CPP' : (isJs ? 'JAVASCRIPT' : 'PYTHON');
+
         for (const tc of exercise.testCases) {
             const rawInput = tc.input ? tc.input.trim() : '';
             const expectedOut = (tc.expectedOutput || '').trim();
 
-            // Tự động xây dựng execution harness để kiểm thử linh hoạt Function & Class OOP
             let codeToRun = code;
-            if (rawInput) {
+
+            if (execLanguage === 'CPP') {
+                // Nếu code chưa có main(), tự động bọc main caller
+                if (!code.includes('main(')) {
+                    const fnMatch = code.match(/(?:int|void|std::string|string|double|float|bool|auto)\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)/);
+                    const fnName = fnMatch ? fnMatch[1] : 'solution';
+                    const paramsStr = fnMatch ? fnMatch[2].trim() : '';
+                    const paramCount = paramsStr ? paramsStr.split(',').length : 0;
+
+                    codeToRun = `
+${code}
+
+#include <iostream>
+#include <sstream>
+#include <string>
+
+int main() {
+    std::string rawInput = ${JSON.stringify(rawInput)};
+    std::stringstream ss(rawInput);
+    ${paramCount >= 2 
+        ? 'int a = 0, b = 0; ss >> a >> b; std::cout << ' + fnName + '(a, b);' 
+        : (paramCount === 0 
+            ? 'std::cout << ' + fnName + '();' 
+            : 'int a = 0; ss >> a; std::cout << ' + fnName + '(a);')}
+    return 0;
+}
+`;
+                }
+            } else if (execLanguage === 'JAVASCRIPT') {
+                // Tự động phát hiện hàm cần gọi và bọc harness thực thi đa tham số
                 codeToRun = `
+${code}
+
+// Injected Smart Harness for JS Unit Testing
+(function __runner() {
+    let targetFn = null;
+
+    // 1. Quét tìm danh sách các hàm được định nghĩa trong mã nguồn người học
+    const funcRegex = /(?:function\\s+([a-zA-Z0-9_$]+)|(?:const|let|var)\\s+([a-zA-Z0-9_$]+)\\s*=\\s*(?:function|\\([^)]*\\)\\s*=>|[a-zA-Z0-9_$]+\\s*=>))/g;
+    const candidates = [];
+    let m;
+    const codeStr = ${JSON.stringify(code)};
+    while ((m = funcRegex.exec(codeStr)) !== null) {
+        const fnName = m[1] || m[2];
+        if (fnName && fnName !== '__runner') {
+            try {
+                const fnObj = eval(fnName);
+                if (typeof fnObj === 'function') {
+                    candidates.push({ name: fnName, fn: fnObj });
+                }
+            } catch (e) {}
+        }
+    }
+
+    if (candidates.length > 0) {
+        // Ưu tiên hàm tên 'solution' nếu có, nếu không lấy hàm cuối cùng được khai báo
+        const pref = candidates.find(c => c.name === 'solution') || candidates[candidates.length - 1];
+        targetFn = pref.fn;
+    }
+
+    // Nếu không tìm thấy hàm nào (ví dụ code dạng script thuần túy), thoát để script tự chạy
+    if (!targetFn) return;
+
+    const raw = ${JSON.stringify(rawInput)};
+    let args = [];
+    if (raw && typeof raw === 'string' && raw.trim().length > 0) {
+        let trimmed = raw.trim();
+        let norm = trimmed
+            .replace(/\\bTrue\\b/g, 'true')
+            .replace(/\\bFalse\\b/g, 'false')
+            .replace(/\\bNone\\b/g, 'null');
+
+        if ((norm.startsWith('(') && norm.endsWith(')')) || (norm.startsWith('[') && norm.endsWith(']'))) {
+            norm = norm.slice(1, -1).trim();
+        }
+
+        try {
+            args = eval('[' + norm + ']');
+            if (!Array.isArray(args)) args = [args];
+        } catch (e1) {
+            try {
+                const p = JSON.parse(trimmed);
+                args = Array.isArray(p) ? p : [p];
+            } catch (e2) {
+                if (trimmed.includes(',')) {
+                    args = trimmed.split(',').map(s => {
+                        const t = s.trim();
+                        if (t === 'true') return true;
+                        if (t === 'false') return false;
+                        if (!isNaN(t) && t !== '') return Number(t);
+                        return t.replace(/^["']|["']$/g, '');
+                    });
+                } else {
+                    args = [trimmed];
+                }
+            }
+        }
+    }
+
+    try {
+        const out = targetFn(...args);
+        if (out !== undefined && out !== null) {
+            if (typeof out === 'object') {
+                console.log(JSON.stringify(out));
+            } else {
+                console.log(out);
+            }
+        }
+    } catch (err) {
+        console.error(err);
+    }
+})();
+`;
+            } else {
+                // Python: Sử dụng execution harness linh hoạt Function & Class OOP
+                if (rawInput) {
+                    codeToRun = `
 import sys
 import ast
 import inspect
@@ -364,9 +483,10 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
 `;
+                }
             }
 
-            const jobRes = await codeExecutionQueue.pushJob(codeToRun, 'PYTHON', rawInput, 5000);
+            const jobRes = await codeExecutionQueue.pushJob(codeToRun, execLanguage, rawInput, 5000);
             const actualOut = (jobRes.stdout || '').trim();
             const errOut = (jobRes.stderr || '').trim();
 
@@ -426,13 +546,55 @@ if __name__ == '__main__':
             });
         }
 
+        // Closed Feedback Loop: Call AI Service /pal-net/submission-feedback
+        let adaptiveFeedback: any = null;
+        try {
+            const conceptId = exercise.lesson?.targetSkillId || 'PY-BASICS-01';
+            const firstError = results.find(r => !r.passed)?.errorMessage || '';
+            const statusStr = isAllPassed 
+                ? 'PASSED' 
+                : (firstError.includes('Lỗi:') ? 'RUNTIME_ERROR' : 'WRONG_ANSWER');
+
+            const fbRes = await fetch(`${AI_SERVICE_URL}/pal-net/submission-feedback`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    submission_id: `sub_${Date.now()}`,
+                    user_id: userId,
+                    exercise_id: exercise.id,
+                    concept_id: conceptId,
+                    status: statusStr,
+                    passed_count: passedCases,
+                    total_count: totalCases,
+                    test_results: results.map(r => ({
+                        id: r.testCaseId,
+                        input: r.input,
+                        expected: r.expectedOutput,
+                        actual: r.actualOutput,
+                        passed: r.passed,
+                        error: r.errorMessage
+                    })),
+                    code,
+                    runtime: (exercise.language || 'PYTHON').toLowerCase(),
+                    raw_error: firstError || null
+                })
+            });
+            if (fbRes.ok) {
+                const fbJson: any = await fbRes.json();
+                adaptiveFeedback = fbJson?.data;
+            }
+        } catch (fbErr) {
+            console.warn('[Adaptive Feedback Loop Warning]:', fbErr);
+        }
+
         res.status(200).json({
             success: true,
             isPassed: isAllPassed,
             score: totalCases > 0 ? Math.round((passedCases / totalCases) * 100) : 100,
             passedCases,
             totalCases,
-            results
+            results,
+            adaptiveFeedback
         });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
@@ -448,8 +610,8 @@ export const startChatSession = async (req: AuthenticatedRequest, res: Response)
             return;
         }
 
-        const { goal, target_concept_id } = req.body;
-        const initialGoal = goal || 'Tôi muốn học lập trình Python cá nhân hóa';
+        const { goal, target_concept_id, language } = req.body;
+        const initialGoal = goal || 'Tôi muốn học lập trình cá nhân hóa';
 
         // 1. Create DB Session
         const session = await prisma.pathChatSession.create({
@@ -486,7 +648,8 @@ export const startChatSession = async (req: AuthenticatedRequest, res: Response)
                     session_id: session.id,
                     messages: [{ sender: 'USER', content: initialGoal }],
                     user_mastery: userMastery,
-                    target_concept_id: target_concept_id || null
+                    target_concept_id: target_concept_id || null,
+                    language: language || null
                 })
             });
             if (aiRes.ok) {
@@ -497,7 +660,7 @@ export const startChatSession = async (req: AuthenticatedRequest, res: Response)
             console.error('AI Service adaptive-tutor-agent error:', e);
         }
 
-        const aiReplyContent = aiReplyData?.reply || 'Chào bạn! PAL-Net Engine đã sẵn sàng đồng hành cùng bạn. Bạn muốn kiểm tra điểm yếu hay bắt đầu rèn luyện chủ đề nào?';
+        const aiReplyContent = cleanChineseArtifacts(aiReplyData?.reply || 'Chào bạn! PAL-Net Engine đã sẵn sàng đồng hành cùng bạn. Bạn muốn kiểm tra điểm yếu hay bắt đầu rèn luyện chủ đề nào?');
         const suggestedOptions = aiReplyData?.suggested_options || [
             '🔍 Tôi đang bị yếu phần nào nhất của Python?',
             '🎯 Hãy tạo bài tập rèn luyện cho phần tôi yếu nhất',
@@ -513,7 +676,7 @@ export const startChatSession = async (req: AuthenticatedRequest, res: Response)
                 metadata: {
                     intent: aiReplyData?.intent || 'GENERAL_CHAT',
                     agentTraces: aiReplyData?.agent_traces || [],
-                    exercise: aiReplyData?.exercise || null,
+                    exercise: aiReplyData?.exercise ? sanitizeExerciseObj(aiReplyData.exercise) : null,
                     suggestedOptions,
                     step: aiReplyData?.exercise ? 'EXERCISE_READY' : 'CHAT'
                 }
@@ -530,10 +693,138 @@ export const startChatSession = async (req: AuthenticatedRequest, res: Response)
     }
 };
 
+// 6b. POST /api/learning-path/chat/start-stream (Real-time SSE Multi-Agent Stream)
+export const startChatSessionStream = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            res.status(401).json({ success: false, error: 'Chưa xác thực người dùng!' });
+            return;
+        }
+
+        const { goal, target_concept_id, language } = req.body;
+        const initialGoal = goal || 'Tôi muốn học lập trình cá nhân hóa';
+
+        // 1. Create DB Session
+        const session = await prisma.pathChatSession.create({
+            data: {
+                userId,
+                initialGoal,
+                messages: {
+                    create: {
+                        sender: 'USER',
+                        content: initialGoal
+                    }
+                }
+            },
+            include: { messages: true }
+        });
+
+        // 2. Load user mastery
+        let userMastery: Record<string, number> = {};
+        try {
+            const masteryRes = await getDynamicUserMasteryFallback(userId);
+            userMastery = masteryRes?.mastery?.['PAL-Net'] || {};
+        } catch (e) {
+            console.warn('Could not load user mastery:', e);
+        }
+
+        // Set SSE Headers
+        res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache, no-transform');
+        res.setHeader('Connection', 'keep-alive');
+        (res as any).flushHeaders?.();
+
+        res.write(`data: ${JSON.stringify({ type: 'session_created', sessionId: session.id, userMessage: session.messages[0] })}\n\n`);
+
+        // Connect to AI Service stream
+        const aiStreamRes = await fetch(`${AI_SERVICE_URL}/pal-net/adaptive-tutor-agent/stream`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                session_id: session.id,
+                messages: [{ sender: 'USER', content: initialGoal }],
+                user_mastery: userMastery,
+                target_concept_id: target_concept_id || null,
+                language: language || null
+            })
+        });
+
+        if (!aiStreamRes.ok || !aiStreamRes.body) {
+            throw new Error(`AI Service stream error: ${aiStreamRes.statusText}`);
+        }
+
+        const reader = aiStreamRes.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let finalData: any = null;
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const parts = buffer.split('\n\n');
+            buffer = parts.pop() || '';
+
+            for (const part of parts) {
+                const trimmed = part.trim();
+                if (!trimmed.startsWith('data: ')) continue;
+                try {
+                    const json = JSON.parse(trimmed.slice(6));
+                    if (json.type === 'agent_step') {
+                        res.write(`data: ${JSON.stringify(json)}\n\n`);
+                    } else if (json.type === 'complete') {
+                        finalData = json.data;
+                    }
+                } catch (pe) {
+                    // ignore JSON chunk slice warning
+                }
+            }
+        }
+
+        const aiReplyContent = cleanChineseArtifacts(finalData?.reply || 'Chào bạn! PAL-Net Engine đã sẵn sàng đồng hành cùng bạn.');
+        const cleanExercise = finalData?.exercise ? sanitizeExerciseObj(finalData.exercise) : null;
+        const suggestedOptions = finalData?.suggested_options || [
+            '🔍 Tôi đang bị yếu phần nào nhất của Python?',
+            '🎯 Hãy tạo bài tập rèn luyện cho phần tôi yếu nhất',
+            '📚 Rèn luyện cấu trúc Dictionary & Key-Value'
+        ];
+
+        const aiMessage = await prisma.pathChatMessage.create({
+            data: {
+                sessionId: session.id,
+                sender: 'AI_TUTOR',
+                content: aiReplyContent,
+                metadata: {
+                    intent: finalData?.intent || 'GENERAL_CHAT',
+                    agentTraces: finalData?.agent_traces || [],
+                    exercise: cleanExercise,
+                    suggestedOptions,
+                    step: cleanExercise ? 'EXERCISE_READY' : 'CHAT'
+                }
+            }
+        });
+
+        res.write(`data: ${JSON.stringify({
+            type: 'complete',
+            sessionId: session.id,
+            messages: [session.messages[0], aiMessage]
+        })}\n\n`);
+
+        res.end();
+    } catch (error: any) {
+        console.error('startChatSessionStream error:', error);
+        res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`);
+        res.end();
+    }
+};
+
 // 7. POST /api/learning-path/chat/reply
 export const replyChatMessage = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
-        const { sessionId, content, target_concept_id } = req.body;
+        const { sessionId, content, target_concept_id, language } = req.body;
         const userId = req.user?.id;
 
         if (!sessionId || !content) {
@@ -585,7 +876,8 @@ export const replyChatMessage = async (req: AuthenticatedRequest, res: Response)
                     session_id: session.id,
                     messages: updatedHistory,
                     user_mastery: userMastery,
-                    target_concept_id: target_concept_id || null
+                    target_concept_id: target_concept_id || null,
+                    language: language || null
                 })
             });
             if (aiRes.ok) {
@@ -596,7 +888,8 @@ export const replyChatMessage = async (req: AuthenticatedRequest, res: Response)
             console.error('AI Service adaptive-tutor-agent error:', e);
         }
 
-        const aiReplyContent = aiReplyData?.reply || 'Tôi đã xử lý yêu cầu của bạn.';
+        const aiReplyContent = cleanChineseArtifacts(aiReplyData?.reply || 'Tôi đã xử lý yêu cầu của bạn.');
+        const cleanExercise = aiReplyData?.exercise ? sanitizeExerciseObj(aiReplyData.exercise) : null;
         
         // Save AI Message with Multi-Agent metadata
         const aiMsg = await prisma.pathChatMessage.create({
@@ -607,9 +900,9 @@ export const replyChatMessage = async (req: AuthenticatedRequest, res: Response)
                 metadata: {
                     intent: aiReplyData?.intent || 'GENERAL_CHAT',
                     agentTraces: aiReplyData?.agent_traces || [],
-                    exercise: aiReplyData?.exercise || null,
+                    exercise: cleanExercise,
                     suggestedOptions: aiReplyData?.suggested_options || [],
-                    step: aiReplyData?.exercise ? 'EXERCISE_READY' : 'CHAT'
+                    step: cleanExercise ? 'EXERCISE_READY' : 'CHAT'
                 }
             }
         });
@@ -624,6 +917,139 @@ export const replyChatMessage = async (req: AuthenticatedRequest, res: Response)
         });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+// 7b. POST /api/learning-path/chat/reply-stream (Real-time SSE Multi-Agent Stream)
+export const replyChatMessageStream = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+        const { sessionId, content, target_concept_id, language } = req.body;
+        const userId = req.user?.id;
+
+        if (!sessionId || !content) {
+            res.status(400).json({ success: false, error: 'Thiếu session ID hoặc nội dung tin nhắn!' });
+            return;
+        }
+
+        const session = await prisma.pathChatSession.findUnique({
+            where: { id: String(sessionId) },
+            include: { messages: { orderBy: { createdAt: 'asc' } } }
+        });
+
+        if (!session || session.userId !== userId) {
+            res.status(404).json({ success: false, error: 'Không tìm thấy phiên trò chuyện!' });
+            return;
+        }
+
+        // Save User Message
+        const userMsg = await prisma.pathChatMessage.create({
+            data: {
+                sessionId: session.id,
+                sender: 'USER',
+                content
+            }
+        });
+
+        const updatedHistory = [...session.messages, userMsg].map(m => ({
+            sender: m.sender,
+            content: m.content
+        }));
+
+        let userMastery: Record<string, number> = {};
+        try {
+            const masteryRes = await getDynamicUserMasteryFallback(userId);
+            userMastery = masteryRes?.mastery?.['PAL-Net'] || {};
+        } catch (e) {
+            console.warn('Could not load user mastery:', e);
+        }
+
+        // Set SSE Headers
+        res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache, no-transform');
+        res.setHeader('Connection', 'keep-alive');
+        (res as any).flushHeaders?.();
+
+        res.write(`data: ${JSON.stringify({ type: 'user_message_saved', userMessage: userMsg })}\n\n`);
+
+        // Connect to AI Service stream
+        const aiStreamRes = await fetch(`${AI_SERVICE_URL}/pal-net/adaptive-tutor-agent/stream`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                session_id: session.id,
+                messages: updatedHistory,
+                user_mastery: userMastery,
+                target_concept_id: target_concept_id || null,
+                language: language || null
+            })
+        });
+
+        if (!aiStreamRes.ok || !aiStreamRes.body) {
+            throw new Error(`AI Service stream error: ${aiStreamRes.statusText}`);
+        }
+
+        const reader = aiStreamRes.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let finalData: any = null;
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const parts = buffer.split('\n\n');
+            buffer = parts.pop() || '';
+
+            for (const part of parts) {
+                const trimmed = part.trim();
+                if (!trimmed.startsWith('data: ')) continue;
+                try {
+                    const json = JSON.parse(trimmed.slice(6));
+                    if (json.type === 'agent_step') {
+                        res.write(`data: ${JSON.stringify(json)}\n\n`);
+                    } else if (json.type === 'complete') {
+                        finalData = json.data;
+                    }
+                } catch (pe) {
+                    // ignore JSON chunk slice warning
+                }
+            }
+        }
+
+        const aiReplyContent = cleanChineseArtifacts(finalData?.reply || 'Tôi đã xử lý yêu cầu của bạn.');
+        const cleanExercise = finalData?.exercise ? sanitizeExerciseObj(finalData.exercise) : null;
+
+        const aiMsg = await prisma.pathChatMessage.create({
+            data: {
+                sessionId: session.id,
+                sender: 'AI_TUTOR',
+                content: aiReplyContent,
+                metadata: {
+                    intent: finalData?.intent || 'GENERAL_CHAT',
+                    agentTraces: finalData?.agent_traces || [],
+                    exercise: cleanExercise,
+                    suggestedOptions: finalData?.suggested_options || [],
+                    step: cleanExercise ? 'EXERCISE_READY' : 'CHAT'
+                }
+            }
+        });
+
+        res.write(`data: ${JSON.stringify({
+            type: 'complete',
+            userMessage: userMsg,
+            aiMessage: aiMsg,
+            intent: finalData?.intent,
+            agentTraces: finalData?.agent_traces || [],
+            exercise: cleanExercise
+        })}\n\n`);
+
+        res.end();
+    } catch (error: any) {
+        console.error('replyChatMessageStream error:', error);
+        res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`);
+        res.end();
     }
 };
 
@@ -752,64 +1178,121 @@ export const confirmAndBuildPath = async (req: AuthenticatedRequest, res: Respon
     }
 };
 
-function generateRichTheoryContent(exercise: any): string {
+export function cleanChineseArtifacts(text: any): any {
+    if (!text || typeof text !== 'string') return text;
+    return text
+        .replace(/\$\s*\\rightarrow\s*\$/g, '→')
+        .replace(/\\rightarrow/g, '→')
+        .replace(/\$\s*\\Rightarrow\s*\$/g, '⇒')
+        .replace(/\\Rightarrow/g, '⇒')
+        .replace(/\$\s*\\le\s*\$/g, '≤')
+        .replace(/\\le/g, '≤')
+        .replace(/\$\s*\\ge\s*\$/g, '≥')
+        .replace(/\\ge/g, '≥')
+        .replace(/\$\s*\\neq\s*\$/g, '≠')
+        .replace(/\\neq/g, '≠')
+        .replace(/在这里写代码|在此处编写代码|在下方编写代码|在下方写代码|请在此处编写代码/g, 'Viết mã tại đây')
+        .replace(/写代码|编写代码/g, 'Viết mã')
+        .replace(/你的代码/g, 'Mã của bạn')
+        .replace(/代码/g, 'mã nguồn')
+        .replace(/输入/g, 'Đầu vào')
+        .replace(/输出/g, 'Đầu ra')
+        .replace(/[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff]/g, '');
+}
+
+export function sanitizeExerciseObj(ex: any): any {
+    if (!ex) return ex;
+    if (typeof ex === 'string') return cleanChineseArtifacts(ex);
+    if (Array.isArray(ex)) return ex.map(sanitizeExerciseObj);
+    if (typeof ex === 'object') {
+        const res: any = {};
+        for (const k of Object.keys(ex)) {
+            res[k] = sanitizeExerciseObj(ex[k]);
+        }
+        return res;
+    }
+    return ex;
+}
+
+function generateRichTheoryContent(rawExercise: any): string {
+    const exercise = sanitizeExerciseObj(rawExercise);
     if (exercise.detailed_theory && exercise.detailed_theory.includes('Execution Trace Table')) {
         return exercise.detailed_theory;
     }
 
-    const title = exercise.title || 'Kỹ Năng Lập Trình Python Thực Chiến';
-    const conceptName = exercise.concept_name || exercise.concept_id || 'Lập Trình Python';
-    const quickTheory = exercise.quick_theory || 'Nắm vững nguyên lý cốt lõi để xây dựng phần mềm ổn định, tối ưu.';
+    const rawLang = String(exercise.language || '').toUpperCase();
+    const isCpp = rawLang.includes('CPP') || rawLang.includes('C++') || /#include\s*<|std::/i.test(exercise.reference_solution || '') || /#include\s*<|std::/i.test(exercise.starter_code || '');
+    const isJs = !isCpp && (rawLang.includes('JS') || rawLang.includes('JAVASCRIPT') || /console\.log|function\s*\(|let\s+|const\s+/i.test(exercise.reference_solution || '') || /console\.log|function\s*\(|let\s+|const\s+/i.test(exercise.starter_code || ''));
+    const langName = isCpp ? 'C++' : isJs ? 'JavaScript' : 'Python';
+    const langCode = isCpp ? 'cpp' : isJs ? 'javascript' : 'python';
+
+    const title = exercise.title || `Kỹ Năng Lập Trình ${langName} Thực Chiến`;
+    const conceptName = exercise.concept_name || exercise.concept_id || `Lập Trình ${langName}`;
+    const quickTheory = exercise.quick_theory || `Nắm vững nguyên lý cốt lõi của ${langName} để xây dựng phần mềm ổn định, tối ưu.`;
     const pitfall = exercise.common_pitfall_warning || 'Chú ý kiểm tra kiểu dữ liệu, ngoại lệ và giá trị biên.';
-    const solutionCode = exercise.reference_solution || 'def solution(data):\n    return data';
-    const starterCode = exercise.starter_code || 'def solution(data):\n    pass';
-    const sampleInput = exercise.sample_input || "([1, 2, 3, 4],)";
+    const solutionCode = exercise.reference_solution || (isCpp ? '#include <iostream>\nusing namespace std;\n\nint main() {\n    return 0;\n}' : isJs ? 'function solution(n) {\n    return n;\n}' : 'def solution(data):\n    return data');
+
+    const syntaxHeading = `Để triển khai giải thuật xử lý chuẩn xác trong ${langName}, ta thực hiện đoạn mã sau:`;
+    const bestPracticeTip = isCpp 
+        ? 'Luôn tuân thủ chuẩn **C++ Core Guidelines**, sử dụng `cin/cout` hiệu quả, giải phóng bộ nhớ an toàn (RAII) và đặt tên biến theo quy tắc rõ nghĩa.'
+        : isJs 
+            ? 'Luôn giữ phong cách lập trình chuẩn **ES6+ Clean Code**, ưu tiên sử dụng `const` và `let` thay vì `var`, đặt tên hàm theo chuẩn **camelCase**.'
+            : 'Luôn giữ phong cách lập trình chuẩn **PEP 8**, đặt tên hàm và biến theo chuẩn **snake_case**, ưu tiên sử dụng các hàm tích hợp sẵn (built-in) của Python để tối ưu tốc độ.';
+
+    const memoryVisual = isCpp
+        ? `\`\`\`text
+[RAM Stack]                       [RAM Heap]
+Biến cục bộ / Tham chiếu ───────► [ Dữ liệu I/O Stream & Bộ nhớ động ]
+Hàm thực thi (Stack Frame) ─────► [ Kết quả xuất ra cout / return ]
+\`\`\``
+        : isJs
+            ? `\`\`\`text
+[Execution Context Stack]         [Memory Heap]
+Biến phạm vi Block / Scope ─────► [ Đối tượng Object / Array ]
+Call Stack thực thi hàm ────────► [ Kết quả trả về caller ]
+\`\`\``
+            : `\`\`\`text
+[RAM Stack]                       [RAM Heap]
+test_data ──────────────────► [ Dữ liệu đầu vào ]
+result    ──────────────────► [ Đối tượng Python sau xử lý ]
+\`\`\``;
 
     return `## 1. Khái niệm & Vấn đề
-Hãy tưởng tượng bạn đang xây dựng một module trong hệ thống phần mềm thực tế cần xử lý dữ liệu về **${conceptName}**. Nếu không có thuật toán và kỹ thuật xử lý phù hợp, chương trình sẽ dễ gặp lỗi dữ liệu khuyết thiếu, rò rỉ bộ nhớ hoặc dừng đột ngột.
+Hãy tưởng tượng bạn đang xây dựng một module trong hệ thống phần mềm thực tế cần xử lý dữ liệu về **${conceptName}** trong ngôn ngữ **${langName}**. Nếu không có thuật toán và kỹ thuật xử lý phù hợp, chương trình sẽ dễ gặp lỗi dữ liệu khuyết thiếu, rò rỉ bộ nhớ hoặc dừng đột ngột.
 
 | Thuật ngữ | Định nghĩa thực tế | Phép ẩn dụ |
 | :--- | :--- | :--- |
 | **${conceptName}** | ${quickTheory} | Như một quy trình kiểm soát chất lượng tự động trên băng chuyền dữ liệu. |
 
 ## 2. Cú pháp & Vận hành
-Để triển khai giải thuật xử lý chuẩn xác trong Python, ta thực hiện đoạn mã sau:
+${syntaxHeading}
 
-\`\`\`python
+\`\`\`${langCode}
 ${solutionCode}
-
-# Chạy thử với dữ liệu mẫu:
-test_data = ${sampleInput}
-result = ${solutionCode.includes('def ') ? (solutionCode.split('def ')[1]?.split('(')[0] || 'solution').trim() + '(*test_data)' : 'solution(*test_data)'}
-print("Kết quả chạy thử:", result)
 \`\`\`
 
 **Bảng theo dõi thực thi (Execution Trace Table):**
-| DÒNG MÃ | LỆNH ĐƯỢC CHẠY | TRẠNG THÁI BIẾN | HÀNH ĐỘNG CỦA MÁY TÍNH |
+| BƯỚC | LỆNH ĐƯỢC CHẠY | TRẠNG THÁI BIẾN | HÀNH ĐỘNG CỦA MÁY TÍNH |
 |:---:|:---|:---|:---|
-| 1 | Khởi tạo hàm xử lý | \`test_data\`: ${sampleInput} | Định nghĩa hàm vào không gian tên bộ nhớ |
-| 2 | Nạp đối số & thực thi | \`result\`: Đang tính toán | Đọc dữ liệu từ bộ nhớ và áp dụng logic giải thuật |
-| 3 | \`print("Kết quả...", result)\` | \`result\`: Đã có giá trị | Xuất kết quả đã xử lý ra màn hình hoặc trả về caller |
+| 1 | Khởi tạo & nạp dữ liệu | Đầu vào sẵn sàng | Nạp mã vào bộ nhớ tiến trình (${langName}) |
+| 2 | Thực thi giải thuật | Đang tính toán | Đọc dữ liệu từ bộ nhớ và áp dụng logic xử lý |
+| 3 | Xuất kết quả | Đã có giá trị | Xuất kết quả đã xử lý ra màn hình console hoặc trả về |
 
-**Trạng thái bộ nhớ RAM:**
-\`\`\`text
-[RAM Stack]                       [RAM Heap]
-test_data ──────────────────► [ ${sampleInput} ]
-result    ──────────────────► [ Kết quả sau khi xử lý ]
-\`\`\`
+**Mô hình bộ nhớ ${langName}:**
+${memoryVisual}
 
 ## 3. Lỗi thường gặp & Tối ưu
 > [!WARNING]
 > **Các lỗi thường gặp cần tránh:**
 > * **Không kiểm tra dữ liệu biên**: ${pitfall}
-> * **Truy xuất trực tiếp không an toàn**: Làm ứng dụng bị crash khi gặp ngoại lệ bất ngờ.
+> * **Truy xuất trực tiếp không an toàn**: Làm ứng dụng bị dừng đột ngột khi gặp dữ liệu bất ngờ.
 
 > [!TIP]
-> Luôn giữ phong cách lập trình chuẩn **PEP 8**, đặt tên hàm và biến theo chuẩn **snake_case**, ưu tiên sử dụng các hàm tích hợp sẵn (built-in) của Python để tối ưu tốc độ.
+> ${bestPracticeTip}
 
 ## 4. Đúc kết & Đi tiếp
 * Nắm vững nguyên lý và luồng dữ liệu của **${conceptName}** giúp bạn tự tin viết mã nguồn ít lỗi nhất.
-* Luôn rà soát qua Bảng theo dõi thực thi (Execution Trace Table) trong đầu trước khi viết code phức tạp.
+* Luôn rà soát qua Bảng theo dõi thực thi trong đầu trước khi viết code phức tạp.
 * Bây giờ, hãy chuyển sang tab **Thực Hành Lập Trình** để tự tay giải bài tập và kiểm thử với các test cases!`;
 }
 
@@ -829,6 +1312,15 @@ export const startAdaptiveExerciseFromChat = async (req: AuthenticatedRequest, r
             return;
         }
 
+        // Xác định ngôn ngữ chính xác của bài tập
+        const rawLang = String(exercise.language || '').toUpperCase();
+        const isCpp = rawLang.includes('CPP') || rawLang.includes('C++') || /#include\s*<|std::/i.test(exercise.reference_solution || '') || /#include\s*<|std::/i.test(exercise.starter_code || '');
+        const isJs = !isCpp && (rawLang.includes('JS') || rawLang.includes('JAVASCRIPT') || /console\.log|function\s*\(|let\s+|const\s+/i.test(exercise.reference_solution || '') || /console\.log|function\s*\(|let\s+|const\s+/i.test(exercise.starter_code || ''));
+        const normalizedLang: 'CPP' | 'JAVASCRIPT' | 'PYTHON' = isCpp ? 'CPP' : (isJs ? 'JAVASCRIPT' : 'PYTHON');
+
+        const targetSkillFallback = isCpp ? 'cpp_practice' : (isJs ? 'js_practice' : 'python_practice');
+        const targetSkillId = String(exercise.concept_id || (isCpp ? 'CPP-SYNTAX-01' : (isJs ? 'JS-VAR-01' : 'PY-BASICS-01')));
+
         // Tạo một PersonalizedPath đơn mục tiêu cho bài tập thích ứng này
         const testCasesList = (exercise.test_cases || []).map((tc: any) => ({
             input: String(tc.input || ''),
@@ -841,27 +1333,31 @@ export const startAdaptiveExerciseFromChat = async (req: AuthenticatedRequest, r
                 userId,
                 title: `[Thích ứng ZPD] ${exercise.title}`,
                 description: exercise.quick_theory || `Thực hành khắc phục điểm yếu concept ${exercise.concept_name || exercise.concept_id}`,
-                targetSkills: [exercise.concept_id || 'python_practice'],
+                targetSkills: [targetSkillId],
                 palNetAvgScore: 0.70,
                 lessons: {
                     create: [
                         {
                             orderIndex: 1,
                             title: exercise.title,
-                            targetSkillId: String(exercise.concept_id || 'PY-GEN'),
+                            targetSkillId: targetSkillId,
                             theoryContent: generateRichTheoryContent(exercise),
                             exercise: {
                                 create: {
                                     title: exercise.title,
                                     difficulty: exercise.difficulty_stars === 1 ? 'EASY' : 'MEDIUM',
                                     problemDescription: exercise.problem_statement || exercise.title,
-                                    starterCode: exercise.starter_code || 'def solution():\n    pass',
+                                    starterCode: exercise.starter_code || (isCpp 
+                                        ? '#include <iostream>\nusing namespace std;\n\nint main() {\n    // Viết mã nguồn C++ ở đây:\n    return 0;\n}' 
+                                        : isJs 
+                                            ? 'function solution(n) {\n    // Viết mã nguồn JS ở đây:\n}' 
+                                            : 'def solution(n):\n    pass'),
                                     solutionCode: exercise.reference_solution || '',
-                                    language: 'PYTHON',
+                                    language: normalizedLang,
                                     qcStatus: 'VERIFIED',
                                     testCases: {
                                         create: testCasesList.length > 0 ? testCasesList : [
-                                            { input: '(5, 10)', expectedOutput: '15', isHidden: false }
+                                            { input: '2', expectedOutput: '4', isHidden: false }
                                         ]
                                     }
                                 }

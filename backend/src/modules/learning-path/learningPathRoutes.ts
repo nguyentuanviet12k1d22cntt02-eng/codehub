@@ -7,7 +7,9 @@ import {
     submitQuizAnswer,
     submitExerciseCode,
     startChatSession,
+    startChatSessionStream,
     replyChatMessage,
+    replyChatMessageStream,
     confirmAndBuildPath,
     startAdaptiveExerciseFromChat,
     updateAdaptiveMastery,
@@ -28,7 +30,9 @@ router.post('/submit-exercise', submitExerciseCode);
 
 // Chat Interactive Routes (KodeKloud AI Tutor Style)
 router.post('/chat/start', startChatSession);
+router.post('/chat/start-stream', startChatSessionStream);
 router.post('/chat/reply', replyChatMessage);
+router.post('/chat/reply-stream', replyChatMessageStream);
 router.post('/chat/confirm', confirmAndBuildPath);
 router.get('/chat/sessions', getChatSessions);
 router.get('/chat/session/:sessionId', getChatSessionById);

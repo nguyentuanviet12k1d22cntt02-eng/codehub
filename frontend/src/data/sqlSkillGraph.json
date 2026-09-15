@@ -1,0 +1,344 @@
+{
+  "version": "2.0",
+  "domain": {
+    "id": "SQL",
+    "name": "Lập trình Cơ sở Dữ liệu Quan hệ SQL Server (T-SQL)",
+    "description": "Khung chương trình năng lực truy vấn dữ liệu quan hệ SQL từ DQL cơ bản, lọc mệnh đề WHERE, sắp xếp đến liên kết bảng JOIN và hàm tổng hợp."
+  },
+  "modules": [
+    {
+      "id": "MOD-SQL-RDBMS",
+      "name": "Mô hình Quan hệ (RDBMS) & Khóa",
+      "description": "Khái niệm Bảng, Khóa chính (Primary Key), Khóa ngoại (Foreign Key) và quan hệ 1-N, N-N.",
+      "order_index": 1
+    },
+    {
+      "id": "MOD-SQL-DQL",
+      "name": "Truy vấn DQL (SELECT & FROM)",
+      "description": "Cú pháp lấy tất cả cột, lấy cột chỉ định, loại bỏ trùng lặp DISTINCT và đặt bí danh AS.",
+      "order_index": 2
+    },
+    {
+      "id": "MOD-SQL-FILTER",
+      "name": "Mệnh đề Lọc Điều kiện (WHERE)",
+      "description": "Lọc bằng toán tử so sánh (=, <>, <, >), so khớp chuỗi LIKE, kiểm tra NULL.",
+      "order_index": 3
+    },
+    {
+      "id": "MOD-SQL-LOGIC",
+      "name": "Toán tử Logic (AND, OR, NOT)",
+      "description": "Kết hợp đa điều kiện logic, độ ưu tiên toán tử và mệnh đề IN, BETWEEN...AND.",
+      "order_index": 4
+    },
+    {
+      "id": "MOD-SQL-SORT",
+      "name": "Sắp xếp & Giới hạn Kết quả",
+      "description": "Sắp xếp tăng dần ASC / giảm dần DESC qua ORDER BY, giới hạn số bản ghi TOP.",
+      "order_index": 5
+    },
+    {
+      "id": "MOD-SQL-AGG",
+      "name": "Hàm Tổng hợp & Gom nhóm",
+      "description": "Các hàm COUNT, SUM, AVG, MIN, MAX kết hợp mệnh đề GROUP BY và điều kiện HAVING.",
+      "order_index": 6
+    },
+    {
+      "id": "MOD-SQL-JOIN",
+      "name": "Liên kết Bảng (Joins)",
+      "description": "Ghép nối dữ liệu đa bảng với INNER JOIN, LEFT JOIN, RIGHT JOIN và FULL OUTER JOIN.",
+      "order_index": 7
+    }
+  ],
+  "topics": [
+    {
+      "id": "TOPIC-SQL-SCHEMA",
+      "module_id": "MOD-SQL-RDBMS",
+      "name": "Lược đồ & Khóa",
+      "description": "Primary Key, Foreign Key và toàn vẹn dữ liệu."
+    },
+    {
+      "id": "TOPIC-SQL-SELECT",
+      "module_id": "MOD-SQL-DQL",
+      "name": "Lệnh SELECT",
+      "description": "Lấy cột dữ liệu và đặt tên bí danh AS."
+    },
+    {
+      "id": "TOPIC-SQL-WHERE",
+      "module_id": "MOD-SQL-FILTER",
+      "name": "Mệnh đề WHERE",
+      "description": "Lọc dữ liệu theo điều kiện giá trị."
+    },
+    {
+      "id": "TOPIC-SQL-LOGIC",
+      "module_id": "MOD-SQL-LOGIC",
+      "name": "Logic Boolean",
+      "description": "Toán tử AND, OR, NOT."
+    },
+    {
+      "id": "TOPIC-SQL-SORT",
+      "module_id": "MOD-SQL-SORT",
+      "name": "ORDER BY & TOP",
+      "description": "Sắp xếp kết quả truy vấn."
+    },
+    {
+      "id": "TOPIC-SQL-GROUP",
+      "module_id": "MOD-SQL-AGG",
+      "name": "Gom nhóm GROUP BY",
+      "description": "Tổng hợp số liệu thống kê."
+    },
+    {
+      "id": "TOPIC-SQL-JOIN",
+      "module_id": "MOD-SQL-JOIN",
+      "name": "Kỹ thuật JOIN",
+      "description": "Liên kết dữ liệu giữa các bảng quan hệ."
+    }
+  ],
+  "skills": [
+    {
+      "id": "SQL-RDBMS-01",
+      "concept_id": "SQL-RDBMS-01",
+      "name": "Cơ sở dữ liệu quan hệ, Bảng & Khóa chính (PK)",
+      "concept_name": "Cơ sở dữ liệu quan hệ, Bảng & Khóa chính (PK)",
+      "domain_id": "SQL",
+      "module_id": "MOD-SQL-RDBMS",
+      "topic_id": "TOPIC-SQL-SCHEMA",
+      "prerequisites": [],
+      "learning_objectives": [
+        "Hiểu bản chất bảng hai chiều bao gồm các dòng (Tuple) và các cột (Attribute)",
+        "Nắm vững vai trò định danh duy nhất của Khóa chính (Primary Key)",
+        "Thiết lập mối liên kết toàn vẹn tham chiếu qua Khóa ngoại (Foreign Key)"
+      ],
+      "associated_errors": [
+        "Foreign Key Violation",
+        "Duplicate Key Exception"
+      ],
+      "difficulty_level": 1,
+      "bloom_level": "Understand",
+      "estimated_time_minutes": 30,
+      "practice_count": 3
+    },
+    {
+      "id": "SQL-DQL-01",
+      "concept_id": "SQL-DQL-01",
+      "name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+      "concept_name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+      "domain_id": "SQL",
+      "module_id": "MOD-SQL-DQL",
+      "topic_id": "TOPIC-SQL-SELECT",
+      "prerequisites": [
+        "SQL-RDBMS-01"
+      ],
+      "learning_objectives": [
+        "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng",
+        "Loại bỏ các dòng kết quả trùng lặp với từ khóa `DISTINCT`",
+        "Đặt tên bí danh cho cột (Column Alias) bằng từ khóa `AS` giúp báo cáo dễ đọc"
+      ],
+      "associated_errors": [
+        "Invalid Column Name",
+        "Syntax Error"
+      ],
+      "difficulty_level": 1,
+      "bloom_level": "Remember",
+      "estimated_time_minutes": 30,
+      "practice_count": 4
+    },
+    {
+      "id": "SQL-WHERE-01",
+      "concept_id": "SQL-WHERE-01",
+      "name": "Mệnh đề lọc WHERE & Các toán tử so sánh",
+      "concept_name": "Mệnh đề lọc WHERE & Các toán tử so sánh",
+      "domain_id": "SQL",
+      "module_id": "MOD-SQL-FILTER",
+      "topic_id": "TOPIC-SQL-WHERE",
+      "prerequisites": [
+        "SQL-DQL-01"
+      ],
+      "learning_objectives": [
+        "Lọc dữ liệu chính xác theo điều kiện bằng mệnh đề `WHERE`",
+        "Sử dụng các toán tử so sánh: `=`, `<>`, `!=`, `>`, `<`, `>=`, `<=`",
+        "Lưu ý kiểm tra giá trị rỗng bằng `IS NULL` hoặc `IS NOT NULL` (không dùng `= NULL`)"
+      ],
+      "associated_errors": [
+        "Incorrect Syntax near WHERE",
+        "Type Mismatch"
+      ],
+      "difficulty_level": 1,
+      "bloom_level": "Apply",
+      "estimated_time_minutes": 35,
+      "practice_count": 4
+    },
+    {
+      "id": "SQL-LOGIC-01",
+      "concept_id": "SQL-LOGIC-01",
+      "name": "Đa điều kiện Logic: AND, OR, NOT & Thứ tự ưu tiên",
+      "concept_name": "Đa điều kiện Logic: AND, OR, NOT & Thứ tự ưu tiên",
+      "domain_id": "SQL",
+      "module_id": "MOD-SQL-LOGIC",
+      "topic_id": "TOPIC-SQL-LOGIC",
+      "prerequisites": [
+        "SQL-WHERE-01"
+      ],
+      "learning_objectives": [
+        "Kết hợp nhiều điều kiện logic đồng thời qua `AND` và hoặc qua `OR`",
+        "Nắm vững quy tắc thứ tự ưu tiên: AND luôn được tính trước OR",
+        "Sử dụng dấu ngoặc đơn `()` để định hình chính xác logic nghiệp vụ"
+      ],
+      "associated_errors": [
+        "Logic Precedence Bug",
+        "Unexpected Row Count"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Analyze",
+      "estimated_time_minutes": 40,
+      "practice_count": 4
+    },
+    {
+      "id": "SQL-SORT-01",
+      "concept_id": "SQL-SORT-01",
+      "name": "Sắp xếp dữ liệu (ORDER BY) & Giới hạn bản ghi (TOP)",
+      "concept_name": "Sắp xếp dữ liệu (ORDER BY) & Giới hạn bản ghi (TOP)",
+      "domain_id": "SQL",
+      "module_id": "MOD-SQL-SORT",
+      "topic_id": "TOPIC-SQL-SORT",
+      "prerequisites": [
+        "SQL-LOGIC-01"
+      ],
+      "learning_objectives": [
+        "Sắp xếp kết quả theo thứ tự tăng dần (`ASC`) hoặc giảm dần (`DESC`)",
+        "Sắp xếp đa cột (Multi-column sorting)",
+        "Giới hạn số lượng bản ghi trả về bằng `SELECT TOP (N)` trong T-SQL"
+      ],
+      "associated_errors": [
+        "Invalid in Subquery without TOP",
+        "Sorting Ambiguity"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Apply",
+      "estimated_time_minutes": 35,
+      "practice_count": 4
+    },
+    {
+      "id": "SQL-AGG-01",
+      "concept_id": "SQL-AGG-01",
+      "name": "Hàm tổng hợp (COUNT, SUM, AVG) & Gom nhóm (GROUP BY)",
+      "concept_name": "Hàm tổng hợp (COUNT, SUM, AVG) & Gom nhóm (GROUP BY)",
+      "domain_id": "SQL",
+      "module_id": "MOD-SQL-AGG",
+      "topic_id": "TOPIC-SQL-GROUP",
+      "prerequisites": [
+        "SQL-SORT-01"
+      ],
+      "learning_objectives": [
+        "Thực hiện thống kê với các hàm tổng hợp `COUNT()`, `SUM()`, `AVG()`, `MIN()`, `MAX()`",
+        "Phân nhóm dữ liệu theo một hoặc nhiều thuộc tính với `GROUP BY`",
+        "Lọc dữ liệu sau khi gom nhóm bằng mệnh đề `HAVING` (phân biệt với `WHERE`)"
+      ],
+      "associated_errors": [
+        "Column is invalid in the select list because it is not contained in GROUP BY"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Analyze",
+      "estimated_time_minutes": 45,
+      "practice_count": 4
+    },
+    {
+      "id": "SQL-JOIN-01",
+      "concept_id": "SQL-JOIN-01",
+      "name": "Liên kết Bảng (INNER JOIN & LEFT JOIN)",
+      "concept_name": "Liên kết Bảng (INNER JOIN & LEFT JOIN)",
+      "domain_id": "SQL",
+      "module_id": "MOD-SQL-JOIN",
+      "topic_id": "TOPIC-SQL-JOIN",
+      "prerequisites": [
+        "SQL-AGG-01"
+      ],
+      "learning_objectives": [
+        "Ghép nối hai bảng quan hệ qua điều kiện khóa ngoại với `INNER JOIN ... ON`",
+        "Giữ lại toàn bộ dữ liệu bảng bên trái kể cả khi không có bản ghi khớp bằng `LEFT JOIN`",
+        "Xử lý các giá trị `NULL` phát sinh sau khi liên kết bảng"
+      ],
+      "associated_errors": [
+        "Ambiguous column name",
+        "Cartesian Product (Missing ON clause)"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Analyze",
+      "estimated_time_minutes": 50,
+      "practice_count": 5
+    }
+  ],
+  "prerequisites": [
+    {
+      "source": "SQL-RDBMS-01",
+      "target": "SQL-DQL-01",
+      "relation": "prerequisite"
+    },
+    {
+      "source": "SQL-DQL-01",
+      "target": "SQL-WHERE-01",
+      "relation": "prerequisite"
+    },
+    {
+      "source": "SQL-WHERE-01",
+      "target": "SQL-LOGIC-01",
+      "relation": "prerequisite"
+    },
+    {
+      "source": "SQL-LOGIC-01",
+      "target": "SQL-SORT-01",
+      "relation": "prerequisite"
+    },
+    {
+      "source": "SQL-SORT-01",
+      "target": "SQL-AGG-01",
+      "relation": "prerequisite"
+    },
+    {
+      "source": "SQL-AGG-01",
+      "target": "SQL-JOIN-01",
+      "relation": "prerequisite"
+    }
+  ],
+  "lesson_mappings": {
+    "SQL-01.01": "SQL-RDBMS-01",
+    "SQL-01.02": "SQL-RDBMS-01",
+    "SQL-01.03": "SQL-DQL-01",
+    "SQL-02.01": "SQL-DQL-01",
+    "SQL-02.02": "SQL-DQL-01",
+    "SQL-02.03": "SQL-WHERE-01",
+    "SQL-02.04": "SQL-LOGIC-01"
+  },
+  "practice_problem_mappings": {},
+  "edges": [
+    {
+      "source": "SQL-RDBMS-01",
+      "target": "SQL-DQL-01",
+      "relation": "prerequisite"
+    },
+    {
+      "source": "SQL-DQL-01",
+      "target": "SQL-WHERE-01",
+      "relation": "prerequisite"
+    },
+    {
+      "source": "SQL-WHERE-01",
+      "target": "SQL-LOGIC-01",
+      "relation": "prerequisite"
+    },
+    {
+      "source": "SQL-LOGIC-01",
+      "target": "SQL-SORT-01",
+      "relation": "prerequisite"
+    },
+    {
+      "source": "SQL-SORT-01",
+      "target": "SQL-AGG-01",
+      "relation": "prerequisite"
+    },
+    {
+      "source": "SQL-AGG-01",
+      "target": "SQL-JOIN-01",
+      "relation": "prerequisite"
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+KẾ HOẠCH TRIỂN KHAI & REFACTOR KIẾN TRÚC
+MULTI-AGENT ADAPTIVE LEARNING
+Định tuyến ý định → lập kế hoạch thích ứng → sinh bài → kiểm định → phân tích lỗi → cập nhật người học
+Mục tiêu: biến hệ thống hiện tại từ pipeline “AI sinh bài” thành một vòng lặp Adaptive Learning có Learner State, Knowledge Graph, quy tắc dữ liệu rõ ràng và feedback từ kết quả làm bài quay ngược vào quyết định bài tiếp theo.
+1. Kết luận kiến trúc cần triển khai
+Giữ IntentRouterAgent làm cửa vào cho ngôn ngữ tự nhiên, nhưng chỉ phân loại intent + trích xuất context; không cho Agent này sinh bài hoặc quyết định mastery.
+Tách AdaptiveExercisePlanner thành thành phần quyết định trung tâm. Planner nhận Learner State + Knowledge Graph + lịch sử học tập + yêu cầu từ Router để tạo Exercise Specification.
+Giữ ExerciseGeneratorAgent để viết đề, đáp án, test case và metadata theo specification; không để Generator tự chọn mục tiêu kiến thức.
+Tách Validation thành pipeline kiểm định nhiều lớp: schema → constraint/AST → test execution → pedagogical critic. LLM Critic không thay thế các kiểm tra deterministic.
+Tạo feedback loop sau khi nộp bài: Code Runner → Error Analyzer → Concept Attribution → Update Learner Mastery → Learner State → Planner.
+Knowledge Graph là “kiến thức khách quan của môn học”; Learner State là “trạng thái của từng học viên”. Hai lớp dữ liệu này phải độc lập.
+2. Căn cứ từ tài liệu hiện tại
+Tài liệu chương trình hiện có đã mô hình hóa C++ và JavaScript thành Knowledge Graph DAG để định tuyến bài học, theo dõi mức độ làm chủ và chẩn đoán lỗ hổng. Quy mô hiện tại là 108 bài học, 24 node tri thức và 22 cạnh DAG cho hai ngôn ngữ. Tài liệu cũng đã nêu mục tiêu backtracking từ lỗi về “Root Cognitive Gap” và tạo remediation micro-path.
+Điểm cần thay đổi không phải là bỏ KG, mà là biến KG thành dữ liệu đầu vào của Planner và biến kết quả làm bài thành dữ liệu cập nhật Learner State. Trong tài liệu hiện tại, nhiều bài học vẫn được ánh xạ 1-một vào các node khái niệm tổng hợp; ví dụ nhiều bài nền tảng JavaScript đều quy về JS-BASICS-01, còn nhiều bài C++ quy về CPP-BASICS-01. Điều này phù hợp để thống kê cấp module nhưng chưa đủ mịn để attribution lỗi.
+3. Kiến trúc mục tiêu
+4. Phân loại: khối nào cần Agent, khối nào chỉ là service/query
+5. Hợp đồng dữ liệu bắt buộc giữa các khối
+5.1. Router → Planner: RoutingDecision
+{
+  "intent": "REQUEST_ADAPTIVE_EXERCISE",
+  "language": "javascript",
+  "topic": "function",
+  "difficulty_request": "easier",
+  "mode": "remediation",
+  "confidence": 0.94,
+  "user_text": "Cho tôi một bài function dễ hơn"
+}
+5.2. Planner → Generator: ExerciseSpecification
+{
+  "target_concept": "JS-FUNC-01",
+  "target_sub_skills": ["parameters", "scope"],
+  "difficulty": "EASY",
+  "mode": "remediation",
+  "prerequisites": ["JS-BASICS-01"],
+  "required_constructs": ["function", "parameter"],
+  "forbidden_constructs": ["closure", "class"],
+  "recent_errors": ["unused parameter", "outer variable leakage"]
+}
+5.3. Submission → Error Analyzer: ExecutionResult / ErrorEvent
+{
+  "submission_id": "sub_123",
+  "status": "WRONG_ANSWER",
+  "error_type": "LOGIC_ERROR",
+  "test_case_id": "tc_03",
+  "message": "Expected ... but received ...",
+  "code_excerpt": "...",
+  "runtime": "javascript"
+}
+5.4. Error Analyzer → KG/Mastery: ConceptAttribution
+{
+  "submission_id": "sub_123",
+  "candidates": [
+    {"concept":"JS-FUNC-01","sub_skill":"parameters","confidence":0.85},
+    {"concept":"JS-BASICS-01","sub_skill":"scope","confidence":0.15}
+  ],
+  "selected": {"concept":"JS-FUNC-01","sub_skill":"parameters"}
+}
+6. Cấu trúc dữ liệu tối thiểu cần đảm bảo
+KnowledgeConcept: concept_id, language, title, sub_skills, prerequisites, downstream, associated_errors, remediation_templates, difficulty_range
+LearnerState: user_id, concept_id, mastery, confidence, attempts, correct_count, wrong_count, last_attempt_at, current_streak, recent_error_ids
+Submission: submission_id, user_id, exercise_id, code, language, submitted_at, execution_status, score, test_results
+ErrorEvent: error_id, submission_id, normalized_type, message, test_case_id, code_location, severity, created_at
+ConceptAttribution: error_id, concept_id, sub_skill, confidence, evidence, model_version, created_at
+ExerciseSpecification: target_concept, sub_skills, difficulty, mode, prerequisites, required_constructs, forbidden_constructs, test_constraints
+Exercise: exercise_id, spec_snapshot, statement, input, output, constraints, tests, hints, solution, metadata
+MasteryEvent: user_id, concept_id, previous_mastery, delta, reason, evidence_ids, policy_version, created_at
+7. Kịch bản triển khai theo từng luồng
+Kịch bản A — User yêu cầu bài tập thích ứng
+User gửi câu tự nhiên: “Tôi đang yếu function, cho tôi bài dễ hơn.”
+IntentRouterAgent trả RoutingDecision: REQUEST_ADAPTIVE_EXERCISE + topic=function + difficulty=easier + mode=remediation.
+Planner query Learner State: mastery, recent errors, recent attempts.
+Planner query Knowledge Graph: concept function, sub-skills, prerequisites và các concept downstream.
+Planner tạo ExerciseSpecification. Generator nhận đúng specification và không tự chọn target.
+Validation chạy schema + AST/constraint + sandbox tests. Nếu fail kỹ thuật thì không đưa cho Critic.
+Critic đánh giá tính sư phạm. Nếu reject → retry với lý do reject đã chuẩn hóa.
+Final Exercise trả về frontend và lưu spec snapshot để sau này biết bài đã được tạo từ trạng thái nào.
+Kịch bản B — User hỏi điểm yếu
+Router phân loại CHECK_WEAKNESS.
+Weakness Service chỉ query Learner State và có thể query KG để lấy tên concept/prerequisite.
+Thông tin trả về là thống kê + giải thích, không chạy Generator.
+Kịch bản C — User hỏi lý thuyết
+Router phân loại EXPLAIN_CONCEPT và lấy topic.
+Tutor/Explanation Agent query KG + content repository để lấy đúng concept và prerequisite context.
+Agent sinh phần giải thích; không thay đổi mastery chỉ vì user đọc lý thuyết.
+Kịch bản D — User nộp code
+Code Runner chạy test và trả ExecutionResult.
+Error Analyzer chuẩn hóa compile/runtime/test failure thành ErrorEvent.
+Concept Attribution gán candidate concept/sub-skill + confidence.
+Mastery Updater cập nhật LearnerState từ evidence; nếu confidence thấp thì chỉ ghi evidence, chưa giảm mastery mạnh.
+Update xong mới cho phép Planner dùng trạng thái mới để tạo bài tiếp theo.
+Kịch bản E — Bài AI sinh ra nhưng sai yêu cầu
+Schema Validator bắt lỗi thiếu field/JSON sai.
+AST/Constraint Validator bắt lỗi như “đề bắt buộc Template Literal nhưng solution không dùng backtick” hoặc “hàm phải nhận parameter nhưng solution bỏ parameter”.
+Sandbox bắt lỗi test case, input/output.
+Critic chỉ chạy sau khi deterministic checks đạt.
+8. Yêu cầu triển khai cho từng Agent
+IntentRouterAgent — Input: raw user message + current language/lesson context. Output: strict RoutingDecision JSON. Prompt phải buộc Agent không trả prose ngoài JSON. Confidence < threshold thì route về clarification/general handling.
+AdaptiveExercisePlanner — Input: RoutingDecision + LearnerState + KG query results + recent history. Output: ExerciseSpecification JSON. Planner phải ưu tiên remediation khi có lỗi lặp lại; không cho Generator tự đổi target.
+ExerciseGeneratorAgent — Input: ExerciseSpecification. Output: exercise JSON có statement, input, output, constraints, starter_code nếu có, tests, reference_solution, metadata. Không suy diễn thêm mục tiêu ngoài spec.
+CriticEvaluatorAgent — Input: exercise JSON + spec + validation report. Output: approve/reject + rubric + repair instructions. Không được bỏ qua deterministic failures.
+Error Analyzer — Input: ExecutionResult + source code + test result. Output: normalized ErrorEvent. Chuẩn hóa cùng một taxonomy lỗi giữa C++ và JS, nhưng giữ mapping riêng theo ngôn ngữ.
+Concept Attribution — Input: ErrorEvent + code context + exercise target concept + KG neighborhood. Output: candidate concepts + confidence + evidence. Không cập nhật mastery.
+9. Quy tắc truy vấn dữ liệu: Agent không được tự do truy vấn
+Agent không nên tự viết SQL/ORM tùy ý để tìm toàn bộ dữ liệu. Mỗi use case phải có service/tool rõ ràng.
+Planner được phép gọi: getLearnerState(), getRecentSubmissionHistory(), getConcept(), getPrerequisites(), getAssociatedErrors(), getRemediationCandidates().
+Router chỉ gọi context tối thiểu nếu cần: current_language, current_lesson, active_course. Không đọc toàn bộ Learner State.
+Critic không cần đọc database người dùng; nó chỉ cần spec + validation report + rubric.
+MasteryUpdater là deterministic. Việc tăng/giảm mastery phải dùng policy version và evidence IDs để truy vết.
+10. Logic quyết định bài tập thích ứng (mẫu)
+11. Lộ trình triển khai cho AI/codebase
+12. Tiêu chí nghiệm thu
+Router phân loại đúng intent và luôn trả JSON theo schema.
+Planner không tạo bài trực tiếp; luôn tạo ExerciseSpecification.
+Generator không tự thay đổi target concept/difficulty đã được Planner khóa.
+Bài tập bị lỗi schema/constraint/test phải bị chặn trước khi trả cho user.
+Mỗi submission tạo được ExecutionResult và, khi có lỗi, ErrorEvent.
+Mỗi ErrorEvent có ConceptAttribution hoặc trạng thái “unresolved/low-confidence”.
+Mastery update có evidence_id và policy_version, truy vết được vì sao điểm thay đổi.
+Bài tiếp theo có thể giải thích được: “vì sao hệ thống chọn bài này cho học viên này”.
+Có thể replay một request bằng trace_id để kiểm tra toàn pipeline.
+13. Prompt giao việc cho AI sửa codebase
+Hãy refactor hệ thống Adaptive Tutor theo tài liệu này. Ưu tiên thay đổi theo P0 → P1 → P2. Trước khi sửa code, tạo/kiểm tra các schema contract. Không trộn Learner State vào Knowledge Graph. Không để Generator tự quyết định concept. Không dùng LLM để thay thế schema/AST/sandbox validation. Mọi update mastery phải đi qua MasteryUpdater và có evidence + policy version. Sau mỗi bước, cập nhật test tích hợp cho routing, planning, generation, validation và submission feedback loop.
+14. Checklist trước khi AI bắt đầu sửa code
+Đọc codebase và xác định RouterAgent, KnowledgeRetriever, ExerciseGeneratorAgent, CriticEvaluatorAgent hiện tại đang nằm ở đâu.
+Không xóa pipeline cũ ngay; tạo flow mới song song sau đó chuyển từng use case.
+Tạo và validate các schema contract trước khi sửa logic agent.
+Tách repository/service layer để Agent không truy vấn database trực tiếp.
+Tạo test cho từng contract và test tích hợp end-to-end.
+Sau mỗi P0/P1 phải chạy lại các case: CHECK_WEAKNESS, EXPLAIN_CONCEPT, REQUEST_ADAPTIVE_EXERCISE và submission có lỗi.
+Gắn trace_id cho toàn bộ request để có thể truy vết Router → Planner → Generator → Validator → Critic và Submission → Attribution → Mastery.
+Chỉ chuyển traffic chính sang kiến trúc mới sau khi output của hai pipeline cũ/mới được đối chiếu.
+Khối | Loại | Có dùng LLM? | Nhiệm vụ | Không được làm
+IntentRouterAgent | Agent | Có | Phân loại intent, trích xuất topic/language/difficulty/mode/confidence. | Không sinh bài; không cập nhật mastery; không tự truy vấn và diễn giải toàn bộ KG.
+Learner State Service | Service/DB | Không | Đọc/ghi mastery, error history, attempts, recent performance. | Không suy luận nội dung; không chứa prerequisite graph.
+Knowledge Graph Service | Service/DB | Không | Truy vấn concept, prerequisite, downstream/upstream, error mapping, remediation links. | Không lưu trạng thái cá nhân.
+Learning History Service | Service/DB | Không | Truy vấn submission, attempt, time, score, test failures, recent streaks. | Không sinh kết luận sư phạm một mình.
+AdaptiveExercisePlanner | Agent/Policy engine | Có thể có LLM + rule | Chọn target concept/sub-skill, remediation hay progression, difficulty, constraints. | Không viết đề hoàn chỉnh.
+ExerciseGeneratorAgent | Agent | Có | Sinh exercise JSON theo specification. | Không tự đổi target concept hoặc difficulty.
+Schema/Constraint Validator | Deterministic service | Không | Kiểm schema, required fields, forbidden constructs, required constructs. | Không đánh giá văn phong sư phạm.
+AST Analyzer | Deterministic service | Không | Phân tích code học viên theo cấu trúc cú pháp và ràng buộc kỹ thuật. | Không tự suy diễn intent người dùng.
+Sandbox/Test Runner | Execution service | Không | Biên dịch/chạy code và test cases an toàn. | Không đưa ra kết luận mastery trực tiếp.
+CriticEvaluatorAgent | Agent | Có | Đánh giá chất lượng, độ khó, tính sư phạm, mức khớp specification. | Không thay thế schema/AST/test runner.
+Error Analyzer | Service + rules/LLM tùy mức | Có thể | Chuẩn hóa lỗi runtime/compile/test failure và tạo Error Event. | Không cập nhật mastery trực tiếp.
+Concept Attribution | Inference service | Có thể hybrid | Gán lỗi cho concept/sub-skill theo confidence. | Không ghi đè KG; chỉ tạo attribution event.
+Mastery Updater | Deterministic policy | Không | Cập nhật mastery từ evidence có trọng số. | Không tự sinh exercise.
+Trạng thái | Chiến lược | Mục tiêu
+mastery < 40% | Remediation / EASY | Tập trung sub-skill lỗi nhiều nhất, prerequisite gần nhất
+40% ≤ mastery < 70% | MEDIUM | Kết hợp 2–3 concept liên quan, tăng dần độ phức tạp
+70% ≤ mastery < 85% | MEDIUM+ / HARD | Bài tích hợp nhiều kiến thức, ít gợi ý
+mastery ≥ 85% | HARD / CHALLENGE | Bài mới lạ, kết hợp concept và yêu cầu debug/tối ưu
+Lặp cùng một lỗi ≥ 3 lần | Remediation | Ưu tiên bài biến thể khác nhưng giữ cùng sub-skill
+Lỗi confidence < 0.6 | Không giảm mastery mạnh | Yêu cầu thêm evidence hoặc tạo bài chẩn đoán nhỏ
+Giai đoạn | Việc phải làm
+P0 — Chuẩn hóa contract | Tạo schema TypeScript/Pydantic cho RoutingDecision, ExerciseSpecification, ExecutionResult, ErrorEvent, ConceptAttribution, MasteryEvent. Không refactor agent trước khi contract ổn định.
+P0 — Tách Learner State khỏi KG | Tạo service + repository query riêng. Mastery và lịch sử học tập tuyệt đối không lưu trực tiếp vào KG node definition.
+P0 — Tách Planner | Tách quyết định “bài tiếp theo” khỏi ExerciseGeneratorAgent. Generator chỉ nhận specification.
+P1 — Validation pipeline | Thêm Schema Validator, AST/Constraint Validator và Sandbox Test Runner trước Critic.
+P1 — Feedback loop | Sau submission phải tạo ErrorEvent → Attribution → MasteryEvent → LearnerState update.
+P1 — Observability | Lưu trace_id cho Router, Planner, Generator, Validation, Critic và Submission pipeline để debug toàn luồng.
+P2 — Tinh chỉnh policy | Dựa trên dữ liệu thực tế để điều chỉnh threshold mastery, confidence và retry budget.
