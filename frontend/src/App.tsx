@@ -30,6 +30,7 @@ import PracticeProblemManagement from "./pages/admin/PracticeProblemManagement";
 import Analytics from "./pages/admin/Analytics";
 import AIKeyManagement from "./pages/admin/AIKeyManagement";
 import { getInitialTheme, applyTheme } from "./utils/themeHelper";
+import { setupAuthInterceptor } from "./utils/authHelper";
 
 // Khởi tạo QueryClient cho TanStack Query với các cấu hình mặc định (cache 5 phút)
 const queryClient = new QueryClient({
@@ -47,6 +48,7 @@ function App() {
   useEffect(() => {
     const theme = getInitialTheme();
     applyTheme(theme);
+    setupAuthInterceptor();
   }, []);
 
   return (

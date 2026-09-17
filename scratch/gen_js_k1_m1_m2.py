@@ -72,23 +72,16 @@ console.log(2026);
         "exercise": {
             "title": "In thông điệp chào mừng JavaScript 2026",
             "difficulty": "EASY",
-            "problem_description": """### Mục tiêu:
-Làm quen với cú pháp xuất dữ liệu cơ bản của JavaScript bằng `console.log()`.
+            "problem_description": """### Yêu cầu
+Viết chương trình JavaScript sử dụng hàm `console.log()` để in chính xác 2 dòng thông điệp ra màn hình console.
+Chương trình bắt buộc phải có ít nhất 1 dòng chú thích (sử dụng `//` hoặc `/* ... */`).
 
-### Yêu cầu đề bài:
-Viết chương trình in chính xác hai dòng sau ra màn hình console:
+### Ví dụ
+**Output**
 ```text
 MCODE - JavaScript Foundations
 Năm học: 2026
 ```
-
-### Định dạng đầu ra:
-* Dòng 1: `MCODE - JavaScript Foundations`
-* Dòng 2: `Năm học: 2026`
-
-### Ràng buộc kỹ thuật:
-* Sử dụng hàm `console.log()` để xuất kết quả.
-* Bắt buộc có ít nhất 1 dòng chú thích (`//` hoặc `/* */`).
 
 <!-- CONSTRAINTS: {"requireComment":true,"requiredKeywords":["console.log"],"forbiddenKeywords":[],"customErrorMessage":"Bài tập yêu cầu sử dụng console.log() và có ít nhất 1 dòng chú thích //."} -->""",
             "starterCode": """// Viết mã JavaScript của bạn bên dưới
@@ -201,26 +194,19 @@ console.log("Tổng là:", sum);
         "exercise": {
             "title": "Viết chú thích chuẩn mực và in khẩu hiệu",
             "difficulty": "EASY",
-            "problem_description": """### Mục tiêu:
-Thực hành viết cả hai dạng chú thích trong JavaScript và xuất thông tin đúng quy chuẩn.
-
-### Yêu cầu đề bài:
-Viết chương trình chứa:
-1. Ít nhất một chú thích một dòng (`//`).
+            "problem_description": """### Yêu cầu
+Viết chương trình JavaScript sử dụng hàm `console.log()` và kết thúc các câu lệnh bằng dấu chấm phẩy `;` để in chính xác 3 dòng khẩu hiệu ra màn hình console.
+Mã nguồn phải chứa:
+1. Ít nhất một chú thích đơn dòng (`//`).
 2. Ít nhất một chú thích nhiều dòng (`/* ... */`).
-3. In ra console chính xác 3 dòng khẩu hiệu:
+
+### Ví dụ
+**Output**
 ```text
 Cú pháp rõ ràng
 Dấu chấm phẩy an toàn
 Mã nguồn dễ đọc
 ```
-
-### Định dạng đầu ra:
-3 dòng văn bản tương ứng.
-
-### Ràng buộc kỹ thuật:
-* Bắt buộc có cả `//` và `/*` trong mã nguồn.
-* Sử dụng `console.log()` kết thúc các câu lệnh bằng dấu `;`.
 
 <!-- CONSTRAINTS: {"requireComment":true,"requiredKeywords":["console.log","/*","*/",";"],"forbiddenKeywords":[],"customErrorMessage":"Bài tập yêu cầu dùng cả chú thích // và /* */ cùng dấu chấm phẩy ; kết thúc lệnh."} -->""",
             "starterCode": """// Viết mã của bạn tại đây
@@ -332,25 +318,23 @@ console.log(studentCount);
         "exercise": {
             "title": "Quản lý thông tin khóa học với const và let",
             "difficulty": "EASY",
-            "problem_description": """### Mục tiêu:
-Áp dụng khai báo hằng số bằng `const` và cập nhật biến bằng `let`.
+            "problem_description": """### Yêu cầu
+Thực hiện các thao tác quản lý thông tin lớp học:
+1. Dùng từ khóa `const` khai báo hằng số `courseName` có giá trị `"JavaScript Foundations"`.
+2. Dùng từ khóa `const` khai báo hằng số `maxStudents` có giá trị `50`.
+3. Dùng từ khóa `let` khai báo biến `currentStudents` có giá trị ban đầu là `42`.
+4. Cập nhật `currentStudents` bằng cách cộng thêm `5` học viên mới đăng ký (`+= 5` hoặc `+ 5`).
+5. In thông tin ra màn hình console trên 3 dòng theo đúng định dạng.
 
-### Yêu cầu đề bài:
-1. Khai báo một hằng số `courseName` có giá trị chuỗi là `"JavaScript Foundations"`.
-2. Khai báo một hằng số `maxStudents` có giá trị số nguyên là `50`.
-3. Khai báo một biến `currentStudents` có giá trị ban đầu là `42`.
-4. Sau đó, có thêm `5` học viên đăng ký mới, hãy cập nhật lại giá trị cho `currentStudents`.
-5. In ra màn hình console 3 dòng:
+*(Lưu ý: Tuyệt đối không dùng từ khóa `var`).*
+
+### Ví dụ
+**Output**
 ```text
 Khóa học: JavaScript Foundations
 Sĩ số tối đa: 50
 Sĩ số hiện tại: 47
 ```
-
-### Ràng buộc kỹ thuật:
-* Bắt buộc sử dụng đúng từ khóa `const` cho `courseName` và `maxStudents`.
-* Bắt buộc sử dụng đúng từ khóa `let` cho `currentStudents`.
-* Sử dụng phép gán cộng dồn (`+=` hoặc `= currentStudents + 5`).
 
 <!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["const","let","courseName","maxStudents","currentStudents"],"forbiddenKeywords":["var"],"customErrorMessage":"Đề bài yêu cầu khai báo đúng các biến courseName, maxStudents (bằng const) và currentStudents (bằng let). Không dùng var."} -->""",
             "starterCode": """// Khai báo hằng số và biến theo yêu cầu đề bài
@@ -466,25 +450,22 @@ console.log("Tổng điểm:", total);
         "exercise": {
             "title": "In hóa đơn thanh toán sách lập trình",
             "difficulty": "EASY",
-            "problem_description": """### Mục tiêu:
-Thực hành kết hợp biến, phép tính số học và kỹ thuật xuất dữ liệu kèm nhãn.
+            "problem_description": """### Yêu cầu
+Khai báo các hằng số bằng từ khóa `const` để quản lý thông tin mua sách:
+- `bookTitle = "JavaScript Nang Cao"`
+- `unitPrice = 120000`
+- `quantity = 3`
+- `totalPrice = unitPrice * quantity`
 
-### Yêu cầu đề bài:
-Cho các thông tin sau:
-* Tên sách: `"JavaScript Nang Cao"`
-* Đơn giá: `120000` (đồng)
-* Số lượng mua: `3` (quyển)
+Sử dụng hàm `console.log()` để in thông tin hóa đơn ra màn hình trên 3 dòng theo định dạng mẫu.
 
-Hãy khai báo các hằng số thích hợp, tính tổng tiền phải trả (`donGia * soLuong`) và in ra màn hình chính xác theo định dạng 3 dòng:
+### Ví dụ
+**Output**
 ```text
 Sách: JavaScript Nang Cao
 Số lượng: 3
 Tổng tiền: 360000 VNĐ
 ```
-
-### Ràng buộc kỹ thuật:
-* Khai báo các hằng số rõ ràng: `bookTitle`, `unitPrice`, `quantity`, `totalPrice`.
-* Sử dụng `console.log()` để xuất kết quả.
 
 <!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["console.log","const","bookTitle","unitPrice","quantity"],"forbiddenKeywords":[],"customErrorMessage":"Cần khai báo đúng các hằng số bookTitle, unitPrice, quantity và in tổng tiền."} -->""",
             "starterCode": """// Khai báo thông tin và in hóa đơn thanh toán
@@ -599,26 +580,23 @@ console.log(typeof 9007199254740995n); // "bigint"
         "exercise": {
             "title": "Kiểm tra kiểu dữ liệu các định danh",
             "difficulty": "EASY",
-            "problem_description": """### Mục tiêu:
-Sử dụng toán tử `typeof` để kiểm tra kiểu dữ liệu của các biến được cho trước.
-
-### Yêu cầu đề bài:
+            "problem_description": """### Yêu cầu
 Khai báo 4 biến sau:
-1. `score` nhận giá trị `9.5`
-2. `subject` nhận giá trị `"JavaScript"`
-3. `isPassed` nhận giá trị `true`
-4. `emptySlot` nhận giá trị `null`
+1. `score = 9.5`
+2. `subject = "JavaScript"`
+3. `isPassed = true`
+4. `emptySlot = null`
 
-In ra kiểu dữ liệu của từng biến bằng toán tử `typeof` theo đúng định dạng 4 dòng:
+Sử dụng toán tử `typeof` và hàm `console.log()` để in ra kiểu dữ liệu của từng biến trên 4 dòng theo định dạng: `{tên biến}: {kiểu dữ liệu}`.
+
+### Ví dụ
+**Output**
 ```text
 score: number
 subject: string
 isPassed: boolean
 emptySlot: object
 ```
-
-### Ràng buộc kỹ thuật:
-* Bắt buộc sử dụng toán tử `typeof`.
 
 <!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["typeof","console.log"],"forbiddenKeywords":[],"customErrorMessage":"Bài tập yêu cầu sử dụng toán tử typeof để in kiểu dữ liệu."} -->""",
             "starterCode": """// Khai báo các biến và in kiểu dữ liệu với typeof
@@ -726,30 +704,22 @@ console.log("Power:", power);
         "exercise": {
             "title": "Tính toán chu vi, diện tích và chia kẹo",
             "difficulty": "EASY",
-            "problem_description": """### Mục tiêu:
-Vận dụng các toán tử số học nhân, cộng, chia lấy dư và lũy thừa trong JavaScript.
-
-### Yêu cầu đề bài:
-Cho một hình chữ nhật có chiều dài `length = 8` và chiều rộng `width = 5`.
-Có `candies = 47` chiếc kẹo được chia đều cho `children = 6` bạn nhỏ.
-
-Hãy tính:
+            "problem_description": """### Yêu cầu
+Cho các giá trị: hình chữ nhật có `length = 8`, `width = 5`; và `candies = 47` chiếc kẹo chia đều cho `children = 6` bạn nhỏ.
+Hãy tính và in kết quả ra màn hình trên 4 dòng:
 1. Chu vi hình chữ nhật: `(length + width) * 2`
 2. Diện tích hình chữ nhật: `length * width`
-3. Số kẹo mỗi bạn nhận được (phần nguyên: dùng `Math.floor(candies / children)`)
-4. Số kẹo còn dư lại (dùng toán tử `%`)
+3. Số kẹo mỗi bạn nhận được: lấy phần nguyên bằng `Math.floor(candies / children)`
+4. Số kẹo còn dư: sử dụng toán tử chia lấy dư `%`
 
-In ra màn hình theo định dạng 4 dòng:
+### Ví dụ
+**Output**
 ```text
 Chu vi: 26
 Dien tich: 40
 Moi ban: 7
 Con du: 5
 ```
-
-### Ràng buộc kỹ thuật:
-* Sử dụng toán tử `%` để tìm số dư.
-* In kết quả bằng `console.log()`.
 
 <!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["%","*","console.log"],"forbiddenKeywords":[],"customErrorMessage":"Bài tập yêu cầu dùng các toán tử số học và toán tử % chia lấy dư."} -->""",
             "starterCode": """// Tính chu vi, diện tích và chia kẹo theo yêu cầu
@@ -858,30 +828,25 @@ console.log("So sánh ===:", userInput === targetScore); // false
         "exercise": {
             "title": "Phân biệt so sánh nghiêm ngặt và lỏng lẻo",
             "difficulty": "EASY",
-            "problem_description": """### Mục tiêu:
-Thực hành phân biệt kết quả giữa toán tử so sánh lỏng lẻo `==` và nghiêm ngặt `===`.
-
-### Yêu cầu đề bài:
+            "problem_description": """### Yêu cầu
 Cho hai biến:
-* `const a = 0;`
-* `const b = false;`
+- `const a = 0;`
+- `const b = false;`
 
-Hãy in ra màn hình kết quả của 4 phép so sánh sau:
-1. `a == b`
-2. `a === b`
-3. `a != b`
-4. `a !== b`
+Hãy sử dụng các toán tử so sánh `==`, `===`, `!=`, `!==` và hàm `console.log()` để in ra kết quả của 4 phép so sánh trên 4 dòng theo định dạng:
+1. `a == b: {kết quả}`
+2. `a === b: {kết quả}`
+3. `a != b: {kết quả}`
+4. `a !== b: {kết quả}`
 
-Theo đúng định dạng:
+### Ví dụ
+**Output**
 ```text
 a == b: true
 a === b: false
 a != b: false
 a !== b: true
 ```
-
-### Ràng buộc kỹ thuật:
-* Bắt buộc sử dụng đúng 4 toán tử `==`, `===`, `!=`, `!==`.
 
 <!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["==","===","!=","!==","console.log"],"forbiddenKeywords":[],"customErrorMessage":"Cần sử dụng cả 4 toán tử so sánh: ==, ===, !=, !==."} -->""",
             "starterCode": """const a = 0;
@@ -988,28 +953,25 @@ console.log("Ưu đãi đặc biệt:", hasSpecialOffer); // false
         "exercise": {
             "title": "Kiểm tra điều kiện cấp chứng chỉ xuất sắc",
             "difficulty": "EASY",
-            "problem_description": """### Mục tiêu:
-Kết hợp các toán tử logic `&&`, `||` và toán tử so sánh để kiểm tra điều kiện.
+            "problem_description": """### Yêu cầu
+Cho thông tin học tập của một sinh viên:
+- Điểm lý thuyết: `theoryScore = 8.5`
+- Điểm thực hành: `practiceScore = 9.0`
+- Tỷ lệ chuyên cần (%): `attendance = 80`
+- Nộp bài tập lớn: `hasProject = true`
 
-### Yêu cầu đề bài:
-Cho các chỉ số của một sinh viên:
-* Điểm lý thuyết: `theoryScore = 8.5`
-* Điểm thực hành: `practiceScore = 9.0`
-* Tỷ lệ chuyên cần (%): `attendance = 80`
-* Có nộp bài tập lớn: `hasProject = true`
+Sử dụng toán tử so sánh và toán tử logic (`&&`, `||`) để tính toán:
+1. `isPassed`: Điểm lý thuyết $\ge 5.0$ VÀ điểm thực hành $\ge 5.0$ VÀ tỷ lệ chuyên cần $\ge 75\%$.
+2. `isExcellent`: `isPassed` là `true` VÀ (điểm thực hành $\ge 9.0$ HOẶC có nộp bài tập lớn).
 
-Quy chế cấp chứng chỉ:
-1. `isPassed`: Điểm lý thuyết >= 5.0 VÀ điểm thực hành >= 5.0 VÀ tỷ lệ chuyên cần >= 75%.
-2. `isExcellent`: `isPassed` là true VÀ (điểm thực hành >= 9.0 HOẶC có nộp bài tập lớn).
+In kết quả ra màn hình console trên 2 dòng theo đúng định dạng.
 
-Hãy tính và in kết quả ra màn hình:
+### Ví dụ
+**Output**
 ```text
 Đỗ khóa học: true
 Xuất sắc: true
 ```
-
-### Ràng buộc kỹ thuật:
-* Sử dụng toán tử logic `&&` và `||`.
 
 <!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["&&","||","console.log"],"forbiddenKeywords":[],"customErrorMessage":"Bài tập yêu cầu dùng toán tử logic && và ||."} -->""",
             "starterCode": """const theoryScore = 8.5;

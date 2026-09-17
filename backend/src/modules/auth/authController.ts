@@ -235,11 +235,11 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
             return;
         }
 
-        // 4. Tạo JWT
+        // 4. Tạo JWT (hết hạn trong 1 tiếng)
         const token = jwt.sign(
             { id: user.id, username: user.username, role: user.role },
             JWT_SECRET,
-            { expiresIn: '30d' }
+            { expiresIn: '1h' }
         );
 
         // 5. Trả về Token thống nhất dưới key 'token'

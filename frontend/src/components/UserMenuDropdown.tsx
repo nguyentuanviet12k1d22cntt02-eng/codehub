@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getValidUser, clearAuth } from '../utils/authHelper';
 
 interface UserMenuDropdownProps {
     className?: string;
@@ -10,8 +11,7 @@ export default function UserMenuDropdown({ className = '' }: UserMenuDropdownPro
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const userRaw = localStorage.getItem('user');
-    const user = userRaw ? JSON.parse(userRaw) : null;
+    const user = getValidUser();
     const username = user?.username || 'Tài khoản';
     const isAdmin = user?.role === 'ADMIN';
 
@@ -29,8 +29,7 @@ export default function UserMenuDropdown({ className = '' }: UserMenuDropdownPro
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        clearAuth();
         navigate('/login');
     };
 
