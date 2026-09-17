@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
     Search, 
     Play, 
-    Rocket, 
     ArrowRight, 
     FolderGit2, 
     Code2, 
@@ -11,8 +10,6 @@ import {
     Clock, 
     TrendingUp, 
     Sparkles, 
-    ChevronRight,
-    BookOpen,
     Users
 } from 'lucide-react';
 
