@@ -63,6 +63,29 @@ body {
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
+.dashboard-shell {
+  background-image:
+    radial-gradient(circle at 8% 4%, color-mix(in srgb, var(--accent-color) 9%, transparent) 0, transparent 28rem),
+    radial-gradient(circle at 92% 12%, rgba(14, 165, 233, 0.07) 0, transparent 24rem),
+    linear-gradient(to right, color-mix(in srgb, var(--border-color) 42%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--border-color) 42%, transparent) 1px, transparent 1px);
+  background-size: auto, auto, 32px 32px, 32px 32px;
+  background-position: center;
+}
+
+.dashboard-hero {
+  background-image:
+    linear-gradient(135deg, rgba(124, 58, 237, 0.38), transparent 48%),
+    linear-gradient(120deg, #17113f 0%, #201654 56%, #12274d 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-float-delayed {
+    animation: none !important;
+  }
+}
+
 /* ==========================================================================
    Ultra-Sleek Minimalist Custom Scrollbars (Across all browsers & elements)
    ========================================================================== */
