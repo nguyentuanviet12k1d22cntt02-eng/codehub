@@ -78,7 +78,9 @@ export const PersonalizedPathWorkspace: React.FC = () => {
                         <div className="hidden sm:flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-500/30">
                             <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-cyan-400 animate-pulse" />
                             <span className="text-[11px] font-mono font-bold text-blue-700 dark:text-cyan-300">
-                                PAL-Net Score: {((pathDetail?.palNetAvgScore || 0.85) * 100).toFixed(0)}%
+                                {typeof pathDetail?.palNetAvgScore === 'number'
+                                    ? `Điểm hồ sơ lúc tạo: ${(pathDetail.palNetAvgScore * 100).toFixed(0)}%`
+                                    : 'Chưa có điểm hồ sơ'}
                             </span>
                         </div>
                         <ThemeToggle />

@@ -359,7 +359,7 @@ export const reportKeyUsageInternal = async (req: Request, res: Response) => {
 // 8. Ghi nhận log chi tiết từng cuộc gọi AI
 export const recordCallLogInternal = async (req: Request, res: Response) => {
     try {
-        const { provider, model, apiKey, status, statusCode, latencyMs, promptSample, responseSample, errorMessage } = req.body;
+        const { provider, model, apiKey, status, statusCode, latencyMs, promptSample, responseSample, errorMessage, updateKeyStats } = req.body;
         const masked = apiKey ? (apiKey.slice(0, 8) + '••••••••' + apiKey.slice(-6)) : 'UNKNOWN';
 
         await prisma.aICallLog.create({
@@ -377,7 +377,7 @@ export const recordCallLogInternal = async (req: Request, res: Response) => {
         });
 
         // Đồng thời cập nhật vào AIProviderKey nếu tìm thấy
-        if (apiKey) {
+        if (apiKey && updateKeyStats !== false) {
             const keyRecord = await prisma.aIProviderKey.findFirst({ where: { apiKey } });
             if (keyRecord) {
                 if (status === 'SUCCESS') {

@@ -1,0 +1,581 @@
+{
+  "reply": "# Định nghĩa hàm `def`, gọi hàm & giá trị `return`\n\nChào bạn, trong Python, hàm (function) là một khối mã nguồn được đóng gói lại để tái sử dụng. Việc hiểu rõ cách định nghĩa, gọi và xử lý giá trị trả về là nền tảng quan trọng để viết code hiệu quả.\n\n## 1. Bản chất và Cú pháp\n\n### Khởi tạo hàm bằng `def` và Docstring\nBạn sử dụng từ khóa `def` để khai báo một hàm. Ngay sau tên hàm và dấu ngoặc đơn, bạn có thể thêm một **Docstring** (chuỗi tài liệu) để mô tả chức năng của hàm. Docstring thường nằm ở dòng đầu tiên trong thân hàm.\n\n```python\ndef tinh_tong(a, b):\n    \"\"\"Tính tổng của hai số a và b.\"\"\"\n    return a + b\n```\n\n- `tinh_tong`: Tên hàm (nên dùng chữ thường, phân tách bằng dấu gạch dưới).\n- `a, b`: Các tham số (parameters) mà hàm nhận vào.\n- `\"\"\"...\"\"\"`: Docstring, giúp người khác (hoặc chính bạn sau này) hiểu hàm làm gì.\n\n### Gọi hàm\nĐể thực thi hàm, bạn gọi tên hàm kèm theo các đối số (arguments) cụ thể trong dấu ngoặc đơn.\n\n```python\nket_qua = tinh_tong(5, 3) # Gọi hàm với a=5, b=3\nprint(ket_qua) # In ra: 8\n```\n\n### Giá trị `return`\nLệnh `return` có hai vai trò chính:\n1. **Trả về giá trị:** Gửi kết quả tính toán từ bên trong hàm ra bên ngoài để chương trình chính có thể sử dụng tiếp.\n2. **Kết thúc hàm:** Dừng việc thực thi các dòng lệnh còn lại trong hàm ngay lập tức.\n\n```python\ndef nhan_do(n):\n    ket_qua = n * 2\n    return ket_qua # Trả về giá trị và dừng hàm\n    print(\"Dòng này sẽ không bao giờ chạy\") # Dead code\n```\n\n## 2. Ví dụ minh họa\n\nGiả sử bạn cần một hàm tính diện tích hình tròn. Thay vì chỉ in ra màn hình, bạn muốn lưu kết quả để tính tiền thuê đất.\n\n```python\nimport math\n\ndef tinh_dien_tich(ban_kinh):\n    \"\"\"Tính diện tích hình tròn dựa trên bán kính.\"\"\"\n    dt = math.pi * ban_kinh ** 2\n    return dt # Trả về diện tích\n\n# Gọi hàm và lưu kết quả\nr = 5\ndt_hinh_tron = tinh_dien_tich(r)\n\n# Sử dụng kết quả trả về để tính tiếp\ntien_thue = dt_hinh_tron * 1000000\nprint(f\"Diện tích: {dt_hinh_tron:.2f} m2\")\nprint(f\"Tiền thuê: {tien_thue} VND\")\n```\n\n## 3. Lỗi thường gặp\n\n### Nhầm lẫn giữa `print()` và `return`\nNhiều người mới học thường dùng `print()` để \"trả về\" kết quả. Tuy nhiên, `print()` chỉ hiển thị lên màn hình, nó **không** trả về giá trị cho biến.\n\n**Sai:**\n```python\ndef cong(a, b):\n    print(a + b) # Chỉ in ra, không return\n\nx = cong(2, 3)\nprint(x) # In ra: None (vì hàm không có return)\n```\n\n**Đúng:**\n```python\ndef cong(a, b):\n    return a + b # Trả về giá trị\n\nx = cong(2, 3)\nprint(x) # In ra: 5\n```\n\n### Hàm không có `return` mặc định trả về `None`\nNếu một hàm không có lệnh `return` rõ ràng, Python sẽ mặc định trả về giá trị `None`. Điều này có thể gây ra lỗi `TypeError` nếu bạn cố gắng thực hiện phép toán với kết quả đó.\n\n```python\ndef in_chao():\n    print(\"Xin chào!\")\n\nkq = in_chao()\nprint(type(kq)) # <class 'NoneType'>\n```\n\n### Thiếu đối số khi gọi hàm\nNếu hàm yêu cầu 2 tham số nhưng bạn chỉ truyền 1, Python sẽ báo lỗi `TypeError`.\n\n```python\ndef tinh_tong(a, b):\n    return a + b\n\n# Lỗi: TypeError: tinh_tong() missing 1 required positional argument: 'b'\n# tinh_tong(5) \n```\n\n## 4. Tóm tắt\n- Dùng `def` để định nghĩa hàm, kèm theo Docstring để tài liệu hóa.\n- Dùng `return` để trả về giá trị và kết thúc hàm.\n- `print()` chỉ hiển thị, không trả về giá trị.\n- Hàm không có `return` sẽ trả về `None`.\n- Đảm bảo truyền đúng số lượng đối số khi gọi hàm để tránh `TypeError`.",
+  "intent": "EXPLAIN_CONCEPT",
+  "status": "SUCCEEDED",
+  "ended_at": "2026-09-20T16:54:07.020326+00:00",
+  "exercise": null,
+  "trace_id": "trace_1d380c63675b4966b8cc694ef9cd97a0",
+  "started_at": "2026-09-20T16:54:01.181402+00:00",
+  "agent_traces": [
+    {
+      "id": "22c0cc19-7f06-4f4e-b771-dc0e1ef7cc94",
+      "agent": "IntentRouterAgent",
+      "input": {
+        "request": "Tôi muốn tìm hiểu Def trong Python.",
+        "language": "python",
+        "last_concept_id": null
+      },
+      "method": "RULES_OR_LLM",
+      "output": {
+        "mode": "progression",
+        "topic": "def",
+        "intent": "EXPLAIN_CONCEPT",
+        "language": "python",
+        "trace_id": "trace_1d380c63675b4966b8cc694ef9cd97a0",
+        "user_text": "Tôi muốn tìm hiểu Def trong Python.",
+        "confidence": 1,
+        "selection_mode": "explicit",
+        "difficulty_request": "auto"
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-20T16:54:02.798718+00:00",
+      "sequence": 1,
+      "trace_id": "trace_1d380c63675b4966b8cc694ef9cd97a0",
+      "input_hash": "ca7253f4069f1db6374346502a660b51813dc5f7ae94d2b3477a5e735a71bba5",
+      "started_at": "2026-09-20T16:54:01.181604+00:00",
+      "duration_ms": 1617,
+      "model_calls": [
+        {
+          "input": {
+            "context": {
+              "states": {},
+              "language": "python",
+              "recent_exercises": []
+            },
+            "request": "Tôi muốn tìm hiểu Def trong Python."
+          },
+          "model": "qwen/qwen3.8-27b",
+          "stage": "IntentRouterAgent",
+          "usage": {
+            "queue_time": 0.073265709,
+            "total_time": 0.10254019,
+            "prompt_time": 0.0387913,
+            "total_tokens": 496,
+            "prompt_tokens": 465,
+            "completion_time": 0.06374889,
+            "completion_tokens": 31
+          },
+          "output": {
+            "topic": "def",
+            "intent": "EXPLAIN_CONCEPT",
+            "language": "python"
+          },
+          "status": "SUCCEEDED",
+          "provider": "GROQ",
+          "deadline_ms": 25000,
+          "duration_ms": 1426,
+          "http_status": 200,
+          "prompt_hash": "3d8824380fb207b76f33bc4121763234efc70c2cbb7157ddd7638f3108755e70",
+          "response_id": "chatcmpl-a21e3f72-2673-46c8-b9f2-8766f0aec415",
+          "response_hash": "604c13865d16947df4ee45b1f0df6a0063e4577a16b0eecb17d5182b139c16b6",
+          "prompt_version": "adaptive_v4",
+          "key_fingerprint": "5d760354afab"
+        }
+      ],
+      "output_hash": "33f201bfa6ffe281146bd7e8da4f8b03e26790831ff7f33acf46a58a2535f870",
+      "run_attempt": 1,
+      "stage_attempt": 1
+    },
+    {
+      "id": "07d1ea48-2624-4e75-8125-959131847012",
+      "agent": "AdaptiveExercisePlanner",
+      "input": {
+        "routing": {
+          "mode": "progression",
+          "topic": "def",
+          "intent": "EXPLAIN_CONCEPT",
+          "language": "python",
+          "trace_id": "trace_1d380c63675b4966b8cc694ef9cd97a0",
+          "user_text": "Tôi muốn tìm hiểu Def trong Python.",
+          "confidence": 1,
+          "selection_mode": "explicit",
+          "difficulty_request": "auto"
+        }
+      },
+      "method": "RULE_POLICY",
+      "output": {
+        "mode": "diagnostic",
+        "language": "python",
+        "trace_id": "trace_1d380c63675b4966b8cc694ef9cd97a0",
+        "execution": {
+          "mode": "function",
+          "comparator": "json",
+          "entrypoint": "solution",
+          "call_style_required": true
+        },
+        "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+        "difficulty": "EASY",
+        "source_refs": [],
+        "user_request": "Tôi muốn tìm hiểu Def trong Python.",
+        "concept_title": "Định nghĩa hàm def, gọi hàm & giá trị return",
+        "prerequisites": [
+          "PY-FLOW-01",
+          "PY-FLOW-03"
+        ],
+        "recent_errors": [],
+        "schema_version": "4.0",
+        "selection_mode": "explicit",
+        "target_concept": "PY-FUNC-01",
+        "learner_evidence": {
+          "policy": "adaptive_policy_v3",
+          "mastery": null,
+          "attempts": 0,
+          "prerequisite_gaps": [
+            "PY-FLOW-01",
+            "PY-FLOW-03"
+          ]
+        },
+        "test_constraints": {
+          "max_cases": 8,
+          "min_cases": 4,
+          "require_hidden_case": true,
+          "max_execution_time_ms": 3000,
+          "require_boundary_case": true
+        },
+        "target_sub_skills": [
+          "Khởi tạo hàm bằng từ khóa def và tài liệu hóa bằng Docstring"
+        ],
+        "learning_objectives": [
+          "Khởi tạo hàm bằng từ khóa def và tài liệu hóa bằng Docstring"
+        ],
+        "required_constructs": [],
+        "forbidden_constructs": []
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-20T16:54:02.799162+00:00",
+      "sequence": 2,
+      "trace_id": "trace_1d380c63675b4966b8cc694ef9cd97a0",
+      "input_hash": "06b5045d27bc5d47ec28af8fc3966945f82070ef081ddbd93bd33414314f0b92",
+      "started_at": "2026-09-20T16:54:02.798832+00:00",
+      "duration_ms": 0,
+      "model_calls": [],
+      "output_hash": "f00dff0b170b2c5d63058e595b5165d549afb17e5d82230a31428de34adbadbd",
+      "run_attempt": 1,
+      "stage_attempt": 1
+    },
+    {
+      "id": "d09a3410-6c0b-4b1b-a201-2a8489a24166",
+      "agent": "KnowledgeRetrievalService",
+      "input": {
+        "concept_id": "PY-FUNC-01"
+      },
+      "method": "LOCAL_GRAPH_AND_FILES",
+      "output": {
+        "concept": {
+          "id": "PY-FUNC-01",
+          "name": "Định nghĩa hàm def, gọi hàm & giá trị return",
+          "topic_id": "TOPIC-FUNC-BASIC",
+          "domain_id": "PYTHON",
+          "module_id": "MOD-FUNC",
+          "concept_id": "PY-FUNC-01",
+          "bloom_level": "Application",
+          "description": "Đóng gói mã nguồn tái sử dụng với lệnh def, tham số đầu vào và giá trị trả về qua lệnh return.",
+          "concept_name": "Định nghĩa hàm def, gọi hàm & giá trị return",
+          "prerequisites": [
+            "PY-FLOW-01",
+            "PY-FLOW-03"
+          ],
+          "code_signatures": [
+            "def my_func():\n    return result",
+            "res = my_func()"
+          ],
+          "difficulty_level": 2,
+          "associated_errors": [
+            "TypeError",
+            "UnboundLocalError"
+          ],
+          "learning_objectives": [
+            "Khởi tạo hàm bằng từ khóa def và tài liệu hóa bằng Docstring",
+            "Phân biệt giữa việc in ra màn hình print() và trả về giá trị cho caller qua return",
+            "Hiểu rằng hàm không có return rõ ràng sẽ mặc định trả về None"
+          ]
+        },
+        "sources": [
+          {
+            "id": "ai-service/data/pythonSkillGraph.json#PY-FUNC-01",
+            "sha256": "ec8e578657c1eecf4072e84f4dd8c0eda421567e8e3ea02343680c44682046bc",
+            "excerpt": {
+              "id": "PY-FUNC-01",
+              "name": "Định nghĩa hàm def, gọi hàm & giá trị return",
+              "topic_id": "TOPIC-FUNC-BASIC",
+              "domain_id": "PYTHON",
+              "module_id": "MOD-FUNC",
+              "concept_id": "PY-FUNC-01",
+              "bloom_level": "Application",
+              "description": "Đóng gói mã nguồn tái sử dụng với lệnh def, tham số đầu vào và giá trị trả về qua lệnh return.",
+              "concept_name": "Định nghĩa hàm def, gọi hàm & giá trị return",
+              "prerequisites": [
+                "PY-FLOW-01",
+                "PY-FLOW-03"
+              ],
+              "code_signatures": [
+                "def my_func():\n    return result",
+                "res = my_func()"
+              ],
+              "difficulty_level": 2,
+              "associated_errors": [
+                "TypeError",
+                "UnboundLocalError"
+              ],
+              "learning_objectives": [
+                "Khởi tạo hàm bằng từ khóa def và tài liệu hóa bằng Docstring",
+                "Phân biệt giữa việc in ra màn hình print() và trả về giá trị cho caller qua return",
+                "Hiểu rằng hàm không có return rõ ràng sẽ mặc định trả về None"
+              ]
+            }
+          },
+          {
+            "id": "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 09/Lession2.md",
+            "sha256": "be18c9224770d349536ee69bbf46464f8bc527a82ffbdd0123a283677118a53d",
+            "excerpt": "---\nlessonId: \"LS-04.02\"\ntitle: \"Tham số và Đối số\"\ndifficulty: \"EASY\"\nestimatedDuration: 20\nkeywords: [\"parameters\", \"arguments\", \"positional arguments\", \"keyword arguments\"]\nprerequisites: [\"LS-04.01\"]\n---\n\n# 📘 Lesson 04.02: Tham số và Đối số\n\n---\n\n## 1. Khái niệm & Vấn đề\n\nNếu một hàm chỉ thực hiện các câu lệnh cố định (ví dụ: luôn in ra `\"Chào bạn Minh\"`), hàm đó sẽ có tính ứng dụng rất hạn chế. Trong thực tế, ta muốn hàm đó có thể chào bất kỳ ai tùy vào tên người dùng truyền vào khi gọi hàm.\n\nĐể làm được điều này, hàm cần nhận dữ liệu từ bên ngoài vào lúc chạy. Dữ liệu này được định nghĩa thông qua các **Tham số (Parameters)** và được truyền vào qua các **Đối số (Arguments)**.\n\n| Thuật ngữ | Định nghĩa thực tế | Phép ẩn dụ |\n| :--- | :--- | :--- |\n| **Parameter (Tham số)** | Các biến được khai báo ở phần định nghĩa hàm (trong dấu ngoặc đơn), đóng vai trò như các \"hộp chứa\" chờ nhận dữ liệu. | Giống như các **khay trống** trong tủ lạnh được dán nhãn: khay đựng trứng, khay đựng rau. |\n| **Argument (Đối số)** | Giá trị thực tế được truyền vào cho tham số khi gọi hàm chạy. | Giống như **quả trứng thực tế** hoặc **cây rau** bạn bỏ vào các khay trống tương ứng đó. |\n\n---\n\n## 2. Cú pháp & Vận hành\n\n```python\n# 'name' là tham số (parameter)\ndef greet(name):\n    print(f\"Xin chào, {name}!\")\n\n# \"Alice\" và \"Bob\" là đối số (arguments)\ngreet(\"Alice\")\ngreet(\"Bob\")\n```\n\n**Bảng theo dõi thực thi (Execution Trace Table):**\n| Dòng mã | Lệnh được chạy | Trạng thái biến tham số | Kết quả màn hình |\n|:---:|:---|:---|:---|\n| 1-2 | `def greet(name): ...` | `name` được khai báo | Chưa chạy |\n| 5 | `greet(\"Alice\")` | `name` nhận giá trị `\"Alice\"` | `Xin chào, Alice!` |\n| 6 | `greet(\"Bob\")` | `name` nhận giá trị `\"Bob\"` | `Xin chào, Bob!` |\n\nPython hỗ trợ các cách truyền đối số linh hoạt:\n1. **Đối số vị trí (Positional Arguments):** Truyền đối số theo đúng thứ tự khai báo của các tham số.\n2. **Đối số từ khóa (Keyword Arguments):** Chỉ rõ tên tham số khi truyền đối số để không phụ thuộc vào thứ tự: `greet(name=\"Alice\")`.\n\n---\n\n## 3. Lỗi thường gặp & Tối ưu\n\n> [!WARNING]\n> **Lỗi thiếu đối số (`TypeError`):**\n> Nếu hàm định nghĩa yêu cầu truyền 2 tham số, nhưng lúc gọi bạn chỉ truyền vào 1 đối số, Python sẽ báo lỗi `TypeError: missing required positional argument`.\n> *Ví dụ:*\n> ```python\n> def tinh_tong(a, b):\n>     print(a + b)\n> \n> tinh_tong(5) # Lỗi TypeError: tinh_tong() missing 1 required positional argument: 'b'\n> ```\n>\n> [!TIP]\n> **Tham số mặc định (Default Parameters):**\n> Ta có thể gán giá trị mặc định cho tham số phòng trường hợp người dùng không truyền đối số vào:\n> ```python\n> def welcome(name=\"Học viên\"):\n>     print(f\"Chào mừng {name}\")\n> \n> welcome() # In ra: Chào mừng Học viên\n> ```\n\n---\n\n## 4. Luyện tập\n\n### Câu hỏi trắc nghiệm (Warm-up)\nKhẳng định nào sau đây mô tả đúng nhất về sự khác biệt giữa **Tham số (Parameter)** và **Đối số (Argument)**?\n* [ ] Tham số là giá trị thực tế truyền vào, đối số là tên biến khai báo trong hàm.\n* [x] Tham số là biến khai báo trong định nghĩa hàm, đối số là giá trị thực tế truyền vào khi gọi hàm.\n* [ ] Cả hai là cách gọi hoàn toàn giống nhau, không có sự khác biệt.\n* [ ] Tham số chỉ nhận dữ liệu chuỗi, đối số chỉ nhận dữ liệu số.\n\n### Thử thách sửa lỗi (Debug)\nĐoạn code dưới đây định nghĩa hàm tính tiền sau thuế của sản phẩm với thuế mặc định là `0.1` (10%). Tuy nhiên chương trình đang báo lỗi cú pháp do đặt sai thứ tự tham số mặc định. Hãy sửa lại cho đúng quy tắc của Python (Gợi ý: tham số mặc định phải nằm sau các tham số thông thường):\n```python\n# Đoạn code lỗi:\ndef calc_total(tax=0.1, price):\n    print(price + (price * tax))\n\ncalc_total(100)\n```\n\n### Bài tập lập trình (Mini-task)\nĐịnh nghĩa một hàm tên là `print_info` nhận vào hai tham số là `name` và `age`. Hàm sẽ in ra màn hình thông báo: `\"{name} năm nay {age} tuổi.\"`. Hãy gọi hàm này với đối số cụ thể.\n```python\n# Nhập code của bạn ở đây\n```\n\n---\n\n## 5. Đúc kết & Đi tiếp\n\n* 📥 **Tham số** (Parameter) hoạt động như các biến đại diện bên trong hàm.\n* 📤 **Đối số** (Argument) là giá trị cụ thể được gán vào tham số lúc gọi hàm.\n* ⚖️ Đảm bảo truyền đúng số lượng đối số tương ứng với số lượng tham số yêu cầu để tránh lỗi `TypeError`.\n* 🛡️ Sử dụng **tham số mặc định** ở phía sau danh sách tham số để tăng tính linh động.\n\nTrong bài học tiếp theo **[LS-04.03: Trả về kết quả (Return)]**, chúng ta sẽ học cách đưa kết quả tính toán của hàm ra ngoài chương trình để tiếp tục sử dụng thay vì chỉ in ra màn hình.\n",
+            "match_score": 3
+          },
+          {
+            "id": "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 09/Lession3.md",
+            "sha256": "2aea4b45c038e3e15cd112d1c2869929d44f726c3ca1e4e5ac041cc3e71318ce",
+            "excerpt": "---\nlessonId: \"LS-04.03\"\ntitle: \"Trả về kết quả (Return)\"\ndifficulty: \"EASY\"\nestimatedDuration: 15\nkeywords: [\"return\", \"return value\", \"function output\", \"none\"]\nprerequisites: [\"LS-04.02\"]\n---\n\n# 📘 Lesson 04.03: Trả về kết quả (Return)\n\n---\n\n## 1. Khái niệm & Vấn đề\n\nKhi viết một hàm tính toán diện tích hình tròn, nếu ta chỉ in kết quả ra màn hình bằng lệnh `print()`, chương trình chính sẽ không thể sử dụng kết quả đó để tính toán tiếp (ví dụ: nhân với đơn giá đất để ra tổng tiền). Kết quả chỉ hiện lên màn hình rồi biến mất khỏi bộ nhớ của máy tính.\n\nĐể chuyển kết quả tính toán từ bên trong hàm ra ngoài chương trình chính, ta phải sử dụng lệnh **`return`**.\n\n| Thuật ngữ | Định nghĩa thực tế | Phép ẩn dụ |\n| :--- | :--- | :--- |\n| **Return (Trả về)** | Câu lệnh dừng thực thi hàm và gửi trả lại một giá trị từ hàm về nơi gọi nó. | Giống như việc bạn **đưa tiền cho shipper đi mua đồ**. Shipper đi mua (chạy hàm) rồi quay về giao hàng tận tay cho bạn (lệnh return). |\n\n---\n\n## 2. Cú pháp & Vận hành\n\nĐể trả về giá trị, ta dùng từ khóa `return` kèm theo giá trị hoặc biến chứa kết quả cần chuyển ra ngoài:\n\n```python\ndef multiply(a, b):\n    result = a * b\n    return result\n\n# Nhận giá trị trả về và lưu vào biến\noutput = multiply(3, 4)\nprint(output) # In ra: 12\n```\n\n**Bảng theo dõi thực thi (Execution Trace Table):**\n| Dòng mã | Lệnh được chạy | Trạng thái biến | Hành động của máy tính |\n|:---:|:---|:---|:---|\n| 1-3 | `def multiply(a, b): ...` | Đăng ký hàm | Chưa thực thi |\n| 6 | `multiply(3, 4)` | `a: 3, b: 4` | Tính `result = 12` |\n| 3 | `return result` | Thoát hàm | Đưa giá trị `12` ra ngoài và gán cho biến `output` |\n| 7 | `print(output)` | `output: 12` | Hiển thị `12` lên màn hình |\n\n---\n\n## 3. Lỗi thường gặp & Tối ưu\n\n> [!WARNING]\n> **Nhầm lẫn giữa `print` và `return`:**\n> `print()` chỉ hiển thị dữ liệu lên màn hình cho con người đọc. Nó **không** trả về giá trị cho biến. Nếu một hàm không có lệnh `return` mà bạn vẫn gán kết quả của nó vào một biến, biến đó sẽ mang giá trị rỗng **`None`**.\n> *Ví dụ:*\n> ```python\n> def add(a, b):\n>     print(a + b) # Chỉ in, không return\n> \n> result = add(2, 3) # result sẽ nhận giá trị None\n> print(result) # In ra: None\n> ```\n>\n> **Lệnh `return` kết thúc hàm lập tức:**\n> Bất kỳ dòng lệnh nào đứng sau lệnh `return` bên trong cùng một khối lệnh của hàm đều sẽ không bao giờ được thực thi (được gọi là dead code).\n\n---\n\n## 4. Luyện tập\n\n### Câu hỏi trắc nghiệm (Warm-up)\nĐiều gì xảy ra khi chương trình gặp lệnh `return` bên trong một hàm?\n* [ ] Hàm tiếp tục thực thi các dòng lệnh bên dưới lệnh return.\n* [x] Hàm lập tức dừng hoạt động và gửi trả lại giá trị phía sau return về nơi gọi.\n* [ ] Chương trình chính bị dừng hoạt động hoàn toàn.\n* [ ] Giá trị của biến toàn cục bị xóa bỏ.\n\n### Thử thách sửa lỗi (Debug)\nĐoạn code sau đây muốn tính bình phương của một số và gán kết quả đó vào biến `x` để tiếp tục cộng thêm `10`. Tuy nhiên kết quả in ra màn hình bị lỗi `TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'`. Hãy sửa lại hàm:\n```python\ndef square(n):\n    result = n * n\n    print(result)\n\n# Đoạn code lỗi:\nx = square(5)\nprint(x + 10)\n```\n\n### Bài tập lập trình (Mini-task)\nĐịnh nghĩa một hàm tên là `double_number` nhận vào một tham số `n`. Hàm sẽ nhân đôi giá trị `n` và trả về kết quả đó bằng lệnh `return`. Sau đó hãy gọi hàm này với giá trị truyền vào là `10`, lưu kết quả vào biến `res` rồi in ra màn hình.\n```python\n# Nhập code của bạn ở đây\n```\n\n---\n\n## 5. Đúc kết & Đi tiếp\n\n* 🎁 **`return`** gửi kết quả tính toán từ trong hàm ra ngoài chương trình chính.\n* 🛑 Lệnh `return` kết thúc hoạt động của hàm ngay lập tức khi được kích hoạt.\n* 🚫 Nếu một hàm không có từ khóa `return`, giá trị mặc định trả về là **`None`**.\n\nTrong bài học tiếp theo **[LS-04.04: Phạm vi của Biến (Scope)]**, chúng ta sẽ học về ranh giới kiểm soát biến: tại sao biến khai báo trong hàm không thể gọi được ở ngoài hàm và ngược lại.\n",
+            "match_score": 3
+          }
+        ],
+        "retrieval_method": "local_graph_and_keyword_search"
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-20T16:54:03.260506+00:00",
+      "sequence": 3,
+      "trace_id": "trace_1d380c63675b4966b8cc694ef9cd97a0",
+      "input_hash": "ce561aae8fc953b34862f776c3f7cf4cfedb9ae5230de01951188683f73d1e26",
+      "started_at": "2026-09-20T16:54:02.799222+00:00",
+      "duration_ms": 461,
+      "model_calls": [],
+      "output_hash": "997d9548ea5471c2fe34287734ed450038ef7e71bdc588796545c05e97d651b5",
+      "run_attempt": 1,
+      "stage_attempt": 1
+    },
+    {
+      "id": "184bbd01-1c79-4e52-a521-affcfa4bf0a2",
+      "agent": "ExplanationTutorAgent",
+      "input": {
+        "grounding": {
+          "concept": {
+            "id": "PY-FUNC-01",
+            "name": "Định nghĩa hàm def, gọi hàm & giá trị return",
+            "topic_id": "TOPIC-FUNC-BASIC",
+            "domain_id": "PYTHON",
+            "module_id": "MOD-FUNC",
+            "concept_id": "PY-FUNC-01",
+            "bloom_level": "Application",
+            "description": "Đóng gói mã nguồn tái sử dụng với lệnh def, tham số đầu vào và giá trị trả về qua lệnh return.",
+            "concept_name": "Định nghĩa hàm def, gọi hàm & giá trị return",
+            "prerequisites": [
+              "PY-FLOW-01",
+              "PY-FLOW-03"
+            ],
+            "code_signatures": [
+              "def my_func():\n    return result",
+              "res = my_func()"
+            ],
+            "difficulty_level": 2,
+            "associated_errors": [
+              "TypeError",
+              "UnboundLocalError"
+            ],
+            "learning_objectives": [
+              "Khởi tạo hàm bằng từ khóa def và tài liệu hóa bằng Docstring",
+              "Phân biệt giữa việc in ra màn hình print() và trả về giá trị cho caller qua return",
+              "Hiểu rằng hàm không có return rõ ràng sẽ mặc định trả về None"
+            ]
+          },
+          "sources": [
+            {
+              "id": "ai-service/data/pythonSkillGraph.json#PY-FUNC-01",
+              "sha256": "ec8e578657c1eecf4072e84f4dd8c0eda421567e8e3ea02343680c44682046bc",
+              "excerpt": {
+                "id": "PY-FUNC-01",
+                "name": "Định nghĩa hàm def, gọi hàm & giá trị return",
+                "topic_id": "TOPIC-FUNC-BASIC",
+                "domain_id": "PYTHON",
+                "module_id": "MOD-FUNC",
+                "concept_id": "PY-FUNC-01",
+                "bloom_level": "Application",
+                "description": "Đóng gói mã nguồn tái sử dụng với lệnh def, tham số đầu vào và giá trị trả về qua lệnh return.",
+                "concept_name": "Định nghĩa hàm def, gọi hàm & giá trị return",
+                "prerequisites": [
+                  "PY-FLOW-01",
+                  "PY-FLOW-03"
+                ],
+                "code_signatures": [
+                  "def my_func():\n    return result",
+                  "res = my_func()"
+                ],
+                "difficulty_level": 2,
+                "associated_errors": [
+                  "TypeError",
+                  "UnboundLocalError"
+                ],
+                "learning_objectives": [
+                  "Khởi tạo hàm bằng từ khóa def và tài liệu hóa bằng Docstring",
+                  "Phân biệt giữa việc in ra màn hình print() và trả về giá trị cho caller qua return",
+                  "Hiểu rằng hàm không có return rõ ràng sẽ mặc định trả về None"
+                ]
+              }
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 09/Lession2.md",
+              "sha256": "be18c9224770d349536ee69bbf46464f8bc527a82ffbdd0123a283677118a53d",
+              "excerpt": "---\nlessonId: \"LS-04.02\"\ntitle: \"Tham số và Đối số\"\ndifficulty: \"EASY\"\nestimatedDuration: 20\nkeywords: [\"parameters\", \"arguments\", \"positional arguments\", \"keyword arguments\"]\nprerequisites: [\"LS-04.01\"]\n---\n\n# 📘 Lesson 04.02: Tham số và Đối số\n\n---\n\n## 1. Khái niệm & Vấn đề\n\nNếu một hàm chỉ thực hiện các câu lệnh cố định (ví dụ: luôn in ra `\"Chào bạn Minh\"`), hàm đó sẽ có tính ứng dụng rất hạn chế. Trong thực tế, ta muốn hàm đó có thể chào bất kỳ ai tùy vào tên người dùng truyền vào khi gọi hàm.\n\nĐể làm được điều này, hàm cần nhận dữ liệu từ bên ngoài vào lúc chạy. Dữ liệu này được định nghĩa thông qua các **Tham số (Parameters)** và được truyền vào qua các **Đối số (Arguments)**.\n\n| Thuật ngữ | Định nghĩa thực tế | Phép ẩn dụ |\n| :--- | :--- | :--- |\n| **Parameter (Tham số)** | Các biến được khai báo ở phần định nghĩa hàm (trong dấu ngoặc đơn), đóng vai trò như các \"hộp chứa\" chờ nhận dữ liệu. | Giống như các **khay trống** trong tủ lạnh được dán nhãn: khay đựng trứng, khay đựng rau. |\n| **Argument (Đối số)** | Giá trị thực tế được truyền vào cho tham số khi gọi hàm chạy. | Giống như **quả trứng thực tế** hoặc **cây rau** bạn bỏ vào các khay trống tương ứng đó. |\n\n---\n\n## 2. Cú pháp & Vận hành\n\n```python\n# 'name' là tham số (parameter)\ndef greet(name):\n    print(f\"Xin chào, {name}!\")\n\n# \"Alice\" và \"Bob\" là đối số (arguments)\ngreet(\"Alice\")\ngreet(\"Bob\")\n```\n\n**Bảng theo dõi thực thi (Execution Trace Table):**\n| Dòng mã | Lệnh được chạy | Trạng thái biến tham số | Kết quả màn hình |\n|:---:|:---|:---|:---|\n| 1-2 | `def greet(name): ...` | `name` được khai báo | Chưa chạy |\n| 5 | `greet(\"Alice\")` | `name` nhận giá trị `\"Alice\"` | `Xin chào, Alice!` |\n| 6 | `greet(\"Bob\")` | `name` nhận giá trị `\"Bob\"` | `Xin chào, Bob!` |\n\nPython hỗ trợ các cách truyền đối số linh hoạt:\n1. **Đối số vị trí (Positional Arguments):** Truyền đối số theo đúng thứ tự khai báo của các tham số.\n2. **Đối số từ khóa (Keyword Arguments):** Chỉ rõ tên tham số khi truyền đối số để không phụ thuộc vào thứ tự: `greet(name=\"Alice\")`.\n\n---\n\n## 3. Lỗi thường gặp & Tối ưu\n\n> [!WARNING]\n> **Lỗi thiếu đối số (`TypeError`):**\n> Nếu hàm định nghĩa yêu cầu truyền 2 tham số, nhưng lúc gọi bạn chỉ truyền vào 1 đối số, Python sẽ báo lỗi `TypeError: missing required positional argument`.\n> *Ví dụ:*\n> ```python\n> def tinh_tong(a, b):\n>     print(a + b)\n> \n> tinh_tong(5) # Lỗi TypeError: tinh_tong() missing 1 required positional argument: 'b'\n> ```\n>\n> [!TIP]\n> **Tham số mặc định (Default Parameters):**\n> Ta có thể gán giá trị mặc định cho tham số phòng trường hợp người dùng không truyền đối số vào:\n> ```python\n> def welcome(name=\"Học viên\"):\n>     print(f\"Chào mừng {name}\")\n> \n> welcome() # In ra: Chào mừng Học viên\n> ```\n\n---\n\n## 4. Luyện tập\n\n### Câu hỏi trắc nghiệm (Warm-up)\nKhẳng định nào sau đây mô tả đúng nhất về sự khác biệt giữa **Tham số (Parameter)** và **Đối số (Argument)**?\n* [ ] Tham số là giá trị thực tế truyền vào, đối số là tên biến khai báo trong hàm.\n* [x] Tham số là biến khai báo trong định nghĩa hàm, đối số là giá trị thực tế truyền vào khi gọi hàm.\n* [ ] Cả hai là cách gọi hoàn toàn giống nhau, không có sự khác biệt.\n* [ ] Tham số chỉ nhận dữ liệu chuỗi, đối số chỉ nhận dữ liệu số.\n\n### Thử thách sửa lỗi (Debug)\nĐoạn code dưới đây định nghĩa hàm tính tiền sau thuế của sản phẩm với thuế mặc định là `0.1` (10%). Tuy nhiên chương trình đang báo lỗi cú pháp do đặt sai thứ tự tham số mặc định. Hãy sửa lại cho đúng quy tắc của Python (Gợi ý: tham số mặc định phải nằm sau các tham số thông thường):\n```python\n# Đoạn code lỗi:\ndef calc_total(tax=0.1, price):\n    print(price + (price * tax))\n\ncalc_total(100)\n```\n\n### Bài tập lập trình (Mini-task)\nĐịnh nghĩa một hàm tên là `print_info` nhận vào hai tham số là `name` và `age`. Hàm sẽ in ra màn hình thông báo: `\"{name} năm nay {age} tuổi.\"`. Hãy gọi hàm này với đối số cụ thể.\n```python\n# Nhập code của bạn ở đây\n```\n\n---\n\n## 5. Đúc kết & Đi tiếp\n\n* 📥 **Tham số** (Parameter) hoạt động như các biến đại diện bên trong hàm.\n* 📤 **Đối số** (Argument) là giá trị cụ thể được gán vào tham số lúc gọi hàm.\n* ⚖️ Đảm bảo truyền đúng số lượng đối số tương ứng với số lượng tham số yêu cầu để tránh lỗi `TypeError`.\n* 🛡️ Sử dụng **tham số mặc định** ở phía sau danh sách tham số để tăng tính linh động.\n\nTrong bài học tiếp theo **[LS-04.03: Trả về kết quả (Return)]**, chúng ta sẽ học cách đưa kết quả tính toán của hàm ra ngoài chương trình để tiếp tục sử dụng thay vì chỉ in ra màn hình.\n",
+              "match_score": 3
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 09/Lession3.md",
+              "sha256": "2aea4b45c038e3e15cd112d1c2869929d44f726c3ca1e4e5ac041cc3e71318ce",
+              "excerpt": "---\nlessonId: \"LS-04.03\"\ntitle: \"Trả về kết quả (Return)\"\ndifficulty: \"EASY\"\nestimatedDuration: 15\nkeywords: [\"return\", \"return value\", \"function output\", \"none\"]\nprerequisites: [\"LS-04.02\"]\n---\n\n# 📘 Lesson 04.03: Trả về kết quả (Return)\n\n---\n\n## 1. Khái niệm & Vấn đề\n\nKhi viết một hàm tính toán diện tích hình tròn, nếu ta chỉ in kết quả ra màn hình bằng lệnh `print()`, chương trình chính sẽ không thể sử dụng kết quả đó để tính toán tiếp (ví dụ: nhân với đơn giá đất để ra tổng tiền). Kết quả chỉ hiện lên màn hình rồi biến mất khỏi bộ nhớ của máy tính.\n\nĐể chuyển kết quả tính toán từ bên trong hàm ra ngoài chương trình chính, ta phải sử dụng lệnh **`return`**.\n\n| Thuật ngữ | Định nghĩa thực tế | Phép ẩn dụ |\n| :--- | :--- | :--- |\n| **Return (Trả về)** | Câu lệnh dừng thực thi hàm và gửi trả lại một giá trị từ hàm về nơi gọi nó. | Giống như việc bạn **đưa tiền cho shipper đi mua đồ**. Shipper đi mua (chạy hàm) rồi quay về giao hàng tận tay cho bạn (lệnh return). |\n\n---\n\n## 2. Cú pháp & Vận hành\n\nĐể trả về giá trị, ta dùng từ khóa `return` kèm theo giá trị hoặc biến chứa kết quả cần chuyển ra ngoài:\n\n```python\ndef multiply(a, b):\n    result = a * b\n    return result\n\n# Nhận giá trị trả về và lưu vào biến\noutput = multiply(3, 4)\nprint(output) # In ra: 12\n```\n\n**Bảng theo dõi thực thi (Execution Trace Table):**\n| Dòng mã | Lệnh được chạy | Trạng thái biến | Hành động của máy tính |\n|:---:|:---|:---|:---|\n| 1-3 | `def multiply(a, b): ...` | Đăng ký hàm | Chưa thực thi |\n| 6 | `multiply(3, 4)` | `a: 3, b: 4` | Tính `result = 12` |\n| 3 | `return result` | Thoát hàm | Đưa giá trị `12` ra ngoài và gán cho biến `output` |\n| 7 | `print(output)` | `output: 12` | Hiển thị `12` lên màn hình |\n\n---\n\n## 3. Lỗi thường gặp & Tối ưu\n\n> [!WARNING]\n> **Nhầm lẫn giữa `print` và `return`:**\n> `print()` chỉ hiển thị dữ liệu lên màn hình cho con người đọc. Nó **không** trả về giá trị cho biến. Nếu một hàm không có lệnh `return` mà bạn vẫn gán kết quả của nó vào một biến, biến đó sẽ mang giá trị rỗng **`None`**.\n> *Ví dụ:*\n> ```python\n> def add(a, b):\n>     print(a + b) # Chỉ in, không return\n> \n> result = add(2, 3) # result sẽ nhận giá trị None\n> print(result) # In ra: None\n> ```\n>\n> **Lệnh `return` kết thúc hàm lập tức:**\n> Bất kỳ dòng lệnh nào đứng sau lệnh `return` bên trong cùng một khối lệnh của hàm đều sẽ không bao giờ được thực thi (được gọi là dead code).\n\n---\n\n## 4. Luyện tập\n\n### Câu hỏi trắc nghiệm (Warm-up)\nĐiều gì xảy ra khi chương trình gặp lệnh `return` bên trong một hàm?\n* [ ] Hàm tiếp tục thực thi các dòng lệnh bên dưới lệnh return.\n* [x] Hàm lập tức dừng hoạt động và gửi trả lại giá trị phía sau return về nơi gọi.\n* [ ] Chương trình chính bị dừng hoạt động hoàn toàn.\n* [ ] Giá trị của biến toàn cục bị xóa bỏ.\n\n### Thử thách sửa lỗi (Debug)\nĐoạn code sau đây muốn tính bình phương của một số và gán kết quả đó vào biến `x` để tiếp tục cộng thêm `10`. Tuy nhiên kết quả in ra màn hình bị lỗi `TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'`. Hãy sửa lại hàm:\n```python\ndef square(n):\n    result = n * n\n    print(result)\n\n# Đoạn code lỗi:\nx = square(5)\nprint(x + 10)\n```\n\n### Bài tập lập trình (Mini-task)\nĐịnh nghĩa một hàm tên là `double_number` nhận vào một tham số `n`. Hàm sẽ nhân đôi giá trị `n` và trả về kết quả đó bằng lệnh `return`. Sau đó hãy gọi hàm này với giá trị truyền vào là `10`, lưu kết quả vào biến `res` rồi in ra màn hình.\n```python\n# Nhập code của bạn ở đây\n```\n\n---\n\n## 5. Đúc kết & Đi tiếp\n\n* 🎁 **`return`** gửi kết quả tính toán từ trong hàm ra ngoài chương trình chính.\n* 🛑 Lệnh `return` kết thúc hoạt động của hàm ngay lập tức khi được kích hoạt.\n* 🚫 Nếu một hàm không có từ khóa `return`, giá trị mặc định trả về là **`None`**.\n\nTrong bài học tiếp theo **[LS-04.04: Phạm vi của Biến (Scope)]**, chúng ta sẽ học về ranh giới kiểm soát biến: tại sao biến khai báo trong hàm không thể gọi được ở ngoài hàm và ngược lại.\n",
+              "match_score": 3
+            }
+          ],
+          "retrieval_method": "local_graph_and_keyword_search"
+        },
+        "specification": {
+          "mode": "diagnostic",
+          "language": "python",
+          "trace_id": "trace_1d380c63675b4966b8cc694ef9cd97a0",
+          "execution": {
+            "mode": "function",
+            "comparator": "json",
+            "entrypoint": "solution",
+            "call_style_required": true
+          },
+          "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+          "difficulty": "EASY",
+          "source_refs": [],
+          "user_request": "Tôi muốn tìm hiểu Def trong Python.",
+          "concept_title": "Định nghĩa hàm def, gọi hàm & giá trị return",
+          "prerequisites": [
+            "PY-FLOW-01",
+            "PY-FLOW-03"
+          ],
+          "recent_errors": [],
+          "schema_version": "4.0",
+          "selection_mode": "explicit",
+          "target_concept": "PY-FUNC-01",
+          "learner_evidence": {
+            "policy": "adaptive_policy_v3",
+            "mastery": null,
+            "attempts": 0,
+            "prerequisite_gaps": [
+              "PY-FLOW-01",
+              "PY-FLOW-03"
+            ]
+          },
+          "test_constraints": {
+            "max_cases": 8,
+            "min_cases": 4,
+            "require_hidden_case": true,
+            "max_execution_time_ms": 3000,
+            "require_boundary_case": true
+          },
+          "target_sub_skills": [
+            "Khởi tạo hàm bằng từ khóa def và tài liệu hóa bằng Docstring"
+          ],
+          "learning_objectives": [
+            "Khởi tạo hàm bằng từ khóa def và tài liệu hóa bằng Docstring"
+          ],
+          "required_constructs": [],
+          "forbidden_constructs": []
+        }
+      },
+      "method": "LLM",
+      "output": {
+        "reply": "# Định nghĩa hàm `def`, gọi hàm & giá trị `return`\n\nChào bạn, trong Python, hàm (function) là một khối mã nguồn được đóng gói lại để tái sử dụng. Việc hiểu rõ cách định nghĩa, gọi và xử lý giá trị trả về là nền tảng quan trọng để viết code hiệu quả.\n\n## 1. Bản chất và Cú pháp\n\n### Khởi tạo hàm bằng `def` và Docstring\nBạn sử dụng từ khóa `def` để khai báo một hàm. Ngay sau tên hàm và dấu ngoặc đơn, bạn có thể thêm một **Docstring** (chuỗi tài liệu) để mô tả chức năng của hàm. Docstring thường nằm ở dòng đầu tiên trong thân hàm.\n\n```python\ndef tinh_tong(a, b):\n    \"\"\"Tính tổng của hai số a và b.\"\"\"\n    return a + b\n```\n\n- `tinh_tong`: Tên hàm (nên dùng chữ thường, phân tách bằng dấu gạch dưới).\n- `a, b`: Các tham số (parameters) mà hàm nhận vào.\n- `\"\"\"...\"\"\"`: Docstring, giúp người khác (hoặc chính bạn sau này) hiểu hàm làm gì.\n\n### Gọi hàm\nĐể thực thi hàm, bạn gọi tên hàm kèm theo các đối số (arguments) cụ thể trong dấu ngoặc đơn.\n\n```python\nket_qua = tinh_tong(5, 3) # Gọi hàm với a=5, b=3\nprint(ket_qua) # In ra: 8\n```\n\n### Giá trị `return`\nLệnh `return` có hai vai trò chính:\n1. **Trả về giá trị:** Gửi kết quả tính toán từ bên trong hàm ra bên ngoài để chương trình chính có thể sử dụng tiếp.\n2. **Kết thúc hàm:** Dừng việc thực thi các dòng lệnh còn lại trong hàm ngay lập tức.\n\n```python\ndef nhan_do(n):\n    ket_qua = n * 2\n    return ket_qua # Trả về giá trị và dừng hàm\n    print(\"Dòng này sẽ không bao giờ chạy\") # Dead code\n```\n\n## 2. Ví dụ minh họa\n\nGiả sử bạn cần một hàm tính diện tích hình tròn. Thay vì chỉ in ra màn hình, bạn muốn lưu kết quả để tính tiền thuê đất.\n\n```python\nimport math\n\ndef tinh_dien_tich(ban_kinh):\n    \"\"\"Tính diện tích hình tròn dựa trên bán kính.\"\"\"\n    dt = math.pi * ban_kinh ** 2\n    return dt # Trả về diện tích\n\n# Gọi hàm và lưu kết quả\nr = 5\ndt_hinh_tron = tinh_dien_tich(r)\n\n# Sử dụng kết quả trả về để tính tiếp\ntien_thue = dt_hinh_tron * 1000000\nprint(f\"Diện tích: {dt_hinh_tron:.2f} m2\")\nprint(f\"Tiền thuê: {tien_thue} VND\")\n```\n\n## 3. Lỗi thường gặp\n\n### Nhầm lẫn giữa `print()` và `return`\nNhiều người mới học thường dùng `print()` để \"trả về\" kết quả. Tuy nhiên, `print()` chỉ hiển thị lên màn hình, nó **không** trả về giá trị cho biến.\n\n**Sai:**\n```python\ndef cong(a, b):\n    print(a + b) # Chỉ in ra, không return\n\nx = cong(2, 3)\nprint(x) # In ra: None (vì hàm không có return)\n```\n\n**Đúng:**\n```python\ndef cong(a, b):\n    return a + b # Trả về giá trị\n\nx = cong(2, 3)\nprint(x) # In ra: 5\n```\n\n### Hàm không có `return` mặc định trả về `None`\nNếu một hàm không có lệnh `return` rõ ràng, Python sẽ mặc định trả về giá trị `None`. Điều này có thể gây ra lỗi `TypeError` nếu bạn cố gắng thực hiện phép toán với kết quả đó.\n\n```python\ndef in_chao():\n    print(\"Xin chào!\")\n\nkq = in_chao()\nprint(type(kq)) # <class 'NoneType'>\n```\n\n### Thiếu đối số khi gọi hàm\nNếu hàm yêu cầu 2 tham số nhưng bạn chỉ truyền 1, Python sẽ báo lỗi `TypeError`.\n\n```python\ndef tinh_tong(a, b):\n    return a + b\n\n# Lỗi: TypeError: tinh_tong() missing 1 required positional argument: 'b'\n# tinh_tong(5) \n```\n\n## 4. Tóm tắt\n- Dùng `def` để định nghĩa hàm, kèm theo Docstring để tài liệu hóa.\n- Dùng `return` để trả về giá trị và kết thúc hàm.\n- `print()` chỉ hiển thị, không trả về giá trị.\n- Hàm không có `return` sẽ trả về `None`.\n- Đảm bảo truyền đúng số lượng đối số khi gọi hàm để tránh `TypeError`.",
+        "source": "LLM",
+        "source_ids": [
+          "ai-service/data/pythonSkillGraph.json#PY-FUNC-01",
+          "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 09/Lession2.md",
+          "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 09/Lession3.md"
+        ]
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-20T16:54:07.020259+00:00",
+      "sequence": 4,
+      "trace_id": "trace_1d380c63675b4966b8cc694ef9cd97a0",
+      "input_hash": "820941e67667d0770fd0bf1796f87fb6e1eaf2949cea39e0aa6ed5f724881f2c",
+      "started_at": "2026-09-20T16:54:03.260697+00:00",
+      "duration_ms": 3759,
+      "model_calls": [
+        {
+          "input": {
+            "context": {
+              "concept": {
+                "id": "PY-FUNC-01",
+                "name": "Định nghĩa hàm def, gọi hàm & giá trị return",
+                "topic_id": "TOPIC-FUNC-BASIC",
+                "domain_id": "PYTHON",
+                "module_id": "MOD-FUNC",
+                "concept_id": "PY-FUNC-01",
+                "bloom_level": "Application",
+                "description": "Đóng gói mã nguồn tái sử dụng với lệnh def, tham số đầu vào và giá trị trả về qua lệnh return.",
+                "concept_name": "Định nghĩa hàm def, gọi hàm & giá trị return",
+                "prerequisites": [
+                  "PY-FLOW-01",
+                  "PY-FLOW-03"
+                ],
+                "code_signatures": [
+                  "def my_func():\n    return result",
+                  "res = my_func()"
+                ],
+                "difficulty_level": 2,
+                "associated_errors": [
+                  "TypeError",
+                  "UnboundLocalError"
+                ],
+                "learning_objectives": [
+                  "Khởi tạo hàm bằng từ khóa def và tài liệu hóa bằng Docstring",
+                  "Phân biệt giữa việc in ra màn hình print() và trả về giá trị cho caller qua return",
+                  "Hiểu rằng hàm không có return rõ ràng sẽ mặc định trả về None"
+                ]
+              },
+              "sources": [
+                {
+                  "id": "ai-service/data/pythonSkillGraph.json#PY-FUNC-01",
+                  "sha256": "ec8e578657c1eecf4072e84f4dd8c0eda421567e8e3ea02343680c44682046bc",
+                  "excerpt": {
+                    "id": "PY-FUNC-01",
+                    "name": "Định nghĩa hàm def, gọi hàm & giá trị return",
+                    "topic_id": "TOPIC-FUNC-BASIC",
+                    "domain_id": "PYTHON",
+                    "module_id": "MOD-FUNC",
+                    "concept_id": "PY-FUNC-01",
+                    "bloom_level": "Application",
+                    "description": "Đóng gói mã nguồn tái sử dụng với lệnh def, tham số đầu vào và giá trị trả về qua lệnh return.",
+                    "concept_name": "Định nghĩa hàm def, gọi hàm & giá trị return",
+                    "prerequisites": [
+                      "PY-FLOW-01",
+                      "PY-FLOW-03"
+                    ],
+                    "code_signatures": [
+                      "def my_func():\n    return result",
+                      "res = my_func()"
+                    ],
+                    "difficulty_level": 2,
+                    "associated_errors": [
+                      "TypeError",
+                      "UnboundLocalError"
+                    ],
+                    "learning_objectives": [
+                      "Khởi tạo hàm bằng từ khóa def và tài liệu hóa bằng Docstring",
+                      "Phân biệt giữa việc in ra màn hình print() và trả về giá trị cho caller qua return",
+                      "Hiểu rằng hàm không có return rõ ràng sẽ mặc định trả về None"
+                    ]
+                  }
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 09/Lession2.md",
+                  "sha256": "be18c9224770d349536ee69bbf46464f8bc527a82ffbdd0123a283677118a53d",
+                  "excerpt": "---\nlessonId: \"LS-04.02\"\ntitle: \"Tham số và Đối số\"\ndifficulty: \"EASY\"\nestimatedDuration: 20\nkeywords: [\"parameters\", \"arguments\", \"positional arguments\", \"keyword arguments\"]\nprerequisites: [\"LS-04.01\"]\n---\n\n# 📘 Lesson 04.02: Tham số và Đối số\n\n---\n\n## 1. Khái niệm & Vấn đề\n\nNếu một hàm chỉ thực hiện các câu lệnh cố định (ví dụ: luôn in ra `\"Chào bạn Minh\"`), hàm đó sẽ có tính ứng dụng rất hạn chế. Trong thực tế, ta muốn hàm đó có thể chào bất kỳ ai tùy vào tên người dùng truyền vào khi gọi hàm.\n\nĐể làm được điều này, hàm cần nhận dữ liệu từ bên ngoài vào lúc chạy. Dữ liệu này được định nghĩa thông qua các **Tham số (Parameters)** và được truyền vào qua các **Đối số (Arguments)**.\n\n| Thuật ngữ | Định nghĩa thực tế | Phép ẩn dụ |\n| :--- | :--- | :--- |\n| **Parameter (Tham số)** | Các biến được khai báo ở phần định nghĩa hàm (trong dấu ngoặc đơn), đóng vai trò như các \"hộp chứa\" chờ nhận dữ liệu. | Giống như các **khay trống** trong tủ lạnh được dán nhãn: khay đựng trứng, khay đựng rau. |\n| **Argument (Đối số)** | Giá trị thực tế được truyền vào cho tham số khi gọi hàm chạy. | Giống như **quả trứng thực tế** hoặc **cây rau** bạn bỏ vào các khay trống tương ứng đó. |\n\n---\n\n## 2. Cú pháp & Vận hành\n\n```python\n# 'name' là tham số (parameter)\ndef greet(name):\n    print(f\"Xin chào, {name}!\")\n\n# \"Alice\" và \"Bob\" là đối số (arguments)\ngreet(\"Alice\")\ngreet(\"Bob\")\n```\n\n**Bảng theo dõi thực thi (Execution Trace Table):**\n| Dòng mã | Lệnh được chạy | Trạng thái biến tham số | Kết quả màn hình |\n|:---:|:---|:---|:---|\n| 1-2 | `def greet(name): ...` | `name` được khai báo | Chưa chạy |\n| 5 | `greet(\"Alice\")` | `name` nhận giá trị `\"Alice\"` | `Xin chào, Alice!` |\n| 6 | `greet(\"Bob\")` | `name` nhận giá trị `\"Bob\"` | `Xin chào, Bob!` |\n\nPython hỗ trợ các cách truyền đối số linh hoạt:\n1. **Đối số vị trí (Positional Arguments):** Truyền đối số theo đúng thứ tự khai báo của các tham số.\n2. **Đối số từ khóa (Keyword Arguments):** Chỉ rõ tên tham số khi truyền đối số để không phụ thuộc vào thứ tự: `greet(name=\"Alice\")`.\n\n---\n\n## 3. Lỗi thường gặp & Tối ưu\n\n> [!WARNING]\n> **Lỗi thiếu đối số (`TypeError`):**\n> Nếu hàm định nghĩa yêu cầu truyền 2 tham số, nhưng lúc gọi bạn chỉ truyền vào 1 đối số, Python sẽ báo lỗi `TypeError: missing required positional argument`.\n> *Ví dụ:*\n> ```python\n> def tinh_tong(a, b):\n>     print(a + b)\n> \n> tinh_tong(5) # Lỗi TypeError: tinh_tong() missing 1 required positional argument: 'b'\n> ```\n>\n> [!TIP]\n> **Tham số mặc định (Default Parameters):**\n> Ta có thể gán giá trị mặc định cho tham số phòng trường hợp người dùng không truyền đối số vào:\n> ```python\n> def welcome(name=\"Học viên\"):\n>     print(f\"Chào mừng {name}\")\n> \n> welcome() # In ra: Chào mừng Học viên\n> ```\n\n---\n\n## 4. Luyện tập\n\n### Câu hỏi trắc nghiệm (Warm-up)\nKhẳng định nào sau đây mô tả đúng nhất về sự khác biệt giữa **Tham số (Parameter)** và **Đối số (Argument)**?\n* [ ] Tham số là giá trị thực tế truyền vào, đối số là tên biến khai báo trong hàm.\n* [x] Tham số là biến khai báo trong định nghĩa hàm, đối số là giá trị thực tế truyền vào khi gọi hàm.\n* [ ] Cả hai là cách gọi hoàn toàn giống nhau, không có sự khác biệt.\n* [ ] Tham số chỉ nhận dữ liệu chuỗi, đối số chỉ nhận dữ liệu số.\n\n### Thử thách sửa lỗi (Debug)\nĐoạn code dưới đây định nghĩa hàm tính tiền sau thuế của sản phẩm với thuế mặc định là `0.1` (10%). Tuy nhiên chương trình đang báo lỗi cú pháp do đặt sai thứ tự tham số mặc định. Hãy sửa lại cho đúng quy tắc của Python (Gợi ý: tham số mặc định phải nằm sau các tham số thông thường):\n```python\n# Đoạn code lỗi:\ndef calc_total(tax=0.1, price):\n    print(price + (price * tax))\n\ncalc_total(100)\n```\n\n### Bài tập lập trình (Mini-task)\nĐịnh nghĩa một hàm tên là `print_info` nhận vào hai tham số là `name` và `age`. Hàm sẽ in ra màn hình thông báo: `\"{name} năm nay {age} tuổi.\"`. Hãy gọi hàm này với đối số cụ thể.\n```python\n# Nhập code của bạn ở đây\n```\n\n---\n\n## 5. Đúc kết & Đi tiếp\n\n* 📥 **Tham số** (Parameter) hoạt động như các biến đại diện bên trong hàm.\n* 📤 **Đối số** (Argument) là giá trị cụ thể được gán vào tham số lúc gọi hàm.\n* ⚖️ Đảm bảo truyền đúng số lượng đối số tương ứng với số lượng tham số yêu cầu để tránh lỗi `TypeError`.\n* 🛡️ Sử dụng **tham số mặc định** ở phía sau danh sách tham số để tăng tính linh động.\n\nTrong bài học tiếp theo **[LS-04.03: Trả về kết quả (Return)]**, chúng ta sẽ học cách đưa kết quả tính toán của hàm ra ngoài chương trình để tiếp tục sử dụng thay vì chỉ in ra màn hình.\n",
+                  "match_score": 3
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 09/Lession3.md",
+                  "sha256": "2aea4b45c038e3e15cd112d1c2869929d44f726c3ca1e4e5ac041cc3e71318ce",
+                  "excerpt": "---\nlessonId: \"LS-04.03\"\ntitle: \"Trả về kết quả (Return)\"\ndifficulty: \"EASY\"\nestimatedDuration: 15\nkeywords: [\"return\", \"return value\", \"function output\", \"none\"]\nprerequisites: [\"LS-04.02\"]\n---\n\n# 📘 Lesson 04.03: Trả về kết quả (Return)\n\n---\n\n## 1. Khái niệm & Vấn đề\n\nKhi viết một hàm tính toán diện tích hình tròn, nếu ta chỉ in kết quả ra màn hình bằng lệnh `print()`, chương trình chính sẽ không thể sử dụng kết quả đó để tính toán tiếp (ví dụ: nhân với đơn giá đất để ra tổng tiền). Kết quả chỉ hiện lên màn hình rồi biến mất khỏi bộ nhớ của máy tính.\n\nĐể chuyển kết quả tính toán từ bên trong hàm ra ngoài chương trình chính, ta phải sử dụng lệnh **`return`**.\n\n| Thuật ngữ | Định nghĩa thực tế | Phép ẩn dụ |\n| :--- | :--- | :--- |\n| **Return (Trả về)** | Câu lệnh dừng thực thi hàm và gửi trả lại một giá trị từ hàm về nơi gọi nó. | Giống như việc bạn **đưa tiền cho shipper đi mua đồ**. Shipper đi mua (chạy hàm) rồi quay về giao hàng tận tay cho bạn (lệnh return). |\n\n---\n\n## 2. Cú pháp & Vận hành\n\nĐể trả về giá trị, ta dùng từ khóa `return` kèm theo giá trị hoặc biến chứa kết quả cần chuyển ra ngoài:\n\n```python\ndef multiply(a, b):\n    result = a * b\n    return result\n\n# Nhận giá trị trả về và lưu vào biến\noutput = multiply(3, 4)\nprint(output) # In ra: 12\n```\n\n**Bảng theo dõi thực thi (Execution Trace Table):**\n| Dòng mã | Lệnh được chạy | Trạng thái biến | Hành động của máy tính |\n|:---:|:---|:---|:---|\n| 1-3 | `def multiply(a, b): ...` | Đăng ký hàm | Chưa thực thi |\n| 6 | `multiply(3, 4)` | `a: 3, b: 4` | Tính `result = 12` |\n| 3 | `return result` | Thoát hàm | Đưa giá trị `12` ra ngoài và gán cho biến `output` |\n| 7 | `print(output)` | `output: 12` | Hiển thị `12` lên màn hình |\n\n---\n\n## 3. Lỗi thường gặp & Tối ưu\n\n> [!WARNING]\n> **Nhầm lẫn giữa `print` và `return`:**\n> `print()` chỉ hiển thị dữ liệu lên màn hình cho con người đọc. Nó **không** trả về giá trị cho biến. Nếu một hàm không có lệnh `return` mà bạn vẫn gán kết quả của nó vào một biến, biến đó sẽ mang giá trị rỗng **`None`**.\n> *Ví dụ:*\n> ```python\n> def add(a, b):\n>     print(a + b) # Chỉ in, không return\n> \n> result = add(2, 3) # result sẽ nhận giá trị None\n> print(result) # In ra: None\n> ```\n>\n> **Lệnh `return` kết thúc hàm lập tức:**\n> Bất kỳ dòng lệnh nào đứng sau lệnh `return` bên trong cùng một khối lệnh của hàm đều sẽ không bao giờ được thực thi (được gọi là dead code).\n\n---\n\n## 4. Luyện tập\n\n### Câu hỏi trắc nghiệm (Warm-up)\nĐiều gì xảy ra khi chương trình gặp lệnh `return` bên trong một hàm?\n* [ ] Hàm tiếp tục thực thi các dòng lệnh bên dưới lệnh return.\n* [x] Hàm lập tức dừng hoạt động và gửi trả lại giá trị phía sau return về nơi gọi.\n* [ ] Chương trình chính bị dừng hoạt động hoàn toàn.\n* [ ] Giá trị của biến toàn cục bị xóa bỏ.\n\n### Thử thách sửa lỗi (Debug)\nĐoạn code sau đây muốn tính bình phương của một số và gán kết quả đó vào biến `x` để tiếp tục cộng thêm `10`. Tuy nhiên kết quả in ra màn hình bị lỗi `TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'`. Hãy sửa lại hàm:\n```python\ndef square(n):\n    result = n * n\n    print(result)\n\n# Đoạn code lỗi:\nx = square(5)\nprint(x + 10)\n```\n\n### Bài tập lập trình (Mini-task)\nĐịnh nghĩa một hàm tên là `double_number` nhận vào một tham số `n`. Hàm sẽ nhân đôi giá trị `n` và trả về kết quả đó bằng lệnh `return`. Sau đó hãy gọi hàm này với giá trị truyền vào là `10`, lưu kết quả vào biến `res` rồi in ra màn hình.\n```python\n# Nhập code của bạn ở đây\n```\n\n---\n\n## 5. Đúc kết & Đi tiếp\n\n* 🎁 **`return`** gửi kết quả tính toán từ trong hàm ra ngoài chương trình chính.\n* 🛑 Lệnh `return` kết thúc hoạt động của hàm ngay lập tức khi được kích hoạt.\n* 🚫 Nếu một hàm không có từ khóa `return`, giá trị mặc định trả về là **`None`**.\n\nTrong bài học tiếp theo **[LS-04.04: Phạm vi của Biến (Scope)]**, chúng ta sẽ học về ranh giới kiểm soát biến: tại sao biến khai báo trong hàm không thể gọi được ở ngoài hàm và ngược lại.\n",
+                  "match_score": 3
+                }
+              ],
+              "specification": {
+                "mode": "diagnostic",
+                "language": "python",
+                "trace_id": "trace_1d380c63675b4966b8cc694ef9cd97a0",
+                "execution": {
+                  "mode": "function",
+                  "comparator": "json",
+                  "entrypoint": "solution",
+                  "call_style_required": true
+                },
+                "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+                "difficulty": "EASY",
+                "source_refs": [],
+                "user_request": "Tôi muốn tìm hiểu Def trong Python.",
+                "concept_title": "Định nghĩa hàm def, gọi hàm & giá trị return",
+                "prerequisites": [
+                  "PY-FLOW-01",
+                  "PY-FLOW-03"
+                ],
+                "recent_errors": [],
+                "schema_version": "4.0",
+                "selection_mode": "explicit",
+                "target_concept": "PY-FUNC-01",
+                "learner_evidence": {
+                  "policy": "adaptive_policy_v3",
+                  "mastery": null,
+                  "attempts": 0,
+                  "prerequisite_gaps": [
+                    "PY-FLOW-01",
+                    "PY-FLOW-03"
+                  ]
+                },
+                "test_constraints": {
+                  "max_cases": 8,
+                  "min_cases": 4,
+                  "require_hidden_case": true,
+                  "max_execution_time_ms": 3000,
+                  "require_boundary_case": true
+                },
+                "target_sub_skills": [
+                  "Khởi tạo hàm bằng từ khóa def và tài liệu hóa bằng Docstring"
+                ],
+                "learning_objectives": [
+                  "Khởi tạo hàm bằng từ khóa def và tài liệu hóa bằng Docstring"
+                ],
+                "required_constructs": [],
+                "forbidden_constructs": []
+              },
+              "retrieval_method": "local_graph_and_keyword_search"
+            },
+            "feedback": null,
+            "language": "python",
+            "concept_id": "PY-FUNC-01",
+            "user_query": "Tôi muốn tìm hiểu Def trong Python.",
+            "concept_name": "Định nghĩa hàm def, gọi hàm & giá trị return"
+          },
+          "model": "qwen/qwen3.8-27b",
+          "stage": "ExplanationTutorAgent",
+          "usage": {
+            "queue_time": 0.020616771,
+            "total_time": 2.6939689270000002,
+            "prompt_time": 0.301716685,
+            "total_tokens": 5339,
+            "prompt_tokens": 4108,
+            "completion_time": 2.392252242,
+            "completion_tokens": 1231
+          },
+          "output": {
+            "reply": "# Định nghĩa hàm `def`, gọi hàm & giá trị `return`\n\nChào bạn, trong Python, hàm (function) là một khối mã nguồn được đóng gói lại để tái sử dụng. Việc hiểu rõ cách định nghĩa, gọi và xử lý giá trị trả về là nền tảng quan trọng để viết code hiệu quả.\n\n## 1. Bản chất và Cú pháp\n\n### Khởi tạo hàm bằng `def` và Docstring\nBạn sử dụng từ khóa `def` để khai báo một hàm. Ngay sau tên hàm và dấu ngoặc đơn, bạn có thể thêm một **Docstring** (chuỗi tài liệu) để mô tả chức năng của hàm. Docstring thường nằm ở dòng đầu tiên trong thân hàm.\n\n```python\ndef tinh_tong(a, b):\n    \"\"\"Tính tổng của hai số a và b.\"\"\"\n    return a + b\n```\n\n- `tinh_tong`: Tên hàm (nên dùng chữ thường, phân tách bằng dấu gạch dưới).\n- `a, b`: Các tham số (parameters) mà hàm nhận vào.\n- `\"\"\"...\"\"\"`: Docstring, giúp người khác (hoặc chính bạn sau này) hiểu hàm làm gì.\n\n### Gọi hàm\nĐể thực thi hàm, bạn gọi tên hàm kèm theo các đối số (arguments) cụ thể trong dấu ngoặc đơn.\n\n```python\nket_qua = tinh_tong(5, 3) # Gọi hàm với a=5, b=3\nprint(ket_qua) # In ra: 8\n```\n\n### Giá trị `return`\nLệnh `return` có hai vai trò chính:\n1. **Trả về giá trị:** Gửi kết quả tính toán từ bên trong hàm ra bên ngoài để chương trình chính có thể sử dụng tiếp.\n2. **Kết thúc hàm:** Dừng việc thực thi các dòng lệnh còn lại trong hàm ngay lập tức.\n\n```python\ndef nhan_do(n):\n    ket_qua = n * 2\n    return ket_qua # Trả về giá trị và dừng hàm\n    print(\"Dòng này sẽ không bao giờ chạy\") # Dead code\n```\n\n## 2. Ví dụ minh họa\n\nGiả sử bạn cần một hàm tính diện tích hình tròn. Thay vì chỉ in ra màn hình, bạn muốn lưu kết quả để tính tiền thuê đất.\n\n```python\nimport math\n\ndef tinh_dien_tich(ban_kinh):\n    \"\"\"Tính diện tích hình tròn dựa trên bán kính.\"\"\"\n    dt = math.pi * ban_kinh ** 2\n    return dt # Trả về diện tích\n\n# Gọi hàm và lưu kết quả\nr = 5\ndt_hinh_tron = tinh_dien_tich(r)\n\n# Sử dụng kết quả trả về để tính tiếp\ntien_thue = dt_hinh_tron * 1000000\nprint(f\"Diện tích: {dt_hinh_tron:.2f} m2\")\nprint(f\"Tiền thuê: {tien_thue} VND\")\n```\n\n## 3. Lỗi thường gặp\n\n### Nhầm lẫn giữa `print()` và `return`\nNhiều người mới học thường dùng `print()` để \"trả về\" kết quả. Tuy nhiên, `print()` chỉ hiển thị lên màn hình, nó **không** trả về giá trị cho biến.\n\n**Sai:**\n```python\ndef cong(a, b):\n    print(a + b) # Chỉ in ra, không return\n\nx = cong(2, 3)\nprint(x) # In ra: None (vì hàm không có return)\n```\n\n**Đúng:**\n```python\ndef cong(a, b):\n    return a + b # Trả về giá trị\n\nx = cong(2, 3)\nprint(x) # In ra: 5\n```\n\n### Hàm không có `return` mặc định trả về `None`\nNếu một hàm không có lệnh `return` rõ ràng, Python sẽ mặc định trả về giá trị `None`. Điều này có thể gây ra lỗi `TypeError` nếu bạn cố gắng thực hiện phép toán với kết quả đó.\n\n```python\ndef in_chao():\n    print(\"Xin chào!\")\n\nkq = in_chao()\nprint(type(kq)) # <class 'NoneType'>\n```\n\n### Thiếu đối số khi gọi hàm\nNếu hàm yêu cầu 2 tham số nhưng bạn chỉ truyền 1, Python sẽ báo lỗi `TypeError`.\n\n```python\ndef tinh_tong(a, b):\n    return a + b\n\n# Lỗi: TypeError: tinh_tong() missing 1 required positional argument: 'b'\n# tinh_tong(5) \n```\n\n## 4. Tóm tắt\n- Dùng `def` để định nghĩa hàm, kèm theo Docstring để tài liệu hóa.\n- Dùng `return` để trả về giá trị và kết thúc hàm.\n- `print()` chỉ hiển thị, không trả về giá trị.\n- Hàm không có `return` sẽ trả về `None`.\n- Đảm bảo truyền đúng số lượng đối số khi gọi hàm để tránh `TypeError`.",
+            "source_ids": [
+              "ai-service/data/pythonSkillGraph.json#PY-FUNC-01",
+              "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 09/Lession2.md",
+              "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 09/Lession3.md"
+            ]
+          },
+          "status": "SUCCEEDED",
+          "provider": "GROQ",
+          "deadline_ms": 28000,
+          "duration_ms": 3759,
+          "http_status": 200,
+          "prompt_hash": "aad4315f94ad4bda44d504e4813cd60e470389c00d7068d90b00c76891ba506b",
+          "response_id": "chatcmpl-a6a673f9-3de8-4a0f-bcdb-bc0335f746de",
+          "response_hash": "efd6ff398a9ad6edf753b3ec30cbe1f0ad5373cf4e960f09f492b9b0cc46b2a8",
+          "prompt_version": "adaptive_v4",
+          "key_fingerprint": "51ec0036b73f"
+        }
+      ],
+      "output_hash": "8223b786a086e3c0cbe2df836ef0ff69c8d28d43a28c6ff63c46190cce47a532",
+      "run_attempt": 1,
+      "stage_attempt": 1
+    }
+  ],
+  "fallback_used": false,
+  "schema_version": "4.0"
+}

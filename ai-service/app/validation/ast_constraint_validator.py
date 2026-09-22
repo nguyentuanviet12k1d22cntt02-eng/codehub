@@ -24,6 +24,7 @@ class AstConstraintValidator:
         # 1. Kiểm tra bằng Python AST nếu ngôn ngữ là Python
         if lang == "python":
             cls._validate_python_ast(code, spec, errors)
+            cls._validate_python_invocation_contract(code, exercise_data, spec, errors)
         elif lang == "javascript":
             cls._validate_js_constructs(code, spec, errors)
         elif lang == "cpp":
@@ -80,6 +81,40 @@ class AstConstraintValidator:
                 errors.append("Đặc tả cấm dùng biểu thức 'lambda', nhưng reference_solution lại dùng lambda.")
             elif f == "global" and has_global:
                 errors.append("Đặc tả cấm dùng từ khóa 'global', nhưng reference_solution lại dùng global.")
+
+    @classmethod
+    def _validate_python_invocation_contract(cls, code: str, exercise_data: Dict[str, Any], spec: ExerciseSpecification, errors: List[str]):
+        """Catch an incompatible function signature before a Docker execution.
+
+        This is deliberately a preflight check only.  Docker remains the
+        execution authority, but a known mismatch is returned as a precise
+        repair instruction instead of a generic runtime failure.
+        """
+        if spec.execution.get("mode") != "function":
+            return
+        try:
+            tree = ast.parse(code)
+        except SyntaxError:
+            return
+        entrypoint = spec.execution.get("entrypoint", "solution")
+        function = next((node for node in tree.body if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == entrypoint), None)
+        if not function:
+            errors.append(f"INVOCATION_ENTRYPOINT_NOT_FOUND:{entrypoint}")
+            return
+        positional = list(function.args.posonlyargs) + list(function.args.args)
+        minimum = len(positional) - len(function.args.defaults)
+        maximum = None if function.args.vararg else len(positional)
+        for index, test in enumerate(exercise_data.get("test_cases", [])):
+            arguments = test.get("arguments")
+            style = test.get("call_style")
+            if not isinstance(arguments, list) or style not in ("spread", "single"):
+                continue
+            supplied = len(arguments) if style == "spread" else 1
+            if supplied < minimum or (maximum is not None and supplied > maximum):
+                errors.append(
+                    f"INVOCATION_ARITY_MISMATCH:test_cases[{index}] {style} truyền {supplied} đối số, "
+                    f"nhưng {entrypoint} nhận {minimum}" + (f"..{maximum}" if maximum != minimum else "") + "."
+                )
 
     @classmethod
     def _validate_js_constructs(cls, code: str, spec: ExerciseSpecification, errors: List[str]):

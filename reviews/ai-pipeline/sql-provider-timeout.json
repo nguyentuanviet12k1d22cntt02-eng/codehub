@@ -1,0 +1,1510 @@
+{
+  "error": {
+    "code": "PROVIDER_DEADLINE_EXCEEDED",
+    "message": "Không nhận được JSON hợp lệ từ provider trong ngân sách cho phép"
+  },
+  "reply": "Pipeline dừng tại bước chưa đạt. Bạn có thể xem dẫn chứng và lỗi cụ thể bên dưới.",
+  "intent": "REQUEST_ADAPTIVE_EXERCISE",
+  "status": "FAILED",
+  "ended_at": "2026-09-18T02:16:42.395316+00:00",
+  "exercise": null,
+  "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+  "started_at": "2026-09-18T02:15:52.826785+00:00",
+  "agent_traces": [
+    {
+      "id": "21aa5ee9-f0c8-4fb7-aa30-1d6a1ec0669f",
+      "agent": "IntentRouterAgent",
+      "input": {
+        "request": "Tạo bài tập SQL mức dễ về SELECT và WHERE: liệt kê tên học viên có điểm từ 8 trở lên. Dùng SQLite, kiểm tra cả dữ liệu rỗng và điểm bằng 8.",
+        "language": "sql",
+        "last_concept_id": null
+      },
+      "method": "RULES_OR_LLM",
+      "output": {
+        "mode": "progression",
+        "topic": "select",
+        "intent": "REQUEST_ADAPTIVE_EXERCISE",
+        "language": "sql",
+        "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+        "user_text": "Tạo bài tập SQL mức dễ về SELECT và WHERE: liệt kê tên học viên có điểm từ 8 trở lên. Dùng SQLite, kiểm tra cả dữ liệu rỗng và điểm bằng 8.",
+        "confidence": 1,
+        "selection_mode": "explicit",
+        "difficulty_request": "auto"
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-18T02:15:52.827899+00:00",
+      "sequence": 1,
+      "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+      "input_hash": "bf44445c5e19e04cb5ab763b2c222eccf556e5af99f076b8b17404c94eecf18b",
+      "started_at": "2026-09-18T02:15:52.826906+00:00",
+      "duration_ms": 1,
+      "model_calls": [],
+      "output_hash": "4163a251b1f9005f2cefe05324a51428faf642bcd95f2aa0ab95d624a2b7c6b8"
+    },
+    {
+      "id": "123562be-89a6-4ca8-b526-f8d46d2ccda5",
+      "agent": "AdaptiveExercisePlanner",
+      "input": {
+        "routing": {
+          "mode": "progression",
+          "topic": "select",
+          "intent": "REQUEST_ADAPTIVE_EXERCISE",
+          "language": "sql",
+          "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+          "user_text": "Tạo bài tập SQL mức dễ về SELECT và WHERE: liệt kê tên học viên có điểm từ 8 trở lên. Dùng SQLite, kiểm tra cả dữ liệu rỗng và điểm bằng 8.",
+          "confidence": 1,
+          "selection_mode": "explicit",
+          "difficulty_request": "auto"
+        },
+        "learner_context": {
+          "states": {
+            "PY-FLOW-02": {
+              "mastery": 0.48,
+              "attempts": 3,
+              "failure_streak": 1
+            },
+            "JS-PROTO-01": {
+              "mastery": 0.48,
+              "attempts": 3,
+              "failure_streak": 1
+            }
+          },
+          "recent_exercises": [
+            "JS-PROTO-01",
+            "PY-FLOW-02"
+          ]
+        }
+      },
+      "method": "RULE_POLICY",
+      "output": {
+        "mode": "diagnostic",
+        "language": "sql",
+        "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+        "execution": {
+          "mode": "sql",
+          "dialect": "sqlite",
+          "ordered": false,
+          "comparator": "json",
+          "entrypoint": "solution"
+        },
+        "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+        "difficulty": "EASY",
+        "source_refs": [],
+        "user_request": "Tạo bài tập SQL mức dễ về SELECT và WHERE: liệt kê tên học viên có điểm từ 8 trở lên. Dùng SQLite, kiểm tra cả dữ liệu rỗng và điểm bằng 8.",
+        "concept_title": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+        "prerequisites": [
+          "SQL-RDBMS-01"
+        ],
+        "recent_errors": [],
+        "schema_version": "3.0",
+        "selection_mode": "explicit",
+        "target_concept": "SQL-DQL-01",
+        "learner_evidence": {
+          "policy": "adaptive_policy_v3",
+          "mastery": null,
+          "attempts": 0,
+          "prerequisite_gaps": [
+            "SQL-RDBMS-01"
+          ]
+        },
+        "test_constraints": {
+          "max_cases": 8,
+          "min_cases": 4,
+          "require_hidden_case": true,
+          "max_execution_time_ms": 3000,
+          "require_boundary_case": true
+        },
+        "target_sub_skills": [
+          "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+        ],
+        "learning_objectives": [
+          "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+        ],
+        "required_constructs": [],
+        "forbidden_constructs": []
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-18T02:15:52.828247+00:00",
+      "sequence": 2,
+      "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+      "input_hash": "4fb3e7c10c87970825aadc96e1bfe1f92310cba5d8e3a987a80cacbe5de21a3b",
+      "started_at": "2026-09-18T02:15:52.827970+00:00",
+      "duration_ms": 0,
+      "model_calls": [],
+      "output_hash": "3e4139f1950fb769f7b3f1cbdb0d3cea053c5bda66af7296e02e6dac28e9be4e"
+    },
+    {
+      "id": "69902d08-5aeb-4e64-b5dd-f4fbd5ae324b",
+      "agent": "KnowledgeRetrievalService",
+      "input": {
+        "language": "sql",
+        "concept_id": "SQL-DQL-01"
+      },
+      "method": "LOCAL_GRAPH_AND_FILES",
+      "output": {
+        "concept": {
+          "id": "SQL-DQL-01",
+          "name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+          "topic_id": "TOPIC-SQL-SELECT",
+          "domain_id": "SQL",
+          "module_id": "MOD-SQL-DQL",
+          "concept_id": "SQL-DQL-01",
+          "bloom_level": "Remember",
+          "concept_name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+          "prerequisites": [
+            "SQL-RDBMS-01"
+          ],
+          "practice_count": 4,
+          "difficulty_level": 1,
+          "associated_errors": [
+            "Invalid Column Name",
+            "Syntax Error"
+          ],
+          "learning_objectives": [
+            "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng",
+            "Loại bỏ các dòng kết quả trùng lặp với từ khóa `DISTINCT`",
+            "Đặt tên bí danh cho cột (Column Alias) bằng từ khóa `AS` giúp báo cáo dễ đọc"
+          ],
+          "estimated_time_minutes": 30
+        },
+        "sources": [
+          {
+            "id": "ai-service/data/sqlSkillGraph.json#SQL-DQL-01",
+            "sha256": "54f075d1933564bf047c2e3db8bba50b67d028a30c4322b9be73479fd9f0714e",
+            "excerpt": {
+              "id": "SQL-DQL-01",
+              "name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+              "topic_id": "TOPIC-SQL-SELECT",
+              "domain_id": "SQL",
+              "module_id": "MOD-SQL-DQL",
+              "concept_id": "SQL-DQL-01",
+              "bloom_level": "Remember",
+              "concept_name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+              "prerequisites": [
+                "SQL-RDBMS-01"
+              ],
+              "practice_count": 4,
+              "difficulty_level": 1,
+              "associated_errors": [
+                "Invalid Column Name",
+                "Syntax Error"
+              ],
+              "learning_objectives": [
+                "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng",
+                "Loại bỏ các dòng kết quả trùng lặp với từ khóa `DISTINCT`",
+                "Đặt tên bí danh cho cột (Column Alias) bằng từ khóa `AS` giúp báo cáo dễ đọc"
+              ],
+              "estimated_time_minutes": 30
+            }
+          },
+          {
+            "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md",
+            "sha256": "dd8a460302dda604441e357f9486f1bfe5c4144a8edd96dcd750ea9e9c92c947",
+            "excerpt": "---\nlessonId: \"SQL-02.02\"\ntitle: \"Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS\"\ndifficulty: \"EASY\"\nestimatedDuration: 20\nkeywords: [\"distinct\", \"as\", \"alias\", \"column-alias\", \"logical-processing\", \"duplicate-removal\"]\nprerequisites: [\"SQL-02.01\"]\n---\n\n# Bài 2.2: Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS\n\n---\n\n## 1. Khái niệm & Vấn đề\n\nHãy hình dung bạn có danh sách 100.000 đơn hàng. Khi muốn biết: *\"Công ty chúng ta đã từng giao hàng tới những thành phố nào?\"*, nếu chỉ `SELECT City FROM Orders`, bạn sẽ nhận về 100.000 dòng với từ \"Hà Nội\", \"TP. Hồ Chí Minh\" lặp đi lặp lại hàng nghìn lần! Bạn chỉ muốn một danh sách các thành phố **duy nhất, không trùng lặp**.\n\nMặt khác, khi hiển thị dữ liệu ra báo cáo hoặc tính toán (ví dụ: `Price * Quantity`), kết quả trả về thường có tên cột khó hiểu (như `c102`) hoặc mang nhãn `(No column name)`.\n\nĐể giải quyết hai bài toán này, SQL cung cấp hai từ khóa hữu dụng: **`DISTINCT`** (Loại bỏ trùng lặp) và **`AS`** (Đặt bí danh - Alias).\n\n```\n   BẢNG GỐC: Customers                     KẾT QUẢ KHI DÙNG DISTINCT\n┌────────────┬────────────────┐           ┌────────────────┐\n│ CustomerID │ City           │           │ City           │\n├────────────┼────────────────┤           ├────────────────┤\n│ 1          │ Hà Nội         │   ───►    │ Hà Nội         │\n│ 2          │ TP. Hồ Chí Minh│           │ TP. Hồ Chí Minh│\n│ 3          │ Hà Nội         │           │ Đà Nẵng        │\n│ 4          │ Đà Nẵng        │           └────────────────┘\n│ 5          │ TP. Hồ Chí Minh│            (Chỉ giữ lại 3 giá trị duy nhất)\n└────────────┴────────────────┘\n```\n\n| Từ khóa | Chức năng kỹ thuật | Phép ẩn dụ thực tế |\n| :--- | :--- | :--- |\n| **`DISTINCT`** | Loại bỏ tất cả các dòng trùng lặp hoàn toàn trong tập kết quả trả về. | Bộ lọc thông minh chỉ lấy danh sách các địa danh không trùng tên. |\n| **`AS` (Alias)** | Đặt lại tên tạm thời cho cột hoặc bảng trong quá trình hiển thị kết quả truy vấn. | Đặt \"biệt danh\" hoặc dán nhãn tiếng Việt dễ hiểu cho một cột dữ liệu. |\n\n---\n\n## 2. Cú pháp & Vận hành trong T-SQL\n\n### 2.1. Loại bỏ trùng lặp với `DISTINCT`\n\n#### A. Dùng `DISTINCT` trên 1 cột:\n```sql\n-- Lấy danh sách các tỉnh/thành phố duy nhất có khách hàng\nSELECT DISTINCT City \nFROM sales.Customers;\n```\n\n#### B. Dùng `DISTINCT` trên nhiều cột:\n> [!NOTE]\n> Khi viết `SELECT DISTINCT Col1, Col2`, SQL Server sẽ kiểm tra **cặp giá trị tổ hợp `(Col1, Col2)`**. Dòng chỉ bị coi là trùng lặp khi **tất cả** các cột trong danh sách đều giống hệt nhau!\n\n```text\nCity             Country        --> Có bị loại bỏ không?\n─────────────────────────────\nHà Nội           Việt Nam       (Giữ dòng đầu)\nHà Nội           Việt Nam       (BỊ LOẠI BỎ vì trùng cả City và Country)\nHà Nội           Nhật Bản       (VẪN GIỮ vì tổ hợp khác nhau)\n```\n\n```sql\nSELECT DISTINCT City, Country \nFROM sales.Customers;\n```\n\n---\n\n### 2.2. Đặt bí danh cột với từ khóa `AS`\n\nKhi tính toán biểu thức hoặc muốn tiêu đề cột thân thiện hơn:\n\n```sql\n-- Đặt bí danh cho cột và biểu thức tính toán\nSELECT \n    ProductName AS [Tên Sản Phẩm],\n    UnitPrice AS [Đơn Giá Gốc],\n    UnitPrice * 0.9 AS [Giá Sau Khuyến Mãi]\nFROM sales.Products;\n```\n\n#### 3 cách đặt bí danh trong SQL Server:\n1. **Dùng từ khóa `AS` kèm dấu ngoặc vuông `[ ]` (Khuyên dùng khi có dấu cách hoặc tiếng Việt):**  \n   `SELECT ProductName AS [Tên Sản Phẩm]`\n2. **Dùng dấu ngoặc vuông bỏ từ khóa `AS`:**  \n   `SELECT ProductName [Tên Sản Phẩm]`\n3. **Dùng dấu gán `=` (Cú pháp riêng của T-SQL):**  \n   `SELECT [Tên Sản Phẩm] = ProductName`\n\n---\n\n## 3. Thứ tự xử lý logic & \"Cái bẫy\" Bí danh trong `WHERE`\n\n> [!WARNING]\n> **Cạm bẫy kinh điển:** Tại sao bạn **KHÔNG THỂ** dùng Bí danh (Alias) trong mệnh đề `WHERE`?\n\nXét đoạn code lỗi sau:\n```sql\n-- ❌ BỊ LỖI: Invalid column name 'GiaKhuyenMai'\nSELECT ProductName, UnitPrice * 0.9 AS GiaKhuyenMai\nFROM sales.Products\nWHERE GiaKhuyenMai < 500000;\n```\n\n### Nguyên nhân từ thứ tự thực thi (Logical Processing Order):\n```\n1. FROM sales.Products        (Xác định bảng nguồn)\n2. WHERE GiaKhuyenMai < 500000 (Lọc dữ liệu - TẠI ĐÂY CHƯA HỀ CÓ BIẾN GiaKhuyenMai!)\n3. SELECT ... AS GiaKhuyenMai (Mệnh đề SELECT sinh ra bí danh sau cùng)\n```\nVì mệnh đề `WHERE` chạy **trước** mệnh đề `SELECT`, tại thời điểm lọc điều kiện, SQL Server **chưa hề biết** bí danh `GiaKhuyenMai` là gì.\n\n✅ **Cách viết đúng chuẩn:**\n```sql\nSELECT ProductName, UnitPrice * 0.9 AS GiaKhuyenMai\nFROM sales.Products\nWHERE (UnitPrice * 0.9) < 500000;\n```\n\n---\n\n## 4. Tối ưu hiệu năng với `DISTIN",
+            "match_score": 5
+          },
+          {
+            "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md",
+            "sha256": "ab766999f3a626e4c09a83d9bf295e86833ff989b14b79051ed35e24b8569e89",
+            "excerpt": "# Lộ Trình Khóa Học SQL Server (T-SQL) Toàn Diện\n\n> **Hệ quản trị CSDL chuẩn:** Microsoft SQL Server & T-SQL (Transact-SQL)  \n> **Công cụ thực hành:** SQL Server Management Studio (SSMS) / Azure Data Studio\n\n---\n\n## Module 1: Nền tảng & Truy vấn cơ bản (DQL Basics)\n\n### Chapter 1: Tổng quan Cơ sở dữ liệu quan hệ & Môi trường SQL Server\n- **Bài 1.1:** Cơ sở dữ liệu quan hệ (RDBMS) là gì? Khái niệm Bảng (Table), Dòng (Row), Cột (Column), Lược đồ (Schema).\n- **Bài 1.2:** Khóa chính (Primary Key), Khóa ngoại (Foreign Key) và Mối quan hệ giữa các bảng (1-1, 1-N, N-N).\n- **Bài 1.3:** Cài đặt SQL Server, làm quen giao diện SQL Server Management Studio (SSMS) & thực thi câu lệnh T-SQL đầu tiên.\n\n### Chapter 2: Truy xuất & Lọc dữ liệu cơ bản\n- **Bài 2.1:** Cú pháp lệnh `SELECT` và `FROM`: Lấy tất cả cột vs. Lấy cột chỉ định.\n- **Bài 2.2:** Loại bỏ trùng lặp với `DISTINCT` và đặt tên cột thay thế với bí danh `AS` (Alias).\n- **Bài 2.3:** Lọc điều kiện cơ bản với mệnh đề `WHERE` (Toán tử so sánh: `=`, `<>`, `!=`, `>`, `<`, `>=`, `<=`).\n- **Bài 2.4:** Kết hợp nhiều điều kiện logic: `AND`, `OR`, `NOT` và thứ tự ưu tiên toán tử.\n\n### Chapter 3: Lọc dữ liệu nâng cao, Sắp xếp & Phân trang\n- **Bài 3.1:** Lọc theo khoảng giá trị với `BETWEEN ... AND` và danh sách giá trị với `IN (...)`.\n- **Bài 3.2:** Tìm kiếm mẫu chuỗi ký tự với `LIKE` và các ký tự đại diện (`%`, `_`, `[ ]`, `[^ ]`).\n- **Bài 3.3:** Xử lý giá trị rỗng: Kiểm tra `IS NULL` và `IS NOT NULL` (Tránh bẫy so sánh `= NULL`).\n- **Bài 3.4:** Sắp xếp kết quả với `ORDER BY` (`ASC`, `DESC`, sắp xếp đa cột, `NULLS FIRST/LAST`).\n- **Bài 3.5:** Giới hạn kết quả và phân trang chuyên nghiệp trong T-SQL: Mệnh đề `TOP` vs. Cú pháp `OFFSET ... FETCH NEXT`.\n\n---\n\n## Module 2: Ghép bảng & Phân tích tổng hợp (Joins & Aggregations)\n\n### Chapter 4: Kết nối nhiều bảng (Relational Joins)\n- **Bài 4.1:** Tư duy kết nối bảng và `INNER JOIN` (Lấy phần giao nhau theo điều kiện `ON`).\n- **Bài 4.2:** `LEFT JOIN` (Left Outer Join): Giữ trọn bảng bên trái và kỹ thuật tìm bản ghi mồ côi (Is Orphan/NULL).\n- **Bài 4.3:** `RIGHT JOIN` và `FULL OUTER JOIN`: Bản chất và các tình huống ứng dụng thực tế.\n- **Bài 4.4:** `CROSS JOIN` (Tích Descartes) và kỹ thuật `SELF JOIN` (Tự kết nối chính bảng đó cho dữ liệu phân cấp).\n- **Bài 4.5:** Hợp nhất tập dữ liệu từ nhiều truy vấn: Phân biệt bản chất và hiệu năng giữa `UNION` vs `UNION ALL`.\n\n### Chapter 5: Nhóm dữ liệu & Hàm tổng hợp\n- **Bài 5.1:** Các hàm tính toán tổng hợp cơ bản: `COUNT()`, `COUNT(DISTINCT)`, `SUM()`, `AVG()`, `MIN()`, `MAX()`.\n- **Bài 5.2:** Gom nhóm dữ liệu với mệnh đề `GROUP BY` (Gom nhóm đơn cột, đa cột và quy tắc chọn cột ở `SELECT`).\n- **Bài 5.3:** Lọc điều kiện sau khi tổng hợp với mệnh đề `HAVING`.\n- **Bài 5.4:** Phân biệt bản chất hoạt động, thứ tự thực thi (Logical Query Processing) giữa `WHERE` vs `HAVING`.\n\n---\n\n## Module 3: Thao tác dữ liệu & Truy vấn nâng cao (DML & Advanced T-SQL)\n\n### Chapter 6: Thao tác thêm, sửa, xóa dữ liệu (DML)\n- **Bài 6.1:** Thêm mới dữ liệu vào bảng: `INSERT INTO ... VALUES`, `INSERT INTO ... SELECT` và lệnh `SELECT INTO`.\n- **Bài 6.2:** Cập nhật dữ liệu với `UPDATE` (Kỹ thuật `UPDATE` kết hợp `JOIN` và cảnh báo bắt buộc mệnh đề `WHERE`).\n- **Bài 6.3:** Xóa dữ liệu với `DELETE` vs `TRUNCATE TABLE` (So sánh cơ chế Logging, Identity Reset và hiệu năng).\n- **Bài 6.4:** Cú pháp đồng bộ dữ liệu nâng cao `MERGE` (Upsert: Insert, Update, Delete trong 1 lệnh).\n\n### Chapter 7: Xử lý dữ liệu đa dạng & Logic điều kiện\n- **Bài 7.1:** Xử lý giá trị Null nâng cao trong SQL Server: `ISNULL()`, `COALESCE()`, và `NULLIF()`.\n- **Bài 7.2:** Các hàm xử lý chuỗi T-SQL phổ biến: `CONCAT()`, `SUBSTRING()`, `LEN()`, `DATALENGTH()`, `TRIM()`, `REPLACE()`, `CHARINDEX()`.\n- **Bài 7.3:** Làm việc với Ngày & Giờ (Date & Time): `GETDATE()`, `SYSDATETIME()`, `DATEADD()`, `DATEDIFF()`, `DATEPART()`, `FORMAT()`.\n- **Bài 7.4:** Phân nhánh logic linh hoạt với biểu thức `CASE WHEN ... THEN ... ELSE ... END` (Simple CASE & Searched CASE).\n\n### Chapter 8: Subqueries, CTEs & Window Functions\n- **Bài 8.1:** Subquery (Truy vấn con): Scalar Subquery, Correlated Subquery và các toán tử `EXISTS`, `NOT EXISTS`, `IN`, `ALL`, `ANY`.\n- **Bài 8.2:** Bảng tạm Common Table Expressions (`WITH CTE`) và ứng dụng CTE đệ quy (Recursive CTE) cho dữ liệu cây/phân cấp.\n- **Bài 8.3:** Nhập môn Window Functions: Cú pháp mệnh đề `OVER (PARTITION BY ... ORDER BY ... ROWS/RANGE BETWEEN)`.\n- **Bài 8.4:** Xếp hạng dữ liệu: Phân biệt chi tiết `ROW_NUMBER()`, `RANK()`, `DENSE_R",
+            "match_score": 5
+          }
+        ],
+        "retrieval_method": "local_graph_and_keyword_search"
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-18T02:15:52.979360+00:00",
+      "sequence": 3,
+      "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+      "input_hash": "cb24788177f1fb54ab965fc1b4d688fd199c13972a359f6eacd09ca95acfaaf7",
+      "started_at": "2026-09-18T02:15:52.828326+00:00",
+      "duration_ms": 151,
+      "model_calls": [],
+      "output_hash": "5a2e252d0964cdf49b802ae436fd79ce6e0df2bad724c348ad86171dd0e3bee9"
+    },
+    {
+      "id": "14ebccb5-290e-4722-b646-21ccb4467e34",
+      "agent": "ExplanationTutorAgent",
+      "input": {
+        "feedback": null,
+        "grounding": {
+          "concept": {
+            "id": "SQL-DQL-01",
+            "name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+            "topic_id": "TOPIC-SQL-SELECT",
+            "domain_id": "SQL",
+            "module_id": "MOD-SQL-DQL",
+            "concept_id": "SQL-DQL-01",
+            "bloom_level": "Remember",
+            "concept_name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+            "prerequisites": [
+              "SQL-RDBMS-01"
+            ],
+            "practice_count": 4,
+            "difficulty_level": 1,
+            "associated_errors": [
+              "Invalid Column Name",
+              "Syntax Error"
+            ],
+            "learning_objectives": [
+              "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng",
+              "Loại bỏ các dòng kết quả trùng lặp với từ khóa `DISTINCT`",
+              "Đặt tên bí danh cho cột (Column Alias) bằng từ khóa `AS` giúp báo cáo dễ đọc"
+            ],
+            "estimated_time_minutes": 30
+          },
+          "sources": [
+            {
+              "id": "ai-service/data/sqlSkillGraph.json#SQL-DQL-01",
+              "sha256": "54f075d1933564bf047c2e3db8bba50b67d028a30c4322b9be73479fd9f0714e",
+              "excerpt": {
+                "id": "SQL-DQL-01",
+                "name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+                "topic_id": "TOPIC-SQL-SELECT",
+                "domain_id": "SQL",
+                "module_id": "MOD-SQL-DQL",
+                "concept_id": "SQL-DQL-01",
+                "bloom_level": "Remember",
+                "concept_name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+                "prerequisites": [
+                  "SQL-RDBMS-01"
+                ],
+                "practice_count": 4,
+                "difficulty_level": 1,
+                "associated_errors": [
+                  "Invalid Column Name",
+                  "Syntax Error"
+                ],
+                "learning_objectives": [
+                  "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng",
+                  "Loại bỏ các dòng kết quả trùng lặp với từ khóa `DISTINCT`",
+                  "Đặt tên bí danh cho cột (Column Alias) bằng từ khóa `AS` giúp báo cáo dễ đọc"
+                ],
+                "estimated_time_minutes": 30
+              }
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md",
+              "sha256": "dd8a460302dda604441e357f9486f1bfe5c4144a8edd96dcd750ea9e9c92c947",
+              "excerpt": "---\nlessonId: \"SQL-02.02\"\ntitle: \"Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS\"\ndifficulty: \"EASY\"\nestimatedDuration: 20\nkeywords: [\"distinct\", \"as\", \"alias\", \"column-alias\", \"logical-processing\", \"duplicate-removal\"]\nprerequisites: [\"SQL-02.01\"]\n---\n\n# Bài 2.2: Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS\n\n---\n\n## 1. Khái niệm & Vấn đề\n\nHãy hình dung bạn có danh sách 100.000 đơn hàng. Khi muốn biết: *\"Công ty chúng ta đã từng giao hàng tới những thành phố nào?\"*, nếu chỉ `SELECT City FROM Orders`, bạn sẽ nhận về 100.000 dòng với từ \"Hà Nội\", \"TP. Hồ Chí Minh\" lặp đi lặp lại hàng nghìn lần! Bạn chỉ muốn một danh sách các thành phố **duy nhất, không trùng lặp**.\n\nMặt khác, khi hiển thị dữ liệu ra báo cáo hoặc tính toán (ví dụ: `Price * Quantity`), kết quả trả về thường có tên cột khó hiểu (như `c102`) hoặc mang nhãn `(No column name)`.\n\nĐể giải quyết hai bài toán này, SQL cung cấp hai từ khóa hữu dụng: **`DISTINCT`** (Loại bỏ trùng lặp) và **`AS`** (Đặt bí danh - Alias).\n\n```\n   BẢNG GỐC: Customers                     KẾT QUẢ KHI DÙNG DISTINCT\n┌────────────┬────────────────┐           ┌────────────────┐\n│ CustomerID │ City           │           │ City           │\n├────────────┼────────────────┤           ├────────────────┤\n│ 1          │ Hà Nội         │   ───►    │ Hà Nội         │\n│ 2          │ TP. Hồ Chí Minh│           │ TP. Hồ Chí Minh│\n│ 3          │ Hà Nội         │           │ Đà Nẵng        │\n│ 4          │ Đà Nẵng        │           └────────────────┘\n│ 5          │ TP. Hồ Chí Minh│            (Chỉ giữ lại 3 giá trị duy nhất)\n└────────────┴────────────────┘\n```\n\n| Từ khóa | Chức năng kỹ thuật | Phép ẩn dụ thực tế |\n| :--- | :--- | :--- |\n| **`DISTINCT`** | Loại bỏ tất cả các dòng trùng lặp hoàn toàn trong tập kết quả trả về. | Bộ lọc thông minh chỉ lấy danh sách các địa danh không trùng tên. |\n| **`AS` (Alias)** | Đặt lại tên tạm thời cho cột hoặc bảng trong quá trình hiển thị kết quả truy vấn. | Đặt \"biệt danh\" hoặc dán nhãn tiếng Việt dễ hiểu cho một cột dữ liệu. |\n\n---\n\n## 2. Cú pháp & Vận hành trong T-SQL\n\n### 2.1. Loại bỏ trùng lặp với `DISTINCT`\n\n#### A. Dùng `DISTINCT` trên 1 cột:\n```sql\n-- Lấy danh sách các tỉnh/thành phố duy nhất có khách hàng\nSELECT DISTINCT City \nFROM sales.Customers;\n```\n\n#### B. Dùng `DISTINCT` trên nhiều cột:\n> [!NOTE]\n> Khi viết `SELECT DISTINCT Col1, Col2`, SQL Server sẽ kiểm tra **cặp giá trị tổ hợp `(Col1, Col2)`**. Dòng chỉ bị coi là trùng lặp khi **tất cả** các cột trong danh sách đều giống hệt nhau!\n\n```text\nCity             Country        --> Có bị loại bỏ không?\n─────────────────────────────\nHà Nội           Việt Nam       (Giữ dòng đầu)\nHà Nội           Việt Nam       (BỊ LOẠI BỎ vì trùng cả City và Country)\nHà Nội           Nhật Bản       (VẪN GIỮ vì tổ hợp khác nhau)\n```\n\n```sql\nSELECT DISTINCT City, Country \nFROM sales.Customers;\n```\n\n---\n\n### 2.2. Đặt bí danh cột với từ khóa `AS`\n\nKhi tính toán biểu thức hoặc muốn tiêu đề cột thân thiện hơn:\n\n```sql\n-- Đặt bí danh cho cột và biểu thức tính toán\nSELECT \n    ProductName AS [Tên Sản Phẩm],\n    UnitPrice AS [Đơn Giá Gốc],\n    UnitPrice * 0.9 AS [Giá Sau Khuyến Mãi]\nFROM sales.Products;\n```\n\n#### 3 cách đặt bí danh trong SQL Server:\n1. **Dùng từ khóa `AS` kèm dấu ngoặc vuông `[ ]` (Khuyên dùng khi có dấu cách hoặc tiếng Việt):**  \n   `SELECT ProductName AS [Tên Sản Phẩm]`\n2. **Dùng dấu ngoặc vuông bỏ từ khóa `AS`:**  \n   `SELECT ProductName [Tên Sản Phẩm]`\n3. **Dùng dấu gán `=` (Cú pháp riêng của T-SQL):**  \n   `SELECT [Tên Sản Phẩm] = ProductName`\n\n---\n\n## 3. Thứ tự xử lý logic & \"Cái bẫy\" Bí danh trong `WHERE`\n\n> [!WARNING]\n> **Cạm bẫy kinh điển:** Tại sao bạn **KHÔNG THỂ** dùng Bí danh (Alias) trong mệnh đề `WHERE`?\n\nXét đoạn code lỗi sau:\n```sql\n-- ❌ BỊ LỖI: Invalid column name 'GiaKhuyenMai'\nSELECT ProductName, UnitPrice * 0.9 AS GiaKhuyenMai\nFROM sales.Products\nWHERE GiaKhuyenMai < 500000;\n```\n\n### Nguyên nhân từ thứ tự thực thi (Logical Processing Order):\n```\n1. FROM sales.Products        (Xác định bảng nguồn)\n2. WHERE GiaKhuyenMai < 500000 (Lọc dữ liệu - TẠI ĐÂY CHƯA HỀ CÓ BIẾN GiaKhuyenMai!)\n3. SELECT ... AS GiaKhuyenMai (Mệnh đề SELECT sinh ra bí danh sau cùng)\n```\nVì mệnh đề `WHERE` chạy **trước** mệnh đề `SELECT`, tại thời điểm lọc điều kiện, SQL Server **chưa hề biết** bí danh `GiaKhuyenMai` là gì.\n\n✅ **Cách viết đúng chuẩn:**\n```sql\nSELECT ProductName, UnitPrice * 0.9 AS GiaKhuyenMai\nFROM sales.Products\nWHERE (UnitPrice * 0.9) < 500000;\n```\n\n---\n\n## 4. Tối ưu hiệu năng với `DISTIN",
+              "match_score": 5
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md",
+              "sha256": "ab766999f3a626e4c09a83d9bf295e86833ff989b14b79051ed35e24b8569e89",
+              "excerpt": "# Lộ Trình Khóa Học SQL Server (T-SQL) Toàn Diện\n\n> **Hệ quản trị CSDL chuẩn:** Microsoft SQL Server & T-SQL (Transact-SQL)  \n> **Công cụ thực hành:** SQL Server Management Studio (SSMS) / Azure Data Studio\n\n---\n\n## Module 1: Nền tảng & Truy vấn cơ bản (DQL Basics)\n\n### Chapter 1: Tổng quan Cơ sở dữ liệu quan hệ & Môi trường SQL Server\n- **Bài 1.1:** Cơ sở dữ liệu quan hệ (RDBMS) là gì? Khái niệm Bảng (Table), Dòng (Row), Cột (Column), Lược đồ (Schema).\n- **Bài 1.2:** Khóa chính (Primary Key), Khóa ngoại (Foreign Key) và Mối quan hệ giữa các bảng (1-1, 1-N, N-N).\n- **Bài 1.3:** Cài đặt SQL Server, làm quen giao diện SQL Server Management Studio (SSMS) & thực thi câu lệnh T-SQL đầu tiên.\n\n### Chapter 2: Truy xuất & Lọc dữ liệu cơ bản\n- **Bài 2.1:** Cú pháp lệnh `SELECT` và `FROM`: Lấy tất cả cột vs. Lấy cột chỉ định.\n- **Bài 2.2:** Loại bỏ trùng lặp với `DISTINCT` và đặt tên cột thay thế với bí danh `AS` (Alias).\n- **Bài 2.3:** Lọc điều kiện cơ bản với mệnh đề `WHERE` (Toán tử so sánh: `=`, `<>`, `!=`, `>`, `<`, `>=`, `<=`).\n- **Bài 2.4:** Kết hợp nhiều điều kiện logic: `AND`, `OR`, `NOT` và thứ tự ưu tiên toán tử.\n\n### Chapter 3: Lọc dữ liệu nâng cao, Sắp xếp & Phân trang\n- **Bài 3.1:** Lọc theo khoảng giá trị với `BETWEEN ... AND` và danh sách giá trị với `IN (...)`.\n- **Bài 3.2:** Tìm kiếm mẫu chuỗi ký tự với `LIKE` và các ký tự đại diện (`%`, `_`, `[ ]`, `[^ ]`).\n- **Bài 3.3:** Xử lý giá trị rỗng: Kiểm tra `IS NULL` và `IS NOT NULL` (Tránh bẫy so sánh `= NULL`).\n- **Bài 3.4:** Sắp xếp kết quả với `ORDER BY` (`ASC`, `DESC`, sắp xếp đa cột, `NULLS FIRST/LAST`).\n- **Bài 3.5:** Giới hạn kết quả và phân trang chuyên nghiệp trong T-SQL: Mệnh đề `TOP` vs. Cú pháp `OFFSET ... FETCH NEXT`.\n\n---\n\n## Module 2: Ghép bảng & Phân tích tổng hợp (Joins & Aggregations)\n\n### Chapter 4: Kết nối nhiều bảng (Relational Joins)\n- **Bài 4.1:** Tư duy kết nối bảng và `INNER JOIN` (Lấy phần giao nhau theo điều kiện `ON`).\n- **Bài 4.2:** `LEFT JOIN` (Left Outer Join): Giữ trọn bảng bên trái và kỹ thuật tìm bản ghi mồ côi (Is Orphan/NULL).\n- **Bài 4.3:** `RIGHT JOIN` và `FULL OUTER JOIN`: Bản chất và các tình huống ứng dụng thực tế.\n- **Bài 4.4:** `CROSS JOIN` (Tích Descartes) và kỹ thuật `SELF JOIN` (Tự kết nối chính bảng đó cho dữ liệu phân cấp).\n- **Bài 4.5:** Hợp nhất tập dữ liệu từ nhiều truy vấn: Phân biệt bản chất và hiệu năng giữa `UNION` vs `UNION ALL`.\n\n### Chapter 5: Nhóm dữ liệu & Hàm tổng hợp\n- **Bài 5.1:** Các hàm tính toán tổng hợp cơ bản: `COUNT()`, `COUNT(DISTINCT)`, `SUM()`, `AVG()`, `MIN()`, `MAX()`.\n- **Bài 5.2:** Gom nhóm dữ liệu với mệnh đề `GROUP BY` (Gom nhóm đơn cột, đa cột và quy tắc chọn cột ở `SELECT`).\n- **Bài 5.3:** Lọc điều kiện sau khi tổng hợp với mệnh đề `HAVING`.\n- **Bài 5.4:** Phân biệt bản chất hoạt động, thứ tự thực thi (Logical Query Processing) giữa `WHERE` vs `HAVING`.\n\n---\n\n## Module 3: Thao tác dữ liệu & Truy vấn nâng cao (DML & Advanced T-SQL)\n\n### Chapter 6: Thao tác thêm, sửa, xóa dữ liệu (DML)\n- **Bài 6.1:** Thêm mới dữ liệu vào bảng: `INSERT INTO ... VALUES`, `INSERT INTO ... SELECT` và lệnh `SELECT INTO`.\n- **Bài 6.2:** Cập nhật dữ liệu với `UPDATE` (Kỹ thuật `UPDATE` kết hợp `JOIN` và cảnh báo bắt buộc mệnh đề `WHERE`).\n- **Bài 6.3:** Xóa dữ liệu với `DELETE` vs `TRUNCATE TABLE` (So sánh cơ chế Logging, Identity Reset và hiệu năng).\n- **Bài 6.4:** Cú pháp đồng bộ dữ liệu nâng cao `MERGE` (Upsert: Insert, Update, Delete trong 1 lệnh).\n\n### Chapter 7: Xử lý dữ liệu đa dạng & Logic điều kiện\n- **Bài 7.1:** Xử lý giá trị Null nâng cao trong SQL Server: `ISNULL()`, `COALESCE()`, và `NULLIF()`.\n- **Bài 7.2:** Các hàm xử lý chuỗi T-SQL phổ biến: `CONCAT()`, `SUBSTRING()`, `LEN()`, `DATALENGTH()`, `TRIM()`, `REPLACE()`, `CHARINDEX()`.\n- **Bài 7.3:** Làm việc với Ngày & Giờ (Date & Time): `GETDATE()`, `SYSDATETIME()`, `DATEADD()`, `DATEDIFF()`, `DATEPART()`, `FORMAT()`.\n- **Bài 7.4:** Phân nhánh logic linh hoạt với biểu thức `CASE WHEN ... THEN ... ELSE ... END` (Simple CASE & Searched CASE).\n\n### Chapter 8: Subqueries, CTEs & Window Functions\n- **Bài 8.1:** Subquery (Truy vấn con): Scalar Subquery, Correlated Subquery và các toán tử `EXISTS`, `NOT EXISTS`, `IN`, `ALL`, `ANY`.\n- **Bài 8.2:** Bảng tạm Common Table Expressions (`WITH CTE`) và ứng dụng CTE đệ quy (Recursive CTE) cho dữ liệu cây/phân cấp.\n- **Bài 8.3:** Nhập môn Window Functions: Cú pháp mệnh đề `OVER (PARTITION BY ... ORDER BY ... ROWS/RANGE BETWEEN)`.\n- **Bài 8.4:** Xếp hạng dữ liệu: Phân biệt chi tiết `ROW_NUMBER()`, `RANK()`, `DENSE_R",
+              "match_score": 5
+            }
+          ],
+          "retrieval_method": "local_graph_and_keyword_search"
+        },
+        "specification": {
+          "mode": "diagnostic",
+          "language": "sql",
+          "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+          "execution": {
+            "mode": "sql",
+            "dialect": "sqlite",
+            "ordered": false,
+            "comparator": "json",
+            "entrypoint": "solution"
+          },
+          "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+          "difficulty": "EASY",
+          "source_refs": [
+            {
+              "id": "ai-service/data/sqlSkillGraph.json#SQL-DQL-01",
+              "sha256": "54f075d1933564bf047c2e3db8bba50b67d028a30c4322b9be73479fd9f0714e"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md",
+              "sha256": "dd8a460302dda604441e357f9486f1bfe5c4144a8edd96dcd750ea9e9c92c947"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md",
+              "sha256": "ab766999f3a626e4c09a83d9bf295e86833ff989b14b79051ed35e24b8569e89"
+            }
+          ],
+          "user_request": "Tạo bài tập SQL mức dễ về SELECT và WHERE: liệt kê tên học viên có điểm từ 8 trở lên. Dùng SQLite, kiểm tra cả dữ liệu rỗng và điểm bằng 8.",
+          "concept_title": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+          "prerequisites": [
+            "SQL-RDBMS-01"
+          ],
+          "recent_errors": [],
+          "schema_version": "3.0",
+          "selection_mode": "explicit",
+          "target_concept": "SQL-DQL-01",
+          "learner_evidence": {
+            "policy": "adaptive_policy_v3",
+            "mastery": null,
+            "attempts": 0,
+            "prerequisite_gaps": [
+              "SQL-RDBMS-01"
+            ]
+          },
+          "test_constraints": {
+            "max_cases": 8,
+            "min_cases": 4,
+            "require_hidden_case": true,
+            "max_execution_time_ms": 3000,
+            "require_boundary_case": true
+          },
+          "target_sub_skills": [
+            "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+          ],
+          "learning_objectives": [
+            "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+          ],
+          "required_constructs": [],
+          "forbidden_constructs": []
+        },
+        "previous_theory": null
+      },
+      "method": "LLM",
+      "output": {
+        "reply": "## Bản chất\n\n- **`SELECT`**: chỉ định các cột (hoặc biểu thức) muốn trả về.\n- **`FROM`**: xác định bảng nguồn chứa dữ liệu.\n- **`WHERE`**: lọc các dòng trước khi thực hiện `SELECT`.\n- **`DISTINCT`**: loại bỏ các dòng trùng lặp hoàn toàn trong tập kết quả.\n- **`AS` (Alias)**: đặt tên tạm thời cho cột hoặc bảng, giúp kết quả dễ đọc.\n\n## Cú pháp cơ bản (SQLite)\n```sql\nSELECT [DISTINCT] column1 [, column2 ...]\nFROM table_name\n[WHERE condition];\n```\n- `DISTINCT` đặt ngay sau `SELECT` nếu muốn loại bỏ trùng lặp.\n- `AS` được dùng trong danh sách cột: `column_name AS alias_name`.\n\n## Ví dụ thực hành (bài tập EASY)\n### 1. Tạo bảng và dữ liệu mẫu\n```sql\nCREATE TABLE HocVien (\n    id INTEGER PRIMARY KEY,\n    ten TEXT NOT NULL,\n    diem REAL\n);\n\nINSERT INTO HocVien (ten, diem) VALUES\n    ('An', 9.2),\n    ('Bình', 7.5),\n    ('Chi', 8.0),\n    ('Dũng', NULL),   -- điểm chưa nhập\n    ('Em', 8.5);\n```\n### 2. Yêu cầu\n> Liệt kê **tên** học viên có điểm **từ 8 trở lên**. Kiểm tra trường hợp:\n> - Bảng rỗng (không có học viên).\n> - Điểm bằng đúng 8.\n\n### 3. Giải pháp\n```sql\nSELECT DISTINCT ten AS TenHocVien\nFROM HocVien\nWHERE diem >= 8;\n```\n- `DISTINCT` bảo vệ trường hợp có cùng tên xuất hiện nhiều lần.\n- Alias `TenHocVien` giúp tiêu đề cột rõ nghĩa.\n- Điều kiện `diem >= 8` tự động bỏ qua `NULL` (không thỏa `>=`).\n\n### 4. Kết quả mẫu\n| TenHocVien |\n|------------|\n| An |\n| Chi |\n| Em |\n\nNếu bảng **rỗng**, truy vấn vẫn chạy và trả về tập kết quả rỗng – đây là *boundary case* cần kiểm tra.\n\n## Các lỗi thường gặp\n| Lỗi | Nguyên nhân | Cách khắc phục |\n|-----|-------------|----------------|\n| `Invalid column name` | Dùng alias trong `WHERE` (ví dụ `WHERE TenHocVien >= 8`). | Sử dụng biểu thức gốc: `WHERE diem >= 8` hoặc dùng sub‑query/CTE. |\n| `NULL` được so sánh bằng `=` | `NULL` không bằng bất kỳ giá trị nào, kể cả `NULL`. | Dùng `IS NULL` hoặc `IS NOT NULL` khi cần kiểm tra giá trị rỗng. |\n| Quên `DISTINCT` khi có trùng tên | Kết quả sẽ chứa các bản ghi lặp. | Thêm `DISTINCT` hoặc `GROUP BY ten`. |\n| Dùng `SELECT *` trong bài tập yêu cầu chỉ trả về tên | Trả về quá nhiều cột, làm mất điểm. | Liệt kê cột cần thiết (`ten`). |\n| Thiếu dấu `;` ở cuối câu lệnh (trong môi trường yêu cầu) | Cú pháp không hoàn chỉnh. | Đảm bảo mỗi câu lệnh kết thúc bằng `;`. |\n\n## Một số lưu ý thực tiễn\n- **Thứ tự thực thi logic**: `FROM → WHERE → SELECT`. Vì vậy alias chỉ tồn tại sau khi `SELECT` được thực hiện.\n- **Kiểm tra dữ liệu rỗng**: Khi viết test, luôn chuẩn bị một case bảng không có bản ghi để xác nhận truy vấn trả về `[]`.\n- **Kiểm tra điểm đúng 8**: Điều kiện `>= 8` bao gồm giá trị bằng 8; nếu muốn chỉ > 8 thì dùng `> 8`.\n- **Hiệu năng**: Khi chỉ cần một cột, luôn liệt kê cột thay vì `SELECT *` để giảm lượng dữ liệu truyền về.\n\n---\n\n**Nguồn tham khảo**\n- `ai-service/data/sqlSkillGraph.json#SQL-DQL-01`\n- `docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md`\n- `docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md`",
+        "source": "LLM",
+        "source_ids": [
+          "ai-service/data/sqlSkillGraph.json#SQL-DQL-01",
+          "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md",
+          "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md"
+        ]
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-18T02:15:59.904388+00:00",
+      "sequence": 4,
+      "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+      "input_hash": "4a410f5fb05699d50b61aad4ae02a61df35534d7cb2320eef48aaba05eaf70e9",
+      "started_at": "2026-09-18T02:15:52.980778+00:00",
+      "duration_ms": 6923,
+      "model_calls": [
+        {
+          "input": {
+            "context": {
+              "concept": {
+                "id": "SQL-DQL-01",
+                "name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+                "topic_id": "TOPIC-SQL-SELECT",
+                "domain_id": "SQL",
+                "module_id": "MOD-SQL-DQL",
+                "concept_id": "SQL-DQL-01",
+                "bloom_level": "Remember",
+                "concept_name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+                "prerequisites": [
+                  "SQL-RDBMS-01"
+                ],
+                "practice_count": 4,
+                "difficulty_level": 1,
+                "associated_errors": [
+                  "Invalid Column Name",
+                  "Syntax Error"
+                ],
+                "learning_objectives": [
+                  "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng",
+                  "Loại bỏ các dòng kết quả trùng lặp với từ khóa `DISTINCT`",
+                  "Đặt tên bí danh cho cột (Column Alias) bằng từ khóa `AS` giúp báo cáo dễ đọc"
+                ],
+                "estimated_time_minutes": 30
+              },
+              "sources": [
+                {
+                  "id": "ai-service/data/sqlSkillGraph.json#SQL-DQL-01",
+                  "sha256": "54f075d1933564bf047c2e3db8bba50b67d028a30c4322b9be73479fd9f0714e",
+                  "excerpt": {
+                    "id": "SQL-DQL-01",
+                    "name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+                    "topic_id": "TOPIC-SQL-SELECT",
+                    "domain_id": "SQL",
+                    "module_id": "MOD-SQL-DQL",
+                    "concept_id": "SQL-DQL-01",
+                    "bloom_level": "Remember",
+                    "concept_name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+                    "prerequisites": [
+                      "SQL-RDBMS-01"
+                    ],
+                    "practice_count": 4,
+                    "difficulty_level": 1,
+                    "associated_errors": [
+                      "Invalid Column Name",
+                      "Syntax Error"
+                    ],
+                    "learning_objectives": [
+                      "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng",
+                      "Loại bỏ các dòng kết quả trùng lặp với từ khóa `DISTINCT`",
+                      "Đặt tên bí danh cho cột (Column Alias) bằng từ khóa `AS` giúp báo cáo dễ đọc"
+                    ],
+                    "estimated_time_minutes": 30
+                  }
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md",
+                  "sha256": "dd8a460302dda604441e357f9486f1bfe5c4144a8edd96dcd750ea9e9c92c947",
+                  "excerpt": "---\nlessonId: \"SQL-02.02\"\ntitle: \"Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS\"\ndifficulty: \"EASY\"\nestimatedDuration: 20\nkeywords: [\"distinct\", \"as\", \"alias\", \"column-alias\", \"logical-processing\", \"duplicate-removal\"]\nprerequisites: [\"SQL-02.01\"]\n---\n\n# Bài 2.2: Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS\n\n---\n\n## 1. Khái niệm & Vấn đề\n\nHãy hình dung bạn có danh sách 100.000 đơn hàng. Khi muốn biết: *\"Công ty chúng ta đã từng giao hàng tới những thành phố nào?\"*, nếu chỉ `SELECT City FROM Orders`, bạn sẽ nhận về 100.000 dòng với từ \"Hà Nội\", \"TP. Hồ Chí Minh\" lặp đi lặp lại hàng nghìn lần! Bạn chỉ muốn một danh sách các thành phố **duy nhất, không trùng lặp**.\n\nMặt khác, khi hiển thị dữ liệu ra báo cáo hoặc tính toán (ví dụ: `Price * Quantity`), kết quả trả về thường có tên cột khó hiểu (như `c102`) hoặc mang nhãn `(No column name)`.\n\nĐể giải quyết hai bài toán này, SQL cung cấp hai từ khóa hữu dụng: **`DISTINCT`** (Loại bỏ trùng lặp) và **`AS`** (Đặt bí danh - Alias).\n\n```\n   BẢNG GỐC: Customers                     KẾT QUẢ KHI DÙNG DISTINCT\n┌────────────┬────────────────┐           ┌────────────────┐\n│ CustomerID │ City           │           │ City           │\n├────────────┼────────────────┤           ├────────────────┤\n│ 1          │ Hà Nội         │   ───►    │ Hà Nội         │\n│ 2          │ TP. Hồ Chí Minh│           │ TP. Hồ Chí Minh│\n│ 3          │ Hà Nội         │           │ Đà Nẵng        │\n│ 4          │ Đà Nẵng        │           └────────────────┘\n│ 5          │ TP. Hồ Chí Minh│            (Chỉ giữ lại 3 giá trị duy nhất)\n└────────────┴────────────────┘\n```\n\n| Từ khóa | Chức năng kỹ thuật | Phép ẩn dụ thực tế |\n| :--- | :--- | :--- |\n| **`DISTINCT`** | Loại bỏ tất cả các dòng trùng lặp hoàn toàn trong tập kết quả trả về. | Bộ lọc thông minh chỉ lấy danh sách các địa danh không trùng tên. |\n| **`AS` (Alias)** | Đặt lại tên tạm thời cho cột hoặc bảng trong quá trình hiển thị kết quả truy vấn. | Đặt \"biệt danh\" hoặc dán nhãn tiếng Việt dễ hiểu cho một cột dữ liệu. |\n\n---\n\n## 2. Cú pháp & Vận hành trong T-SQL\n\n### 2.1. Loại bỏ trùng lặp với `DISTINCT`\n\n#### A. Dùng `DISTINCT` trên 1 cột:\n```sql\n-- Lấy danh sách các tỉnh/thành phố duy nhất có khách hàng\nSELECT DISTINCT City \nFROM sales.Customers;\n```\n\n#### B. Dùng `DISTINCT` trên nhiều cột:\n> [!NOTE]\n> Khi viết `SELECT DISTINCT Col1, Col2`, SQL Server sẽ kiểm tra **cặp giá trị tổ hợp `(Col1, Col2)`**. Dòng chỉ bị coi là trùng lặp khi **tất cả** các cột trong danh sách đều giống hệt nhau!\n\n```text\nCity             Country        --> Có bị loại bỏ không?\n─────────────────────────────\nHà Nội           Việt Nam       (Giữ dòng đầu)\nHà Nội           Việt Nam       (BỊ LOẠI BỎ vì trùng cả City và Country)\nHà Nội           Nhật Bản       (VẪN GIỮ vì tổ hợp khác nhau)\n```\n\n```sql\nSELECT DISTINCT City, Country \nFROM sales.Customers;\n```\n\n---\n\n### 2.2. Đặt bí danh cột với từ khóa `AS`\n\nKhi tính toán biểu thức hoặc muốn tiêu đề cột thân thiện hơn:\n\n```sql\n-- Đặt bí danh cho cột và biểu thức tính toán\nSELECT \n    ProductName AS [Tên Sản Phẩm],\n    UnitPrice AS [Đơn Giá Gốc],\n    UnitPrice * 0.9 AS [Giá Sau Khuyến Mãi]\nFROM sales.Products;\n```\n\n#### 3 cách đặt bí danh trong SQL Server:\n1. **Dùng từ khóa `AS` kèm dấu ngoặc vuông `[ ]` (Khuyên dùng khi có dấu cách hoặc tiếng Việt):**  \n   `SELECT ProductName AS [Tên Sản Phẩm]`\n2. **Dùng dấu ngoặc vuông bỏ từ khóa `AS`:**  \n   `SELECT ProductName [Tên Sản Phẩm]`\n3. **Dùng dấu gán `=` (Cú pháp riêng của T-SQL):**  \n   `SELECT [Tên Sản Phẩm] = ProductName`\n\n---\n\n## 3. Thứ tự xử lý logic & \"Cái bẫy\" Bí danh trong `WHERE`\n\n> [!WARNING]\n> **Cạm bẫy kinh điển:** Tại sao bạn **KHÔNG THỂ** dùng Bí danh (Alias) trong mệnh đề `WHERE`?\n\nXét đoạn code lỗi sau:\n```sql\n-- ❌ BỊ LỖI: Invalid column name 'GiaKhuyenMai'\nSELECT ProductName, UnitPrice * 0.9 AS GiaKhuyenMai\nFROM sales.Products\nWHERE GiaKhuyenMai < 500000;\n```\n\n### Nguyên nhân từ thứ tự thực thi (Logical Processing Order):\n```\n1. FROM sales.Products        (Xác định bảng nguồn)\n2. WHERE GiaKhuyenMai < 500000 (Lọc dữ liệu - TẠI ĐÂY CHƯA HỀ CÓ BIẾN GiaKhuyenMai!)\n3. SELECT ... AS GiaKhuyenMai (Mệnh đề SELECT sinh ra bí danh sau cùng)\n```\nVì mệnh đề `WHERE` chạy **trước** mệnh đề `SELECT`, tại thời điểm lọc điều kiện, SQL Server **chưa hề biết** bí danh `GiaKhuyenMai` là gì.\n\n✅ **Cách viết đúng chuẩn:**\n```sql\nSELECT ProductName, UnitPrice * 0.9 AS GiaKhuyenMai\nFROM sales.Products\nWHERE (UnitPrice * 0.9) < 500000;\n```\n\n---\n\n## 4. Tối ưu hiệu năng với `DISTIN",
+                  "match_score": 5
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md",
+                  "sha256": "ab766999f3a626e4c09a83d9bf295e86833ff989b14b79051ed35e24b8569e89",
+                  "excerpt": "# Lộ Trình Khóa Học SQL Server (T-SQL) Toàn Diện\n\n> **Hệ quản trị CSDL chuẩn:** Microsoft SQL Server & T-SQL (Transact-SQL)  \n> **Công cụ thực hành:** SQL Server Management Studio (SSMS) / Azure Data Studio\n\n---\n\n## Module 1: Nền tảng & Truy vấn cơ bản (DQL Basics)\n\n### Chapter 1: Tổng quan Cơ sở dữ liệu quan hệ & Môi trường SQL Server\n- **Bài 1.1:** Cơ sở dữ liệu quan hệ (RDBMS) là gì? Khái niệm Bảng (Table), Dòng (Row), Cột (Column), Lược đồ (Schema).\n- **Bài 1.2:** Khóa chính (Primary Key), Khóa ngoại (Foreign Key) và Mối quan hệ giữa các bảng (1-1, 1-N, N-N).\n- **Bài 1.3:** Cài đặt SQL Server, làm quen giao diện SQL Server Management Studio (SSMS) & thực thi câu lệnh T-SQL đầu tiên.\n\n### Chapter 2: Truy xuất & Lọc dữ liệu cơ bản\n- **Bài 2.1:** Cú pháp lệnh `SELECT` và `FROM`: Lấy tất cả cột vs. Lấy cột chỉ định.\n- **Bài 2.2:** Loại bỏ trùng lặp với `DISTINCT` và đặt tên cột thay thế với bí danh `AS` (Alias).\n- **Bài 2.3:** Lọc điều kiện cơ bản với mệnh đề `WHERE` (Toán tử so sánh: `=`, `<>`, `!=`, `>`, `<`, `>=`, `<=`).\n- **Bài 2.4:** Kết hợp nhiều điều kiện logic: `AND`, `OR`, `NOT` và thứ tự ưu tiên toán tử.\n\n### Chapter 3: Lọc dữ liệu nâng cao, Sắp xếp & Phân trang\n- **Bài 3.1:** Lọc theo khoảng giá trị với `BETWEEN ... AND` và danh sách giá trị với `IN (...)`.\n- **Bài 3.2:** Tìm kiếm mẫu chuỗi ký tự với `LIKE` và các ký tự đại diện (`%`, `_`, `[ ]`, `[^ ]`).\n- **Bài 3.3:** Xử lý giá trị rỗng: Kiểm tra `IS NULL` và `IS NOT NULL` (Tránh bẫy so sánh `= NULL`).\n- **Bài 3.4:** Sắp xếp kết quả với `ORDER BY` (`ASC`, `DESC`, sắp xếp đa cột, `NULLS FIRST/LAST`).\n- **Bài 3.5:** Giới hạn kết quả và phân trang chuyên nghiệp trong T-SQL: Mệnh đề `TOP` vs. Cú pháp `OFFSET ... FETCH NEXT`.\n\n---\n\n## Module 2: Ghép bảng & Phân tích tổng hợp (Joins & Aggregations)\n\n### Chapter 4: Kết nối nhiều bảng (Relational Joins)\n- **Bài 4.1:** Tư duy kết nối bảng và `INNER JOIN` (Lấy phần giao nhau theo điều kiện `ON`).\n- **Bài 4.2:** `LEFT JOIN` (Left Outer Join): Giữ trọn bảng bên trái và kỹ thuật tìm bản ghi mồ côi (Is Orphan/NULL).\n- **Bài 4.3:** `RIGHT JOIN` và `FULL OUTER JOIN`: Bản chất và các tình huống ứng dụng thực tế.\n- **Bài 4.4:** `CROSS JOIN` (Tích Descartes) và kỹ thuật `SELF JOIN` (Tự kết nối chính bảng đó cho dữ liệu phân cấp).\n- **Bài 4.5:** Hợp nhất tập dữ liệu từ nhiều truy vấn: Phân biệt bản chất và hiệu năng giữa `UNION` vs `UNION ALL`.\n\n### Chapter 5: Nhóm dữ liệu & Hàm tổng hợp\n- **Bài 5.1:** Các hàm tính toán tổng hợp cơ bản: `COUNT()`, `COUNT(DISTINCT)`, `SUM()`, `AVG()`, `MIN()`, `MAX()`.\n- **Bài 5.2:** Gom nhóm dữ liệu với mệnh đề `GROUP BY` (Gom nhóm đơn cột, đa cột và quy tắc chọn cột ở `SELECT`).\n- **Bài 5.3:** Lọc điều kiện sau khi tổng hợp với mệnh đề `HAVING`.\n- **Bài 5.4:** Phân biệt bản chất hoạt động, thứ tự thực thi (Logical Query Processing) giữa `WHERE` vs `HAVING`.\n\n---\n\n## Module 3: Thao tác dữ liệu & Truy vấn nâng cao (DML & Advanced T-SQL)\n\n### Chapter 6: Thao tác thêm, sửa, xóa dữ liệu (DML)\n- **Bài 6.1:** Thêm mới dữ liệu vào bảng: `INSERT INTO ... VALUES`, `INSERT INTO ... SELECT` và lệnh `SELECT INTO`.\n- **Bài 6.2:** Cập nhật dữ liệu với `UPDATE` (Kỹ thuật `UPDATE` kết hợp `JOIN` và cảnh báo bắt buộc mệnh đề `WHERE`).\n- **Bài 6.3:** Xóa dữ liệu với `DELETE` vs `TRUNCATE TABLE` (So sánh cơ chế Logging, Identity Reset và hiệu năng).\n- **Bài 6.4:** Cú pháp đồng bộ dữ liệu nâng cao `MERGE` (Upsert: Insert, Update, Delete trong 1 lệnh).\n\n### Chapter 7: Xử lý dữ liệu đa dạng & Logic điều kiện\n- **Bài 7.1:** Xử lý giá trị Null nâng cao trong SQL Server: `ISNULL()`, `COALESCE()`, và `NULLIF()`.\n- **Bài 7.2:** Các hàm xử lý chuỗi T-SQL phổ biến: `CONCAT()`, `SUBSTRING()`, `LEN()`, `DATALENGTH()`, `TRIM()`, `REPLACE()`, `CHARINDEX()`.\n- **Bài 7.3:** Làm việc với Ngày & Giờ (Date & Time): `GETDATE()`, `SYSDATETIME()`, `DATEADD()`, `DATEDIFF()`, `DATEPART()`, `FORMAT()`.\n- **Bài 7.4:** Phân nhánh logic linh hoạt với biểu thức `CASE WHEN ... THEN ... ELSE ... END` (Simple CASE & Searched CASE).\n\n### Chapter 8: Subqueries, CTEs & Window Functions\n- **Bài 8.1:** Subquery (Truy vấn con): Scalar Subquery, Correlated Subquery và các toán tử `EXISTS`, `NOT EXISTS`, `IN`, `ALL`, `ANY`.\n- **Bài 8.2:** Bảng tạm Common Table Expressions (`WITH CTE`) và ứng dụng CTE đệ quy (Recursive CTE) cho dữ liệu cây/phân cấp.\n- **Bài 8.3:** Nhập môn Window Functions: Cú pháp mệnh đề `OVER (PARTITION BY ... ORDER BY ... ROWS/RANGE BETWEEN)`.\n- **Bài 8.4:** Xếp hạng dữ liệu: Phân biệt chi tiết `ROW_NUMBER()`, `RANK()`, `DENSE_R",
+                  "match_score": 5
+                }
+              ],
+              "specification": {
+                "mode": "diagnostic",
+                "language": "sql",
+                "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+                "execution": {
+                  "mode": "sql",
+                  "dialect": "sqlite",
+                  "ordered": false,
+                  "comparator": "json",
+                  "entrypoint": "solution"
+                },
+                "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+                "difficulty": "EASY",
+                "source_refs": [
+                  {
+                    "id": "ai-service/data/sqlSkillGraph.json#SQL-DQL-01",
+                    "sha256": "54f075d1933564bf047c2e3db8bba50b67d028a30c4322b9be73479fd9f0714e"
+                  },
+                  {
+                    "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md",
+                    "sha256": "dd8a460302dda604441e357f9486f1bfe5c4144a8edd96dcd750ea9e9c92c947"
+                  },
+                  {
+                    "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md",
+                    "sha256": "ab766999f3a626e4c09a83d9bf295e86833ff989b14b79051ed35e24b8569e89"
+                  }
+                ],
+                "user_request": "Tạo bài tập SQL mức dễ về SELECT và WHERE: liệt kê tên học viên có điểm từ 8 trở lên. Dùng SQLite, kiểm tra cả dữ liệu rỗng và điểm bằng 8.",
+                "concept_title": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+                "prerequisites": [
+                  "SQL-RDBMS-01"
+                ],
+                "recent_errors": [],
+                "schema_version": "3.0",
+                "selection_mode": "explicit",
+                "target_concept": "SQL-DQL-01",
+                "learner_evidence": {
+                  "policy": "adaptive_policy_v3",
+                  "mastery": null,
+                  "attempts": 0,
+                  "prerequisite_gaps": [
+                    "SQL-RDBMS-01"
+                  ]
+                },
+                "test_constraints": {
+                  "max_cases": 8,
+                  "min_cases": 4,
+                  "require_hidden_case": true,
+                  "max_execution_time_ms": 3000,
+                  "require_boundary_case": true
+                },
+                "target_sub_skills": [
+                  "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+                ],
+                "learning_objectives": [
+                  "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+                ],
+                "required_constructs": [],
+                "forbidden_constructs": []
+              },
+              "previous_theory": null,
+              "retrieval_method": "local_graph_and_keyword_search"
+            },
+            "feedback": null,
+            "language": "sql",
+            "concept_id": "SQL-DQL-01",
+            "user_query": "Tạo bài tập SQL mức dễ về SELECT và WHERE: liệt kê tên học viên có điểm từ 8 trở lên. Dùng SQLite, kiểm tra cả dữ liệu rỗng và điểm bằng 8.",
+            "concept_name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)"
+          },
+          "model": "gemini-3.8-flash",
+          "stage": "ExplanationTutorAgent",
+          "status": "FAILED",
+          "provider": "GEMINI",
+          "error_code": "PROVIDER_CALL_FAILED",
+          "error_type": "HTTPError",
+          "duration_ms": 1455,
+          "http_status": 503,
+          "prompt_hash": "a63989539b6df43056ba327374a5b140e2017e513591b9907e0fc89f3c2064e4",
+          "prompt_version": "adaptive_v3"
+        },
+        {
+          "input": {
+            "context": {
+              "concept": {
+                "id": "SQL-DQL-01",
+                "name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+                "topic_id": "TOPIC-SQL-SELECT",
+                "domain_id": "SQL",
+                "module_id": "MOD-SQL-DQL",
+                "concept_id": "SQL-DQL-01",
+                "bloom_level": "Remember",
+                "concept_name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+                "prerequisites": [
+                  "SQL-RDBMS-01"
+                ],
+                "practice_count": 4,
+                "difficulty_level": 1,
+                "associated_errors": [
+                  "Invalid Column Name",
+                  "Syntax Error"
+                ],
+                "learning_objectives": [
+                  "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng",
+                  "Loại bỏ các dòng kết quả trùng lặp với từ khóa `DISTINCT`",
+                  "Đặt tên bí danh cho cột (Column Alias) bằng từ khóa `AS` giúp báo cáo dễ đọc"
+                ],
+                "estimated_time_minutes": 30
+              },
+              "sources": [
+                {
+                  "id": "ai-service/data/sqlSkillGraph.json#SQL-DQL-01",
+                  "sha256": "54f075d1933564bf047c2e3db8bba50b67d028a30c4322b9be73479fd9f0714e",
+                  "excerpt": {
+                    "id": "SQL-DQL-01",
+                    "name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+                    "topic_id": "TOPIC-SQL-SELECT",
+                    "domain_id": "SQL",
+                    "module_id": "MOD-SQL-DQL",
+                    "concept_id": "SQL-DQL-01",
+                    "bloom_level": "Remember",
+                    "concept_name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+                    "prerequisites": [
+                      "SQL-RDBMS-01"
+                    ],
+                    "practice_count": 4,
+                    "difficulty_level": 1,
+                    "associated_errors": [
+                      "Invalid Column Name",
+                      "Syntax Error"
+                    ],
+                    "learning_objectives": [
+                      "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng",
+                      "Loại bỏ các dòng kết quả trùng lặp với từ khóa `DISTINCT`",
+                      "Đặt tên bí danh cho cột (Column Alias) bằng từ khóa `AS` giúp báo cáo dễ đọc"
+                    ],
+                    "estimated_time_minutes": 30
+                  }
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md",
+                  "sha256": "dd8a460302dda604441e357f9486f1bfe5c4144a8edd96dcd750ea9e9c92c947",
+                  "excerpt": "---\nlessonId: \"SQL-02.02\"\ntitle: \"Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS\"\ndifficulty: \"EASY\"\nestimatedDuration: 20\nkeywords: [\"distinct\", \"as\", \"alias\", \"column-alias\", \"logical-processing\", \"duplicate-removal\"]\nprerequisites: [\"SQL-02.01\"]\n---\n\n# Bài 2.2: Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS\n\n---\n\n## 1. Khái niệm & Vấn đề\n\nHãy hình dung bạn có danh sách 100.000 đơn hàng. Khi muốn biết: *\"Công ty chúng ta đã từng giao hàng tới những thành phố nào?\"*, nếu chỉ `SELECT City FROM Orders`, bạn sẽ nhận về 100.000 dòng với từ \"Hà Nội\", \"TP. Hồ Chí Minh\" lặp đi lặp lại hàng nghìn lần! Bạn chỉ muốn một danh sách các thành phố **duy nhất, không trùng lặp**.\n\nMặt khác, khi hiển thị dữ liệu ra báo cáo hoặc tính toán (ví dụ: `Price * Quantity`), kết quả trả về thường có tên cột khó hiểu (như `c102`) hoặc mang nhãn `(No column name)`.\n\nĐể giải quyết hai bài toán này, SQL cung cấp hai từ khóa hữu dụng: **`DISTINCT`** (Loại bỏ trùng lặp) và **`AS`** (Đặt bí danh - Alias).\n\n```\n   BẢNG GỐC: Customers                     KẾT QUẢ KHI DÙNG DISTINCT\n┌────────────┬────────────────┐           ┌────────────────┐\n│ CustomerID │ City           │           │ City           │\n├────────────┼────────────────┤           ├────────────────┤\n│ 1          │ Hà Nội         │   ───►    │ Hà Nội         │\n│ 2          │ TP. Hồ Chí Minh│           │ TP. Hồ Chí Minh│\n│ 3          │ Hà Nội         │           │ Đà Nẵng        │\n│ 4          │ Đà Nẵng        │           └────────────────┘\n│ 5          │ TP. Hồ Chí Minh│            (Chỉ giữ lại 3 giá trị duy nhất)\n└────────────┴────────────────┘\n```\n\n| Từ khóa | Chức năng kỹ thuật | Phép ẩn dụ thực tế |\n| :--- | :--- | :--- |\n| **`DISTINCT`** | Loại bỏ tất cả các dòng trùng lặp hoàn toàn trong tập kết quả trả về. | Bộ lọc thông minh chỉ lấy danh sách các địa danh không trùng tên. |\n| **`AS` (Alias)** | Đặt lại tên tạm thời cho cột hoặc bảng trong quá trình hiển thị kết quả truy vấn. | Đặt \"biệt danh\" hoặc dán nhãn tiếng Việt dễ hiểu cho một cột dữ liệu. |\n\n---\n\n## 2. Cú pháp & Vận hành trong T-SQL\n\n### 2.1. Loại bỏ trùng lặp với `DISTINCT`\n\n#### A. Dùng `DISTINCT` trên 1 cột:\n```sql\n-- Lấy danh sách các tỉnh/thành phố duy nhất có khách hàng\nSELECT DISTINCT City \nFROM sales.Customers;\n```\n\n#### B. Dùng `DISTINCT` trên nhiều cột:\n> [!NOTE]\n> Khi viết `SELECT DISTINCT Col1, Col2`, SQL Server sẽ kiểm tra **cặp giá trị tổ hợp `(Col1, Col2)`**. Dòng chỉ bị coi là trùng lặp khi **tất cả** các cột trong danh sách đều giống hệt nhau!\n\n```text\nCity             Country        --> Có bị loại bỏ không?\n─────────────────────────────\nHà Nội           Việt Nam       (Giữ dòng đầu)\nHà Nội           Việt Nam       (BỊ LOẠI BỎ vì trùng cả City và Country)\nHà Nội           Nhật Bản       (VẪN GIỮ vì tổ hợp khác nhau)\n```\n\n```sql\nSELECT DISTINCT City, Country \nFROM sales.Customers;\n```\n\n---\n\n### 2.2. Đặt bí danh cột với từ khóa `AS`\n\nKhi tính toán biểu thức hoặc muốn tiêu đề cột thân thiện hơn:\n\n```sql\n-- Đặt bí danh cho cột và biểu thức tính toán\nSELECT \n    ProductName AS [Tên Sản Phẩm],\n    UnitPrice AS [Đơn Giá Gốc],\n    UnitPrice * 0.9 AS [Giá Sau Khuyến Mãi]\nFROM sales.Products;\n```\n\n#### 3 cách đặt bí danh trong SQL Server:\n1. **Dùng từ khóa `AS` kèm dấu ngoặc vuông `[ ]` (Khuyên dùng khi có dấu cách hoặc tiếng Việt):**  \n   `SELECT ProductName AS [Tên Sản Phẩm]`\n2. **Dùng dấu ngoặc vuông bỏ từ khóa `AS`:**  \n   `SELECT ProductName [Tên Sản Phẩm]`\n3. **Dùng dấu gán `=` (Cú pháp riêng của T-SQL):**  \n   `SELECT [Tên Sản Phẩm] = ProductName`\n\n---\n\n## 3. Thứ tự xử lý logic & \"Cái bẫy\" Bí danh trong `WHERE`\n\n> [!WARNING]\n> **Cạm bẫy kinh điển:** Tại sao bạn **KHÔNG THỂ** dùng Bí danh (Alias) trong mệnh đề `WHERE`?\n\nXét đoạn code lỗi sau:\n```sql\n-- ❌ BỊ LỖI: Invalid column name 'GiaKhuyenMai'\nSELECT ProductName, UnitPrice * 0.9 AS GiaKhuyenMai\nFROM sales.Products\nWHERE GiaKhuyenMai < 500000;\n```\n\n### Nguyên nhân từ thứ tự thực thi (Logical Processing Order):\n```\n1. FROM sales.Products        (Xác định bảng nguồn)\n2. WHERE GiaKhuyenMai < 500000 (Lọc dữ liệu - TẠI ĐÂY CHƯA HỀ CÓ BIẾN GiaKhuyenMai!)\n3. SELECT ... AS GiaKhuyenMai (Mệnh đề SELECT sinh ra bí danh sau cùng)\n```\nVì mệnh đề `WHERE` chạy **trước** mệnh đề `SELECT`, tại thời điểm lọc điều kiện, SQL Server **chưa hề biết** bí danh `GiaKhuyenMai` là gì.\n\n✅ **Cách viết đúng chuẩn:**\n```sql\nSELECT ProductName, UnitPrice * 0.9 AS GiaKhuyenMai\nFROM sales.Products\nWHERE (UnitPrice * 0.9) < 500000;\n```\n\n---\n\n## 4. Tối ưu hiệu năng với `DISTIN",
+                  "match_score": 5
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md",
+                  "sha256": "ab766999f3a626e4c09a83d9bf295e86833ff989b14b79051ed35e24b8569e89",
+                  "excerpt": "# Lộ Trình Khóa Học SQL Server (T-SQL) Toàn Diện\n\n> **Hệ quản trị CSDL chuẩn:** Microsoft SQL Server & T-SQL (Transact-SQL)  \n> **Công cụ thực hành:** SQL Server Management Studio (SSMS) / Azure Data Studio\n\n---\n\n## Module 1: Nền tảng & Truy vấn cơ bản (DQL Basics)\n\n### Chapter 1: Tổng quan Cơ sở dữ liệu quan hệ & Môi trường SQL Server\n- **Bài 1.1:** Cơ sở dữ liệu quan hệ (RDBMS) là gì? Khái niệm Bảng (Table), Dòng (Row), Cột (Column), Lược đồ (Schema).\n- **Bài 1.2:** Khóa chính (Primary Key), Khóa ngoại (Foreign Key) và Mối quan hệ giữa các bảng (1-1, 1-N, N-N).\n- **Bài 1.3:** Cài đặt SQL Server, làm quen giao diện SQL Server Management Studio (SSMS) & thực thi câu lệnh T-SQL đầu tiên.\n\n### Chapter 2: Truy xuất & Lọc dữ liệu cơ bản\n- **Bài 2.1:** Cú pháp lệnh `SELECT` và `FROM`: Lấy tất cả cột vs. Lấy cột chỉ định.\n- **Bài 2.2:** Loại bỏ trùng lặp với `DISTINCT` và đặt tên cột thay thế với bí danh `AS` (Alias).\n- **Bài 2.3:** Lọc điều kiện cơ bản với mệnh đề `WHERE` (Toán tử so sánh: `=`, `<>`, `!=`, `>`, `<`, `>=`, `<=`).\n- **Bài 2.4:** Kết hợp nhiều điều kiện logic: `AND`, `OR`, `NOT` và thứ tự ưu tiên toán tử.\n\n### Chapter 3: Lọc dữ liệu nâng cao, Sắp xếp & Phân trang\n- **Bài 3.1:** Lọc theo khoảng giá trị với `BETWEEN ... AND` và danh sách giá trị với `IN (...)`.\n- **Bài 3.2:** Tìm kiếm mẫu chuỗi ký tự với `LIKE` và các ký tự đại diện (`%`, `_`, `[ ]`, `[^ ]`).\n- **Bài 3.3:** Xử lý giá trị rỗng: Kiểm tra `IS NULL` và `IS NOT NULL` (Tránh bẫy so sánh `= NULL`).\n- **Bài 3.4:** Sắp xếp kết quả với `ORDER BY` (`ASC`, `DESC`, sắp xếp đa cột, `NULLS FIRST/LAST`).\n- **Bài 3.5:** Giới hạn kết quả và phân trang chuyên nghiệp trong T-SQL: Mệnh đề `TOP` vs. Cú pháp `OFFSET ... FETCH NEXT`.\n\n---\n\n## Module 2: Ghép bảng & Phân tích tổng hợp (Joins & Aggregations)\n\n### Chapter 4: Kết nối nhiều bảng (Relational Joins)\n- **Bài 4.1:** Tư duy kết nối bảng và `INNER JOIN` (Lấy phần giao nhau theo điều kiện `ON`).\n- **Bài 4.2:** `LEFT JOIN` (Left Outer Join): Giữ trọn bảng bên trái và kỹ thuật tìm bản ghi mồ côi (Is Orphan/NULL).\n- **Bài 4.3:** `RIGHT JOIN` và `FULL OUTER JOIN`: Bản chất và các tình huống ứng dụng thực tế.\n- **Bài 4.4:** `CROSS JOIN` (Tích Descartes) và kỹ thuật `SELF JOIN` (Tự kết nối chính bảng đó cho dữ liệu phân cấp).\n- **Bài 4.5:** Hợp nhất tập dữ liệu từ nhiều truy vấn: Phân biệt bản chất và hiệu năng giữa `UNION` vs `UNION ALL`.\n\n### Chapter 5: Nhóm dữ liệu & Hàm tổng hợp\n- **Bài 5.1:** Các hàm tính toán tổng hợp cơ bản: `COUNT()`, `COUNT(DISTINCT)`, `SUM()`, `AVG()`, `MIN()`, `MAX()`.\n- **Bài 5.2:** Gom nhóm dữ liệu với mệnh đề `GROUP BY` (Gom nhóm đơn cột, đa cột và quy tắc chọn cột ở `SELECT`).\n- **Bài 5.3:** Lọc điều kiện sau khi tổng hợp với mệnh đề `HAVING`.\n- **Bài 5.4:** Phân biệt bản chất hoạt động, thứ tự thực thi (Logical Query Processing) giữa `WHERE` vs `HAVING`.\n\n---\n\n## Module 3: Thao tác dữ liệu & Truy vấn nâng cao (DML & Advanced T-SQL)\n\n### Chapter 6: Thao tác thêm, sửa, xóa dữ liệu (DML)\n- **Bài 6.1:** Thêm mới dữ liệu vào bảng: `INSERT INTO ... VALUES`, `INSERT INTO ... SELECT` và lệnh `SELECT INTO`.\n- **Bài 6.2:** Cập nhật dữ liệu với `UPDATE` (Kỹ thuật `UPDATE` kết hợp `JOIN` và cảnh báo bắt buộc mệnh đề `WHERE`).\n- **Bài 6.3:** Xóa dữ liệu với `DELETE` vs `TRUNCATE TABLE` (So sánh cơ chế Logging, Identity Reset và hiệu năng).\n- **Bài 6.4:** Cú pháp đồng bộ dữ liệu nâng cao `MERGE` (Upsert: Insert, Update, Delete trong 1 lệnh).\n\n### Chapter 7: Xử lý dữ liệu đa dạng & Logic điều kiện\n- **Bài 7.1:** Xử lý giá trị Null nâng cao trong SQL Server: `ISNULL()`, `COALESCE()`, và `NULLIF()`.\n- **Bài 7.2:** Các hàm xử lý chuỗi T-SQL phổ biến: `CONCAT()`, `SUBSTRING()`, `LEN()`, `DATALENGTH()`, `TRIM()`, `REPLACE()`, `CHARINDEX()`.\n- **Bài 7.3:** Làm việc với Ngày & Giờ (Date & Time): `GETDATE()`, `SYSDATETIME()`, `DATEADD()`, `DATEDIFF()`, `DATEPART()`, `FORMAT()`.\n- **Bài 7.4:** Phân nhánh logic linh hoạt với biểu thức `CASE WHEN ... THEN ... ELSE ... END` (Simple CASE & Searched CASE).\n\n### Chapter 8: Subqueries, CTEs & Window Functions\n- **Bài 8.1:** Subquery (Truy vấn con): Scalar Subquery, Correlated Subquery và các toán tử `EXISTS`, `NOT EXISTS`, `IN`, `ALL`, `ANY`.\n- **Bài 8.2:** Bảng tạm Common Table Expressions (`WITH CTE`) và ứng dụng CTE đệ quy (Recursive CTE) cho dữ liệu cây/phân cấp.\n- **Bài 8.3:** Nhập môn Window Functions: Cú pháp mệnh đề `OVER (PARTITION BY ... ORDER BY ... ROWS/RANGE BETWEEN)`.\n- **Bài 8.4:** Xếp hạng dữ liệu: Phân biệt chi tiết `ROW_NUMBER()`, `RANK()`, `DENSE_R",
+                  "match_score": 5
+                }
+              ],
+              "specification": {
+                "mode": "diagnostic",
+                "language": "sql",
+                "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+                "execution": {
+                  "mode": "sql",
+                  "dialect": "sqlite",
+                  "ordered": false,
+                  "comparator": "json",
+                  "entrypoint": "solution"
+                },
+                "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+                "difficulty": "EASY",
+                "source_refs": [
+                  {
+                    "id": "ai-service/data/sqlSkillGraph.json#SQL-DQL-01",
+                    "sha256": "54f075d1933564bf047c2e3db8bba50b67d028a30c4322b9be73479fd9f0714e"
+                  },
+                  {
+                    "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md",
+                    "sha256": "dd8a460302dda604441e357f9486f1bfe5c4144a8edd96dcd750ea9e9c92c947"
+                  },
+                  {
+                    "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md",
+                    "sha256": "ab766999f3a626e4c09a83d9bf295e86833ff989b14b79051ed35e24b8569e89"
+                  }
+                ],
+                "user_request": "Tạo bài tập SQL mức dễ về SELECT và WHERE: liệt kê tên học viên có điểm từ 8 trở lên. Dùng SQLite, kiểm tra cả dữ liệu rỗng và điểm bằng 8.",
+                "concept_title": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+                "prerequisites": [
+                  "SQL-RDBMS-01"
+                ],
+                "recent_errors": [],
+                "schema_version": "3.0",
+                "selection_mode": "explicit",
+                "target_concept": "SQL-DQL-01",
+                "learner_evidence": {
+                  "policy": "adaptive_policy_v3",
+                  "mastery": null,
+                  "attempts": 0,
+                  "prerequisite_gaps": [
+                    "SQL-RDBMS-01"
+                  ]
+                },
+                "test_constraints": {
+                  "max_cases": 8,
+                  "min_cases": 4,
+                  "require_hidden_case": true,
+                  "max_execution_time_ms": 3000,
+                  "require_boundary_case": true
+                },
+                "target_sub_skills": [
+                  "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+                ],
+                "learning_objectives": [
+                  "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+                ],
+                "required_constructs": [],
+                "forbidden_constructs": []
+              },
+              "previous_theory": null,
+              "retrieval_method": "local_graph_and_keyword_search"
+            },
+            "feedback": null,
+            "language": "sql",
+            "concept_id": "SQL-DQL-01",
+            "user_query": "Tạo bài tập SQL mức dễ về SELECT và WHERE: liệt kê tên học viên có điểm từ 8 trở lên. Dùng SQLite, kiểm tra cả dữ liệu rỗng và điểm bằng 8.",
+            "concept_name": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)"
+          },
+          "model": "openai/gpt-oss-120b",
+          "stage": "ExplanationTutorAgent",
+          "usage": {
+            "queue_time": 0.347908669,
+            "total_time": 3.351013625,
+            "prompt_time": 0.273211349,
+            "total_tokens": 6369,
+            "prompt_tokens": 4890,
+            "completion_time": 3.077802276,
+            "completion_tokens": 1479,
+            "completion_tokens_details": {
+              "reasoning_tokens": 316
+            }
+          },
+          "output": {
+            "reply": "## Bản chất\n\n- **`SELECT`**: chỉ định các cột (hoặc biểu thức) muốn trả về.\n- **`FROM`**: xác định bảng nguồn chứa dữ liệu.\n- **`WHERE`**: lọc các dòng trước khi thực hiện `SELECT`.\n- **`DISTINCT`**: loại bỏ các dòng trùng lặp hoàn toàn trong tập kết quả.\n- **`AS` (Alias)**: đặt tên tạm thời cho cột hoặc bảng, giúp kết quả dễ đọc.\n\n## Cú pháp cơ bản (SQLite)\n```sql\nSELECT [DISTINCT] column1 [, column2 ...]\nFROM table_name\n[WHERE condition];\n```\n- `DISTINCT` đặt ngay sau `SELECT` nếu muốn loại bỏ trùng lặp.\n- `AS` được dùng trong danh sách cột: `column_name AS alias_name`.\n\n## Ví dụ thực hành (bài tập EASY)\n### 1. Tạo bảng và dữ liệu mẫu\n```sql\nCREATE TABLE HocVien (\n    id INTEGER PRIMARY KEY,\n    ten TEXT NOT NULL,\n    diem REAL\n);\n\nINSERT INTO HocVien (ten, diem) VALUES\n    ('An', 9.2),\n    ('Bình', 7.5),\n    ('Chi', 8.0),\n    ('Dũng', NULL),   -- điểm chưa nhập\n    ('Em', 8.5);\n```\n### 2. Yêu cầu\n> Liệt kê **tên** học viên có điểm **từ 8 trở lên**. Kiểm tra trường hợp:\n> - Bảng rỗng (không có học viên).\n> - Điểm bằng đúng 8.\n\n### 3. Giải pháp\n```sql\nSELECT DISTINCT ten AS TenHocVien\nFROM HocVien\nWHERE diem >= 8;\n```\n- `DISTINCT` bảo vệ trường hợp có cùng tên xuất hiện nhiều lần.\n- Alias `TenHocVien` giúp tiêu đề cột rõ nghĩa.\n- Điều kiện `diem >= 8` tự động bỏ qua `NULL` (không thỏa `>=`).\n\n### 4. Kết quả mẫu\n| TenHocVien |\n|------------|\n| An |\n| Chi |\n| Em |\n\nNếu bảng **rỗng**, truy vấn vẫn chạy và trả về tập kết quả rỗng – đây là *boundary case* cần kiểm tra.\n\n## Các lỗi thường gặp\n| Lỗi | Nguyên nhân | Cách khắc phục |\n|-----|-------------|----------------|\n| `Invalid column name` | Dùng alias trong `WHERE` (ví dụ `WHERE TenHocVien >= 8`). | Sử dụng biểu thức gốc: `WHERE diem >= 8` hoặc dùng sub‑query/CTE. |\n| `NULL` được so sánh bằng `=` | `NULL` không bằng bất kỳ giá trị nào, kể cả `NULL`. | Dùng `IS NULL` hoặc `IS NOT NULL` khi cần kiểm tra giá trị rỗng. |\n| Quên `DISTINCT` khi có trùng tên | Kết quả sẽ chứa các bản ghi lặp. | Thêm `DISTINCT` hoặc `GROUP BY ten`. |\n| Dùng `SELECT *` trong bài tập yêu cầu chỉ trả về tên | Trả về quá nhiều cột, làm mất điểm. | Liệt kê cột cần thiết (`ten`). |\n| Thiếu dấu `;` ở cuối câu lệnh (trong môi trường yêu cầu) | Cú pháp không hoàn chỉnh. | Đảm bảo mỗi câu lệnh kết thúc bằng `;`. |\n\n## Một số lưu ý thực tiễn\n- **Thứ tự thực thi logic**: `FROM → WHERE → SELECT`. Vì vậy alias chỉ tồn tại sau khi `SELECT` được thực hiện.\n- **Kiểm tra dữ liệu rỗng**: Khi viết test, luôn chuẩn bị một case bảng không có bản ghi để xác nhận truy vấn trả về `[]`.\n- **Kiểm tra điểm đúng 8**: Điều kiện `>= 8` bao gồm giá trị bằng 8; nếu muốn chỉ > 8 thì dùng `> 8`.\n- **Hiệu năng**: Khi chỉ cần một cột, luôn liệt kê cột thay vì `SELECT *` để giảm lượng dữ liệu truyền về.\n\n---\n\n**Nguồn tham khảo**\n- `ai-service/data/sqlSkillGraph.json#SQL-DQL-01`\n- `docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md`\n- `docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md`",
+            "source_ids": [
+              "ai-service/data/sqlSkillGraph.json#SQL-DQL-01",
+              "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md",
+              "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md"
+            ]
+          },
+          "status": "SUCCEEDED",
+          "provider": "GROQ",
+          "duration_ms": 4397,
+          "http_status": 200,
+          "prompt_hash": "a63989539b6df43056ba327374a5b140e2017e513591b9907e0fc89f3c2064e4",
+          "response_id": "chatcmpl-d896e286-1316-4a96-9df9-47ade75d89cf",
+          "response_hash": "43a104e29b7ddc54af90ba8e055fa5aea9b5efa4961749fac912bbd59b305164",
+          "prompt_version": "adaptive_v3"
+        }
+      ],
+      "output_hash": "03fb14e08f7d4cbb9f119db299093a91ab7029a8475ebbff8b07162c3f40f812"
+    },
+    {
+      "id": "3b8f4d10-6e52-4a8f-b97a-692137e9d30b",
+      "agent": "ExerciseGeneratorAgent",
+      "error": {
+        "code": "PROVIDER_DEADLINE_EXCEEDED",
+        "message": "Không nhận được JSON hợp lệ từ provider trong ngân sách cho phép"
+      },
+      "input": {
+        "feedback": null,
+        "specification": {
+          "mode": "diagnostic",
+          "language": "sql",
+          "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+          "execution": {
+            "mode": "sql",
+            "dialect": "sqlite",
+            "ordered": false,
+            "comparator": "json",
+            "entrypoint": "solution"
+          },
+          "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+          "difficulty": "EASY",
+          "source_refs": [
+            {
+              "id": "ai-service/data/sqlSkillGraph.json#SQL-DQL-01",
+              "sha256": "54f075d1933564bf047c2e3db8bba50b67d028a30c4322b9be73479fd9f0714e"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md",
+              "sha256": "dd8a460302dda604441e357f9486f1bfe5c4144a8edd96dcd750ea9e9c92c947"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md",
+              "sha256": "ab766999f3a626e4c09a83d9bf295e86833ff989b14b79051ed35e24b8569e89"
+            }
+          ],
+          "user_request": "Tạo bài tập SQL mức dễ về SELECT và WHERE: liệt kê tên học viên có điểm từ 8 trở lên. Dùng SQLite, kiểm tra cả dữ liệu rỗng và điểm bằng 8.",
+          "concept_title": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+          "prerequisites": [
+            "SQL-RDBMS-01"
+          ],
+          "recent_errors": [],
+          "schema_version": "3.0",
+          "selection_mode": "explicit",
+          "target_concept": "SQL-DQL-01",
+          "learner_evidence": {
+            "policy": "adaptive_policy_v3",
+            "mastery": null,
+            "attempts": 0,
+            "prerequisite_gaps": [
+              "SQL-RDBMS-01"
+            ]
+          },
+          "test_constraints": {
+            "max_cases": 8,
+            "min_cases": 4,
+            "require_hidden_case": true,
+            "max_execution_time_ms": 3000,
+            "require_boundary_case": true
+          },
+          "target_sub_skills": [
+            "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+          ],
+          "learning_objectives": [
+            "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+          ],
+          "required_constructs": [],
+          "forbidden_constructs": []
+        },
+        "previous_draft": null
+      },
+      "method": "LLM",
+      "status": "FAILED",
+      "attempt": 1,
+      "ended_at": "2026-09-18T02:16:42.391890+00:00",
+      "sequence": 5,
+      "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+      "input_hash": "6852cac1a30062e148230ed15f5e06cab963175565c02174153e246854c85840",
+      "started_at": "2026-09-18T02:15:52.984488+00:00",
+      "duration_ms": 49410,
+      "model_calls": [
+        {
+          "input": {
+            "feedback": null,
+            "output_schema": {
+              "type": "object",
+              "$defs": {
+                "Hints": {
+                  "type": "object",
+                  "title": "Hints",
+                  "required": [
+                    "scaffold_1_conceptual",
+                    "scaffold_2_syntax",
+                    "scaffold_3_pseudocode"
+                  ],
+                  "properties": {
+                    "scaffold_2_syntax": {
+                      "type": "string",
+                      "title": "Scaffold 2 Syntax",
+                      "minLength": 5
+                    },
+                    "scaffold_1_conceptual": {
+                      "type": "string",
+                      "title": "Scaffold 1 Conceptual",
+                      "minLength": 5
+                    },
+                    "scaffold_3_pseudocode": {
+                      "type": "string",
+                      "title": "Scaffold 3 Pseudocode",
+                      "minLength": 5
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "TestCase": {
+                  "type": "object",
+                  "title": "TestCase",
+                  "required": [
+                    "input",
+                    "expected_output",
+                    "is_hidden",
+                    "category",
+                    "explanation"
+                  ],
+                  "properties": {
+                    "input": {
+                      "type": "string",
+                      "title": "Input"
+                    },
+                    "category": {
+                      "enum": [
+                        "normal",
+                        "boundary"
+                      ],
+                      "type": "string",
+                      "title": "Category"
+                    },
+                    "is_hidden": {
+                      "type": "boolean",
+                      "title": "Is Hidden"
+                    },
+                    "explanation": {
+                      "type": "string",
+                      "title": "Explanation",
+                      "minLength": 5
+                    },
+                    "fixture_sql": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Fixture Sql",
+                      "default": null
+                    },
+                    "expected_output": {
+                      "type": "string",
+                      "title": "Expected Output"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "title": "ExerciseDraft",
+              "required": [
+                "title",
+                "problem_statement",
+                "quick_theory",
+                "starter_code",
+                "reference_solution",
+                "test_cases",
+                "hints",
+                "constraints",
+                "common_pitfall_warning"
+              ],
+              "properties": {
+                "hints": {
+                  "$ref": "#/$defs/Hints"
+                },
+                "title": {
+                  "type": "string",
+                  "title": "Title",
+                  "maxLength": 200,
+                  "minLength": 5
+                },
+                "test_cases": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/TestCase"
+                  },
+                  "title": "Test Cases",
+                  "maxItems": 8,
+                  "minItems": 4
+                },
+                "constraints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Constraints"
+                },
+                "fixture_sql": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Fixture Sql",
+                  "default": null
+                },
+                "quick_theory": {
+                  "type": "string",
+                  "title": "Quick Theory",
+                  "minLength": 20
+                },
+                "starter_code": {
+                  "type": "string",
+                  "title": "Starter Code",
+                  "maxLength": 20000,
+                  "minLength": 1
+                },
+                "problem_statement": {
+                  "type": "string",
+                  "title": "Problem Statement",
+                  "maxLength": 14000,
+                  "minLength": 80
+                },
+                "reference_solution": {
+                  "type": "string",
+                  "title": "Reference Solution",
+                  "maxLength": 20000,
+                  "minLength": 1
+                },
+                "common_pitfall_warning": {
+                  "type": "string",
+                  "title": "Common Pitfall Warning"
+                }
+              },
+              "additionalProperties": false
+            },
+            "specification": {
+              "mode": "diagnostic",
+              "language": "sql",
+              "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+              "execution": {
+                "mode": "sql",
+                "dialect": "sqlite",
+                "ordered": false,
+                "comparator": "json",
+                "entrypoint": "solution"
+              },
+              "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+              "difficulty": "EASY",
+              "source_refs": [
+                {
+                  "id": "ai-service/data/sqlSkillGraph.json#SQL-DQL-01",
+                  "sha256": "54f075d1933564bf047c2e3db8bba50b67d028a30c4322b9be73479fd9f0714e"
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md",
+                  "sha256": "dd8a460302dda604441e357f9486f1bfe5c4144a8edd96dcd750ea9e9c92c947"
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md",
+                  "sha256": "ab766999f3a626e4c09a83d9bf295e86833ff989b14b79051ed35e24b8569e89"
+                }
+              ],
+              "user_request": "Tạo bài tập SQL mức dễ về SELECT và WHERE: liệt kê tên học viên có điểm từ 8 trở lên. Dùng SQLite, kiểm tra cả dữ liệu rỗng và điểm bằng 8.",
+              "concept_title": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+              "prerequisites": [
+                "SQL-RDBMS-01"
+              ],
+              "recent_errors": [],
+              "schema_version": "3.0",
+              "selection_mode": "explicit",
+              "target_concept": "SQL-DQL-01",
+              "learner_evidence": {
+                "policy": "adaptive_policy_v3",
+                "mastery": null,
+                "attempts": 0,
+                "prerequisite_gaps": [
+                  "SQL-RDBMS-01"
+                ]
+              },
+              "test_constraints": {
+                "max_cases": 8,
+                "min_cases": 4,
+                "require_hidden_case": true,
+                "max_execution_time_ms": 3000,
+                "require_boundary_case": true
+              },
+              "target_sub_skills": [
+                "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+              ],
+              "learning_objectives": [
+                "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+              ],
+              "required_constructs": [],
+              "forbidden_constructs": []
+            },
+            "previous_draft": null
+          },
+          "model": "gemini-3.8-flash",
+          "stage": "ExerciseGeneratorAgent",
+          "status": "FAILED",
+          "provider": "GEMINI",
+          "error_code": "PROVIDER_CALL_FAILED",
+          "error_type": "HTTPError",
+          "duration_ms": 1664,
+          "http_status": 503,
+          "prompt_hash": "4b206075ee7949729bc2fe01e2bc4c06f1e6884076eb36763c65d7b9414223cd",
+          "prompt_version": "adaptive_v3"
+        },
+        {
+          "input": {
+            "feedback": null,
+            "output_schema": {
+              "type": "object",
+              "$defs": {
+                "Hints": {
+                  "type": "object",
+                  "title": "Hints",
+                  "required": [
+                    "scaffold_1_conceptual",
+                    "scaffold_2_syntax",
+                    "scaffold_3_pseudocode"
+                  ],
+                  "properties": {
+                    "scaffold_2_syntax": {
+                      "type": "string",
+                      "title": "Scaffold 2 Syntax",
+                      "minLength": 5
+                    },
+                    "scaffold_1_conceptual": {
+                      "type": "string",
+                      "title": "Scaffold 1 Conceptual",
+                      "minLength": 5
+                    },
+                    "scaffold_3_pseudocode": {
+                      "type": "string",
+                      "title": "Scaffold 3 Pseudocode",
+                      "minLength": 5
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "TestCase": {
+                  "type": "object",
+                  "title": "TestCase",
+                  "required": [
+                    "input",
+                    "expected_output",
+                    "is_hidden",
+                    "category",
+                    "explanation"
+                  ],
+                  "properties": {
+                    "input": {
+                      "type": "string",
+                      "title": "Input"
+                    },
+                    "category": {
+                      "enum": [
+                        "normal",
+                        "boundary"
+                      ],
+                      "type": "string",
+                      "title": "Category"
+                    },
+                    "is_hidden": {
+                      "type": "boolean",
+                      "title": "Is Hidden"
+                    },
+                    "explanation": {
+                      "type": "string",
+                      "title": "Explanation",
+                      "minLength": 5
+                    },
+                    "fixture_sql": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Fixture Sql",
+                      "default": null
+                    },
+                    "expected_output": {
+                      "type": "string",
+                      "title": "Expected Output"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "title": "ExerciseDraft",
+              "required": [
+                "title",
+                "problem_statement",
+                "quick_theory",
+                "starter_code",
+                "reference_solution",
+                "test_cases",
+                "hints",
+                "constraints",
+                "common_pitfall_warning"
+              ],
+              "properties": {
+                "hints": {
+                  "$ref": "#/$defs/Hints"
+                },
+                "title": {
+                  "type": "string",
+                  "title": "Title",
+                  "maxLength": 200,
+                  "minLength": 5
+                },
+                "test_cases": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/TestCase"
+                  },
+                  "title": "Test Cases",
+                  "maxItems": 8,
+                  "minItems": 4
+                },
+                "constraints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Constraints"
+                },
+                "fixture_sql": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Fixture Sql",
+                  "default": null
+                },
+                "quick_theory": {
+                  "type": "string",
+                  "title": "Quick Theory",
+                  "minLength": 20
+                },
+                "starter_code": {
+                  "type": "string",
+                  "title": "Starter Code",
+                  "maxLength": 20000,
+                  "minLength": 1
+                },
+                "problem_statement": {
+                  "type": "string",
+                  "title": "Problem Statement",
+                  "maxLength": 14000,
+                  "minLength": 80
+                },
+                "reference_solution": {
+                  "type": "string",
+                  "title": "Reference Solution",
+                  "maxLength": 20000,
+                  "minLength": 1
+                },
+                "common_pitfall_warning": {
+                  "type": "string",
+                  "title": "Common Pitfall Warning"
+                }
+              },
+              "additionalProperties": false
+            },
+            "specification": {
+              "mode": "diagnostic",
+              "language": "sql",
+              "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+              "execution": {
+                "mode": "sql",
+                "dialect": "sqlite",
+                "ordered": false,
+                "comparator": "json",
+                "entrypoint": "solution"
+              },
+              "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+              "difficulty": "EASY",
+              "source_refs": [
+                {
+                  "id": "ai-service/data/sqlSkillGraph.json#SQL-DQL-01",
+                  "sha256": "54f075d1933564bf047c2e3db8bba50b67d028a30c4322b9be73479fd9f0714e"
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md",
+                  "sha256": "dd8a460302dda604441e357f9486f1bfe5c4144a8edd96dcd750ea9e9c92c947"
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md",
+                  "sha256": "ab766999f3a626e4c09a83d9bf295e86833ff989b14b79051ed35e24b8569e89"
+                }
+              ],
+              "user_request": "Tạo bài tập SQL mức dễ về SELECT và WHERE: liệt kê tên học viên có điểm từ 8 trở lên. Dùng SQLite, kiểm tra cả dữ liệu rỗng và điểm bằng 8.",
+              "concept_title": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+              "prerequisites": [
+                "SQL-RDBMS-01"
+              ],
+              "recent_errors": [],
+              "schema_version": "3.0",
+              "selection_mode": "explicit",
+              "target_concept": "SQL-DQL-01",
+              "learner_evidence": {
+                "policy": "adaptive_policy_v3",
+                "mastery": null,
+                "attempts": 0,
+                "prerequisite_gaps": [
+                  "SQL-RDBMS-01"
+                ]
+              },
+              "test_constraints": {
+                "max_cases": 8,
+                "min_cases": 4,
+                "require_hidden_case": true,
+                "max_execution_time_ms": 3000,
+                "require_boundary_case": true
+              },
+              "target_sub_skills": [
+                "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+              ],
+              "learning_objectives": [
+                "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+              ],
+              "required_constructs": [],
+              "forbidden_constructs": []
+            },
+            "previous_draft": null
+          },
+          "model": "openai/gpt-oss-120b",
+          "stage": "ExerciseGeneratorAgent",
+          "status": "FAILED",
+          "provider": "GROQ",
+          "error_code": "PROVIDER_CALL_FAILED",
+          "error_type": "HTTPError",
+          "duration_ms": 593,
+          "http_status": 429,
+          "prompt_hash": "4b206075ee7949729bc2fe01e2bc4c06f1e6884076eb36763c65d7b9414223cd",
+          "prompt_version": "adaptive_v3"
+        },
+        {
+          "input": {
+            "feedback": null,
+            "output_schema": {
+              "type": "object",
+              "$defs": {
+                "Hints": {
+                  "type": "object",
+                  "title": "Hints",
+                  "required": [
+                    "scaffold_1_conceptual",
+                    "scaffold_2_syntax",
+                    "scaffold_3_pseudocode"
+                  ],
+                  "properties": {
+                    "scaffold_2_syntax": {
+                      "type": "string",
+                      "title": "Scaffold 2 Syntax",
+                      "minLength": 5
+                    },
+                    "scaffold_1_conceptual": {
+                      "type": "string",
+                      "title": "Scaffold 1 Conceptual",
+                      "minLength": 5
+                    },
+                    "scaffold_3_pseudocode": {
+                      "type": "string",
+                      "title": "Scaffold 3 Pseudocode",
+                      "minLength": 5
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "TestCase": {
+                  "type": "object",
+                  "title": "TestCase",
+                  "required": [
+                    "input",
+                    "expected_output",
+                    "is_hidden",
+                    "category",
+                    "explanation"
+                  ],
+                  "properties": {
+                    "input": {
+                      "type": "string",
+                      "title": "Input"
+                    },
+                    "category": {
+                      "enum": [
+                        "normal",
+                        "boundary"
+                      ],
+                      "type": "string",
+                      "title": "Category"
+                    },
+                    "is_hidden": {
+                      "type": "boolean",
+                      "title": "Is Hidden"
+                    },
+                    "explanation": {
+                      "type": "string",
+                      "title": "Explanation",
+                      "minLength": 5
+                    },
+                    "fixture_sql": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Fixture Sql",
+                      "default": null
+                    },
+                    "expected_output": {
+                      "type": "string",
+                      "title": "Expected Output"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "title": "ExerciseDraft",
+              "required": [
+                "title",
+                "problem_statement",
+                "quick_theory",
+                "starter_code",
+                "reference_solution",
+                "test_cases",
+                "hints",
+                "constraints",
+                "common_pitfall_warning"
+              ],
+              "properties": {
+                "hints": {
+                  "$ref": "#/$defs/Hints"
+                },
+                "title": {
+                  "type": "string",
+                  "title": "Title",
+                  "maxLength": 200,
+                  "minLength": 5
+                },
+                "test_cases": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/TestCase"
+                  },
+                  "title": "Test Cases",
+                  "maxItems": 8,
+                  "minItems": 4
+                },
+                "constraints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Constraints"
+                },
+                "fixture_sql": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Fixture Sql",
+                  "default": null
+                },
+                "quick_theory": {
+                  "type": "string",
+                  "title": "Quick Theory",
+                  "minLength": 20
+                },
+                "starter_code": {
+                  "type": "string",
+                  "title": "Starter Code",
+                  "maxLength": 20000,
+                  "minLength": 1
+                },
+                "problem_statement": {
+                  "type": "string",
+                  "title": "Problem Statement",
+                  "maxLength": 14000,
+                  "minLength": 80
+                },
+                "reference_solution": {
+                  "type": "string",
+                  "title": "Reference Solution",
+                  "maxLength": 20000,
+                  "minLength": 1
+                },
+                "common_pitfall_warning": {
+                  "type": "string",
+                  "title": "Common Pitfall Warning"
+                }
+              },
+              "additionalProperties": false
+            },
+            "specification": {
+              "mode": "diagnostic",
+              "language": "sql",
+              "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+              "execution": {
+                "mode": "sql",
+                "dialect": "sqlite",
+                "ordered": false,
+                "comparator": "json",
+                "entrypoint": "solution"
+              },
+              "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+              "difficulty": "EASY",
+              "source_refs": [
+                {
+                  "id": "ai-service/data/sqlSkillGraph.json#SQL-DQL-01",
+                  "sha256": "54f075d1933564bf047c2e3db8bba50b67d028a30c4322b9be73479fd9f0714e"
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc bài học/Chapter02/Bài 2.2 - Loại bỏ trùng lặp với DISTINCT và Đặt bí danh cột với AS.md",
+                  "sha256": "dd8a460302dda604441e357f9486f1bfe5c4144a8edd96dcd750ea9e9c92c947"
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/SQL/Cấu trúc nội dung khóa học SQL.md",
+                  "sha256": "ab766999f3a626e4c09a83d9bf295e86833ff989b14b79051ed35e24b8569e89"
+                }
+              ],
+              "user_request": "Tạo bài tập SQL mức dễ về SELECT và WHERE: liệt kê tên học viên có điểm từ 8 trở lên. Dùng SQLite, kiểm tra cả dữ liệu rỗng và điểm bằng 8.",
+              "concept_title": "Cú pháp SELECT, FROM, DISTINCT & Bí danh (AS)",
+              "prerequisites": [
+                "SQL-RDBMS-01"
+              ],
+              "recent_errors": [],
+              "schema_version": "3.0",
+              "selection_mode": "explicit",
+              "target_concept": "SQL-DQL-01",
+              "learner_evidence": {
+                "policy": "adaptive_policy_v3",
+                "mastery": null,
+                "attempts": 0,
+                "prerequisite_gaps": [
+                  "SQL-RDBMS-01"
+                ]
+              },
+              "test_constraints": {
+                "max_cases": 8,
+                "min_cases": 4,
+                "require_hidden_case": true,
+                "max_execution_time_ms": 3000,
+                "require_boundary_case": true
+              },
+              "target_sub_skills": [
+                "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+              ],
+              "learning_objectives": [
+                "Lấy toàn bộ cột với `SELECT *` hoặc lấy cột chỉ định tối ưu hiệu năng"
+              ],
+              "required_constructs": [],
+              "forbidden_constructs": []
+            },
+            "previous_draft": null
+          },
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "stage": "ExerciseGeneratorAgent",
+          "status": "FAILED",
+          "provider": "OPENROUTER",
+          "error_code": "PROVIDER_DEADLINE_EXCEEDED",
+          "error_type": "PipelineError",
+          "duration_ms": 46084,
+          "http_status": 200,
+          "prompt_hash": "4b206075ee7949729bc2fe01e2bc4c06f1e6884076eb36763c65d7b9414223cd",
+          "prompt_version": "adaptive_v3"
+        }
+      ]
+    }
+  ],
+  "fallback_used": false,
+  "schema_version": "3.0"
+}

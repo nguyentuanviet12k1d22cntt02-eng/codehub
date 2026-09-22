@@ -50,7 +50,8 @@ class KnowledgeGraphService:
         files_map = {
             "python": "pythonSkillGraph.json",
             "cpp": "cppSkillGraph.json",
-            "javascript": "javascriptSkillGraph.json"
+            "javascript": "javascriptSkillGraph.json",
+            "sql": "sqlSkillGraph.json"
         }
 
         for lang, fname in files_map.items():
@@ -156,13 +157,7 @@ class KnowledgeGraphService:
     def resolve_concept_by_topic(self, language: str, topic: Optional[str]) -> Optional[str]:
         lang = self._normalize_lang(language)
         if not topic:
-            # Fallback to the first basic concept of the language
-            first_cands = {
-                "python": "PY-BASICS-01",
-                "cpp": "CPP-SYNTAX-01",
-                "javascript": "JS-VAR-01"
-            }
-            return first_cands.get(lang)
+            return None
 
         topic_clean = topic.strip().lower()
 
@@ -194,13 +189,7 @@ class KnowledgeGraphService:
                     if any(kw in c_name or kw in cid.lower() for kw in kw_list):
                         return cid
 
-        # Fallback to first concept
-        first_cands = {
-            "python": "PY-BASICS-01",
-            "cpp": "CPP-SYNTAX-01",
-            "javascript": "JS-VAR-01"
-        }
-        return first_cands.get(lang)
+        return None
 
     def get_remediation_candidates(self, language: str, concept_id: str, failed_sub_skills: Optional[List[str]] = None) -> List[str]:
         """
@@ -215,28 +204,28 @@ class KnowledgeGraphService:
         candidates.append(concept_id)
         return candidates
 
-    def find_root_gap(self, language: str, target_concept_id: str, user_mastery_map: Dict[str, float]) -> str:
+    def find_root_gap(self, language: str, target_concept_id: str, user_mastery_map: Dict[str, float]) -> Optional[str]:
         """
         Thuật toán Backtracking tìm Cognitive Root Gap:
         Duyệt ngược từ target_concept theo các cạnh DAG prerequisites;
         Node tiên quyết nào có mastery < 0.60 sâu nhất thì đó chính là Root Cognitive Gap.
         """
         lang = self._normalize_lang(language)
-        visited = set()
-        queue = [target_concept_id]
-        deepest_gap = target_concept_id
+        visited_depth: Dict[str, int] = {}
+        queue = [(target_concept_id, 0)]
+        observed_gaps = []
 
         while queue:
-            curr = queue.pop(0)
-            if curr in visited:
+            current, depth = queue.pop(0)
+            if current in visited_depth and visited_depth[current] >= depth:
                 continue
-            visited.add(curr)
+            visited_depth[current] = depth
+            if current in user_mastery_map and float(user_mastery_map[current]) < 0.60:
+                observed_gaps.append((depth, float(user_mastery_map[current]), current))
+            for prerequisite in sorted(self.get_prerequisites(lang, current)):
+                queue.append((prerequisite, depth + 1))
 
-            prereqs = self.get_prerequisites(lang, curr)
-            for p in prereqs:
-                p_mastery = user_mastery_map.get(p, 0.40)
-                if p_mastery < 0.60:
-                    deepest_gap = p
-                    queue.append(p)
-
-        return deepest_gap
+        if not observed_gaps:
+            return None
+        # Deepest prerequisite first; ties prefer the lower mastery and then a stable concept id.
+        return sorted(observed_gaps, key=lambda item: (-item[0], item[1], item[2]))[0][2]

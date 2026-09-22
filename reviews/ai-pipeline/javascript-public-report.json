@@ -1,0 +1,619 @@
+{
+  "trace_id": "trace_f4bffeb6b34d466bb517eaef2040df77",
+  "schema_version": "4.0",
+  "status": "SUCCEEDED",
+  "intent": "REQUEST_ADAPTIVE_EXERCISE",
+  "reply": "Bài tập **Đếm số phần tử dương trong mảng (sử dụng Prototype)** đã qua kiểm thử và thẩm định. Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+  "exercise": {
+    "title": "Đếm số phần tử dương trong mảng (sử dụng Prototype)",
+    "exercise_id": "e7c3846e-5e25-444d-a5db-c7c68639377a",
+    "concept_id": "JS-PROTO-01",
+    "concept_name": "Chuỗi Kế thừa Nguyên mẫu (Prototype Chain)",
+    "language": "javascript",
+    "difficulty": "EASY",
+    "difficulty_stars": 1,
+    "problem_statement": "Viết hàm JavaScript có tên `solution` nhận vào một mảng các số nguyên và trả về số lượng phần tử dương (lớn hơn 0) trong mảng đó. Hàm phải xử lý cả trường hợp mảng rỗng và trả về 0. Để luyện tập về Prototype Chain, bạn có thể mở rộng prototype của Array để thực hiện việc đếm này, nhưng không bắt buộc. Đảm bảo hàm không thay đổi nội dung gốc của mảng.",
+    "quick_theory": "Trong JavaScript, mọi đối tượng đều có một prototype (nguyên mẫu) mà chúng kế thừa các thuộc tính và phương thức. Thuộc tính __proto__ trỏ tới prototype của đối tượng, tạo nên chuỗi Prototype Chain. Khi bạn truy cập một thuộc tính/method, JavaScript sẽ tìm kiếm trên đối tượng, nếu không thấy sẽ lên chuỗi prototype cho tới khi tìm thấy hoặc đến Object.prototype. Bạn có thể mở rộng prototype của các built‑in như Array để thêm các phương thức tùy chỉnh, giúp tái sử dụng logic trong nhiều nơi.",
+    "starter_code": "function solution(nums) {\n  // TODO: viết code ở đây\n}\n\n// Bạn có thể mở rộng Array.prototype nếu muốn, ví dụ:\n// Array.prototype.countPositive = function() { /* ... */ };",
+    "hints": {
+      "scaffold_1_conceptual": "Prototype chain cho phép các đối tượng kế thừa thuộc tính và phương thức từ prototype của chúng, giúp tái sử dụng logic.",
+      "scaffold_2_syntax": "Bạn có thể thêm một phương thức mới vào Array.prototype, ví dụ: Array.prototype.countPositive = function() { ... };",
+      "scaffold_3_pseudocode": "Khởi tạo biến đếm = 0; Duyệt từng phần tử trong mảng; Nếu phần tử > 0 thì đếm++; Trả về biến đếm."
+    },
+    "constraints": [
+      "Không sử dụng Array.filter hoặc các phương thức cao cấp khác để đếm.",
+      "Nếu mở rộng prototype, phải không làm thay đổi hành vi mặc định của các phương thức gốc."
+    ],
+    "common_pitfall_warning": "Quên kiểm tra giá trị 0; 0 không phải là số dương nên không được tính.",
+    "theoryContent": "# Bài tập: Đếm số phần tử dương trong mảng\n\n**Mô tả**\nViết hàm `solution(arr)` nhận vào một mảng các số nguyên `arr` và trả về số lượng phần tử có giá trị **lớn hơn 0**. Nếu mảng rỗng, hàm trả về `0`.\n\n**Đầu vào**\n- Một mảng `arr` chứa từ `0` đến `10^5` phần tử.\n- Mỗi phần tử là số nguyên trong khoảng `[-10^9, 10^9]`.\n\n**Đầu ra**\n- Một số nguyên duy nhất: số lượng phần tử dương trong `arr`.\n\n**Ví dụ**\n```js\nsolution([1, -2, 3, 0, 5]); // trả về 3 (1, 3, 5)\nsolution([]);               // trả về 0\nsolution([-1, -2, -3]);    // trả về 0\n```\n\n**Gợi ý**\n- Duyệt mảng một lần, tăng bộ đếm khi gặp giá trị `> 0`.\n- Không cần tạo mảng phụ; chỉ cần một biến đếm.\n\n---\n\n## Mẫu giải (template)\n```js\n/**\n * Đếm số phần tử dương trong mảng.\n * @param {number[]} arr - Mảng các số nguyên.\n * @return {number} Số phần tử dương.\n */\nfunction solution(arr) {\n    // TODO: viết code ở đây\n    let count = 0;\n    for (let i = 0; i < arr.length; i++) {\n        if (arr[i] > 0) count++;\n    }\n    return count;\n}\n\n// Export cho môi trường kiểm thử (nếu cần)\nif (typeof module !== 'undefined') {\n    module.exports = solution;\n}\n```\n\n---\n\n## Các trường hợp kiểm thử (test cases)\n| # | Mô tả | Input | Output |\n|---|-------|-------|--------|\n| 1 | Mảng rỗng | `[]` | `0` |\n| 2 | Tất cả số âm | `[-5, -1, -9]` | `0` |\n| 3 | Trộn dương, âm, 0 | `[0, 2, -3, 4, -1]` | `2` |\n| 4 | Giới hạn trên (boundary) | Mảng có `10^5` phần tử, tất cả `1` | `100000` |\n| 5 | Trường hợp ẩn (hidden) | `[-100, 0, 100]` | `1` |\n\n---\n\n## Lỗi thường gặp\n1. **So sánh sai dấu** – dùng `>= 0` sẽ tính cả `0` là dương.\n2. **Quên khởi tạo biến đếm** – trả về `undefined` hoặc `NaN`.\n3. **Thay đổi `arr` trong vòng lặp** – không cần thiết, có thể gây lỗi khi dùng `for...of` và thay đổi độ dài.\n4. **Không xử lý mảng rỗng** – vòng lặp không chạy, nhưng biến đếm vẫn phải được khởi tạo là `0`.\n\n---\n\n## Kiến thức nền tảng (Prototype Chain) – liên quan tới hàm\n- Trong JavaScript, mọi hàm đều là **object** và có thuộc tính `prototype`. Khi bạn tạo một hàm như `function solution(){}` thì `solution.__proto__` trỏ tới `Function.prototype`, còn `solution.prototype` là đối tượng mà các instance (nếu có) sẽ kế thừa.\n- Mặc dù bài này không yêu cầu tạo đối tượng, hiểu cách prototype hoạt động giúp tránh lỗi như `solution.hasOwnProperty` vs `solution.prototype.hasOwnProperty`.\n- Thuộc tính `Array.prototype` cung cấp các phương thức duyệt (`forEach`, `filter`, …) – bạn có thể dùng `arr.filter(x=>x>0).length` nhờ vào prototype chain của mảng.\n\n---\n\n## Tham khảo nguồn\n- **Skill graph**: `ai-service/data/javascriptSkillGraph.json#JS-PROTO-01`\n- **Bài giảng Prototype Chain**: `docs/Dữ liệu nội dung bài học/JS/Khóa 2 - JavaScript Nâng cao/Module 04/Lesson_12_01.md`\n- **Cú pháp cơ bản JavaScript**: `docs/Dữ liệu nội dung bài học/JS/Khóa 1 - JavaScript Cơ bản/Module 01/Lesson_01_01.md`\n",
+    "execution": {
+      "mode": "function",
+      "entrypoint": "solution",
+      "comparator": "json",
+      "call_style_required": true
+    },
+    "trace_id": "trace_f4bffeb6b34d466bb517eaef2040df77",
+    "qc_status": "VERIFIED",
+    "harness_version": "adaptive_harness_v4",
+    "artifact_hash": "98950f35ef2fa2de898de5464da091006d75af7e6c777144d70c8589c779cfdc",
+    "test_cases": [
+      {
+        "input": "[[1,-2,3,0,5]]",
+        "expected_output": "3",
+        "is_hidden": false,
+        "category": "normal",
+        "explanation": "Mảng chứa ba số dương: 1, 3 và 5."
+      },
+      {
+        "input": "[[-1,-2,-3]]",
+        "expected_output": "0",
+        "is_hidden": false,
+        "category": "normal",
+        "explanation": "Không có số nào lớn hơn 0, kết quả là 0."
+      },
+      {
+        "input": "[[]]",
+        "expected_output": "0",
+        "is_hidden": false,
+        "category": "boundary",
+        "explanation": "Mảng rỗng không có phần tử nào, vì vậy trả về 0."
+      }
+    ]
+  },
+  "agent_traces": [
+    {
+      "id": "45ea41d6-4fe1-4dde-b034-d8342970d5ac",
+      "trace_id": "trace_f4bffeb6b34d466bb517eaef2040df77",
+      "agent": "IntentRouterAgent",
+      "method": "RULES_OR_LLM",
+      "attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-20T09:07:06.819452+00:00",
+      "input_hash": "56389662ad14187a76cbe5348020f5a36823cbe08d7aef2318032e84c6f33f35",
+      "sequence": 1,
+      "output_hash": "e3d88f445e7ea3d23e0388205faaf46142305130f54746b347a584163d5fc585",
+      "ended_at": "2026-09-20T09:07:06.820294+00:00",
+      "duration_ms": 1,
+      "output": {
+        "intent": "REQUEST_ADAPTIVE_EXERCISE",
+        "language": "javascript",
+        "topic": "function",
+        "difficulty_request": "auto",
+        "mode": "progression",
+        "selection_mode": "explicit",
+        "confidence": 1,
+        "user_text": "Tạo bài tập JavaScript mức dễ về hàm. Hàm solution nhận mảng số nguyên và trả số phần tử dương, bao gồm tình huống mảng rỗng.",
+        "trace_id": "trace_f4bffeb6b34d466bb517eaef2040df77"
+      },
+      "model_calls": []
+    },
+    {
+      "id": "b75054a6-a284-4481-aad9-40e2897b522c",
+      "trace_id": "trace_f4bffeb6b34d466bb517eaef2040df77",
+      "agent": "AdaptiveExercisePlanner",
+      "method": "RULE_POLICY",
+      "attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-20T09:07:06.820392+00:00",
+      "input_hash": "1dd299fe28dba7c4989b0b2cd77e56e2ed29e93ab4d008aacef0785856b21e16",
+      "sequence": 2,
+      "output_hash": "7df63c4a2a00c8fb1d0d0a9a36e521e2944009aae16c0f35a6ed98c17ce87d1f",
+      "ended_at": "2026-09-20T09:07:06.821160+00:00",
+      "duration_ms": 1,
+      "output": {
+        "schema_version": "4.0",
+        "user_request": "Tạo bài tập JavaScript mức dễ về hàm. Hàm solution nhận mảng số nguyên và trả số phần tử dương, bao gồm tình huống mảng rỗng.",
+        "selection_mode": "explicit",
+        "execution": {
+          "mode": "function",
+          "entrypoint": "solution",
+          "comparator": "json",
+          "call_style_required": true
+        },
+        "learning_objectives": [
+          "Hiểu bản chất đối tượng nguyên mẫu prototype và liên kết __proto__"
+        ],
+        "source_refs": [],
+        "learner_evidence": {
+          "mastery": null,
+          "attempts": 0,
+          "prerequisite_gaps": [
+            "JS-OBJECT-01"
+          ],
+          "policy": "adaptive_policy_v3"
+        },
+        "target_concept": "JS-PROTO-01",
+        "concept_title": "Chuỗi Kế thừa Nguyên mẫu (Prototype Chain)",
+        "language": "javascript",
+        "target_sub_skills": [
+          "Hiểu bản chất đối tượng nguyên mẫu prototype và liên kết __proto__"
+        ],
+        "difficulty": "EASY",
+        "mode": "diagnostic",
+        "prerequisites": [
+          "JS-OBJECT-01"
+        ],
+        "required_constructs": [],
+        "forbidden_constructs": [],
+        "recent_errors": [],
+        "test_constraints": {
+          "min_cases": 4,
+          "max_cases": 8,
+          "require_hidden_case": true,
+          "require_boundary_case": true,
+          "max_execution_time_ms": 3000
+        },
+        "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+        "trace_id": "trace_f4bffeb6b34d466bb517eaef2040df77"
+      },
+      "model_calls": []
+    },
+    {
+      "id": "de3b238a-aacf-46de-90f0-b0caf5bdf97d",
+      "trace_id": "trace_f4bffeb6b34d466bb517eaef2040df77",
+      "agent": "KnowledgeRetrievalService",
+      "method": "LOCAL_GRAPH_AND_FILES",
+      "attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-20T09:07:06.821227+00:00",
+      "input_hash": "fea771bf780ac5cf2b7f1ccef9927edb46286b749379c088ea09453641fb5c1f",
+      "sequence": 3,
+      "output_hash": "bf0b7c07d979166d5091e6b35ed50a110f872572028e749194e05102a4af9fbf",
+      "ended_at": "2026-09-20T09:07:08.745802+00:00",
+      "duration_ms": 1925,
+      "output": {
+        "concept": {
+          "id": "JS-PROTO-01",
+          "concept_id": "JS-PROTO-01",
+          "name": "Chuỗi Kế thừa Nguyên mẫu (Prototype Chain)",
+          "concept_name": "Chuỗi Kế thừa Nguyên mẫu (Prototype Chain)",
+          "domain_id": "JAVASCRIPT",
+          "module_id": "MOD-JS-OOP",
+          "topic_id": "TOPIC-JS-PROTO",
+          "stage": 4,
+          "tier": 4,
+          "scope": "prototype, __proto__, property lookup, constructor function",
+          "prerequisites": [
+            "JS-OBJECT-01"
+          ],
+          "learning_objectives": [
+            "Hiểu bản chất đối tượng nguyên mẫu prototype và liên kết __proto__",
+            "Phân tích cơ chế tra cứu thuộc tính dọc theo Prototype Chain",
+            "Định nghĩa phương thức dùng chung qua ConstructorFunction.prototype"
+          ],
+          "associated_errors": [
+            "TypeError",
+            "wrong prototype lookup"
+          ],
+          "difficulty_level": 4,
+          "bloom_level": "Analyze",
+          "estimated_time_minutes": 40,
+          "practice_count": 4
+        },
+        "sources": [
+          {
+            "id": "ai-service/data/javascriptSkillGraph.json#JS-PROTO-01",
+            "sha256": "331c99697e654394162515f0f29623ee4c9ed5a11cc2e71ce3934303448f0582",
+            "excerpt": {
+              "id": "JS-PROTO-01",
+              "concept_id": "JS-PROTO-01",
+              "name": "Chuỗi Kế thừa Nguyên mẫu (Prototype Chain)",
+              "concept_name": "Chuỗi Kế thừa Nguyên mẫu (Prototype Chain)",
+              "domain_id": "JAVASCRIPT",
+              "module_id": "MOD-JS-OOP",
+              "topic_id": "TOPIC-JS-PROTO",
+              "stage": 4,
+              "tier": 4,
+              "scope": "prototype, __proto__, property lookup, constructor function",
+              "prerequisites": [
+                "JS-OBJECT-01"
+              ],
+              "learning_objectives": [
+                "Hiểu bản chất đối tượng nguyên mẫu prototype và liên kết __proto__",
+                "Phân tích cơ chế tra cứu thuộc tính dọc theo Prototype Chain",
+                "Định nghĩa phương thức dùng chung qua ConstructorFunction.prototype"
+              ],
+              "associated_errors": [
+                "TypeError",
+                "wrong prototype lookup"
+              ],
+              "difficulty_level": 4,
+              "bloom_level": "Analyze",
+              "estimated_time_minutes": 40,
+              "practice_count": 4
+            }
+          },
+          {
+            "id": "docs/Dữ liệu nội dung bài học/JS/Khóa 2 - JavaScript Nâng cao/Module 04/Lesson_12_01.md",
+            "sha256": "0f42e5acb886a46fcc8dab0ad3bfa59374a6a2e6f9c8d4f2da74e11fe791b8db",
+            "excerpt": "---\nlessonId: JS2-12.01\ntitle: \"Nguyên lý Prototype, __proto__ & Prototype Chain\"\ndifficulty: \"Khó\"\nestimatedDuration: \"25 phút\"\nkeywords: [\"Prototype\", \"__proto__\", \"Prototype Chain\", \"Object.create\", \"Kế thừa nguyên mẫu\"]\nprerequisites: [\"JS2-11.05\"]\n---\n\n# Nguyên lý Prototype, __proto__ & Prototype Chain\n\n## 1. Khái niệm & Vấn đề thực tế\nKhông giống các ngôn ngữ như Java hay C++ (vốn sử dụng mô hình Class-based cổ điển), JavaScript ngay từ đầu được xây dựng trên nền tảng **Kế thừa dựa trên nguyên mẫu (Prototypal Inheritance)**.\n\nMỗi đối tượng trong JavaScript đều có một liên kết nội bộ ẩn trỏ đến một đối tượng khác, gọi là **Prototype (Nguyên mẫu)**. Khi bạn đọc một thuộc tính từ một object mà object đó không có, Engine sẽ lần theo liên kết này để tìm kiếm trên Prototype của nó. Quá trình này tạo thành một chuỗi gọi là **Prototype Chain**.\n\n---\n\n## 2. Cú pháp & Quy tắc cốt lõi\n- **`Object.create(proto)`**: Tạo ra một đối tượng mới có nguyên mẫu kế thừa trực tiếp từ `proto`.\n- **`Object.getPrototypeOf(obj)`**: Phương thức chuẩn mực để lấy prototype của `obj` (thay thế cho thuộc tính kế thừa cũ `__proto__`).\n- **Điểm kết thúc của Prototype Chain**: `Object.prototype` (nguyên mẫu cao nhất, prototype của nó là `null`).\n\n---\n\n## 3. Ví dụ trực quan & Phân tích từng dòng\n\n```javascript\nconst animal = {\n    isAlive: true,\n    eat() {\n        return \"Đang ăn...\";\n    }\n};\n\n// Tạo rabbit kế thừa từ animal\nconst rabbit = Object.create(animal);\nrabbit.name = \"Thỏ trắng\";\n\nconsole.log(rabbit.name);    // \"Thỏ trắng\" (thuộc tính của chính rabbit)\nconsole.log(rabbit.isAlive); // true (tìm thấy trên prototype animal!)\nconsole.log(rabbit.eat());   // \"Đang ăn...\" (phương thức kế thừa từ animal)\n```\n\n---\n\n## 4. Cạm bẫy thường gặp & Thực hành tốt nhất\n- **Ghi đè thuộc tính (Property Shadowing)**: Nếu bạn gán `rabbit.isAlive = false`, thuộc tính `isAlive` sẽ được tạo riêng trên `rabbit`, không làm thay đổi giá trị `isAlive` trên nguyên mẫu `animal`.\n\n---\n\n## 5. Tóm tắt ghi nhớ & Checklist tự đánh giá\n1. Mọi đối tượng đều có một prototype.\n2. Tra cứu thuộc tính diễn ra dọc theo Prototype Chain từ dưới lên trên.\n3. Tạo đối tượng kế thừa chuẩn: `Object.create(parentObj)`.\n",
+            "match_score": 5
+          },
+          {
+            "id": "docs/Dữ liệu nội dung bài học/JS/Khóa 1 - JavaScript Cơ bản/Module 01/Lesson_01_01.md",
+            "sha256": "a5d9b80281e2a0d9d89d58bdf3405286122a7c3126b9386ca57a565457981311",
+            "excerpt": "---\nlessonId: JS1-01.01\ntitle: \"Lịch sử JavaScript, ECMAScript & Môi trường thực thi\"\ndifficulty: \"Dễ\"\nestimatedDuration: \"25 phút\"\nkeywords: [\"JavaScript\", \"ECMAScript\", \"V8 Engine\", \"Node.js\", \"Runtime\"]\nprerequisites: []\n---\n\n# Lịch sử JavaScript, ECMAScript & Môi trường thực thi\n\n## 1. Khái niệm & Vấn đề thực tế\nNăm 1995, Brendan Eich tạo ra JavaScript trong 10 ngày tại Netscape. Ban đầu chỉ là ngôn ngữ kịch bản chạy trong trình duyệt, ngày nay JavaScript là một trong những ngôn ngữ phổ biến nhất thế giới nhờ chuẩn hóa **ECMAScript (ES)** và các công cụ thực thi hiện đại như Google V8 Engine và Node.js.\n\nTrong khóa học này, chúng ta tiếp cận JavaScript dưới góc độ **ngôn ngữ lập trình thuần túy (Vanilla JS)**: học tư duy thuật toán, cấu trúc dữ liệu và cú pháp lõi độc lập, không phụ thuộc vào giao diện web HTML/DOM hay framework bên ngoài.\n\n---\n\n## 2. Cú pháp & Quy tắc cốt lõi\n- **ECMAScript**: Bản đặc tả kỹ thuật tiêu chuẩn (ES5, ES6/ES2015, ES2020,...).\n- **JavaScript Engine**: Bộ máy biên dịch JIT (Just-In-Time) mã JS sang mã máy (V8 trên Chrome/Node.js, SpiderMonkey trên Firefox).\n- **Môi trường Console/Sandbox**: Mã lệnh được chạy tuần tự từ trên xuống dưới, kết quả xuất ra luồng đầu ra tiêu chuẩn (`stdout`).\n\n---\n\n## 3. Ví dụ trực quan & Phân tích từng dòng\n\n```javascript\n// In dòng thông báo đầu tiên ra màn hình console\nconsole.log(\"Xin chào lập trình viên JavaScript!\");\nconsole.log(2026);\n```\n\n- Dòng 1: Chú thích bắt đầu bằng `//` giải thích mục đích mã.\n- Dòng 2: Gọi phương thức `console.log()` để in chuỗi ký tự ra màn hình.\n- Dòng 3: In trực tiếp một hằng số nguyên ra console.\n\n---\n\n## 4. Cạm bẫy thường gặp & Thực hành tốt nhất\n- **Nhầm lẫn Java và JavaScript**: Java và JavaScript là hai ngôn ngữ hoàn toàn khác biệt về cú pháp, triết lý và hệ thống kiểu dữ liệu.\n- **Bỏ quên môi trường thực thi**: JavaScript là ngôn ngữ phân biệt chữ hoa/thường (`console.log` khác `Console.log`). Viết sai hoa thường sẽ gây lỗi `ReferenceError`.\n\n---\n\n## 5. Tóm tắt ghi nhớ & Checklist tự đánh giá\n1. JavaScript được chuẩn hóa bởi tổ chức ECMA quốc tế (tiêu chuẩn ECMAScript).\n2. Mã JS được thực thi bởi JavaScript Engine (như V8) thông qua cơ chế JIT Compiler.\n3. Hàm cơ bản nhất để xuất dữ liệu trong JS thuần là `console.log()`.\n",
+            "match_score": 3
+          }
+        ],
+        "retrieval_method": "local_graph_and_keyword_search"
+      },
+      "model_calls": []
+    },
+    {
+      "id": "513dff51-b704-48dc-8b11-756df0afa764",
+      "trace_id": "trace_f4bffeb6b34d466bb517eaef2040df77",
+      "agent": "ExplanationTutorAgent",
+      "method": "LLM",
+      "attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-20T09:07:08.746670+00:00",
+      "input_hash": "06bdc9ddd031637e68d08e566e972edd6f7094513d353d43b94cc7461ea6eabc",
+      "sequence": 4,
+      "output_hash": "e74bb52f2ff9a8db3a535e9bccd1c48c124dd7464acb567350bb4e1585d03a1d",
+      "ended_at": "2026-09-20T09:07:20.307792+00:00",
+      "duration_ms": 11563,
+      "output": {
+        "reply": "# Bài tập: Đếm số phần tử dương trong mảng\n\n**Mô tả**\nViết hàm `solution(arr)` nhận vào một mảng các số nguyên `arr` và trả về số lượng phần tử có giá trị **lớn hơn 0**. Nếu mảng rỗng, hàm trả về `0`.\n\n**Đầu vào**\n- Một mảng `arr` chứa từ `0` đến `10^5` phần tử.\n- Mỗi phần tử là số nguyên trong khoảng `[-10^9, 10^9]`.\n\n**Đầu ra**\n- Một số nguyên duy nhất: số lượng phần tử dương trong `arr`.\n\n**Ví dụ**\n```js\nsolution([1, -2, 3, 0, 5]); // trả về 3 (1, 3, 5)\nsolution([]);               // trả về 0\nsolution([-1, -2, -3]);    // trả về 0\n```\n\n**Gợi ý**\n- Duyệt mảng một lần, tăng bộ đếm khi gặp giá trị `> 0`.\n- Không cần tạo mảng phụ; chỉ cần một biến đếm.\n\n---\n\n## Mẫu giải (template)\n```js\n/**\n * Đếm số phần tử dương trong mảng.\n * @param {number[]} arr - Mảng các số nguyên.\n * @return {number} Số phần tử dương.\n */\nfunction solution(arr) {\n    // TODO: viết code ở đây\n    let count = 0;\n    for (let i = 0; i < arr.length; i++) {\n        if (arr[i] > 0) count++;\n    }\n    return count;\n}\n\n// Export cho môi trường kiểm thử (nếu cần)\nif (typeof module !== 'undefined') {\n    module.exports = solution;\n}\n```\n\n---\n\n## Các trường hợp kiểm thử (test cases)\n| # | Mô tả | Input | Output |\n|---|-------|-------|--------|\n| 1 | Mảng rỗng | `[]` | `0` |\n| 2 | Tất cả số âm | `[-5, -1, -9]` | `0` |\n| 3 | Trộn dương, âm, 0 | `[0, 2, -3, 4, -1]` | `2` |\n| 4 | Giới hạn trên (boundary) | Mảng có `10^5` phần tử, tất cả `1` | `100000` |\n| 5 | Trường hợp ẩn (hidden) | `[-100, 0, 100]` | `1` |\n\n---\n\n## Lỗi thường gặp\n1. **So sánh sai dấu** – dùng `>= 0` sẽ tính cả `0` là dương.\n2. **Quên khởi tạo biến đếm** – trả về `undefined` hoặc `NaN`.\n3. **Thay đổi `arr` trong vòng lặp** – không cần thiết, có thể gây lỗi khi dùng `for...of` và thay đổi độ dài.\n4. **Không xử lý mảng rỗng** – vòng lặp không chạy, nhưng biến đếm vẫn phải được khởi tạo là `0`.\n\n---\n\n## Kiến thức nền tảng (Prototype Chain) – liên quan tới hàm\n- Trong JavaScript, mọi hàm đều là **object** và có thuộc tính `prototype`. Khi bạn tạo một hàm như `function solution(){}` thì `solution.__proto__` trỏ tới `Function.prototype`, còn `solution.prototype` là đối tượng mà các instance (nếu có) sẽ kế thừa.\n- Mặc dù bài này không yêu cầu tạo đối tượng, hiểu cách prototype hoạt động giúp tránh lỗi như `solution.hasOwnProperty` vs `solution.prototype.hasOwnProperty`.\n- Thuộc tính `Array.prototype` cung cấp các phương thức duyệt (`forEach`, `filter`, …) – bạn có thể dùng `arr.filter(x=>x>0).length` nhờ vào prototype chain của mảng.\n\n---\n\n## Tham khảo nguồn\n- **Skill graph**: `ai-service/data/javascriptSkillGraph.json#JS-PROTO-01`\n- **Bài giảng Prototype Chain**: `docs/Dữ liệu nội dung bài học/JS/Khóa 2 - JavaScript Nâng cao/Module 04/Lesson_12_01.md`\n- **Cú pháp cơ bản JavaScript**: `docs/Dữ liệu nội dung bài học/JS/Khóa 1 - JavaScript Cơ bản/Module 01/Lesson_01_01.md`\n",
+        "source_ids": [
+          "ai-service/data/javascriptSkillGraph.json#JS-PROTO-01",
+          "docs/Dữ liệu nội dung bài học/JS/Khóa 2 - JavaScript Nâng cao/Module 04/Lesson_12_01.md",
+          "docs/Dữ liệu nội dung bài học/JS/Khóa 1 - JavaScript Cơ bản/Module 01/Lesson_01_01.md"
+        ],
+        "source": "LLM"
+      },
+      "model_calls": [
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GEMINI",
+          "status": "FAILED",
+          "prompt_hash": "d8d2df21ef4cffb9b5013aa984a4b6df23201920ed326e6ee20995844adc87fc",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 18000,
+          "model": "gemini-3.8-flash",
+          "http_status": 503,
+          "error_code": "PROVIDER_SERVER_ERROR",
+          "error_type": "HTTPError",
+          "error_message": "503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+          "duration_ms": 5980
+        },
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GROQ",
+          "status": "SUCCEEDED",
+          "prompt_hash": "d8d2df21ef4cffb9b5013aa984a4b6df23201920ed326e6ee20995844adc87fc",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 18000,
+          "model": "openai/gpt-oss-120b",
+          "http_status": 200,
+          "response_id": "chatcmpl-daa5f7fa-4c01-4b6f-80aa-25633e7cfa0a",
+          "usage": {
+            "queue_time": 0.396985637,
+            "prompt_tokens": 3062,
+            "prompt_time": 0.132713096,
+            "completion_tokens": 1628,
+            "completion_time": 3.3928115,
+            "total_tokens": 4690,
+            "total_time": 3.525524596,
+            "completion_tokens_details": {
+              "reasoning_tokens": 461
+            }
+          },
+          "response_hash": "b1484851f1c85ad81bc480a51b4b9efc99c49df723151d38156d549d4ce8c167",
+          "duration_ms": 4840
+        }
+      ]
+    },
+    {
+      "id": "a9a26431-67c7-4e59-8081-33323ca3234d",
+      "trace_id": "trace_f4bffeb6b34d466bb517eaef2040df77",
+      "agent": "ExerciseGeneratorAgent",
+      "method": "LLM",
+      "attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-20T09:07:08.749818+00:00",
+      "input_hash": "b82759edc54569fe249aa28b1c339338c2710542130207fd1ac81e5a40b319c7",
+      "sequence": 5,
+      "output_hash": "3651621855b27424b390c0e261224ff0545657d23d45351f9227b988aff237b1",
+      "ended_at": "2026-09-20T09:07:19.989513+00:00",
+      "duration_ms": 11241,
+      "output": {
+        "title": "Đếm số phần tử dương trong mảng (sử dụng Prototype)",
+        "problem_statement": "Viết hàm JavaScript có tên `solution` nhận vào một mảng các số nguyên và trả về số lượng phần tử dương (lớn hơn 0) trong mảng đó. Hàm phải xử lý cả trường hợp mảng rỗng và trả về 0. Để luyện tập về Prototype Chain, bạn có thể mở rộng prototype của Array để thực hiện việc đếm này, nhưng không bắt buộc. Đảm bảo hàm không thay đổi nội dung gốc của mảng.",
+        "quick_theory": "Trong JavaScript, mọi đối tượng đều có một prototype (nguyên mẫu) mà chúng kế thừa các thuộc tính và phương thức. Thuộc tính __proto__ trỏ tới prototype của đối tượng, tạo nên chuỗi Prototype Chain. Khi bạn truy cập một thuộc tính/method, JavaScript sẽ tìm kiếm trên đối tượng, nếu không thấy sẽ lên chuỗi prototype cho tới khi tìm thấy hoặc đến Object.prototype. Bạn có thể mở rộng prototype của các built‑in như Array để thêm các phương thức tùy chỉnh, giúp tái sử dụng logic trong nhiều nơi.",
+        "starter_code": "function solution(nums) {\n  // TODO: viết code ở đây\n}\n\n// Bạn có thể mở rộng Array.prototype nếu muốn, ví dụ:\n// Array.prototype.countPositive = function() { /* ... */ };",
+        "hints": {
+          "scaffold_1_conceptual": "Prototype chain cho phép các đối tượng kế thừa thuộc tính và phương thức từ prototype của chúng, giúp tái sử dụng logic.",
+          "scaffold_2_syntax": "Bạn có thể thêm một phương thức mới vào Array.prototype, ví dụ: Array.prototype.countPositive = function() { ... };",
+          "scaffold_3_pseudocode": "Khởi tạo biến đếm = 0; Duyệt từng phần tử trong mảng; Nếu phần tử > 0 thì đếm++; Trả về biến đếm."
+        },
+        "constraints": [
+          "Không sử dụng Array.filter hoặc các phương thức cao cấp khác để đếm.",
+          "Nếu mở rộng prototype, phải không làm thay đổi hành vi mặc định của các phương thức gốc."
+        ],
+        "common_pitfall_warning": "Quên kiểm tra giá trị 0; 0 không phải là số dương nên không được tính.",
+        "test_cases": [
+          {
+            "input": "[[1,-2,3,0,5]]",
+            "expected_output": "3",
+            "is_hidden": false,
+            "category": "normal",
+            "explanation": "Mảng chứa ba số dương: 1, 3 và 5."
+          },
+          {
+            "input": "[[-1,-2,-3]]",
+            "expected_output": "0",
+            "is_hidden": false,
+            "category": "normal",
+            "explanation": "Không có số nào lớn hơn 0, kết quả là 0."
+          },
+          {
+            "input": "[[]]",
+            "expected_output": "0",
+            "is_hidden": false,
+            "category": "boundary",
+            "explanation": "Mảng rỗng không có phần tử nào, vì vậy trả về 0."
+          }
+        ]
+      },
+      "model_calls": [
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "status": "FAILED",
+          "prompt_hash": "52dc6ea90339df6ecdbc648175260d6219d67018888be261a6989df56ee524e4",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 18000,
+          "model": "gemini-3.8-flash",
+          "http_status": 503,
+          "error_code": "PROVIDER_SERVER_ERROR",
+          "error_type": "HTTPError",
+          "error_message": "503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+          "duration_ms": 5256
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GROQ",
+          "status": "SUCCEEDED",
+          "prompt_hash": "52dc6ea90339df6ecdbc648175260d6219d67018888be261a6989df56ee524e4",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 18000,
+          "model": "openai/gpt-oss-120b",
+          "http_status": 200,
+          "response_id": "chatcmpl-aab37221-31dc-4825-a42c-496ced70d004",
+          "usage": {
+            "queue_time": 0.348792402,
+            "prompt_tokens": 1914,
+            "prompt_time": 0.086269826,
+            "completion_tokens": 1687,
+            "completion_time": 3.523940789,
+            "total_tokens": 3601,
+            "total_time": 3.6102106149999997,
+            "completion_tokens_details": {
+              "reasoning_tokens": 683
+            }
+          },
+          "response_hash": "21f562d464c656f0ee454eec844a66681f0e7c82d8137afc07f81c4abd362cb8",
+          "duration_ms": 5243
+        }
+      ]
+    },
+    {
+      "id": "8e6cc70c-87e5-40fc-9d1e-51428346c355",
+      "trace_id": "trace_f4bffeb6b34d466bb517eaef2040df77",
+      "agent": "SchemaValidator",
+      "method": "PYDANTIC_AND_RULES",
+      "attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-20T09:07:20.309636+00:00",
+      "input_hash": "4113df8e659a6cb2cfbad941baf16f3c7cc8d087436655be68fbf3f41b88b6af",
+      "sequence": 6,
+      "output_hash": "2ee10fda2171fbe2b6964a0753875f5ff7339044279a7bfc31b76acc59124268",
+      "ended_at": "2026-09-20T09:07:20.309955+00:00",
+      "duration_ms": 0,
+      "output": {
+        "passed": true
+      },
+      "model_calls": []
+    },
+    {
+      "id": "b00dd08f-10b1-44b3-b1dc-d8640ba461e0",
+      "trace_id": "trace_f4bffeb6b34d466bb517eaef2040df77",
+      "agent": "ConstraintValidator",
+      "method": "STATIC_ANALYSIS",
+      "attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-20T09:07:20.310019+00:00",
+      "input_hash": "4fbb588d97691554021203f99cef050bcacc0a48e805c4e821850844150be9a3",
+      "sequence": 7,
+      "output_hash": "0d711a2a00c194cf09061222295a1820b3e9b5ccb0caa97531e6c75b4fd0ce45",
+      "ended_at": "2026-09-20T09:07:20.310435+00:00",
+      "duration_ms": 0,
+      "output": {
+        "passed": true
+      },
+      "model_calls": []
+    },
+    {
+      "id": "8a780df3-e12c-4652-bdb8-db82a4d0c035",
+      "trace_id": "trace_f4bffeb6b34d466bb517eaef2040df77",
+      "agent": "SandboxValidator",
+      "method": "DOCKER_EXECUTION",
+      "attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-20T09:07:20.310491+00:00",
+      "input_hash": "4113df8e659a6cb2cfbad941baf16f3c7cc8d087436655be68fbf3f41b88b6af",
+      "sequence": 8,
+      "output_hash": "9a6d5753ee4a41cd15e3e2ed8ce82367e2c8609f7f368d2b8fda11b45390a930",
+      "ended_at": "2026-09-20T09:07:23.497489+00:00",
+      "duration_ms": 3187,
+      "output": {
+        "passed": true,
+        "test_results": [
+          {
+            "case_index": 1,
+            "is_hidden": false,
+            "category": "normal",
+            "input": "[[1,-2,3,0,5]]",
+            "expected": "3",
+            "actual": "3",
+            "stderr": "",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 681,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v4"
+          },
+          {
+            "case_index": 2,
+            "is_hidden": false,
+            "category": "normal",
+            "input": "[[-1,-2,-3]]",
+            "expected": "0",
+            "actual": "0",
+            "stderr": "",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 780,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v4"
+          },
+          {
+            "case_index": 3,
+            "is_hidden": false,
+            "category": "boundary",
+            "input": "[[]]",
+            "expected": "0",
+            "actual": "0",
+            "stderr": "",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 735,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v4"
+          },
+          {
+            "case_index": 4,
+            "is_hidden": true,
+            "category": "normal",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 970,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v4"
+          }
+        ],
+        "harness_version": "adaptive_harness_v3"
+      },
+      "model_calls": []
+    },
+    {
+      "id": "8372c194-ff13-491f-9331-9c166bc37ddf",
+      "trace_id": "trace_f4bffeb6b34d466bb517eaef2040df77",
+      "agent": "CriticEvaluatorAgent",
+      "method": "LLM",
+      "attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-20T09:07:23.497686+00:00",
+      "input_hash": "8750f7a8076f296d818c7612b918b790194f1ed6471508c80cbb9422079f4f77",
+      "sequence": 9,
+      "output_hash": "e4c6ca64a1bd4e59d1e84c1f7f840f4198950a476d0947ed0ffb6bcf2bd6d744",
+      "ended_at": "2026-09-20T09:07:29.766657+00:00",
+      "duration_ms": 6269,
+      "output": {
+        "is_approved": true,
+        "score": 0.9,
+        "feedback_target": "NONE",
+        "theory_approved": true,
+        "exercise_approved": true,
+        "compatibility_approved": true,
+        "note": "Nhận xét chi tiết được lưu trong báo cáo quản trị."
+      },
+      "model_calls": [
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "GROQ",
+          "status": "FAILED",
+          "prompt_hash": "1f36d53ba19c58462f1c929ac871d3c63922fd107819f62857768df95161b9f1",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 18000,
+          "model": "openai/gpt-oss-120b",
+          "http_status": 429,
+          "error_code": "PROVIDER_RATE_LIMITED",
+          "error_type": "HTTPError",
+          "error_message": "429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions",
+          "duration_ms": 687
+        },
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "OPENROUTER",
+          "status": "SUCCEEDED",
+          "prompt_hash": "1f36d53ba19c58462f1c929ac871d3c63922fd107819f62857768df95161b9f1",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 18000,
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "http_status": 200,
+          "response_id": "gen-1789895261-0NdyH2ny4iycNqJe5Cnv",
+          "usage": {
+            "prompt_tokens": 3113,
+            "completion_tokens": 144,
+            "total_tokens": 3257,
+            "cost": 0.00075686,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00075686,
+              "upstream_inference_prompt_cost": 0.00068486,
+              "upstream_inference_completions_cost": 0.000072
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "response_hash": "6d7075c400b54fc460665d962a7ad2b9080ea1ded5868d34508beb90de954ad8",
+          "duration_ms": 5580
+        }
+      ]
+    },
+    {
+      "id": "aa67b7ba-85d8-4f55-bd84-07774f04c75a",
+      "trace_id": "trace_f4bffeb6b34d466bb517eaef2040df77",
+      "agent": "PublicationGate",
+      "method": "DETERMINISTIC_GATE",
+      "attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-20T09:07:29.767014+00:00",
+      "input_hash": "2a5c169480254d5259d7334e0de329a0b4ac59e79bd85d017897f254bc1da5a1",
+      "sequence": 10,
+      "output_hash": "19949411666bdb1c99d3ef39c3f7021ce28b4c7f5440a1b4de5ce95348d258df",
+      "ended_at": "2026-09-20T09:07:29.767050+00:00",
+      "duration_ms": 0,
+      "output": {
+        "approved": true,
+        "validation_attempt": 1,
+        "critic_score": 0.9,
+        "artifact_hash": "98950f35ef2fa2de898de5464da091006d75af7e6c777144d70c8589c779cfdc"
+      },
+      "model_calls": []
+    }
+  ],
+  "started_at": "2026-09-20T09:07:06.819340+00:00",
+  "ended_at": "2026-09-20T09:07:29.767061+00:00",
+  "fallback_used": false,
+  "suggested_options": [
+    "Cho tôi bài dễ hơn",
+    "Giải thích thêm lý thuyết",
+    "Tạo bài tiếp theo"
+  ]
+}

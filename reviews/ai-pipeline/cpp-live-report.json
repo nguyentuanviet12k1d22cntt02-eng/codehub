@@ -1,0 +1,2536 @@
+{
+  "error": {
+    "code": "PROVIDER_DEADLINE_EXCEEDED",
+    "message": "Không nhận được JSON hợp lệ từ provider trong ngân sách cho phép"
+  },
+  "reply": "Provider tạm thời chưa trả được kết quả hợp lệ. Yêu cầu được giữ lại để tự thử lại; chưa có bài nào được phát hành.",
+  "intent": "REQUEST_ADAPTIVE_EXERCISE",
+  "status": "WAITING_PROVIDER",
+  "ended_at": "2026-09-20T09:09:02.275936+00:00",
+  "exercise": null,
+  "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+  "started_at": "2026-09-20T09:08:05.345857+00:00",
+  "agent_traces": [
+    {
+      "id": "c045e438-baf0-418b-8c80-7b2444896137",
+      "agent": "IntentRouterAgent",
+      "input": {
+        "request": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+        "language": "cpp",
+        "last_concept_id": null
+      },
+      "method": "RULES_OR_LLM",
+      "output": {
+        "mode": "progression",
+        "topic": "while",
+        "intent": "REQUEST_ADAPTIVE_EXERCISE",
+        "language": "cpp",
+        "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+        "user_text": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+        "confidence": 1,
+        "selection_mode": "explicit",
+        "difficulty_request": "auto"
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-20T09:08:05.346115+00:00",
+      "sequence": 1,
+      "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+      "input_hash": "a9e284c7d9ffd19add0577268339013804a7ab9c68afec14b8b9153211e1f80c",
+      "started_at": "2026-09-20T09:08:05.345915+00:00",
+      "duration_ms": 0,
+      "model_calls": [],
+      "output_hash": "fb8c0af33d55ce7ca37eeaa418750cf6bcab605c35e192506093270af29cf4b2"
+    },
+    {
+      "id": "ef97e025-4f83-4911-882e-c485f48c6fe3",
+      "agent": "AdaptiveExercisePlanner",
+      "input": {
+        "routing": {
+          "mode": "progression",
+          "topic": "while",
+          "intent": "REQUEST_ADAPTIVE_EXERCISE",
+          "language": "cpp",
+          "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+          "user_text": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+          "confidence": 1,
+          "selection_mode": "explicit",
+          "difficulty_request": "auto"
+        },
+        "learner_context": {
+          "states": {},
+          "recent_exercises": []
+        }
+      },
+      "method": "RULE_POLICY",
+      "output": {
+        "mode": "diagnostic",
+        "language": "cpp",
+        "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+        "execution": {
+          "mode": "stdio",
+          "comparator": "text",
+          "entrypoint": "main"
+        },
+        "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+        "difficulty": "EASY",
+        "source_refs": [],
+        "user_request": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+        "concept_title": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+        "prerequisites": [
+          "CPP-COND-01"
+        ],
+        "recent_errors": [],
+        "schema_version": "4.0",
+        "selection_mode": "explicit",
+        "target_concept": "CPP-LOOP-01",
+        "learner_evidence": {
+          "policy": "adaptive_policy_v3",
+          "mastery": null,
+          "attempts": 0,
+          "prerequisite_gaps": [
+            "CPP-COND-01"
+          ]
+        },
+        "test_constraints": {
+          "max_cases": 8,
+          "min_cases": 4,
+          "require_hidden_case": true,
+          "max_execution_time_ms": 3000,
+          "require_boundary_case": true
+        },
+        "target_sub_skills": [
+          "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+        ],
+        "learning_objectives": [
+          "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+        ],
+        "required_constructs": [
+          "while"
+        ],
+        "forbidden_constructs": []
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-20T09:08:05.346323+00:00",
+      "sequence": 2,
+      "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+      "input_hash": "5153dcbfcd6ce7fa9171ce5d2eb78b2d5903b0ffe8cbf2a5465a2ccb5329aae3",
+      "started_at": "2026-09-20T09:08:05.346161+00:00",
+      "duration_ms": 0,
+      "model_calls": [],
+      "output_hash": "6aafd25607f8973ddecec1fe68ea29f41f2ba6183896c8d34b2a38ce623d05dd"
+    },
+    {
+      "id": "472a36b8-8bb6-4476-87cb-a2925f661145",
+      "agent": "KnowledgeRetrievalService",
+      "input": {
+        "language": "cpp",
+        "concept_id": "CPP-LOOP-01"
+      },
+      "method": "LOCAL_GRAPH_AND_FILES",
+      "output": {
+        "concept": {
+          "id": "CPP-LOOP-01",
+          "name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+          "tier": 2,
+          "scope": "for, while, do-while, break/continue, nested loops",
+          "stage": 1,
+          "topic_id": "TOPIC-CPP-LOOP",
+          "domain_id": "CPP",
+          "module_id": "MOD-CPP-CONTROL",
+          "concept_id": "CPP-LOOP-01",
+          "bloom_level": "Apply",
+          "concept_name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+          "prerequisites": [
+            "CPP-COND-01"
+          ],
+          "practice_count": 5,
+          "difficulty_level": 2,
+          "associated_errors": [
+            "Infinite Loop",
+            "TLE"
+          ],
+          "learning_objectives": [
+            "Làm chủ vòng lặp for, while và do-while với điều kiện dừng chính xác",
+            "Tối ưu hóa các thuật toán lặp và phòng chống lặp vô hạn (Infinite Loop)",
+            "Kiểm soát luồng lặp lồng nhau với break và continue"
+          ],
+          "estimated_time_minutes": 35
+        },
+        "sources": [
+          {
+            "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+            "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1",
+            "excerpt": {
+              "id": "CPP-LOOP-01",
+              "name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+              "tier": 2,
+              "scope": "for, while, do-while, break/continue, nested loops",
+              "stage": 1,
+              "topic_id": "TOPIC-CPP-LOOP",
+              "domain_id": "CPP",
+              "module_id": "MOD-CPP-CONTROL",
+              "concept_id": "CPP-LOOP-01",
+              "bloom_level": "Apply",
+              "concept_name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+              "prerequisites": [
+                "CPP-COND-01"
+              ],
+              "practice_count": 5,
+              "difficulty_level": 2,
+              "associated_errors": [
+                "Infinite Loop",
+                "TLE"
+              ],
+              "learning_objectives": [
+                "Làm chủ vòng lặp for, while và do-while với điều kiện dừng chính xác",
+                "Tối ưu hóa các thuật toán lặp và phòng chống lặp vô hạn (Infinite Loop)",
+                "Kiểm soát luồng lặp lồng nhau với break và continue"
+              ],
+              "estimated_time_minutes": 35
+            }
+          },
+          {
+            "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+            "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be",
+            "excerpt": "---\nlessonId: \"CPP-03.04\"\ntitle: \"Kiểm soát Dòng lặp với break và continue\"\ndifficulty: \"EASY\"\nestimatedDuration: 15\nkeywords: [\"break\", \"continue\", \"loop control\", \"skip\"]\nprerequisites: [\"CPP-03.01\"]\n---\n\n# Kiểm soát Dòng lặp với break và continue\n\n## 1. Khái niệm cốt lõi\n\nTrong khi vòng lặp đang diễn ra, đôi khi ta cần can thiệp để thay đổi dòng chảy thực thi:\n* **Tìm thấy kết quả sớm:** Không cần lặp tiếp nữa ➔ Dừng vòng lặp ngay lập tức.\n* **Gặp phần tử không hợp lệ:** Bỏ qua phần tử này ➔ Nhảy ngay sang lần lặp tiếp theo.\n\nC++ cung cấp hai lệnh điều hướng mạnh mẽ: **`break`** và **`continue`**.\n\n| Lệnh | Hành động | Điểm đến tiếp theo |\n| :--- | :--- | :--- |\n| **`break`** | **Dừng hoàn toàn** vòng lặp ngay lập tức | Nhảy ra khỏi vòng lặp đến câu lệnh nằm sau dấu `}`. |\n| **`continue`** | **Bỏ qua phần còn lại** của lần lặp hiện tại | Nhảy ngay đến bước cập nhật biến đếm để sang lần lặp mới. |\n\n## 2. Cú pháp & Quy tắc hoạt động\n\n### Minh họa sự khác biệt:\n```text\nVòng lặp: 1 ──► 2 ──► [ Gặp break ] ────────────► [ THOÁT HẲN VÒNG LẶP ]\n                                                  (Các bước 3, 4, 5 bị hủy)\n\nVòng lặp: 1 ──► 2 ──► [ Gặp continue ] ──► 3 ──► 4 ──► 5\n                      (Bỏ qua thân bước 2)\n```\n\n## 3. Ví dụ minh họa tinh gọn\n\n### Ví dụ 1: Dùng `break` dừng sớm khi tìm thấy phần tử\n```cpp\n// Tìm xem số 7 có trong dãy lặp hay không\nfor (int i = 1; i <= 10; ++i) {\n    if (i == 7) {\n        std::cout << \"Da tim thay 7!\";\n        break; // Thoát ngay, không cần kiểm tra 8, 9, 10\n    }\n}\n```\n\n### Ví dụ 2: Dùng `continue` để chỉ in các số lẻ\n```cpp\nfor (int i = 1; i <= 6; ++i) {\n    if (i % 2 == 0) continue; // Bỏ qua số chẵn\n    std::cout << i << ' ';\n}\n// Kết quả in ra: 1 3 5\n```\n\n## 4. Lỗi học sinh hay gặp & Cách phòng tránh\n\n> [!WARNING]\n> **1. Nhầm lẫn phạm vi của `break` khi có vòng lặp lồng nhau**\n> * *Quy tắc:* Lệnh `break` chỉ thoát ra khỏi **vòng lặp gần nhất** chứa nó. Nó không làm thoát khỏi toàn bộ các vòng lặp bên ngoài.\n\n> [!WARNING]\n> **2. Lỗi quên bước tăng biến khi dùng `continue` trong `while`**\n> * *Lỗi:* Đặt `continue` trước dòng `i++` trong vòng lặp `while`.\n> * *Hậu quả:* Lệnh `continue` nhảy về đầu `while` khiến dòng `i++` không bao giờ được chạy ➔ Biến `i` không đổi và gây lặp vô tận!\n\n## 5. Ghi nhớ trọng tâm\n\n- `break` dùng để dừng và thoát hẳn khỏi vòng lặp sớm.\n- `continue` dùng để bỏ qua các câu lệnh còn lại trong lần lặp đó để chuyển sang lần lặp kế tiếp.\n- Chỉ tác động lên vòng lặp trực tiếp bao quanh nó.\n",
+            "match_score": 4
+          },
+          {
+            "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+            "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8",
+            "excerpt": "---\nlessonId: \"CPP-07.01\"\ntitle: \"Bản chất Ma trận trong Bộ nhớ (Row-major) và Thao tác Nhập/Xuất lưới 2D\"\ndifficulty: \"MEDIUM\"\nestimatedDuration: 20\nkeywords: [\"2d array\", \"matrix\", \"row-major\", \"grid\", \"nested loops\"]\nprerequisites: [\"CPP-05.01\", \"CPP-03.05\"]\n---\n\n# Bản chất Ma trận trong Bộ nhớ (Row-major) và Thao tác Lưới 2D\n\n## 1. Khái niệm cốt lõi\n\nNhiều dữ liệu trong thực tế có dạng bảng biểu hai chiều: bảng tính Excel, bàn cờ vua, bản đồ pixel trong game. Để biểu diễn cấu trúc này, C++ cung cấp **Mảng 2 chiều (Ma trận - 2D Array)** gồm $R$ hàng (Rows) và $C$ cột (Columns).\n\nMỗi phần tử được xác định bởi cặp tọa độ `[hàng][cột]`:\n- **Chỉ số hàng `i`:** chạy từ `0` đến `R - 1`.\n- **Chỉ số cột `j`:** chạy từ `0` đến `C - 1`.\n\n### Bản chất trong bộ nhớ RAM: Thứ tự ưu tiên Hàng (Row-Major Order)\nMặc dù ta hình dung ma trận là bảng vuông 2D, **bộ nhớ RAM vật lý chỉ là một dải ô nhớ 1 chiều liên tục**. C++ lưu trữ ma trận theo nguyên tắc **Hàng nối tiếp hàng**:\n- Hết toàn bộ phần tử của Hàng 0 rồi mới đến các phần tử của Hàng 1.\n- Công thức vị trí ô nhớ trong RAM: $\\text{Vị trí} = i \\times C + j$.\n\n## 2. Cú pháp & Quy tắc hoạt động\n\n### Minh họa bảng 2D và Bố trí thực tế trong RAM 1D:\n```text\nMa trận a[2][3] (2 hàng, 3 cột):\n\n[Hình dung Bảng 2D]:\n               Cột 0     Cột 1     Cột 2\n    Hàng 0: [   10   ,    20   ,    30   ]\n    Hàng 1: [   40   ,    50   ,    60   ]\n\n[Bố trí thực tế trong RAM 1 chiều]:\n[ 10 | 20 | 30 | 40 | 50 | 60 ]\n  ^    ^    ^    ^    ^    ^\n 0,0  0,1  0,2  1,0  1,1  1,2\n(Toàn bộ Hàng 0) (Toàn bộ Hàng 1)\n```\n\n## 3. Ví dụ minh họa tinh gọn\n\nDuyệt và tính tổng tất cả các phần tử trong ma trận:\n\n```cpp\nint a[2][3] = {\n    {10, 20, 30},\n    {40, 50, 60}\n};\n\nint tong = 0;\n// Vòng lặp i duyệt qua từng Hàng (0 đến 1)\nfor (int i = 0; i < 2; ++i) {\n    // Vòng lặp j duyệt qua từng Cột (0 đến 2)\n    for (int j = 0; j < 3; ++j) {\n        tong += a[i][j];\n    }\n}\n// tong có giá trị là 210\n```\n\n## 4. Lỗi học sinh hay gặp & Cách phòng tránh\n\n> [!WARNING]\n> **1. Nhầm lẫn tai hại giữa chỉ số hàng `i` và chỉ số cột `j`**\n> * *Lỗi:* Viết `a[j][i]` thay vì `a[i][j]`.\n> * *Hậu quả:* Nếu số hàng khác số cột ($R \\ne C$), việc đảo ngược chỉ số sẽ khiến chương trình truy cập vượt quá biên bộ nhớ, gây lỗi sập chương trình (**Segmentation Fault**) hoặc lấy giá trị rác.\n> * *Quy tắc chuẩn:* `a[hàng][cột]` ➔ `i` chạy theo Hàng, `j` chạy theo Cột.\n\n> [!WARNING]\n> **2. Quên xuống dòng khi hiển thị ma trận dạng bảng**\n> * *Quy tắc:* Luôn đặt lệnh `std::cout << '\\n';` ngay sau khi vòng lặp cột `j` kết thúc một hàng.\n\n## 5. Ghi nhớ trọng tâm\n\n- Cú pháp truy xuất phần tử ma trận: `a[hàng][cột]` (chỉ số đều bắt đầu từ 0).\n- Ma trận được xếp liên tục trong RAM theo thứ tự hàng nối tiếp hàng (Row-Major).\n- Luôn duyệt bằng 2 vòng lặp lồng nhau: vòng ngoài duyệt Hàng `i`, vòng trong duyệt Cột `j`.\n",
+            "match_score": 3
+          }
+        ],
+        "retrieval_method": "local_graph_and_keyword_search"
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-20T09:08:06.247118+00:00",
+      "sequence": 3,
+      "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+      "input_hash": "83a9a9a97476208f78d6f6c2a105eca93d53bf967ba49b3af2ea662b607357f3",
+      "started_at": "2026-09-20T09:08:05.346361+00:00",
+      "duration_ms": 901,
+      "model_calls": [],
+      "output_hash": "9bd6fa4cee558bbc47752031f645e8cfbf5abc4305355f9bd4e98627ae03d370"
+    },
+    {
+      "id": "ee5f054f-2134-4118-a052-2f754f10500c",
+      "agent": "ExplanationTutorAgent",
+      "input": {
+        "feedback": null,
+        "grounding": {
+          "concept": {
+            "id": "CPP-LOOP-01",
+            "name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+            "tier": 2,
+            "scope": "for, while, do-while, break/continue, nested loops",
+            "stage": 1,
+            "topic_id": "TOPIC-CPP-LOOP",
+            "domain_id": "CPP",
+            "module_id": "MOD-CPP-CONTROL",
+            "concept_id": "CPP-LOOP-01",
+            "bloom_level": "Apply",
+            "concept_name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+            "prerequisites": [
+              "CPP-COND-01"
+            ],
+            "practice_count": 5,
+            "difficulty_level": 2,
+            "associated_errors": [
+              "Infinite Loop",
+              "TLE"
+            ],
+            "learning_objectives": [
+              "Làm chủ vòng lặp for, while và do-while với điều kiện dừng chính xác",
+              "Tối ưu hóa các thuật toán lặp và phòng chống lặp vô hạn (Infinite Loop)",
+              "Kiểm soát luồng lặp lồng nhau với break và continue"
+            ],
+            "estimated_time_minutes": 35
+          },
+          "sources": [
+            {
+              "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+              "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1",
+              "excerpt": {
+                "id": "CPP-LOOP-01",
+                "name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                "tier": 2,
+                "scope": "for, while, do-while, break/continue, nested loops",
+                "stage": 1,
+                "topic_id": "TOPIC-CPP-LOOP",
+                "domain_id": "CPP",
+                "module_id": "MOD-CPP-CONTROL",
+                "concept_id": "CPP-LOOP-01",
+                "bloom_level": "Apply",
+                "concept_name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                "prerequisites": [
+                  "CPP-COND-01"
+                ],
+                "practice_count": 5,
+                "difficulty_level": 2,
+                "associated_errors": [
+                  "Infinite Loop",
+                  "TLE"
+                ],
+                "learning_objectives": [
+                  "Làm chủ vòng lặp for, while và do-while với điều kiện dừng chính xác",
+                  "Tối ưu hóa các thuật toán lặp và phòng chống lặp vô hạn (Infinite Loop)",
+                  "Kiểm soát luồng lặp lồng nhau với break và continue"
+                ],
+                "estimated_time_minutes": 35
+              }
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+              "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be",
+              "excerpt": "---\nlessonId: \"CPP-03.04\"\ntitle: \"Kiểm soát Dòng lặp với break và continue\"\ndifficulty: \"EASY\"\nestimatedDuration: 15\nkeywords: [\"break\", \"continue\", \"loop control\", \"skip\"]\nprerequisites: [\"CPP-03.01\"]\n---\n\n# Kiểm soát Dòng lặp với break và continue\n\n## 1. Khái niệm cốt lõi\n\nTrong khi vòng lặp đang diễn ra, đôi khi ta cần can thiệp để thay đổi dòng chảy thực thi:\n* **Tìm thấy kết quả sớm:** Không cần lặp tiếp nữa ➔ Dừng vòng lặp ngay lập tức.\n* **Gặp phần tử không hợp lệ:** Bỏ qua phần tử này ➔ Nhảy ngay sang lần lặp tiếp theo.\n\nC++ cung cấp hai lệnh điều hướng mạnh mẽ: **`break`** và **`continue`**.\n\n| Lệnh | Hành động | Điểm đến tiếp theo |\n| :--- | :--- | :--- |\n| **`break`** | **Dừng hoàn toàn** vòng lặp ngay lập tức | Nhảy ra khỏi vòng lặp đến câu lệnh nằm sau dấu `}`. |\n| **`continue`** | **Bỏ qua phần còn lại** của lần lặp hiện tại | Nhảy ngay đến bước cập nhật biến đếm để sang lần lặp mới. |\n\n## 2. Cú pháp & Quy tắc hoạt động\n\n### Minh họa sự khác biệt:\n```text\nVòng lặp: 1 ──► 2 ──► [ Gặp break ] ────────────► [ THOÁT HẲN VÒNG LẶP ]\n                                                  (Các bước 3, 4, 5 bị hủy)\n\nVòng lặp: 1 ──► 2 ──► [ Gặp continue ] ──► 3 ──► 4 ──► 5\n                      (Bỏ qua thân bước 2)\n```\n\n## 3. Ví dụ minh họa tinh gọn\n\n### Ví dụ 1: Dùng `break` dừng sớm khi tìm thấy phần tử\n```cpp\n// Tìm xem số 7 có trong dãy lặp hay không\nfor (int i = 1; i <= 10; ++i) {\n    if (i == 7) {\n        std::cout << \"Da tim thay 7!\";\n        break; // Thoát ngay, không cần kiểm tra 8, 9, 10\n    }\n}\n```\n\n### Ví dụ 2: Dùng `continue` để chỉ in các số lẻ\n```cpp\nfor (int i = 1; i <= 6; ++i) {\n    if (i % 2 == 0) continue; // Bỏ qua số chẵn\n    std::cout << i << ' ';\n}\n// Kết quả in ra: 1 3 5\n```\n\n## 4. Lỗi học sinh hay gặp & Cách phòng tránh\n\n> [!WARNING]\n> **1. Nhầm lẫn phạm vi của `break` khi có vòng lặp lồng nhau**\n> * *Quy tắc:* Lệnh `break` chỉ thoát ra khỏi **vòng lặp gần nhất** chứa nó. Nó không làm thoát khỏi toàn bộ các vòng lặp bên ngoài.\n\n> [!WARNING]\n> **2. Lỗi quên bước tăng biến khi dùng `continue` trong `while`**\n> * *Lỗi:* Đặt `continue` trước dòng `i++` trong vòng lặp `while`.\n> * *Hậu quả:* Lệnh `continue` nhảy về đầu `while` khiến dòng `i++` không bao giờ được chạy ➔ Biến `i` không đổi và gây lặp vô tận!\n\n## 5. Ghi nhớ trọng tâm\n\n- `break` dùng để dừng và thoát hẳn khỏi vòng lặp sớm.\n- `continue` dùng để bỏ qua các câu lệnh còn lại trong lần lặp đó để chuyển sang lần lặp kế tiếp.\n- Chỉ tác động lên vòng lặp trực tiếp bao quanh nó.\n",
+              "match_score": 4
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+              "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8",
+              "excerpt": "---\nlessonId: \"CPP-07.01\"\ntitle: \"Bản chất Ma trận trong Bộ nhớ (Row-major) và Thao tác Nhập/Xuất lưới 2D\"\ndifficulty: \"MEDIUM\"\nestimatedDuration: 20\nkeywords: [\"2d array\", \"matrix\", \"row-major\", \"grid\", \"nested loops\"]\nprerequisites: [\"CPP-05.01\", \"CPP-03.05\"]\n---\n\n# Bản chất Ma trận trong Bộ nhớ (Row-major) và Thao tác Lưới 2D\n\n## 1. Khái niệm cốt lõi\n\nNhiều dữ liệu trong thực tế có dạng bảng biểu hai chiều: bảng tính Excel, bàn cờ vua, bản đồ pixel trong game. Để biểu diễn cấu trúc này, C++ cung cấp **Mảng 2 chiều (Ma trận - 2D Array)** gồm $R$ hàng (Rows) và $C$ cột (Columns).\n\nMỗi phần tử được xác định bởi cặp tọa độ `[hàng][cột]`:\n- **Chỉ số hàng `i`:** chạy từ `0` đến `R - 1`.\n- **Chỉ số cột `j`:** chạy từ `0` đến `C - 1`.\n\n### Bản chất trong bộ nhớ RAM: Thứ tự ưu tiên Hàng (Row-Major Order)\nMặc dù ta hình dung ma trận là bảng vuông 2D, **bộ nhớ RAM vật lý chỉ là một dải ô nhớ 1 chiều liên tục**. C++ lưu trữ ma trận theo nguyên tắc **Hàng nối tiếp hàng**:\n- Hết toàn bộ phần tử của Hàng 0 rồi mới đến các phần tử của Hàng 1.\n- Công thức vị trí ô nhớ trong RAM: $\\text{Vị trí} = i \\times C + j$.\n\n## 2. Cú pháp & Quy tắc hoạt động\n\n### Minh họa bảng 2D và Bố trí thực tế trong RAM 1D:\n```text\nMa trận a[2][3] (2 hàng, 3 cột):\n\n[Hình dung Bảng 2D]:\n               Cột 0     Cột 1     Cột 2\n    Hàng 0: [   10   ,    20   ,    30   ]\n    Hàng 1: [   40   ,    50   ,    60   ]\n\n[Bố trí thực tế trong RAM 1 chiều]:\n[ 10 | 20 | 30 | 40 | 50 | 60 ]\n  ^    ^    ^    ^    ^    ^\n 0,0  0,1  0,2  1,0  1,1  1,2\n(Toàn bộ Hàng 0) (Toàn bộ Hàng 1)\n```\n\n## 3. Ví dụ minh họa tinh gọn\n\nDuyệt và tính tổng tất cả các phần tử trong ma trận:\n\n```cpp\nint a[2][3] = {\n    {10, 20, 30},\n    {40, 50, 60}\n};\n\nint tong = 0;\n// Vòng lặp i duyệt qua từng Hàng (0 đến 1)\nfor (int i = 0; i < 2; ++i) {\n    // Vòng lặp j duyệt qua từng Cột (0 đến 2)\n    for (int j = 0; j < 3; ++j) {\n        tong += a[i][j];\n    }\n}\n// tong có giá trị là 210\n```\n\n## 4. Lỗi học sinh hay gặp & Cách phòng tránh\n\n> [!WARNING]\n> **1. Nhầm lẫn tai hại giữa chỉ số hàng `i` và chỉ số cột `j`**\n> * *Lỗi:* Viết `a[j][i]` thay vì `a[i][j]`.\n> * *Hậu quả:* Nếu số hàng khác số cột ($R \\ne C$), việc đảo ngược chỉ số sẽ khiến chương trình truy cập vượt quá biên bộ nhớ, gây lỗi sập chương trình (**Segmentation Fault**) hoặc lấy giá trị rác.\n> * *Quy tắc chuẩn:* `a[hàng][cột]` ➔ `i` chạy theo Hàng, `j` chạy theo Cột.\n\n> [!WARNING]\n> **2. Quên xuống dòng khi hiển thị ma trận dạng bảng**\n> * *Quy tắc:* Luôn đặt lệnh `std::cout << '\\n';` ngay sau khi vòng lặp cột `j` kết thúc một hàng.\n\n## 5. Ghi nhớ trọng tâm\n\n- Cú pháp truy xuất phần tử ma trận: `a[hàng][cột]` (chỉ số đều bắt đầu từ 0).\n- Ma trận được xếp liên tục trong RAM theo thứ tự hàng nối tiếp hàng (Row-Major).\n- Luôn duyệt bằng 2 vòng lặp lồng nhau: vòng ngoài duyệt Hàng `i`, vòng trong duyệt Cột `j`.\n",
+              "match_score": 3
+            }
+          ],
+          "retrieval_method": "local_graph_and_keyword_search"
+        },
+        "specification": {
+          "mode": "diagnostic",
+          "language": "cpp",
+          "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+          "execution": {
+            "mode": "stdio",
+            "comparator": "text",
+            "entrypoint": "main"
+          },
+          "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+          "difficulty": "EASY",
+          "source_refs": [
+            {
+              "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+              "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+              "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+              "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8"
+            }
+          ],
+          "user_request": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+          "concept_title": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+          "prerequisites": [
+            "CPP-COND-01"
+          ],
+          "recent_errors": [],
+          "schema_version": "4.0",
+          "selection_mode": "explicit",
+          "target_concept": "CPP-LOOP-01",
+          "learner_evidence": {
+            "policy": "adaptive_policy_v3",
+            "mastery": null,
+            "attempts": 0,
+            "prerequisite_gaps": [
+              "CPP-COND-01"
+            ]
+          },
+          "test_constraints": {
+            "max_cases": 8,
+            "min_cases": 4,
+            "require_hidden_case": true,
+            "max_execution_time_ms": 3000,
+            "require_boundary_case": true
+          },
+          "target_sub_skills": [
+            "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+          ],
+          "learning_objectives": [
+            "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+          ],
+          "required_constructs": [
+            "while"
+          ],
+          "forbidden_constructs": []
+        },
+        "previous_theory": null
+      },
+      "method": "LLM",
+      "output": {
+        "reply": "## Vòng lặp while trong C++\n### Bản chất\nVòng lặp `while` là một cấu trúc điều khiển trong C++ cho phép thực hiện một khối lệnh lặp đi lặp lại miễn là điều kiện cho trước vẫn được thỏa mãn.\n\n### Cú pháp\n```cpp\nwhile (điều_kiện) {\n    // Khối lệnh cần thực hiện lặp lại\n}\n```\nTrong đó, `điều_kiện` là biểu thức logic mà nếu nó đúng (`true`), khối lệnh bên trong sẽ được thực hiện. Quá trình này lặp lại cho đến khi `điều_kiện` trở thành `false`.\n\n### Ví dụ\nTính tổng các số từ 1 đến `n` sử dụng vòng lặp `while`:\n```cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int n;\n    cout << \"Nhap so nguyen n (0-100): \";\n    cin >> n;\n\n    if (n < 0 || n > 100) {\n        cout << \"So nguyen n khong hop le!\";\n        return 1;\n    }\n\n    int i = 1;\n    int tong = 0;\n    while (i <= n) {\n        tong += i;\n        i++;\n    }\n\n    cout << \"Tong cac so tu 1 den \" << n << \" la: \" << tong;\n    return 0;\n}\n```\n### Lỗi thường gặp\n- **Lặp vô hạn**: Khi điều kiện trong `while` luôn đúng và không có cơ chế thoát ra khỏi vòng lặp.\n- **Quên cập nhật biến**: Trong vòng lặp `while`, quên cập nhật giá trị của biến dùng trong điều kiện, dẫn đến lặp vô hạn.\n\n### Nghiệm mẫu bài tập\nBài tập yêu cầu nhập một số nguyên `n` từ 0 đến 100 và in tổng các số từ 1 đến `n`, bắt buộc dùng vòng lặp `while`. Bài giải trên đã minh họa cách thực hiện yêu cầu này.\n\n### Lưu ý\n- Luôn kiểm tra điều kiện biên và xử lý trường hợp ngoại lệ.\n- Sử dụng vòng lặp `while` khi không biết trước số lần lặp hoặc khi cần kiểm tra điều kiện trước mỗi lần lặp.\n",
+        "source": "LLM",
+        "source_ids": [
+          "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+          "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+          "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md"
+        ]
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-20T09:08:29.609000+00:00",
+      "sequence": 4,
+      "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+      "input_hash": "2a6993d6109c9b871c49a731dfb879cfe20c5f609865ca07a92c7bfa13a20a11",
+      "started_at": "2026-09-20T09:08:06.247840+00:00",
+      "duration_ms": 23362,
+      "model_calls": [
+        {
+          "input": {
+            "context": {
+              "concept": {
+                "id": "CPP-LOOP-01",
+                "name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                "tier": 2,
+                "scope": "for, while, do-while, break/continue, nested loops",
+                "stage": 1,
+                "topic_id": "TOPIC-CPP-LOOP",
+                "domain_id": "CPP",
+                "module_id": "MOD-CPP-CONTROL",
+                "concept_id": "CPP-LOOP-01",
+                "bloom_level": "Apply",
+                "concept_name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                "prerequisites": [
+                  "CPP-COND-01"
+                ],
+                "practice_count": 5,
+                "difficulty_level": 2,
+                "associated_errors": [
+                  "Infinite Loop",
+                  "TLE"
+                ],
+                "learning_objectives": [
+                  "Làm chủ vòng lặp for, while và do-while với điều kiện dừng chính xác",
+                  "Tối ưu hóa các thuật toán lặp và phòng chống lặp vô hạn (Infinite Loop)",
+                  "Kiểm soát luồng lặp lồng nhau với break và continue"
+                ],
+                "estimated_time_minutes": 35
+              },
+              "sources": [
+                {
+                  "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+                  "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1",
+                  "excerpt": {
+                    "id": "CPP-LOOP-01",
+                    "name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                    "tier": 2,
+                    "scope": "for, while, do-while, break/continue, nested loops",
+                    "stage": 1,
+                    "topic_id": "TOPIC-CPP-LOOP",
+                    "domain_id": "CPP",
+                    "module_id": "MOD-CPP-CONTROL",
+                    "concept_id": "CPP-LOOP-01",
+                    "bloom_level": "Apply",
+                    "concept_name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                    "prerequisites": [
+                      "CPP-COND-01"
+                    ],
+                    "practice_count": 5,
+                    "difficulty_level": 2,
+                    "associated_errors": [
+                      "Infinite Loop",
+                      "TLE"
+                    ],
+                    "learning_objectives": [
+                      "Làm chủ vòng lặp for, while và do-while với điều kiện dừng chính xác",
+                      "Tối ưu hóa các thuật toán lặp và phòng chống lặp vô hạn (Infinite Loop)",
+                      "Kiểm soát luồng lặp lồng nhau với break và continue"
+                    ],
+                    "estimated_time_minutes": 35
+                  }
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+                  "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be",
+                  "excerpt": "---\nlessonId: \"CPP-03.04\"\ntitle: \"Kiểm soát Dòng lặp với break và continue\"\ndifficulty: \"EASY\"\nestimatedDuration: 15\nkeywords: [\"break\", \"continue\", \"loop control\", \"skip\"]\nprerequisites: [\"CPP-03.01\"]\n---\n\n# Kiểm soát Dòng lặp với break và continue\n\n## 1. Khái niệm cốt lõi\n\nTrong khi vòng lặp đang diễn ra, đôi khi ta cần can thiệp để thay đổi dòng chảy thực thi:\n* **Tìm thấy kết quả sớm:** Không cần lặp tiếp nữa ➔ Dừng vòng lặp ngay lập tức.\n* **Gặp phần tử không hợp lệ:** Bỏ qua phần tử này ➔ Nhảy ngay sang lần lặp tiếp theo.\n\nC++ cung cấp hai lệnh điều hướng mạnh mẽ: **`break`** và **`continue`**.\n\n| Lệnh | Hành động | Điểm đến tiếp theo |\n| :--- | :--- | :--- |\n| **`break`** | **Dừng hoàn toàn** vòng lặp ngay lập tức | Nhảy ra khỏi vòng lặp đến câu lệnh nằm sau dấu `}`. |\n| **`continue`** | **Bỏ qua phần còn lại** của lần lặp hiện tại | Nhảy ngay đến bước cập nhật biến đếm để sang lần lặp mới. |\n\n## 2. Cú pháp & Quy tắc hoạt động\n\n### Minh họa sự khác biệt:\n```text\nVòng lặp: 1 ──► 2 ──► [ Gặp break ] ────────────► [ THOÁT HẲN VÒNG LẶP ]\n                                                  (Các bước 3, 4, 5 bị hủy)\n\nVòng lặp: 1 ──► 2 ──► [ Gặp continue ] ──► 3 ──► 4 ──► 5\n                      (Bỏ qua thân bước 2)\n```\n\n## 3. Ví dụ minh họa tinh gọn\n\n### Ví dụ 1: Dùng `break` dừng sớm khi tìm thấy phần tử\n```cpp\n// Tìm xem số 7 có trong dãy lặp hay không\nfor (int i = 1; i <= 10; ++i) {\n    if (i == 7) {\n        std::cout << \"Da tim thay 7!\";\n        break; // Thoát ngay, không cần kiểm tra 8, 9, 10\n    }\n}\n```\n\n### Ví dụ 2: Dùng `continue` để chỉ in các số lẻ\n```cpp\nfor (int i = 1; i <= 6; ++i) {\n    if (i % 2 == 0) continue; // Bỏ qua số chẵn\n    std::cout << i << ' ';\n}\n// Kết quả in ra: 1 3 5\n```\n\n## 4. Lỗi học sinh hay gặp & Cách phòng tránh\n\n> [!WARNING]\n> **1. Nhầm lẫn phạm vi của `break` khi có vòng lặp lồng nhau**\n> * *Quy tắc:* Lệnh `break` chỉ thoát ra khỏi **vòng lặp gần nhất** chứa nó. Nó không làm thoát khỏi toàn bộ các vòng lặp bên ngoài.\n\n> [!WARNING]\n> **2. Lỗi quên bước tăng biến khi dùng `continue` trong `while`**\n> * *Lỗi:* Đặt `continue` trước dòng `i++` trong vòng lặp `while`.\n> * *Hậu quả:* Lệnh `continue` nhảy về đầu `while` khiến dòng `i++` không bao giờ được chạy ➔ Biến `i` không đổi và gây lặp vô tận!\n\n## 5. Ghi nhớ trọng tâm\n\n- `break` dùng để dừng và thoát hẳn khỏi vòng lặp sớm.\n- `continue` dùng để bỏ qua các câu lệnh còn lại trong lần lặp đó để chuyển sang lần lặp kế tiếp.\n- Chỉ tác động lên vòng lặp trực tiếp bao quanh nó.\n",
+                  "match_score": 4
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+                  "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8",
+                  "excerpt": "---\nlessonId: \"CPP-07.01\"\ntitle: \"Bản chất Ma trận trong Bộ nhớ (Row-major) và Thao tác Nhập/Xuất lưới 2D\"\ndifficulty: \"MEDIUM\"\nestimatedDuration: 20\nkeywords: [\"2d array\", \"matrix\", \"row-major\", \"grid\", \"nested loops\"]\nprerequisites: [\"CPP-05.01\", \"CPP-03.05\"]\n---\n\n# Bản chất Ma trận trong Bộ nhớ (Row-major) và Thao tác Lưới 2D\n\n## 1. Khái niệm cốt lõi\n\nNhiều dữ liệu trong thực tế có dạng bảng biểu hai chiều: bảng tính Excel, bàn cờ vua, bản đồ pixel trong game. Để biểu diễn cấu trúc này, C++ cung cấp **Mảng 2 chiều (Ma trận - 2D Array)** gồm $R$ hàng (Rows) và $C$ cột (Columns).\n\nMỗi phần tử được xác định bởi cặp tọa độ `[hàng][cột]`:\n- **Chỉ số hàng `i`:** chạy từ `0` đến `R - 1`.\n- **Chỉ số cột `j`:** chạy từ `0` đến `C - 1`.\n\n### Bản chất trong bộ nhớ RAM: Thứ tự ưu tiên Hàng (Row-Major Order)\nMặc dù ta hình dung ma trận là bảng vuông 2D, **bộ nhớ RAM vật lý chỉ là một dải ô nhớ 1 chiều liên tục**. C++ lưu trữ ma trận theo nguyên tắc **Hàng nối tiếp hàng**:\n- Hết toàn bộ phần tử của Hàng 0 rồi mới đến các phần tử của Hàng 1.\n- Công thức vị trí ô nhớ trong RAM: $\\text{Vị trí} = i \\times C + j$.\n\n## 2. Cú pháp & Quy tắc hoạt động\n\n### Minh họa bảng 2D và Bố trí thực tế trong RAM 1D:\n```text\nMa trận a[2][3] (2 hàng, 3 cột):\n\n[Hình dung Bảng 2D]:\n               Cột 0     Cột 1     Cột 2\n    Hàng 0: [   10   ,    20   ,    30   ]\n    Hàng 1: [   40   ,    50   ,    60   ]\n\n[Bố trí thực tế trong RAM 1 chiều]:\n[ 10 | 20 | 30 | 40 | 50 | 60 ]\n  ^    ^    ^    ^    ^    ^\n 0,0  0,1  0,2  1,0  1,1  1,2\n(Toàn bộ Hàng 0) (Toàn bộ Hàng 1)\n```\n\n## 3. Ví dụ minh họa tinh gọn\n\nDuyệt và tính tổng tất cả các phần tử trong ma trận:\n\n```cpp\nint a[2][3] = {\n    {10, 20, 30},\n    {40, 50, 60}\n};\n\nint tong = 0;\n// Vòng lặp i duyệt qua từng Hàng (0 đến 1)\nfor (int i = 0; i < 2; ++i) {\n    // Vòng lặp j duyệt qua từng Cột (0 đến 2)\n    for (int j = 0; j < 3; ++j) {\n        tong += a[i][j];\n    }\n}\n// tong có giá trị là 210\n```\n\n## 4. Lỗi học sinh hay gặp & Cách phòng tránh\n\n> [!WARNING]\n> **1. Nhầm lẫn tai hại giữa chỉ số hàng `i` và chỉ số cột `j`**\n> * *Lỗi:* Viết `a[j][i]` thay vì `a[i][j]`.\n> * *Hậu quả:* Nếu số hàng khác số cột ($R \\ne C$), việc đảo ngược chỉ số sẽ khiến chương trình truy cập vượt quá biên bộ nhớ, gây lỗi sập chương trình (**Segmentation Fault**) hoặc lấy giá trị rác.\n> * *Quy tắc chuẩn:* `a[hàng][cột]` ➔ `i` chạy theo Hàng, `j` chạy theo Cột.\n\n> [!WARNING]\n> **2. Quên xuống dòng khi hiển thị ma trận dạng bảng**\n> * *Quy tắc:* Luôn đặt lệnh `std::cout << '\\n';` ngay sau khi vòng lặp cột `j` kết thúc một hàng.\n\n## 5. Ghi nhớ trọng tâm\n\n- Cú pháp truy xuất phần tử ma trận: `a[hàng][cột]` (chỉ số đều bắt đầu từ 0).\n- Ma trận được xếp liên tục trong RAM theo thứ tự hàng nối tiếp hàng (Row-Major).\n- Luôn duyệt bằng 2 vòng lặp lồng nhau: vòng ngoài duyệt Hàng `i`, vòng trong duyệt Cột `j`.\n",
+                  "match_score": 3
+                }
+              ],
+              "specification": {
+                "mode": "diagnostic",
+                "language": "cpp",
+                "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+                "execution": {
+                  "mode": "stdio",
+                  "comparator": "text",
+                  "entrypoint": "main"
+                },
+                "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+                "difficulty": "EASY",
+                "source_refs": [
+                  {
+                    "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+                    "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1"
+                  },
+                  {
+                    "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+                    "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be"
+                  },
+                  {
+                    "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+                    "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8"
+                  }
+                ],
+                "user_request": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+                "concept_title": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                "prerequisites": [
+                  "CPP-COND-01"
+                ],
+                "recent_errors": [],
+                "schema_version": "4.0",
+                "selection_mode": "explicit",
+                "target_concept": "CPP-LOOP-01",
+                "learner_evidence": {
+                  "policy": "adaptive_policy_v3",
+                  "mastery": null,
+                  "attempts": 0,
+                  "prerequisite_gaps": [
+                    "CPP-COND-01"
+                  ]
+                },
+                "test_constraints": {
+                  "max_cases": 8,
+                  "min_cases": 4,
+                  "require_hidden_case": true,
+                  "max_execution_time_ms": 3000,
+                  "require_boundary_case": true
+                },
+                "target_sub_skills": [
+                  "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+                ],
+                "learning_objectives": [
+                  "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+                ],
+                "required_constructs": [
+                  "while"
+                ],
+                "forbidden_constructs": []
+              },
+              "previous_theory": null,
+              "retrieval_method": "local_graph_and_keyword_search"
+            },
+            "feedback": null,
+            "language": "cpp",
+            "concept_id": "CPP-LOOP-01",
+            "user_query": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+            "concept_name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)"
+          },
+          "model": "gemini-3.8-flash",
+          "stage": "ExplanationTutorAgent",
+          "status": "FAILED",
+          "provider": "GEMINI",
+          "error_code": "PROVIDER_SERVER_ERROR",
+          "error_type": "HTTPError",
+          "deadline_ms": 18000,
+          "duration_ms": 5359,
+          "http_status": 503,
+          "prompt_hash": "bac99a432e30cdae7fc84da90d25dc1ede004d1add06d2c2d80260bd0576a1dc",
+          "error_message": "503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+          "prompt_version": "adaptive_v4"
+        },
+        {
+          "input": {
+            "context": {
+              "concept": {
+                "id": "CPP-LOOP-01",
+                "name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                "tier": 2,
+                "scope": "for, while, do-while, break/continue, nested loops",
+                "stage": 1,
+                "topic_id": "TOPIC-CPP-LOOP",
+                "domain_id": "CPP",
+                "module_id": "MOD-CPP-CONTROL",
+                "concept_id": "CPP-LOOP-01",
+                "bloom_level": "Apply",
+                "concept_name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                "prerequisites": [
+                  "CPP-COND-01"
+                ],
+                "practice_count": 5,
+                "difficulty_level": 2,
+                "associated_errors": [
+                  "Infinite Loop",
+                  "TLE"
+                ],
+                "learning_objectives": [
+                  "Làm chủ vòng lặp for, while và do-while với điều kiện dừng chính xác",
+                  "Tối ưu hóa các thuật toán lặp và phòng chống lặp vô hạn (Infinite Loop)",
+                  "Kiểm soát luồng lặp lồng nhau với break và continue"
+                ],
+                "estimated_time_minutes": 35
+              },
+              "sources": [
+                {
+                  "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+                  "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1",
+                  "excerpt": {
+                    "id": "CPP-LOOP-01",
+                    "name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                    "tier": 2,
+                    "scope": "for, while, do-while, break/continue, nested loops",
+                    "stage": 1,
+                    "topic_id": "TOPIC-CPP-LOOP",
+                    "domain_id": "CPP",
+                    "module_id": "MOD-CPP-CONTROL",
+                    "concept_id": "CPP-LOOP-01",
+                    "bloom_level": "Apply",
+                    "concept_name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                    "prerequisites": [
+                      "CPP-COND-01"
+                    ],
+                    "practice_count": 5,
+                    "difficulty_level": 2,
+                    "associated_errors": [
+                      "Infinite Loop",
+                      "TLE"
+                    ],
+                    "learning_objectives": [
+                      "Làm chủ vòng lặp for, while và do-while với điều kiện dừng chính xác",
+                      "Tối ưu hóa các thuật toán lặp và phòng chống lặp vô hạn (Infinite Loop)",
+                      "Kiểm soát luồng lặp lồng nhau với break và continue"
+                    ],
+                    "estimated_time_minutes": 35
+                  }
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+                  "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be",
+                  "excerpt": "---\nlessonId: \"CPP-03.04\"\ntitle: \"Kiểm soát Dòng lặp với break và continue\"\ndifficulty: \"EASY\"\nestimatedDuration: 15\nkeywords: [\"break\", \"continue\", \"loop control\", \"skip\"]\nprerequisites: [\"CPP-03.01\"]\n---\n\n# Kiểm soát Dòng lặp với break và continue\n\n## 1. Khái niệm cốt lõi\n\nTrong khi vòng lặp đang diễn ra, đôi khi ta cần can thiệp để thay đổi dòng chảy thực thi:\n* **Tìm thấy kết quả sớm:** Không cần lặp tiếp nữa ➔ Dừng vòng lặp ngay lập tức.\n* **Gặp phần tử không hợp lệ:** Bỏ qua phần tử này ➔ Nhảy ngay sang lần lặp tiếp theo.\n\nC++ cung cấp hai lệnh điều hướng mạnh mẽ: **`break`** và **`continue`**.\n\n| Lệnh | Hành động | Điểm đến tiếp theo |\n| :--- | :--- | :--- |\n| **`break`** | **Dừng hoàn toàn** vòng lặp ngay lập tức | Nhảy ra khỏi vòng lặp đến câu lệnh nằm sau dấu `}`. |\n| **`continue`** | **Bỏ qua phần còn lại** của lần lặp hiện tại | Nhảy ngay đến bước cập nhật biến đếm để sang lần lặp mới. |\n\n## 2. Cú pháp & Quy tắc hoạt động\n\n### Minh họa sự khác biệt:\n```text\nVòng lặp: 1 ──► 2 ──► [ Gặp break ] ────────────► [ THOÁT HẲN VÒNG LẶP ]\n                                                  (Các bước 3, 4, 5 bị hủy)\n\nVòng lặp: 1 ──► 2 ──► [ Gặp continue ] ──► 3 ──► 4 ──► 5\n                      (Bỏ qua thân bước 2)\n```\n\n## 3. Ví dụ minh họa tinh gọn\n\n### Ví dụ 1: Dùng `break` dừng sớm khi tìm thấy phần tử\n```cpp\n// Tìm xem số 7 có trong dãy lặp hay không\nfor (int i = 1; i <= 10; ++i) {\n    if (i == 7) {\n        std::cout << \"Da tim thay 7!\";\n        break; // Thoát ngay, không cần kiểm tra 8, 9, 10\n    }\n}\n```\n\n### Ví dụ 2: Dùng `continue` để chỉ in các số lẻ\n```cpp\nfor (int i = 1; i <= 6; ++i) {\n    if (i % 2 == 0) continue; // Bỏ qua số chẵn\n    std::cout << i << ' ';\n}\n// Kết quả in ra: 1 3 5\n```\n\n## 4. Lỗi học sinh hay gặp & Cách phòng tránh\n\n> [!WARNING]\n> **1. Nhầm lẫn phạm vi của `break` khi có vòng lặp lồng nhau**\n> * *Quy tắc:* Lệnh `break` chỉ thoát ra khỏi **vòng lặp gần nhất** chứa nó. Nó không làm thoát khỏi toàn bộ các vòng lặp bên ngoài.\n\n> [!WARNING]\n> **2. Lỗi quên bước tăng biến khi dùng `continue` trong `while`**\n> * *Lỗi:* Đặt `continue` trước dòng `i++` trong vòng lặp `while`.\n> * *Hậu quả:* Lệnh `continue` nhảy về đầu `while` khiến dòng `i++` không bao giờ được chạy ➔ Biến `i` không đổi và gây lặp vô tận!\n\n## 5. Ghi nhớ trọng tâm\n\n- `break` dùng để dừng và thoát hẳn khỏi vòng lặp sớm.\n- `continue` dùng để bỏ qua các câu lệnh còn lại trong lần lặp đó để chuyển sang lần lặp kế tiếp.\n- Chỉ tác động lên vòng lặp trực tiếp bao quanh nó.\n",
+                  "match_score": 4
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+                  "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8",
+                  "excerpt": "---\nlessonId: \"CPP-07.01\"\ntitle: \"Bản chất Ma trận trong Bộ nhớ (Row-major) và Thao tác Nhập/Xuất lưới 2D\"\ndifficulty: \"MEDIUM\"\nestimatedDuration: 20\nkeywords: [\"2d array\", \"matrix\", \"row-major\", \"grid\", \"nested loops\"]\nprerequisites: [\"CPP-05.01\", \"CPP-03.05\"]\n---\n\n# Bản chất Ma trận trong Bộ nhớ (Row-major) và Thao tác Lưới 2D\n\n## 1. Khái niệm cốt lõi\n\nNhiều dữ liệu trong thực tế có dạng bảng biểu hai chiều: bảng tính Excel, bàn cờ vua, bản đồ pixel trong game. Để biểu diễn cấu trúc này, C++ cung cấp **Mảng 2 chiều (Ma trận - 2D Array)** gồm $R$ hàng (Rows) và $C$ cột (Columns).\n\nMỗi phần tử được xác định bởi cặp tọa độ `[hàng][cột]`:\n- **Chỉ số hàng `i`:** chạy từ `0` đến `R - 1`.\n- **Chỉ số cột `j`:** chạy từ `0` đến `C - 1`.\n\n### Bản chất trong bộ nhớ RAM: Thứ tự ưu tiên Hàng (Row-Major Order)\nMặc dù ta hình dung ma trận là bảng vuông 2D, **bộ nhớ RAM vật lý chỉ là một dải ô nhớ 1 chiều liên tục**. C++ lưu trữ ma trận theo nguyên tắc **Hàng nối tiếp hàng**:\n- Hết toàn bộ phần tử của Hàng 0 rồi mới đến các phần tử của Hàng 1.\n- Công thức vị trí ô nhớ trong RAM: $\\text{Vị trí} = i \\times C + j$.\n\n## 2. Cú pháp & Quy tắc hoạt động\n\n### Minh họa bảng 2D và Bố trí thực tế trong RAM 1D:\n```text\nMa trận a[2][3] (2 hàng, 3 cột):\n\n[Hình dung Bảng 2D]:\n               Cột 0     Cột 1     Cột 2\n    Hàng 0: [   10   ,    20   ,    30   ]\n    Hàng 1: [   40   ,    50   ,    60   ]\n\n[Bố trí thực tế trong RAM 1 chiều]:\n[ 10 | 20 | 30 | 40 | 50 | 60 ]\n  ^    ^    ^    ^    ^    ^\n 0,0  0,1  0,2  1,0  1,1  1,2\n(Toàn bộ Hàng 0) (Toàn bộ Hàng 1)\n```\n\n## 3. Ví dụ minh họa tinh gọn\n\nDuyệt và tính tổng tất cả các phần tử trong ma trận:\n\n```cpp\nint a[2][3] = {\n    {10, 20, 30},\n    {40, 50, 60}\n};\n\nint tong = 0;\n// Vòng lặp i duyệt qua từng Hàng (0 đến 1)\nfor (int i = 0; i < 2; ++i) {\n    // Vòng lặp j duyệt qua từng Cột (0 đến 2)\n    for (int j = 0; j < 3; ++j) {\n        tong += a[i][j];\n    }\n}\n// tong có giá trị là 210\n```\n\n## 4. Lỗi học sinh hay gặp & Cách phòng tránh\n\n> [!WARNING]\n> **1. Nhầm lẫn tai hại giữa chỉ số hàng `i` và chỉ số cột `j`**\n> * *Lỗi:* Viết `a[j][i]` thay vì `a[i][j]`.\n> * *Hậu quả:* Nếu số hàng khác số cột ($R \\ne C$), việc đảo ngược chỉ số sẽ khiến chương trình truy cập vượt quá biên bộ nhớ, gây lỗi sập chương trình (**Segmentation Fault**) hoặc lấy giá trị rác.\n> * *Quy tắc chuẩn:* `a[hàng][cột]` ➔ `i` chạy theo Hàng, `j` chạy theo Cột.\n\n> [!WARNING]\n> **2. Quên xuống dòng khi hiển thị ma trận dạng bảng**\n> * *Quy tắc:* Luôn đặt lệnh `std::cout << '\\n';` ngay sau khi vòng lặp cột `j` kết thúc một hàng.\n\n## 5. Ghi nhớ trọng tâm\n\n- Cú pháp truy xuất phần tử ma trận: `a[hàng][cột]` (chỉ số đều bắt đầu từ 0).\n- Ma trận được xếp liên tục trong RAM theo thứ tự hàng nối tiếp hàng (Row-Major).\n- Luôn duyệt bằng 2 vòng lặp lồng nhau: vòng ngoài duyệt Hàng `i`, vòng trong duyệt Cột `j`.\n",
+                  "match_score": 3
+                }
+              ],
+              "specification": {
+                "mode": "diagnostic",
+                "language": "cpp",
+                "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+                "execution": {
+                  "mode": "stdio",
+                  "comparator": "text",
+                  "entrypoint": "main"
+                },
+                "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+                "difficulty": "EASY",
+                "source_refs": [
+                  {
+                    "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+                    "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1"
+                  },
+                  {
+                    "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+                    "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be"
+                  },
+                  {
+                    "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+                    "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8"
+                  }
+                ],
+                "user_request": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+                "concept_title": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                "prerequisites": [
+                  "CPP-COND-01"
+                ],
+                "recent_errors": [],
+                "schema_version": "4.0",
+                "selection_mode": "explicit",
+                "target_concept": "CPP-LOOP-01",
+                "learner_evidence": {
+                  "policy": "adaptive_policy_v3",
+                  "mastery": null,
+                  "attempts": 0,
+                  "prerequisite_gaps": [
+                    "CPP-COND-01"
+                  ]
+                },
+                "test_constraints": {
+                  "max_cases": 8,
+                  "min_cases": 4,
+                  "require_hidden_case": true,
+                  "max_execution_time_ms": 3000,
+                  "require_boundary_case": true
+                },
+                "target_sub_skills": [
+                  "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+                ],
+                "learning_objectives": [
+                  "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+                ],
+                "required_constructs": [
+                  "while"
+                ],
+                "forbidden_constructs": []
+              },
+              "previous_theory": null,
+              "retrieval_method": "local_graph_and_keyword_search"
+            },
+            "feedback": null,
+            "language": "cpp",
+            "concept_id": "CPP-LOOP-01",
+            "user_query": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+            "concept_name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)"
+          },
+          "model": "openai/gpt-oss-120b",
+          "stage": "ExplanationTutorAgent",
+          "status": "FAILED",
+          "provider": "GROQ",
+          "error_code": "PROVIDER_RATE_LIMITED",
+          "error_type": "HTTPError",
+          "deadline_ms": 18000,
+          "duration_ms": 669,
+          "http_status": 429,
+          "prompt_hash": "bac99a432e30cdae7fc84da90d25dc1ede004d1add06d2c2d80260bd0576a1dc",
+          "error_message": "429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions",
+          "prompt_version": "adaptive_v4"
+        },
+        {
+          "input": {
+            "context": {
+              "concept": {
+                "id": "CPP-LOOP-01",
+                "name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                "tier": 2,
+                "scope": "for, while, do-while, break/continue, nested loops",
+                "stage": 1,
+                "topic_id": "TOPIC-CPP-LOOP",
+                "domain_id": "CPP",
+                "module_id": "MOD-CPP-CONTROL",
+                "concept_id": "CPP-LOOP-01",
+                "bloom_level": "Apply",
+                "concept_name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                "prerequisites": [
+                  "CPP-COND-01"
+                ],
+                "practice_count": 5,
+                "difficulty_level": 2,
+                "associated_errors": [
+                  "Infinite Loop",
+                  "TLE"
+                ],
+                "learning_objectives": [
+                  "Làm chủ vòng lặp for, while và do-while với điều kiện dừng chính xác",
+                  "Tối ưu hóa các thuật toán lặp và phòng chống lặp vô hạn (Infinite Loop)",
+                  "Kiểm soát luồng lặp lồng nhau với break và continue"
+                ],
+                "estimated_time_minutes": 35
+              },
+              "sources": [
+                {
+                  "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+                  "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1",
+                  "excerpt": {
+                    "id": "CPP-LOOP-01",
+                    "name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                    "tier": 2,
+                    "scope": "for, while, do-while, break/continue, nested loops",
+                    "stage": 1,
+                    "topic_id": "TOPIC-CPP-LOOP",
+                    "domain_id": "CPP",
+                    "module_id": "MOD-CPP-CONTROL",
+                    "concept_id": "CPP-LOOP-01",
+                    "bloom_level": "Apply",
+                    "concept_name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                    "prerequisites": [
+                      "CPP-COND-01"
+                    ],
+                    "practice_count": 5,
+                    "difficulty_level": 2,
+                    "associated_errors": [
+                      "Infinite Loop",
+                      "TLE"
+                    ],
+                    "learning_objectives": [
+                      "Làm chủ vòng lặp for, while và do-while với điều kiện dừng chính xác",
+                      "Tối ưu hóa các thuật toán lặp và phòng chống lặp vô hạn (Infinite Loop)",
+                      "Kiểm soát luồng lặp lồng nhau với break và continue"
+                    ],
+                    "estimated_time_minutes": 35
+                  }
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+                  "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be",
+                  "excerpt": "---\nlessonId: \"CPP-03.04\"\ntitle: \"Kiểm soát Dòng lặp với break và continue\"\ndifficulty: \"EASY\"\nestimatedDuration: 15\nkeywords: [\"break\", \"continue\", \"loop control\", \"skip\"]\nprerequisites: [\"CPP-03.01\"]\n---\n\n# Kiểm soát Dòng lặp với break và continue\n\n## 1. Khái niệm cốt lõi\n\nTrong khi vòng lặp đang diễn ra, đôi khi ta cần can thiệp để thay đổi dòng chảy thực thi:\n* **Tìm thấy kết quả sớm:** Không cần lặp tiếp nữa ➔ Dừng vòng lặp ngay lập tức.\n* **Gặp phần tử không hợp lệ:** Bỏ qua phần tử này ➔ Nhảy ngay sang lần lặp tiếp theo.\n\nC++ cung cấp hai lệnh điều hướng mạnh mẽ: **`break`** và **`continue`**.\n\n| Lệnh | Hành động | Điểm đến tiếp theo |\n| :--- | :--- | :--- |\n| **`break`** | **Dừng hoàn toàn** vòng lặp ngay lập tức | Nhảy ra khỏi vòng lặp đến câu lệnh nằm sau dấu `}`. |\n| **`continue`** | **Bỏ qua phần còn lại** của lần lặp hiện tại | Nhảy ngay đến bước cập nhật biến đếm để sang lần lặp mới. |\n\n## 2. Cú pháp & Quy tắc hoạt động\n\n### Minh họa sự khác biệt:\n```text\nVòng lặp: 1 ──► 2 ──► [ Gặp break ] ────────────► [ THOÁT HẲN VÒNG LẶP ]\n                                                  (Các bước 3, 4, 5 bị hủy)\n\nVòng lặp: 1 ──► 2 ──► [ Gặp continue ] ──► 3 ──► 4 ──► 5\n                      (Bỏ qua thân bước 2)\n```\n\n## 3. Ví dụ minh họa tinh gọn\n\n### Ví dụ 1: Dùng `break` dừng sớm khi tìm thấy phần tử\n```cpp\n// Tìm xem số 7 có trong dãy lặp hay không\nfor (int i = 1; i <= 10; ++i) {\n    if (i == 7) {\n        std::cout << \"Da tim thay 7!\";\n        break; // Thoát ngay, không cần kiểm tra 8, 9, 10\n    }\n}\n```\n\n### Ví dụ 2: Dùng `continue` để chỉ in các số lẻ\n```cpp\nfor (int i = 1; i <= 6; ++i) {\n    if (i % 2 == 0) continue; // Bỏ qua số chẵn\n    std::cout << i << ' ';\n}\n// Kết quả in ra: 1 3 5\n```\n\n## 4. Lỗi học sinh hay gặp & Cách phòng tránh\n\n> [!WARNING]\n> **1. Nhầm lẫn phạm vi của `break` khi có vòng lặp lồng nhau**\n> * *Quy tắc:* Lệnh `break` chỉ thoát ra khỏi **vòng lặp gần nhất** chứa nó. Nó không làm thoát khỏi toàn bộ các vòng lặp bên ngoài.\n\n> [!WARNING]\n> **2. Lỗi quên bước tăng biến khi dùng `continue` trong `while`**\n> * *Lỗi:* Đặt `continue` trước dòng `i++` trong vòng lặp `while`.\n> * *Hậu quả:* Lệnh `continue` nhảy về đầu `while` khiến dòng `i++` không bao giờ được chạy ➔ Biến `i` không đổi và gây lặp vô tận!\n\n## 5. Ghi nhớ trọng tâm\n\n- `break` dùng để dừng và thoát hẳn khỏi vòng lặp sớm.\n- `continue` dùng để bỏ qua các câu lệnh còn lại trong lần lặp đó để chuyển sang lần lặp kế tiếp.\n- Chỉ tác động lên vòng lặp trực tiếp bao quanh nó.\n",
+                  "match_score": 4
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+                  "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8",
+                  "excerpt": "---\nlessonId: \"CPP-07.01\"\ntitle: \"Bản chất Ma trận trong Bộ nhớ (Row-major) và Thao tác Nhập/Xuất lưới 2D\"\ndifficulty: \"MEDIUM\"\nestimatedDuration: 20\nkeywords: [\"2d array\", \"matrix\", \"row-major\", \"grid\", \"nested loops\"]\nprerequisites: [\"CPP-05.01\", \"CPP-03.05\"]\n---\n\n# Bản chất Ma trận trong Bộ nhớ (Row-major) và Thao tác Lưới 2D\n\n## 1. Khái niệm cốt lõi\n\nNhiều dữ liệu trong thực tế có dạng bảng biểu hai chiều: bảng tính Excel, bàn cờ vua, bản đồ pixel trong game. Để biểu diễn cấu trúc này, C++ cung cấp **Mảng 2 chiều (Ma trận - 2D Array)** gồm $R$ hàng (Rows) và $C$ cột (Columns).\n\nMỗi phần tử được xác định bởi cặp tọa độ `[hàng][cột]`:\n- **Chỉ số hàng `i`:** chạy từ `0` đến `R - 1`.\n- **Chỉ số cột `j`:** chạy từ `0` đến `C - 1`.\n\n### Bản chất trong bộ nhớ RAM: Thứ tự ưu tiên Hàng (Row-Major Order)\nMặc dù ta hình dung ma trận là bảng vuông 2D, **bộ nhớ RAM vật lý chỉ là một dải ô nhớ 1 chiều liên tục**. C++ lưu trữ ma trận theo nguyên tắc **Hàng nối tiếp hàng**:\n- Hết toàn bộ phần tử của Hàng 0 rồi mới đến các phần tử của Hàng 1.\n- Công thức vị trí ô nhớ trong RAM: $\\text{Vị trí} = i \\times C + j$.\n\n## 2. Cú pháp & Quy tắc hoạt động\n\n### Minh họa bảng 2D và Bố trí thực tế trong RAM 1D:\n```text\nMa trận a[2][3] (2 hàng, 3 cột):\n\n[Hình dung Bảng 2D]:\n               Cột 0     Cột 1     Cột 2\n    Hàng 0: [   10   ,    20   ,    30   ]\n    Hàng 1: [   40   ,    50   ,    60   ]\n\n[Bố trí thực tế trong RAM 1 chiều]:\n[ 10 | 20 | 30 | 40 | 50 | 60 ]\n  ^    ^    ^    ^    ^    ^\n 0,0  0,1  0,2  1,0  1,1  1,2\n(Toàn bộ Hàng 0) (Toàn bộ Hàng 1)\n```\n\n## 3. Ví dụ minh họa tinh gọn\n\nDuyệt và tính tổng tất cả các phần tử trong ma trận:\n\n```cpp\nint a[2][3] = {\n    {10, 20, 30},\n    {40, 50, 60}\n};\n\nint tong = 0;\n// Vòng lặp i duyệt qua từng Hàng (0 đến 1)\nfor (int i = 0; i < 2; ++i) {\n    // Vòng lặp j duyệt qua từng Cột (0 đến 2)\n    for (int j = 0; j < 3; ++j) {\n        tong += a[i][j];\n    }\n}\n// tong có giá trị là 210\n```\n\n## 4. Lỗi học sinh hay gặp & Cách phòng tránh\n\n> [!WARNING]\n> **1. Nhầm lẫn tai hại giữa chỉ số hàng `i` và chỉ số cột `j`**\n> * *Lỗi:* Viết `a[j][i]` thay vì `a[i][j]`.\n> * *Hậu quả:* Nếu số hàng khác số cột ($R \\ne C$), việc đảo ngược chỉ số sẽ khiến chương trình truy cập vượt quá biên bộ nhớ, gây lỗi sập chương trình (**Segmentation Fault**) hoặc lấy giá trị rác.\n> * *Quy tắc chuẩn:* `a[hàng][cột]` ➔ `i` chạy theo Hàng, `j` chạy theo Cột.\n\n> [!WARNING]\n> **2. Quên xuống dòng khi hiển thị ma trận dạng bảng**\n> * *Quy tắc:* Luôn đặt lệnh `std::cout << '\\n';` ngay sau khi vòng lặp cột `j` kết thúc một hàng.\n\n## 5. Ghi nhớ trọng tâm\n\n- Cú pháp truy xuất phần tử ma trận: `a[hàng][cột]` (chỉ số đều bắt đầu từ 0).\n- Ma trận được xếp liên tục trong RAM theo thứ tự hàng nối tiếp hàng (Row-Major).\n- Luôn duyệt bằng 2 vòng lặp lồng nhau: vòng ngoài duyệt Hàng `i`, vòng trong duyệt Cột `j`.\n",
+                  "match_score": 3
+                }
+              ],
+              "specification": {
+                "mode": "diagnostic",
+                "language": "cpp",
+                "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+                "execution": {
+                  "mode": "stdio",
+                  "comparator": "text",
+                  "entrypoint": "main"
+                },
+                "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+                "difficulty": "EASY",
+                "source_refs": [
+                  {
+                    "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+                    "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1"
+                  },
+                  {
+                    "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+                    "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be"
+                  },
+                  {
+                    "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+                    "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8"
+                  }
+                ],
+                "user_request": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+                "concept_title": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+                "prerequisites": [
+                  "CPP-COND-01"
+                ],
+                "recent_errors": [],
+                "schema_version": "4.0",
+                "selection_mode": "explicit",
+                "target_concept": "CPP-LOOP-01",
+                "learner_evidence": {
+                  "policy": "adaptive_policy_v3",
+                  "mastery": null,
+                  "attempts": 0,
+                  "prerequisite_gaps": [
+                    "CPP-COND-01"
+                  ]
+                },
+                "test_constraints": {
+                  "max_cases": 8,
+                  "min_cases": 4,
+                  "require_hidden_case": true,
+                  "max_execution_time_ms": 3000,
+                  "require_boundary_case": true
+                },
+                "target_sub_skills": [
+                  "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+                ],
+                "learning_objectives": [
+                  "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+                ],
+                "required_constructs": [
+                  "while"
+                ],
+                "forbidden_constructs": []
+              },
+              "previous_theory": null,
+              "retrieval_method": "local_graph_and_keyword_search"
+            },
+            "feedback": null,
+            "language": "cpp",
+            "concept_id": "CPP-LOOP-01",
+            "user_query": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+            "concept_name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)"
+          },
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "stage": "ExplanationTutorAgent",
+          "usage": {
+            "cost": 0.00111322,
+            "is_byok": false,
+            "cost_details": {
+              "upstream_inference_cost": 0.00111322,
+              "upstream_inference_prompt_cost": 0.00080872,
+              "upstream_inference_completions_cost": 0.0003045
+            },
+            "total_tokens": 4285,
+            "prompt_tokens": 3676,
+            "completion_tokens": 609,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "video_tokens": 0,
+              "cached_tokens": 0,
+              "cache_write_tokens": 0
+            },
+            "completion_tokens_details": {
+              "audio_tokens": 0,
+              "image_tokens": 0,
+              "reasoning_tokens": 0
+            }
+          },
+          "output": {
+            "reply": "## Vòng lặp while trong C++\n### Bản chất\nVòng lặp `while` là một cấu trúc điều khiển trong C++ cho phép thực hiện một khối lệnh lặp đi lặp lại miễn là điều kiện cho trước vẫn được thỏa mãn.\n\n### Cú pháp\n```cpp\nwhile (điều_kiện) {\n    // Khối lệnh cần thực hiện lặp lại\n}\n```\nTrong đó, `điều_kiện` là biểu thức logic mà nếu nó đúng (`true`), khối lệnh bên trong sẽ được thực hiện. Quá trình này lặp lại cho đến khi `điều_kiện` trở thành `false`.\n\n### Ví dụ\nTính tổng các số từ 1 đến `n` sử dụng vòng lặp `while`:\n```cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int n;\n    cout << \"Nhap so nguyen n (0-100): \";\n    cin >> n;\n\n    if (n < 0 || n > 100) {\n        cout << \"So nguyen n khong hop le!\";\n        return 1;\n    }\n\n    int i = 1;\n    int tong = 0;\n    while (i <= n) {\n        tong += i;\n        i++;\n    }\n\n    cout << \"Tong cac so tu 1 den \" << n << \" la: \" << tong;\n    return 0;\n}\n```\n### Lỗi thường gặp\n- **Lặp vô hạn**: Khi điều kiện trong `while` luôn đúng và không có cơ chế thoát ra khỏi vòng lặp.\n- **Quên cập nhật biến**: Trong vòng lặp `while`, quên cập nhật giá trị của biến dùng trong điều kiện, dẫn đến lặp vô hạn.\n\n### Nghiệm mẫu bài tập\nBài tập yêu cầu nhập một số nguyên `n` từ 0 đến 100 và in tổng các số từ 1 đến `n`, bắt buộc dùng vòng lặp `while`. Bài giải trên đã minh họa cách thực hiện yêu cầu này.\n\n### Lưu ý\n- Luôn kiểm tra điều kiện biên và xử lý trường hợp ngoại lệ.\n- Sử dụng vòng lặp `while` khi không biết trước số lần lặp hoặc khi cần kiểm tra điều kiện trước mỗi lần lặp.\n",
+            "source_ids": [
+              "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+              "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+              "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md"
+            ]
+          },
+          "status": "SUCCEEDED",
+          "provider": "OPENROUTER",
+          "deadline_ms": 18000,
+          "duration_ms": 16630,
+          "http_status": 200,
+          "prompt_hash": "bac99a432e30cdae7fc84da90d25dc1ede004d1add06d2c2d80260bd0576a1dc",
+          "response_id": "gen-1789895309-Rdn6yZXGaE0NPF14srzU",
+          "response_hash": "c4e5b547808415197d9ade0e50a6f3c1732ac20f335e51d5435eeb04fb1ae9a2",
+          "prompt_version": "adaptive_v4"
+        }
+      ],
+      "output_hash": "fda2b276ef312b94b5d145bf7f7c4154924bacf32221410f8eea82482b13f7a7"
+    },
+    {
+      "id": "ab46ac40-e17c-46cf-972b-fe7bcd26eed7",
+      "agent": "ExerciseGeneratorAgent",
+      "input": {
+        "feedback": null,
+        "specification": {
+          "mode": "diagnostic",
+          "language": "cpp",
+          "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+          "execution": {
+            "mode": "stdio",
+            "comparator": "text",
+            "entrypoint": "main"
+          },
+          "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+          "difficulty": "EASY",
+          "source_refs": [
+            {
+              "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+              "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+              "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+              "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8"
+            }
+          ],
+          "user_request": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+          "concept_title": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+          "prerequisites": [
+            "CPP-COND-01"
+          ],
+          "recent_errors": [],
+          "schema_version": "4.0",
+          "selection_mode": "explicit",
+          "target_concept": "CPP-LOOP-01",
+          "learner_evidence": {
+            "policy": "adaptive_policy_v3",
+            "mastery": null,
+            "attempts": 0,
+            "prerequisite_gaps": [
+              "CPP-COND-01"
+            ]
+          },
+          "test_constraints": {
+            "max_cases": 8,
+            "min_cases": 4,
+            "require_hidden_case": true,
+            "max_execution_time_ms": 3000,
+            "require_boundary_case": true
+          },
+          "target_sub_skills": [
+            "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+          ],
+          "learning_objectives": [
+            "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+          ],
+          "required_constructs": [
+            "while"
+          ],
+          "forbidden_constructs": []
+        },
+        "previous_draft": null
+      },
+      "method": "LLM",
+      "output": {
+        "hints": {
+          "scaffold_2_syntax": "while (điều kiện) { // thực hiện; // cập nhật biến đếm }",
+          "scaffold_1_conceptual": "Vòng while lặp lại khi điều kiện đúng; cần một biến đếm để dừng vòng lặp.",
+          "scaffold_3_pseudocode": "i = 1; sum = 0; while (i <= n) { sum = sum + i; i = i + 1; } in sum"
+        },
+        "title": "Tính tổng các số từ 1 đến n bằng vòng lặp while",
+        "test_cases": [
+          {
+            "input": "0",
+            "category": "boundary",
+            "arguments": null,
+            "is_hidden": false,
+            "call_style": null,
+            "explanation": "Khi n = 0, không có số nào để cộng, tổng phải bằng 0.",
+            "fixture_sql": null,
+            "expected_output": "0"
+          },
+          {
+            "input": "5",
+            "category": "normal",
+            "arguments": null,
+            "is_hidden": false,
+            "call_style": null,
+            "explanation": "Tổng 1+2+3+4+5 = 15.",
+            "fixture_sql": null,
+            "expected_output": "15"
+          },
+          {
+            "input": "100",
+            "category": "boundary",
+            "arguments": null,
+            "is_hidden": false,
+            "call_style": null,
+            "explanation": "Sử dụng công thức n*(n+1)/2 cho n=100 cho kết quả 5050.",
+            "fixture_sql": null,
+            "expected_output": "5050"
+          },
+          {
+            "input": "57",
+            "category": "normal",
+            "arguments": null,
+            "is_hidden": true,
+            "call_style": null,
+            "explanation": "Kiểm tra chương trình với một giá trị ngẫu nhiên trong khoảng cho phép.",
+            "fixture_sql": null,
+            "expected_output": "1653"
+          },
+          {
+            "input": "10",
+            "category": "normal",
+            "arguments": null,
+            "is_hidden": false,
+            "call_style": null,
+            "explanation": "Tổng 1+2+...+10 = 55, một trường hợp trung bình.",
+            "fixture_sql": null,
+            "expected_output": "55"
+          }
+        ],
+        "constraints": [
+          "Chương trình phải sử dụng vòng lặp while để tính tổng.",
+          "Giá trị n phải nằm trong khoảng 0 đến 100.",
+          "Kết quả phải được in ra một số nguyên duy nhất, không có ký tự thừa."
+        ],
+        "quick_theory": "Vòng lặp while trong C++ thực hiện lặp lại khối lệnh cho đến khi biểu thức điều kiện trở thành false. Cú pháp: while (điều kiện) { // khối lệnh }. Khi dùng while để tính tổng, ta cần khởi tạo biến đếm và biến tổng, sau đó trong mỗi vòng lặp cập nhật chúng và giảm/ tăng biến đếm cho tới khi điều kiện không còn đúng.",
+        "starter_code": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    // TODO: Đọc n từ stdin\n    // TODO: Sử dụng vòng lặp while để tính tổng từ 1 đến n\n    // TODO: In kết quả ra stdout\n    return 0;\n}\n",
+        "problem_statement": "Viết chương trình C++ nhận vào một số nguyên n (0 ≤ n ≤ 100) và in ra tổng các số nguyên dương từ 1 đến n. Yêu cầu bắt buộc phải sử dụng vòng lặp while để thực hiện tính toán. Chương trình phải xử lý đúng các trường hợp biên như n = 0 (kết quả 0) và n = 100 (kết quả 5050). Đầu vào được đưa qua stdin, đầu ra qua stdout, mỗi kết quả in trên một dòng duy nhất.",
+        "reference_solution": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    int n;\n    if (!(cin >> n)) return 0; // nếu không đọc được, thoát\n    int sum = 0;\n    int i = 1;\n    while (i <= n) {\n        sum += i;\n        ++i;\n    }\n    cout << sum;\n    return 0;\n}\n",
+        "common_pitfall_warning": "Tránh việc đặt biến đếm sai hướng (ví dụ i-- thay vì i++) gây vòng lặp vô hạn, và nhớ xử lý trường hợp n = 0 để không thực hiện vòng lặp."
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-20T09:08:16.902118+00:00",
+      "sequence": 5,
+      "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+      "input_hash": "30c663c11fd49928198a801359848f6463cf1b4893ad5c1c68f471daa7892ca4",
+      "started_at": "2026-09-20T09:08:06.252126+00:00",
+      "duration_ms": 10651,
+      "model_calls": [
+        {
+          "input": {
+            "feedback": null,
+            "output_schema": {
+              "type": "object",
+              "$defs": {
+                "Hints": {
+                  "type": "object",
+                  "title": "Hints",
+                  "required": [
+                    "scaffold_1_conceptual",
+                    "scaffold_2_syntax",
+                    "scaffold_3_pseudocode"
+                  ],
+                  "properties": {
+                    "scaffold_2_syntax": {
+                      "type": "string",
+                      "title": "Scaffold 2 Syntax",
+                      "minLength": 5
+                    },
+                    "scaffold_1_conceptual": {
+                      "type": "string",
+                      "title": "Scaffold 1 Conceptual",
+                      "minLength": 5
+                    },
+                    "scaffold_3_pseudocode": {
+                      "type": "string",
+                      "title": "Scaffold 3 Pseudocode",
+                      "minLength": 5
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "TestCase": {
+                  "type": "object",
+                  "title": "TestCase",
+                  "required": [
+                    "expected_output",
+                    "is_hidden",
+                    "category",
+                    "explanation"
+                  ],
+                  "properties": {
+                    "input": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Input",
+                      "default": null
+                    },
+                    "category": {
+                      "enum": [
+                        "normal",
+                        "boundary"
+                      ],
+                      "type": "string",
+                      "title": "Category"
+                    },
+                    "arguments": {
+                      "anyOf": [
+                        {
+                          "type": "array",
+                          "items": {}
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Arguments",
+                      "default": null
+                    },
+                    "is_hidden": {
+                      "type": "boolean",
+                      "title": "Is Hidden"
+                    },
+                    "call_style": {
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "spread",
+                            "single"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Call Style",
+                      "default": null
+                    },
+                    "explanation": {
+                      "type": "string",
+                      "title": "Explanation",
+                      "minLength": 5
+                    },
+                    "fixture_sql": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Fixture Sql",
+                      "default": null
+                    },
+                    "expected_output": {
+                      "type": "string",
+                      "title": "Expected Output"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "title": "ExerciseDraft",
+              "required": [
+                "title",
+                "problem_statement",
+                "quick_theory",
+                "starter_code",
+                "reference_solution",
+                "test_cases",
+                "hints",
+                "constraints",
+                "common_pitfall_warning"
+              ],
+              "properties": {
+                "hints": {
+                  "$ref": "#/$defs/Hints"
+                },
+                "title": {
+                  "type": "string",
+                  "title": "Title",
+                  "maxLength": 200,
+                  "minLength": 5
+                },
+                "test_cases": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/TestCase"
+                  },
+                  "title": "Test Cases",
+                  "maxItems": 8,
+                  "minItems": 4
+                },
+                "constraints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Constraints"
+                },
+                "fixture_sql": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Fixture Sql",
+                  "default": null
+                },
+                "quick_theory": {
+                  "type": "string",
+                  "title": "Quick Theory",
+                  "minLength": 20
+                },
+                "starter_code": {
+                  "type": "string",
+                  "title": "Starter Code",
+                  "maxLength": 20000,
+                  "minLength": 1
+                },
+                "problem_statement": {
+                  "type": "string",
+                  "title": "Problem Statement",
+                  "maxLength": 14000,
+                  "minLength": 80
+                },
+                "reference_solution": {
+                  "type": "string",
+                  "title": "Reference Solution",
+                  "maxLength": 20000,
+                  "minLength": 1
+                },
+                "common_pitfall_warning": {
+                  "type": "string",
+                  "title": "Common Pitfall Warning"
+                }
+              },
+              "additionalProperties": false
+            },
+            "specification": {
+              "mode": "diagnostic",
+              "language": "cpp",
+              "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+              "execution": {
+                "mode": "stdio",
+                "comparator": "text",
+                "entrypoint": "main"
+              },
+              "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+              "difficulty": "EASY",
+              "source_refs": [
+                {
+                  "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+                  "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1"
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+                  "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be"
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+                  "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8"
+                }
+              ],
+              "user_request": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+              "concept_title": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+              "prerequisites": [
+                "CPP-COND-01"
+              ],
+              "recent_errors": [],
+              "schema_version": "4.0",
+              "selection_mode": "explicit",
+              "target_concept": "CPP-LOOP-01",
+              "learner_evidence": {
+                "policy": "adaptive_policy_v3",
+                "mastery": null,
+                "attempts": 0,
+                "prerequisite_gaps": [
+                  "CPP-COND-01"
+                ]
+              },
+              "test_constraints": {
+                "max_cases": 8,
+                "min_cases": 4,
+                "require_hidden_case": true,
+                "max_execution_time_ms": 3000,
+                "require_boundary_case": true
+              },
+              "target_sub_skills": [
+                "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+              ],
+              "learning_objectives": [
+                "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+              ],
+              "required_constructs": [
+                "while"
+              ],
+              "forbidden_constructs": []
+            },
+            "previous_draft": null
+          },
+          "model": "gemini-3.8-flash",
+          "stage": "ExerciseGeneratorAgent",
+          "status": "FAILED",
+          "provider": "GEMINI",
+          "error_code": "PROVIDER_SERVER_ERROR",
+          "error_type": "HTTPError",
+          "deadline_ms": 18000,
+          "duration_ms": 3427,
+          "http_status": 503,
+          "prompt_hash": "7aef08b94ec239ab371bae00b79793b2db84adcb94067bc78fdab870f37e7505",
+          "error_message": "503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+          "prompt_version": "adaptive_v4"
+        },
+        {
+          "input": {
+            "feedback": null,
+            "output_schema": {
+              "type": "object",
+              "$defs": {
+                "Hints": {
+                  "type": "object",
+                  "title": "Hints",
+                  "required": [
+                    "scaffold_1_conceptual",
+                    "scaffold_2_syntax",
+                    "scaffold_3_pseudocode"
+                  ],
+                  "properties": {
+                    "scaffold_2_syntax": {
+                      "type": "string",
+                      "title": "Scaffold 2 Syntax",
+                      "minLength": 5
+                    },
+                    "scaffold_1_conceptual": {
+                      "type": "string",
+                      "title": "Scaffold 1 Conceptual",
+                      "minLength": 5
+                    },
+                    "scaffold_3_pseudocode": {
+                      "type": "string",
+                      "title": "Scaffold 3 Pseudocode",
+                      "minLength": 5
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "TestCase": {
+                  "type": "object",
+                  "title": "TestCase",
+                  "required": [
+                    "expected_output",
+                    "is_hidden",
+                    "category",
+                    "explanation"
+                  ],
+                  "properties": {
+                    "input": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Input",
+                      "default": null
+                    },
+                    "category": {
+                      "enum": [
+                        "normal",
+                        "boundary"
+                      ],
+                      "type": "string",
+                      "title": "Category"
+                    },
+                    "arguments": {
+                      "anyOf": [
+                        {
+                          "type": "array",
+                          "items": {}
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Arguments",
+                      "default": null
+                    },
+                    "is_hidden": {
+                      "type": "boolean",
+                      "title": "Is Hidden"
+                    },
+                    "call_style": {
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "spread",
+                            "single"
+                          ],
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Call Style",
+                      "default": null
+                    },
+                    "explanation": {
+                      "type": "string",
+                      "title": "Explanation",
+                      "minLength": 5
+                    },
+                    "fixture_sql": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Fixture Sql",
+                      "default": null
+                    },
+                    "expected_output": {
+                      "type": "string",
+                      "title": "Expected Output"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "title": "ExerciseDraft",
+              "required": [
+                "title",
+                "problem_statement",
+                "quick_theory",
+                "starter_code",
+                "reference_solution",
+                "test_cases",
+                "hints",
+                "constraints",
+                "common_pitfall_warning"
+              ],
+              "properties": {
+                "hints": {
+                  "$ref": "#/$defs/Hints"
+                },
+                "title": {
+                  "type": "string",
+                  "title": "Title",
+                  "maxLength": 200,
+                  "minLength": 5
+                },
+                "test_cases": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/TestCase"
+                  },
+                  "title": "Test Cases",
+                  "maxItems": 8,
+                  "minItems": 4
+                },
+                "constraints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Constraints"
+                },
+                "fixture_sql": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Fixture Sql",
+                  "default": null
+                },
+                "quick_theory": {
+                  "type": "string",
+                  "title": "Quick Theory",
+                  "minLength": 20
+                },
+                "starter_code": {
+                  "type": "string",
+                  "title": "Starter Code",
+                  "maxLength": 20000,
+                  "minLength": 1
+                },
+                "problem_statement": {
+                  "type": "string",
+                  "title": "Problem Statement",
+                  "maxLength": 14000,
+                  "minLength": 80
+                },
+                "reference_solution": {
+                  "type": "string",
+                  "title": "Reference Solution",
+                  "maxLength": 20000,
+                  "minLength": 1
+                },
+                "common_pitfall_warning": {
+                  "type": "string",
+                  "title": "Common Pitfall Warning"
+                }
+              },
+              "additionalProperties": false
+            },
+            "specification": {
+              "mode": "diagnostic",
+              "language": "cpp",
+              "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+              "execution": {
+                "mode": "stdio",
+                "comparator": "text",
+                "entrypoint": "main"
+              },
+              "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+              "difficulty": "EASY",
+              "source_refs": [
+                {
+                  "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+                  "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1"
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+                  "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be"
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+                  "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8"
+                }
+              ],
+              "user_request": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+              "concept_title": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+              "prerequisites": [
+                "CPP-COND-01"
+              ],
+              "recent_errors": [],
+              "schema_version": "4.0",
+              "selection_mode": "explicit",
+              "target_concept": "CPP-LOOP-01",
+              "learner_evidence": {
+                "policy": "adaptive_policy_v3",
+                "mastery": null,
+                "attempts": 0,
+                "prerequisite_gaps": [
+                  "CPP-COND-01"
+                ]
+              },
+              "test_constraints": {
+                "max_cases": 8,
+                "min_cases": 4,
+                "require_hidden_case": true,
+                "max_execution_time_ms": 3000,
+                "require_boundary_case": true
+              },
+              "target_sub_skills": [
+                "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+              ],
+              "learning_objectives": [
+                "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+              ],
+              "required_constructs": [
+                "while"
+              ],
+              "forbidden_constructs": []
+            },
+            "previous_draft": null
+          },
+          "model": "openai/gpt-oss-120b",
+          "stage": "ExerciseGeneratorAgent",
+          "usage": {
+            "queue_time": 0.348529948,
+            "total_time": 3.573870355,
+            "prompt_time": 0.08704366,
+            "total_tokens": 3556,
+            "prompt_tokens": 1914,
+            "completion_time": 3.486826695,
+            "completion_tokens": 1642,
+            "completion_tokens_details": {
+              "reasoning_tokens": 583
+            }
+          },
+          "output": {
+            "hints": {
+              "scaffold_2_syntax": "while (điều kiện) { // thực hiện; // cập nhật biến đếm }",
+              "scaffold_1_conceptual": "Vòng while lặp lại khi điều kiện đúng; cần một biến đếm để dừng vòng lặp.",
+              "scaffold_3_pseudocode": "i = 1; sum = 0; while (i <= n) { sum = sum + i; i = i + 1; } in sum"
+            },
+            "title": "Tính tổng các số từ 1 đến n bằng vòng lặp while",
+            "test_cases": [
+              {
+                "input": "0",
+                "category": "boundary",
+                "arguments": null,
+                "is_hidden": false,
+                "call_style": null,
+                "explanation": "Khi n = 0, không có số nào để cộng, tổng phải bằng 0.",
+                "fixture_sql": null,
+                "expected_output": "0"
+              },
+              {
+                "input": "5",
+                "category": "normal",
+                "arguments": null,
+                "is_hidden": false,
+                "call_style": null,
+                "explanation": "Tổng 1+2+3+4+5 = 15.",
+                "fixture_sql": null,
+                "expected_output": "15"
+              },
+              {
+                "input": "100",
+                "category": "boundary",
+                "arguments": null,
+                "is_hidden": false,
+                "call_style": null,
+                "explanation": "Sử dụng công thức n*(n+1)/2 cho n=100 cho kết quả 5050.",
+                "fixture_sql": null,
+                "expected_output": "5050"
+              },
+              {
+                "input": "57",
+                "category": "normal",
+                "arguments": null,
+                "is_hidden": true,
+                "call_style": null,
+                "explanation": "Kiểm tra chương trình với một giá trị ngẫu nhiên trong khoảng cho phép.",
+                "fixture_sql": null,
+                "expected_output": "1653"
+              },
+              {
+                "input": "10",
+                "category": "normal",
+                "arguments": null,
+                "is_hidden": false,
+                "call_style": null,
+                "explanation": "Tổng 1+2+...+10 = 55, một trường hợp trung bình.",
+                "fixture_sql": null,
+                "expected_output": "55"
+              }
+            ],
+            "constraints": [
+              "Chương trình phải sử dụng vòng lặp while để tính tổng.",
+              "Giá trị n phải nằm trong khoảng 0 đến 100.",
+              "Kết quả phải được in ra một số nguyên duy nhất, không có ký tự thừa."
+            ],
+            "quick_theory": "Vòng lặp while trong C++ thực hiện lặp lại khối lệnh cho đến khi biểu thức điều kiện trở thành false. Cú pháp: while (điều kiện) { // khối lệnh }. Khi dùng while để tính tổng, ta cần khởi tạo biến đếm và biến tổng, sau đó trong mỗi vòng lặp cập nhật chúng và giảm/ tăng biến đếm cho tới khi điều kiện không còn đúng.",
+            "starter_code": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    // TODO: Đọc n từ stdin\n    // TODO: Sử dụng vòng lặp while để tính tổng từ 1 đến n\n    // TODO: In kết quả ra stdout\n    return 0;\n}\n",
+            "problem_statement": "Viết chương trình C++ nhận vào một số nguyên n (0 ≤ n ≤ 100) và in ra tổng các số nguyên dương từ 1 đến n. Yêu cầu bắt buộc phải sử dụng vòng lặp while để thực hiện tính toán. Chương trình phải xử lý đúng các trường hợp biên như n = 0 (kết quả 0) và n = 100 (kết quả 5050). Đầu vào được đưa qua stdin, đầu ra qua stdout, mỗi kết quả in trên một dòng duy nhất.",
+            "reference_solution": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    int n;\n    if (!(cin >> n)) return 0; // nếu không đọc được, thoát\n    int sum = 0;\n    int i = 1;\n    while (i <= n) {\n        sum += i;\n        ++i;\n    }\n    cout << sum;\n    return 0;\n}\n",
+            "common_pitfall_warning": "Tránh việc đặt biến đếm sai hướng (ví dụ i-- thay vì i++) gây vòng lặp vô hạn, và nhớ xử lý trường hợp n = 0 để không thực hiện vòng lặp."
+          },
+          "status": "SUCCEEDED",
+          "provider": "GROQ",
+          "deadline_ms": 18000,
+          "duration_ms": 6587,
+          "http_status": 200,
+          "prompt_hash": "7aef08b94ec239ab371bae00b79793b2db84adcb94067bc78fdab870f37e7505",
+          "response_id": "chatcmpl-986505e4-466c-4273-b2f6-db33c2aaf306",
+          "response_hash": "ef10de31ec9609acc7107bb97dde2749af2a163011afa9af85aadde3ceed0402",
+          "prompt_version": "adaptive_v4"
+        }
+      ],
+      "output_hash": "4741ffc5567ddadc0548e2fc6687a3c5b12fc4bf3c25a1366917019335c98ffd"
+    },
+    {
+      "id": "1a7443c6-dd2d-4276-88b8-ab70007f9c41",
+      "agent": "SchemaValidator",
+      "input": {
+        "draft": {
+          "hints": {
+            "scaffold_2_syntax": "while (điều kiện) { // thực hiện; // cập nhật biến đếm }",
+            "scaffold_1_conceptual": "Vòng while lặp lại khi điều kiện đúng; cần một biến đếm để dừng vòng lặp.",
+            "scaffold_3_pseudocode": "i = 1; sum = 0; while (i <= n) { sum = sum + i; i = i + 1; } in sum"
+          },
+          "title": "Tính tổng các số từ 1 đến n bằng vòng lặp while",
+          "test_cases": [
+            {
+              "input": "0",
+              "category": "boundary",
+              "arguments": null,
+              "is_hidden": false,
+              "call_style": null,
+              "explanation": "Khi n = 0, không có số nào để cộng, tổng phải bằng 0.",
+              "fixture_sql": null,
+              "expected_output": "0"
+            },
+            {
+              "input": "5",
+              "category": "normal",
+              "arguments": null,
+              "is_hidden": false,
+              "call_style": null,
+              "explanation": "Tổng 1+2+3+4+5 = 15.",
+              "fixture_sql": null,
+              "expected_output": "15"
+            },
+            {
+              "input": "100",
+              "category": "boundary",
+              "arguments": null,
+              "is_hidden": false,
+              "call_style": null,
+              "explanation": "Sử dụng công thức n*(n+1)/2 cho n=100 cho kết quả 5050.",
+              "fixture_sql": null,
+              "expected_output": "5050"
+            },
+            {
+              "input": "57",
+              "category": "normal",
+              "arguments": null,
+              "is_hidden": true,
+              "call_style": null,
+              "explanation": "Kiểm tra chương trình với một giá trị ngẫu nhiên trong khoảng cho phép.",
+              "fixture_sql": null,
+              "expected_output": "1653"
+            },
+            {
+              "input": "10",
+              "category": "normal",
+              "arguments": null,
+              "is_hidden": false,
+              "call_style": null,
+              "explanation": "Tổng 1+2+...+10 = 55, một trường hợp trung bình.",
+              "fixture_sql": null,
+              "expected_output": "55"
+            }
+          ],
+          "constraints": [
+            "Chương trình phải sử dụng vòng lặp while để tính tổng.",
+            "Giá trị n phải nằm trong khoảng 0 đến 100.",
+            "Kết quả phải được in ra một số nguyên duy nhất, không có ký tự thừa."
+          ],
+          "quick_theory": "Vòng lặp while trong C++ thực hiện lặp lại khối lệnh cho đến khi biểu thức điều kiện trở thành false. Cú pháp: while (điều kiện) { // khối lệnh }. Khi dùng while để tính tổng, ta cần khởi tạo biến đếm và biến tổng, sau đó trong mỗi vòng lặp cập nhật chúng và giảm/ tăng biến đếm cho tới khi điều kiện không còn đúng.",
+          "starter_code": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    // TODO: Đọc n từ stdin\n    // TODO: Sử dụng vòng lặp while để tính tổng từ 1 đến n\n    // TODO: In kết quả ra stdout\n    return 0;\n}\n",
+          "problem_statement": "Viết chương trình C++ nhận vào một số nguyên n (0 ≤ n ≤ 100) và in ra tổng các số nguyên dương từ 1 đến n. Yêu cầu bắt buộc phải sử dụng vòng lặp while để thực hiện tính toán. Chương trình phải xử lý đúng các trường hợp biên như n = 0 (kết quả 0) và n = 100 (kết quả 5050). Đầu vào được đưa qua stdin, đầu ra qua stdout, mỗi kết quả in trên một dòng duy nhất.",
+          "reference_solution": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    int n;\n    if (!(cin >> n)) return 0; // nếu không đọc được, thoát\n    int sum = 0;\n    int i = 1;\n    while (i <= n) {\n        sum += i;\n        ++i;\n    }\n    cout << sum;\n    return 0;\n}\n",
+          "common_pitfall_warning": "Tránh việc đặt biến đếm sai hướng (ví dụ i-- thay vì i++) gây vòng lặp vô hạn, và nhớ xử lý trường hợp n = 0 để không thực hiện vòng lặp."
+        },
+        "specification": {
+          "mode": "diagnostic",
+          "language": "cpp",
+          "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+          "execution": {
+            "mode": "stdio",
+            "comparator": "text",
+            "entrypoint": "main"
+          },
+          "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+          "difficulty": "EASY",
+          "source_refs": [
+            {
+              "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+              "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+              "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+              "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8"
+            }
+          ],
+          "user_request": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+          "concept_title": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+          "prerequisites": [
+            "CPP-COND-01"
+          ],
+          "recent_errors": [],
+          "schema_version": "4.0",
+          "selection_mode": "explicit",
+          "target_concept": "CPP-LOOP-01",
+          "learner_evidence": {
+            "policy": "adaptive_policy_v3",
+            "mastery": null,
+            "attempts": 0,
+            "prerequisite_gaps": [
+              "CPP-COND-01"
+            ]
+          },
+          "test_constraints": {
+            "max_cases": 8,
+            "min_cases": 4,
+            "require_hidden_case": true,
+            "max_execution_time_ms": 3000,
+            "require_boundary_case": true
+          },
+          "target_sub_skills": [
+            "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+          ],
+          "learning_objectives": [
+            "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+          ],
+          "required_constructs": [
+            "while"
+          ],
+          "forbidden_constructs": []
+        }
+      },
+      "method": "PYDANTIC_AND_RULES",
+      "output": {
+        "errors": [],
+        "passed": true,
+        "schema_version": "4.0"
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-20T09:08:29.611769+00:00",
+      "sequence": 6,
+      "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+      "input_hash": "4d3a645b19ce036700b3a9f5b1a95c2529c630300c77941668f025d5d8140603",
+      "started_at": "2026-09-20T09:08:29.611297+00:00",
+      "duration_ms": 0,
+      "model_calls": [],
+      "output_hash": "2ee10fda2171fbe2b6964a0753875f5ff7339044279a7bfc31b76acc59124268"
+    },
+    {
+      "id": "974bffc7-c410-4574-98d0-692583f67872",
+      "agent": "ConstraintValidator",
+      "input": {
+        "specification": {
+          "mode": "diagnostic",
+          "language": "cpp",
+          "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+          "execution": {
+            "mode": "stdio",
+            "comparator": "text",
+            "entrypoint": "main"
+          },
+          "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+          "difficulty": "EASY",
+          "source_refs": [
+            {
+              "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+              "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+              "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+              "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8"
+            }
+          ],
+          "user_request": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+          "concept_title": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+          "prerequisites": [
+            "CPP-COND-01"
+          ],
+          "recent_errors": [],
+          "schema_version": "4.0",
+          "selection_mode": "explicit",
+          "target_concept": "CPP-LOOP-01",
+          "learner_evidence": {
+            "policy": "adaptive_policy_v3",
+            "mastery": null,
+            "attempts": 0,
+            "prerequisite_gaps": [
+              "CPP-COND-01"
+            ]
+          },
+          "test_constraints": {
+            "max_cases": 8,
+            "min_cases": 4,
+            "require_hidden_case": true,
+            "max_execution_time_ms": 3000,
+            "require_boundary_case": true
+          },
+          "target_sub_skills": [
+            "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+          ],
+          "learning_objectives": [
+            "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+          ],
+          "required_constructs": [
+            "while"
+          ],
+          "forbidden_constructs": []
+        },
+        "reference_solution": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    int n;\n    if (!(cin >> n)) return 0; // nếu không đọc được, thoát\n    int sum = 0;\n    int i = 1;\n    while (i <= n) {\n        sum += i;\n        ++i;\n    }\n    cout << sum;\n    return 0;\n}\n"
+      },
+      "method": "STATIC_ANALYSIS",
+      "output": {
+        "scope": "python_ast_or_language_tokens",
+        "errors": [],
+        "passed": true
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-20T09:08:29.612378+00:00",
+      "sequence": 7,
+      "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+      "input_hash": "2693f4174b12e383a2c955515bbfe5ef563f9a828b2830ad8c418f32881e36e8",
+      "started_at": "2026-09-20T09:08:29.611840+00:00",
+      "duration_ms": 0,
+      "model_calls": [],
+      "output_hash": "0d711a2a00c194cf09061222295a1820b3e9b5ccb0caa97531e6c75b4fd0ce45"
+    },
+    {
+      "id": "67f9d5d6-ade5-4af3-8fe9-6bd868ed3291",
+      "agent": "SandboxValidator",
+      "input": {
+        "draft": {
+          "hints": {
+            "scaffold_2_syntax": "while (điều kiện) { // thực hiện; // cập nhật biến đếm }",
+            "scaffold_1_conceptual": "Vòng while lặp lại khi điều kiện đúng; cần một biến đếm để dừng vòng lặp.",
+            "scaffold_3_pseudocode": "i = 1; sum = 0; while (i <= n) { sum = sum + i; i = i + 1; } in sum"
+          },
+          "title": "Tính tổng các số từ 1 đến n bằng vòng lặp while",
+          "test_cases": [
+            {
+              "input": "0",
+              "category": "boundary",
+              "arguments": null,
+              "is_hidden": false,
+              "call_style": null,
+              "explanation": "Khi n = 0, không có số nào để cộng, tổng phải bằng 0.",
+              "fixture_sql": null,
+              "expected_output": "0"
+            },
+            {
+              "input": "5",
+              "category": "normal",
+              "arguments": null,
+              "is_hidden": false,
+              "call_style": null,
+              "explanation": "Tổng 1+2+3+4+5 = 15.",
+              "fixture_sql": null,
+              "expected_output": "15"
+            },
+            {
+              "input": "100",
+              "category": "boundary",
+              "arguments": null,
+              "is_hidden": false,
+              "call_style": null,
+              "explanation": "Sử dụng công thức n*(n+1)/2 cho n=100 cho kết quả 5050.",
+              "fixture_sql": null,
+              "expected_output": "5050"
+            },
+            {
+              "input": "57",
+              "category": "normal",
+              "arguments": null,
+              "is_hidden": true,
+              "call_style": null,
+              "explanation": "Kiểm tra chương trình với một giá trị ngẫu nhiên trong khoảng cho phép.",
+              "fixture_sql": null,
+              "expected_output": "1653"
+            },
+            {
+              "input": "10",
+              "category": "normal",
+              "arguments": null,
+              "is_hidden": false,
+              "call_style": null,
+              "explanation": "Tổng 1+2+...+10 = 55, một trường hợp trung bình.",
+              "fixture_sql": null,
+              "expected_output": "55"
+            }
+          ],
+          "constraints": [
+            "Chương trình phải sử dụng vòng lặp while để tính tổng.",
+            "Giá trị n phải nằm trong khoảng 0 đến 100.",
+            "Kết quả phải được in ra một số nguyên duy nhất, không có ký tự thừa."
+          ],
+          "quick_theory": "Vòng lặp while trong C++ thực hiện lặp lại khối lệnh cho đến khi biểu thức điều kiện trở thành false. Cú pháp: while (điều kiện) { // khối lệnh }. Khi dùng while để tính tổng, ta cần khởi tạo biến đếm và biến tổng, sau đó trong mỗi vòng lặp cập nhật chúng và giảm/ tăng biến đếm cho tới khi điều kiện không còn đúng.",
+          "starter_code": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    // TODO: Đọc n từ stdin\n    // TODO: Sử dụng vòng lặp while để tính tổng từ 1 đến n\n    // TODO: In kết quả ra stdout\n    return 0;\n}\n",
+          "problem_statement": "Viết chương trình C++ nhận vào một số nguyên n (0 ≤ n ≤ 100) và in ra tổng các số nguyên dương từ 1 đến n. Yêu cầu bắt buộc phải sử dụng vòng lặp while để thực hiện tính toán. Chương trình phải xử lý đúng các trường hợp biên như n = 0 (kết quả 0) và n = 100 (kết quả 5050). Đầu vào được đưa qua stdin, đầu ra qua stdout, mỗi kết quả in trên một dòng duy nhất.",
+          "reference_solution": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    int n;\n    if (!(cin >> n)) return 0; // nếu không đọc được, thoát\n    int sum = 0;\n    int i = 1;\n    while (i <= n) {\n        sum += i;\n        ++i;\n    }\n    cout << sum;\n    return 0;\n}\n",
+          "common_pitfall_warning": "Tránh việc đặt biến đếm sai hướng (ví dụ i-- thay vì i++) gây vòng lặp vô hạn, và nhớ xử lý trường hợp n = 0 để không thực hiện vòng lặp."
+        },
+        "specification": {
+          "mode": "diagnostic",
+          "language": "cpp",
+          "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+          "execution": {
+            "mode": "stdio",
+            "comparator": "text",
+            "entrypoint": "main"
+          },
+          "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+          "difficulty": "EASY",
+          "source_refs": [
+            {
+              "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+              "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+              "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+              "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8"
+            }
+          ],
+          "user_request": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+          "concept_title": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+          "prerequisites": [
+            "CPP-COND-01"
+          ],
+          "recent_errors": [],
+          "schema_version": "4.0",
+          "selection_mode": "explicit",
+          "target_concept": "CPP-LOOP-01",
+          "learner_evidence": {
+            "policy": "adaptive_policy_v3",
+            "mastery": null,
+            "attempts": 0,
+            "prerequisite_gaps": [
+              "CPP-COND-01"
+            ]
+          },
+          "test_constraints": {
+            "max_cases": 8,
+            "min_cases": 4,
+            "require_hidden_case": true,
+            "max_execution_time_ms": 3000,
+            "require_boundary_case": true
+          },
+          "target_sub_skills": [
+            "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+          ],
+          "learning_objectives": [
+            "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+          ],
+          "required_constructs": [
+            "while"
+          ],
+          "forbidden_constructs": []
+        }
+      },
+      "method": "DOCKER_EXECUTION",
+      "output": {
+        "errors": [],
+        "passed": true,
+        "test_results": [
+          {
+            "image": "gcc:12",
+            "input": "0",
+            "actual": "0",
+            "passed": true,
+            "status": "SUCCESS",
+            "stderr": "",
+            "category": "boundary",
+            "executed": true,
+            "expected": "0",
+            "is_hidden": false,
+            "case_index": 1,
+            "runtime_ms": 3202,
+            "harness_version": "adaptive_harness_v4"
+          },
+          {
+            "image": "gcc:12",
+            "input": "5",
+            "actual": "15",
+            "passed": true,
+            "status": "SUCCESS",
+            "stderr": "",
+            "category": "normal",
+            "executed": true,
+            "expected": "15",
+            "is_hidden": false,
+            "case_index": 2,
+            "runtime_ms": 2517,
+            "harness_version": "adaptive_harness_v4"
+          },
+          {
+            "image": "gcc:12",
+            "input": "100",
+            "actual": "5050",
+            "passed": true,
+            "status": "SUCCESS",
+            "stderr": "",
+            "category": "boundary",
+            "executed": true,
+            "expected": "5050",
+            "is_hidden": false,
+            "case_index": 3,
+            "runtime_ms": 2527,
+            "harness_version": "adaptive_harness_v4"
+          },
+          {
+            "image": "gcc:12",
+            "input": "57",
+            "actual": "1653",
+            "passed": true,
+            "status": "SUCCESS",
+            "stderr": "",
+            "category": "normal",
+            "executed": true,
+            "expected": "1653",
+            "is_hidden": true,
+            "case_index": 4,
+            "runtime_ms": 2581,
+            "harness_version": "adaptive_harness_v4"
+          },
+          {
+            "image": "gcc:12",
+            "input": "10",
+            "actual": "55",
+            "passed": true,
+            "status": "SUCCESS",
+            "stderr": "",
+            "category": "normal",
+            "executed": true,
+            "expected": "55",
+            "is_hidden": false,
+            "case_index": 5,
+            "runtime_ms": 2474,
+            "harness_version": "adaptive_harness_v4"
+          }
+        ],
+        "harness_version": "adaptive_harness_v3"
+      },
+      "status": "SUCCEEDED",
+      "attempt": 1,
+      "ended_at": "2026-09-20T09:08:42.922420+00:00",
+      "sequence": 8,
+      "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+      "input_hash": "4d3a645b19ce036700b3a9f5b1a95c2529c630300c77941668f025d5d8140603",
+      "started_at": "2026-09-20T09:08:29.612441+00:00",
+      "duration_ms": 13310,
+      "model_calls": [],
+      "output_hash": "75e29cb5f466ed65753e56df93a69a5eefab7e12195615cc849f3af23d782d07"
+    },
+    {
+      "id": "230c282c-5c2c-40b0-a6a5-18b19ef50cae",
+      "agent": "CriticEvaluatorAgent",
+      "error": {
+        "code": "PROVIDER_DEADLINE_EXCEEDED",
+        "message": "Không nhận được JSON hợp lệ từ provider trong ngân sách cho phép"
+      },
+      "input": {
+        "draft": {
+          "hints": {
+            "scaffold_2_syntax": "while (điều kiện) { // thực hiện; // cập nhật biến đếm }",
+            "scaffold_1_conceptual": "Vòng while lặp lại khi điều kiện đúng; cần một biến đếm để dừng vòng lặp.",
+            "scaffold_3_pseudocode": "i = 1; sum = 0; while (i <= n) { sum = sum + i; i = i + 1; } in sum"
+          },
+          "title": "Tính tổng các số từ 1 đến n bằng vòng lặp while",
+          "test_cases": [
+            {
+              "input": "0",
+              "category": "boundary",
+              "arguments": null,
+              "is_hidden": false,
+              "call_style": null,
+              "explanation": "Khi n = 0, không có số nào để cộng, tổng phải bằng 0.",
+              "fixture_sql": null,
+              "expected_output": "0"
+            },
+            {
+              "input": "5",
+              "category": "normal",
+              "arguments": null,
+              "is_hidden": false,
+              "call_style": null,
+              "explanation": "Tổng 1+2+3+4+5 = 15.",
+              "fixture_sql": null,
+              "expected_output": "15"
+            },
+            {
+              "input": "100",
+              "category": "boundary",
+              "arguments": null,
+              "is_hidden": false,
+              "call_style": null,
+              "explanation": "Sử dụng công thức n*(n+1)/2 cho n=100 cho kết quả 5050.",
+              "fixture_sql": null,
+              "expected_output": "5050"
+            },
+            {
+              "input": "57",
+              "category": "normal",
+              "arguments": null,
+              "is_hidden": true,
+              "call_style": null,
+              "explanation": "Kiểm tra chương trình với một giá trị ngẫu nhiên trong khoảng cho phép.",
+              "fixture_sql": null,
+              "expected_output": "1653"
+            },
+            {
+              "input": "10",
+              "category": "normal",
+              "arguments": null,
+              "is_hidden": false,
+              "call_style": null,
+              "explanation": "Tổng 1+2+...+10 = 55, một trường hợp trung bình.",
+              "fixture_sql": null,
+              "expected_output": "55"
+            }
+          ],
+          "constraints": [
+            "Chương trình phải sử dụng vòng lặp while để tính tổng.",
+            "Giá trị n phải nằm trong khoảng 0 đến 100.",
+            "Kết quả phải được in ra một số nguyên duy nhất, không có ký tự thừa."
+          ],
+          "quick_theory": "Vòng lặp while trong C++ thực hiện lặp lại khối lệnh cho đến khi biểu thức điều kiện trở thành false. Cú pháp: while (điều kiện) { // khối lệnh }. Khi dùng while để tính tổng, ta cần khởi tạo biến đếm và biến tổng, sau đó trong mỗi vòng lặp cập nhật chúng và giảm/ tăng biến đếm cho tới khi điều kiện không còn đúng.",
+          "starter_code": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    // TODO: Đọc n từ stdin\n    // TODO: Sử dụng vòng lặp while để tính tổng từ 1 đến n\n    // TODO: In kết quả ra stdout\n    return 0;\n}\n",
+          "problem_statement": "Viết chương trình C++ nhận vào một số nguyên n (0 ≤ n ≤ 100) và in ra tổng các số nguyên dương từ 1 đến n. Yêu cầu bắt buộc phải sử dụng vòng lặp while để thực hiện tính toán. Chương trình phải xử lý đúng các trường hợp biên như n = 0 (kết quả 0) và n = 100 (kết quả 5050). Đầu vào được đưa qua stdin, đầu ra qua stdout, mỗi kết quả in trên một dòng duy nhất.",
+          "reference_solution": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    int n;\n    if (!(cin >> n)) return 0; // nếu không đọc được, thoát\n    int sum = 0;\n    int i = 1;\n    while (i <= n) {\n        sum += i;\n        ++i;\n    }\n    cout << sum;\n    return 0;\n}\n",
+          "common_pitfall_warning": "Tránh việc đặt biến đếm sai hướng (ví dụ i-- thay vì i++) gây vòng lặp vô hạn, và nhớ xử lý trường hợp n = 0 để không thực hiện vòng lặp."
+        },
+        "theory": {
+          "reply": "## Vòng lặp while trong C++\n### Bản chất\nVòng lặp `while` là một cấu trúc điều khiển trong C++ cho phép thực hiện một khối lệnh lặp đi lặp lại miễn là điều kiện cho trước vẫn được thỏa mãn.\n\n### Cú pháp\n```cpp\nwhile (điều_kiện) {\n    // Khối lệnh cần thực hiện lặp lại\n}\n```\nTrong đó, `điều_kiện` là biểu thức logic mà nếu nó đúng (`true`), khối lệnh bên trong sẽ được thực hiện. Quá trình này lặp lại cho đến khi `điều_kiện` trở thành `false`.\n\n### Ví dụ\nTính tổng các số từ 1 đến `n` sử dụng vòng lặp `while`:\n```cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int n;\n    cout << \"Nhap so nguyen n (0-100): \";\n    cin >> n;\n\n    if (n < 0 || n > 100) {\n        cout << \"So nguyen n khong hop le!\";\n        return 1;\n    }\n\n    int i = 1;\n    int tong = 0;\n    while (i <= n) {\n        tong += i;\n        i++;\n    }\n\n    cout << \"Tong cac so tu 1 den \" << n << \" la: \" << tong;\n    return 0;\n}\n```\n### Lỗi thường gặp\n- **Lặp vô hạn**: Khi điều kiện trong `while` luôn đúng và không có cơ chế thoát ra khỏi vòng lặp.\n- **Quên cập nhật biến**: Trong vòng lặp `while`, quên cập nhật giá trị của biến dùng trong điều kiện, dẫn đến lặp vô hạn.\n\n### Nghiệm mẫu bài tập\nBài tập yêu cầu nhập một số nguyên `n` từ 0 đến 100 và in tổng các số từ 1 đến `n`, bắt buộc dùng vòng lặp `while`. Bài giải trên đã minh họa cách thực hiện yêu cầu này.\n\n### Lưu ý\n- Luôn kiểm tra điều kiện biên và xử lý trường hợp ngoại lệ.\n- Sử dụng vòng lặp `while` khi không biết trước số lần lặp hoặc khi cần kiểm tra điều kiện trước mỗi lần lặp.\n",
+          "source": "LLM",
+          "source_ids": [
+            "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+            "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+            "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md"
+          ]
+        },
+        "specification": {
+          "mode": "diagnostic",
+          "language": "cpp",
+          "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+          "execution": {
+            "mode": "stdio",
+            "comparator": "text",
+            "entrypoint": "main"
+          },
+          "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+          "difficulty": "EASY",
+          "source_refs": [
+            {
+              "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+              "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+              "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be"
+            },
+            {
+              "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+              "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8"
+            }
+          ],
+          "user_request": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+          "concept_title": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+          "prerequisites": [
+            "CPP-COND-01"
+          ],
+          "recent_errors": [],
+          "schema_version": "4.0",
+          "selection_mode": "explicit",
+          "target_concept": "CPP-LOOP-01",
+          "learner_evidence": {
+            "policy": "adaptive_policy_v3",
+            "mastery": null,
+            "attempts": 0,
+            "prerequisite_gaps": [
+              "CPP-COND-01"
+            ]
+          },
+          "test_constraints": {
+            "max_cases": 8,
+            "min_cases": 4,
+            "require_hidden_case": true,
+            "max_execution_time_ms": 3000,
+            "require_boundary_case": true
+          },
+          "target_sub_skills": [
+            "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+          ],
+          "learning_objectives": [
+            "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+          ],
+          "required_constructs": [
+            "while"
+          ],
+          "forbidden_constructs": []
+        }
+      },
+      "method": "LLM",
+      "status": "FAILED",
+      "attempt": 1,
+      "ended_at": "2026-09-20T09:09:02.275810+00:00",
+      "sequence": 9,
+      "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+      "input_hash": "fab1f2cebb19cc419327357f30e9b0f4c067a84fd4098706deb572fcdd4022b5",
+      "started_at": "2026-09-20T09:08:42.922606+00:00",
+      "duration_ms": 19353,
+      "model_calls": [
+        {
+          "input": {
+            "theory": "## Vòng lặp while trong C++\n### Bản chất\nVòng lặp `while` là một cấu trúc điều khiển trong C++ cho phép thực hiện một khối lệnh lặp đi lặp lại miễn là điều kiện cho trước vẫn được thỏa mãn.\n\n### Cú pháp\n```cpp\nwhile (điều_kiện) {\n    // Khối lệnh cần thực hiện lặp lại\n}\n```\nTrong đó, `điều_kiện` là biểu thức logic mà nếu nó đúng (`true`), khối lệnh bên trong sẽ được thực hiện. Quá trình này lặp lại cho đến khi `điều_kiện` trở thành `false`.\n\n### Ví dụ\nTính tổng các số từ 1 đến `n` sử dụng vòng lặp `while`:\n```cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int n;\n    cout << \"Nhap so nguyen n (0-100): \";\n    cin >> n;\n\n    if (n < 0 || n > 100) {\n        cout << \"So nguyen n khong hop le!\";\n        return 1;\n    }\n\n    int i = 1;\n    int tong = 0;\n    while (i <= n) {\n        tong += i;\n        i++;\n    }\n\n    cout << \"Tong cac so tu 1 den \" << n << \" la: \" << tong;\n    return 0;\n}\n```\n### Lỗi thường gặp\n- **Lặp vô hạn**: Khi điều kiện trong `while` luôn đúng và không có cơ chế thoát ra khỏi vòng lặp.\n- **Quên cập nhật biến**: Trong vòng lặp `while`, quên cập nhật giá trị của biến dùng trong điều kiện, dẫn đến lặp vô hạn.\n\n### Nghiệm mẫu bài tập\nBài tập yêu cầu nhập một số nguyên `n` từ 0 đến 100 và in tổng các số từ 1 đến `n`, bắt buộc dùng vòng lặp `while`. Bài giải trên đã minh họa cách thực hiện yêu cầu này.\n\n### Lưu ý\n- Luôn kiểm tra điều kiện biên và xử lý trường hợp ngoại lệ.\n- Sử dụng vòng lặp `while` khi không biết trước số lần lặp hoặc khi cần kiểm tra điều kiện trước mỗi lần lặp.\n",
+            "exercise": {
+              "hints": {
+                "scaffold_2_syntax": "while (điều kiện) { // thực hiện; // cập nhật biến đếm }",
+                "scaffold_1_conceptual": "Vòng while lặp lại khi điều kiện đúng; cần một biến đếm để dừng vòng lặp.",
+                "scaffold_3_pseudocode": "i = 1; sum = 0; while (i <= n) { sum = sum + i; i = i + 1; } in sum"
+              },
+              "title": "Tính tổng các số từ 1 đến n bằng vòng lặp while",
+              "test_cases": [
+                {
+                  "input": "0",
+                  "category": "boundary",
+                  "arguments": null,
+                  "is_hidden": false,
+                  "call_style": null,
+                  "explanation": "Khi n = 0, không có số nào để cộng, tổng phải bằng 0.",
+                  "fixture_sql": null,
+                  "expected_output": "0"
+                },
+                {
+                  "input": "5",
+                  "category": "normal",
+                  "arguments": null,
+                  "is_hidden": false,
+                  "call_style": null,
+                  "explanation": "Tổng 1+2+3+4+5 = 15.",
+                  "fixture_sql": null,
+                  "expected_output": "15"
+                },
+                {
+                  "input": "100",
+                  "category": "boundary",
+                  "arguments": null,
+                  "is_hidden": false,
+                  "call_style": null,
+                  "explanation": "Sử dụng công thức n*(n+1)/2 cho n=100 cho kết quả 5050.",
+                  "fixture_sql": null,
+                  "expected_output": "5050"
+                },
+                {
+                  "input": "57",
+                  "category": "normal",
+                  "arguments": null,
+                  "is_hidden": true,
+                  "call_style": null,
+                  "explanation": "Kiểm tra chương trình với một giá trị ngẫu nhiên trong khoảng cho phép.",
+                  "fixture_sql": null,
+                  "expected_output": "1653"
+                },
+                {
+                  "input": "10",
+                  "category": "normal",
+                  "arguments": null,
+                  "is_hidden": false,
+                  "call_style": null,
+                  "explanation": "Tổng 1+2+...+10 = 55, một trường hợp trung bình.",
+                  "fixture_sql": null,
+                  "expected_output": "55"
+                }
+              ],
+              "constraints": [
+                "Chương trình phải sử dụng vòng lặp while để tính tổng.",
+                "Giá trị n phải nằm trong khoảng 0 đến 100.",
+                "Kết quả phải được in ra một số nguyên duy nhất, không có ký tự thừa."
+              ],
+              "quick_theory": "Vòng lặp while trong C++ thực hiện lặp lại khối lệnh cho đến khi biểu thức điều kiện trở thành false. Cú pháp: while (điều kiện) { // khối lệnh }. Khi dùng while để tính tổng, ta cần khởi tạo biến đếm và biến tổng, sau đó trong mỗi vòng lặp cập nhật chúng và giảm/ tăng biến đếm cho tới khi điều kiện không còn đúng.",
+              "starter_code": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    // TODO: Đọc n từ stdin\n    // TODO: Sử dụng vòng lặp while để tính tổng từ 1 đến n\n    // TODO: In kết quả ra stdout\n    return 0;\n}\n",
+              "problem_statement": "Viết chương trình C++ nhận vào một số nguyên n (0 ≤ n ≤ 100) và in ra tổng các số nguyên dương từ 1 đến n. Yêu cầu bắt buộc phải sử dụng vòng lặp while để thực hiện tính toán. Chương trình phải xử lý đúng các trường hợp biên như n = 0 (kết quả 0) và n = 100 (kết quả 5050). Đầu vào được đưa qua stdin, đầu ra qua stdout, mỗi kết quả in trên một dòng duy nhất.",
+              "reference_solution": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    int n;\n    if (!(cin >> n)) return 0; // nếu không đọc được, thoát\n    int sum = 0;\n    int i = 1;\n    while (i <= n) {\n        sum += i;\n        ++i;\n    }\n    cout << sum;\n    return 0;\n}\n",
+              "common_pitfall_warning": "Tránh việc đặt biến đếm sai hướng (ví dụ i-- thay vì i++) gây vòng lặp vô hạn, và nhớ xử lý trường hợp n = 0 để không thực hiện vòng lặp."
+            },
+            "output_schema": {
+              "type": "object",
+              "title": "CriticReview",
+              "required": [
+                "is_approved",
+                "theory_approved",
+                "exercise_approved",
+                "compatibility_approved",
+                "score",
+                "feedback_target",
+                "feedback",
+                "evidence"
+              ],
+              "properties": {
+                "score": {
+                  "type": "number",
+                  "title": "Score",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                "evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Evidence",
+                  "minItems": 1
+                },
+                "feedback": {
+                  "type": "string",
+                  "title": "Feedback",
+                  "minLength": 10
+                },
+                "is_approved": {
+                  "type": "boolean",
+                  "title": "Is Approved"
+                },
+                "feedback_target": {
+                  "enum": [
+                    "THEORY",
+                    "EXERCISE",
+                    "BOTH",
+                    "NONE"
+                  ],
+                  "type": "string",
+                  "title": "Feedback Target"
+                },
+                "theory_approved": {
+                  "type": "boolean",
+                  "title": "Theory Approved"
+                },
+                "theory_feedback": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Theory Feedback",
+                  "default": null
+                },
+                "exercise_approved": {
+                  "type": "boolean",
+                  "title": "Exercise Approved"
+                },
+                "exercise_feedback": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Exercise Feedback",
+                  "default": null
+                },
+                "compatibility_approved": {
+                  "type": "boolean",
+                  "title": "Compatibility Approved"
+                }
+              },
+              "additionalProperties": false
+            },
+            "specification": {
+              "mode": "diagnostic",
+              "language": "cpp",
+              "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+              "execution": {
+                "mode": "stdio",
+                "comparator": "text",
+                "entrypoint": "main"
+              },
+              "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+              "difficulty": "EASY",
+              "source_refs": [
+                {
+                  "id": "ai-service/data/cppSkillGraph.json#CPP-LOOP-01",
+                  "sha256": "a86c3275ff797f97d61f4f4c00a6aa910b5483155b3f1183face851b0a825da1"
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 03/Lesson_03_04.md",
+                  "sha256": "da717eb472c5977f3f14c46295a59c57b66ad0880e57f9c7ad697ce7194912be"
+                },
+                {
+                  "id": "docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 07/Lesson_07_01.md",
+                  "sha256": "5e8224266d11ba9cb3368bfa5ed27143ae293ea61b3db083f36ffcbaf1bca6d8"
+                }
+              ],
+              "user_request": "Tạo bài tập C++ mức dễ về vòng lặp while: nhập một số nguyên n từ 0 đến 100 và in tổng các số từ 1 đến n. Bắt buộc dùng while.",
+              "concept_title": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
+              "prerequisites": [
+                "CPP-COND-01"
+              ],
+              "recent_errors": [],
+              "schema_version": "4.0",
+              "selection_mode": "explicit",
+              "target_concept": "CPP-LOOP-01",
+              "learner_evidence": {
+                "policy": "adaptive_policy_v3",
+                "mastery": null,
+                "attempts": 0,
+                "prerequisite_gaps": [
+                  "CPP-COND-01"
+                ]
+              },
+              "test_constraints": {
+                "max_cases": 8,
+                "min_cases": 4,
+                "require_hidden_case": true,
+                "max_execution_time_ms": 3000,
+                "require_boundary_case": true
+              },
+              "target_sub_skills": [
+                "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+              ],
+              "learning_objectives": [
+                "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+              ],
+              "required_constructs": [
+                "while"
+              ],
+              "forbidden_constructs": []
+            }
+          },
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "stage": "CriticEvaluatorAgent",
+          "status": "FAILED",
+          "provider": "OPENROUTER",
+          "error_code": "PROVIDER_DEADLINE_EXCEEDED",
+          "error_type": "PipelineError",
+          "deadline_ms": 18000,
+          "duration_ms": 18654,
+          "http_status": 200,
+          "prompt_hash": "bb17c897e5776f2a4303d08cefa4986ece1b4b43db98624fa4465c3dc2a840e6",
+          "error_message": "PROVIDER_DEADLINE_EXCEEDED",
+          "prompt_version": "adaptive_v4"
+        }
+      ]
+    }
+  ],
+  "fallback_used": false,
+  "schema_version": "4.0"
+}

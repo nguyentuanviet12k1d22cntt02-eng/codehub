@@ -1,0 +1,74 @@
+{
+  "kind": "REAL_DOCKER_SMOKE",
+  "created_at": "2026-09-18T01:24:19.920Z",
+  "language": "sql",
+  "result": {
+    "passed": true,
+    "status": "EXECUTED",
+    "test_results": [
+      {
+        "case_index": 1,
+        "is_hidden": false,
+        "category": "normal",
+        "input": "",
+        "expected": "[[4]]",
+        "actual": "[[4]]",
+        "stderr": "",
+        "passed": true,
+        "executed": true,
+        "status": "SUCCESS",
+        "runtime_ms": 1333,
+        "image": "python:3.11-alpine",
+        "harness_version": "adaptive_harness_v3"
+      },
+      {
+        "case_index": 2,
+        "is_hidden": false,
+        "category": "normal",
+        "input": "",
+        "expected": "[[10]]",
+        "actual": "[[10]]",
+        "stderr": "",
+        "passed": true,
+        "executed": true,
+        "status": "SUCCESS",
+        "runtime_ms": 1641,
+        "image": "python:3.11-alpine",
+        "harness_version": "adaptive_harness_v3"
+      },
+      {
+        "case_index": 3,
+        "is_hidden": true,
+        "category": "boundary",
+        "input": "",
+        "expected": "[[0]]",
+        "actual": "[[0]]",
+        "stderr": "",
+        "passed": true,
+        "executed": true,
+        "status": "SUCCESS",
+        "runtime_ms": 979,
+        "image": "python:3.11-alpine",
+        "harness_version": "adaptive_harness_v3"
+      },
+      {
+        "case_index": 4,
+        "is_hidden": true,
+        "category": "boundary",
+        "input": "",
+        "expected": "[[-6]]",
+        "actual": "[[-6]]",
+        "stderr": "",
+        "passed": true,
+        "executed": true,
+        "status": "SUCCESS",
+        "runtime_ms": 742,
+        "image": "python:3.11-alpine",
+        "harness_version": "adaptive_harness_v3"
+      }
+    ],
+    "errors": [],
+    "source_hash": "8abb6a9270fa0c50729fa71d823d437df0288fd964c7ee4759d212417ac132d2",
+    "harness_version": "adaptive_harness_v3"
+  }
+}

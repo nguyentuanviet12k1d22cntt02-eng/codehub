@@ -32,8 +32,7 @@ except ImportError:
     from app.orchestrator.adaptive_learning_orchestrator import AdaptiveLearningOrchestrator
     from app.contracts.execution import ExecutionResult
 
-adaptive_orchestrator = AdaptiveAgentOrchestrator()
-orchestrator_v2 = AdaptiveLearningOrchestrator()
+# Adaptive orchestrators are instantiated per request to isolate budgets and evidence.
 
 
 
@@ -533,63 +532,11 @@ class GeneratePathRequest(BaseModel):
 
 @app.post("/pal-net/generate-path")
 def generate_palnet_learning_path(req: GeneratePathRequest):
-    """Endpoint sinh Lộ trình Học cá nhân hóa dựa trên Mô hình PAL-Net"""
-    try:
-        user_id = req.user_id
-        conn = get_db_connection()
-        skills_selected = ["python_loops", "python_lists"]
-        
-        if conn:
-            student_meta, actions = query_student_history(conn, user_id)
-            if actions and palnet_model:
-                # Compute PAL-Net predictions for skills
-                attempts = np.zeros(len(skills_list))
-                corrects = np.zeros(len(skills_list))
-                raw_masteries = np.full(len(skills_list), 0.5)
-                for a in actions:
-                    k_idx = kc_to_idx.get(a["kc_id"])
-                    if k_idx is not None:
-                        attempts[k_idx] += 1
-                        if a["correct"] == 1:
-                            corrects[k_idx] += 1
-                        raw_masteries[k_idx] = 0.7 * raw_masteries[k_idx] + 0.3 * a["correct"]
-                
-                stats = np.zeros(len(skills_list) * 2)
-                for k in range(len(skills_list)):
-                    stats[k * 2] = attempts[k]
-                    stats[k * 2 + 1] = corrects[k] / attempts[k] if attempts[k] > 0 else 0.0
-                
-                stats_tensor = torch.tensor([stats], dtype=torch.float)
-                profile_tensor = torch.tensor([1], dtype=torch.long)
-                masteries_tensor = torch.tensor([raw_masteries], dtype=torch.float)
-                
-                scored_skills = []
-                with torch.no_grad():
-                    for kc in skills_list:
-                        k_idx = kc_to_idx[kc]
-                        k_idx_tensor = torch.tensor([k_idx], dtype=torch.long)
-                        pred_prob = palnet_model(
-                            k_idx_tensor, stats_tensor, profile_tensor, masteries_tensor, palnet_adj
-                        )
-                        score = float(pred_prob[0].item())
-                        scored_skills.append((kc, score))
-                
-                # Sort ZPD score (target score around 0.70-0.85 or lowest scores)
-                scored_skills.sort(key=lambda x: abs(x[1] - 0.78))
-                skills_selected = [s[0] for s in scored_skills[:2]]
-            conn.close()
-            
-        path_payload = generate_personalized_learning_path(
-            user_id=user_id,
-            skills_selected=skills_selected,
-            learner_archetype=req.archetype or "Persister",
-            topic=req.topic
-        )
-        return {"success": True, "data": path_payload}
-
-    except Exception as e:
-        print(f"[Generate Path Endpoint Error]: {e}")
-        raise HTTPException(status_code=500, detail=f"Lỗi sinh lộ trình AI: {e}")
+    """Retired: generation must use the audited adaptive V3 workflow."""
+    raise HTTPException(
+        status_code=410,
+        detail="LEGACY_PIPELINE_RETIRED_USE_ADAPTIVE_V3",
+    )
 
 class ChatInteractRequest(BaseModel):
     user_id: str
@@ -598,203 +545,13 @@ class ChatInteractRequest(BaseModel):
 
 @app.post("/pal-net/chat-interact")
 def chat_interact_ai_tutor(req: ChatInteractRequest):
-    """Endpoint tương tác đối thoại AI Tutor phỏng vấn & làm rõ mục tiêu học tập"""
-    try:
-        res = interact_ai_tutor_dialogue(
-            user_id=req.user_id,
-            history=req.messages
-        )
-        return {"success": True, "data": res}
-    except Exception as e:
-        print(f"[Chat Interact Error]: {e}")
-        fallback_res = interact_ai_tutor_dialogue(req.user_id, req.messages)
-        return {"success": True, "data": fallback_res}
-
-
-class AdaptiveTutorAgentRequest(BaseModel):
-    user_id: str
-    session_id: Optional[str] = None
-    messages: List[Dict[str, str]] = []
-    user_mastery: Optional[Dict[str, float]] = None
-    target_concept_id: Optional[str] = None
-    language: Optional[str] = None
-
-
-@app.post("/pal-net/adaptive-tutor-agent")
-def adaptive_tutor_agent_endpoint(req: AdaptiveTutorAgentRequest):
-    """Endpoint Multi-Agent Adaptive Learning: Router -> Knowledge Retriever -> Generator -> Critic Evaluator"""
-    try:
-        res = orchestrator_v2.process_turn(
-            user_id=req.user_id,
-            history=req.messages,
-            user_mastery=req.user_mastery,
-            target_concept_id=req.target_concept_id,
-            language=req.language
-        )
-        return {"success": True, "data": res}
-    except Exception as e:
-        print(f"[Adaptive Tutor Agent V2 Fallback to V1]: {e}")
-        try:
-            res = adaptive_orchestrator.process_turn(
-                user_id=req.user_id,
-                history=req.messages,
-                user_mastery=req.user_mastery,
-                target_concept_id=req.target_concept_id,
-                language=req.language
-            )
-            return {"success": True, "data": res}
-        except Exception as e2:
-            print(f"[Adaptive Tutor Agent Error]: {e2}")
-            raise HTTPException(status_code=500, detail=f"Lỗi Multi-Agent Orchestrator: {e2}")
-
-
-@app.post("/pal-net/adaptive-tutor-agent/stream")
-def adaptive_tutor_agent_stream_endpoint(req: AdaptiveTutorAgentRequest):
-    """
-    Streaming Endpoint: Chuyển tiếp thời gian thực các sự kiện hoạt động của từng Agent
-    ngay khi agent đó đang thực thi (SSE - Server Sent Events).
-    """
-    event_queue: queue.Queue = queue.Queue()
-
-    def worker():
-        try:
-            def on_event(event_payload: Dict[str, Any]):
-                event_queue.put(event_payload)
-
-            res = orchestrator_v2.process_turn(
-                user_id=req.user_id,
-                history=req.messages,
-                user_mastery=req.user_mastery,
-                target_concept_id=req.target_concept_id,
-                language=req.language,
-                event_callback=on_event
-            )
-            event_queue.put({"type": "complete", "data": res})
-        except Exception as e:
-            print(f"[Adaptive Tutor Agent Stream Error]: {e}")
-            event_queue.put({"type": "error", "error": str(e)})
-        finally:
-            event_queue.put(None)
-
-    threading.Thread(target=worker, daemon=True).start()
-
-    def generate_events():
-        while True:
-            item = event_queue.get()
-            if item is None:
-                break
-            yield f"data: {json.dumps(item, ensure_ascii=False)}\n\n"
-
-    return StreamingResponse(
-        generate_events(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no"
-        }
+    """Retired: chat routing must use the audited adaptive V3 workflow."""
+    raise HTTPException(
+        status_code=410,
+        detail="LEGACY_PIPELINE_RETIRED_USE_ADAPTIVE_V3",
     )
 
 
-class MasteryProgressRequest(BaseModel):
-    user_id: str
-    concept_id: str
-    passed: bool = True
-    current_mastery: Optional[Dict[str, float]] = None
-
-
-@app.post("/pal-net/update-mastery-progress")
-def update_mastery_progress_endpoint(req: MasteryProgressRequest):
-    """Kịch bản 4: Cập nhật độ thành thạo và gợi ý mắt xích tiếp theo trên DAG"""
-    try:
-        mastery_map = req.current_mastery or {}
-        res = adaptive_orchestrator.process_mastery_update(
-            user_id=req.user_id,
-            concept_id=req.concept_id,
-            passed=req.passed,
-            current_mastery_map=mastery_map
-        )
-        return {"success": True, "data": res}
-    except Exception as e:
-        print(f"[Update Mastery Progress Error]: {e}")
-        raise HTTPException(status_code=500, detail=f"Lỗi cập nhật tiến trình DAG: {e}")
-
-
-# ============================================================================
-# MULTI-AGENT ADAPTIVE LEARNING V2.1 ENDPOINTS (CLOSED-LOOP ARCHITECTURE)
-# ============================================================================
-
-@app.post("/pal-net/adaptive-tutor-agent-v2")
-def adaptive_tutor_agent_v2_endpoint(req: AdaptiveTutorAgentRequest):
-    """
-    Endpoint Multi-Agent Adaptive Learning v2.1:
-    IntentRouterAgent -> AdaptiveExercisePlanner -> ExerciseGeneratorAgent -> Multi-tier Validation -> CriticEvaluatorAgent
-    """
-    try:
-        res = orchestrator_v2.process_turn(
-            user_id=req.user_id,
-            history=req.messages,
-            user_mastery=req.user_mastery,
-            target_concept_id=req.target_concept_id,
-            language=req.language
-        )
-        return {"success": True, "data": res}
-    except Exception as e:
-        print(f"[Adaptive Tutor Agent V2 Error]: {e}")
-        # Fallback to v1 if exception occurs
-        res = adaptive_orchestrator.process_turn(
-            user_id=req.user_id,
-            history=req.messages,
-            user_mastery=req.user_mastery,
-            target_concept_id=req.target_concept_id,
-            language=req.language
-        )
-        return {"success": True, "data": res}
-
-
-class SubmissionFeedbackPayload(BaseModel):
-    submission_id: str
-    user_id: Optional[str] = "anonymous_learner"
-    exercise_id: Optional[str] = None
-    concept_id: Optional[str] = "PY-BASICS-01"
-    status: str = "PASSED"
-    passed_count: int = 0
-    total_count: int = 0
-    test_results: List[Dict[str, Any]] = []
-    code: str = ""
-    runtime: str = "python"
-    raw_error: Optional[str] = None
-    trace_id: Optional[str] = None
-
-
-@app.post("/pal-net/submission-feedback")
-def submission_feedback_endpoint(payload: SubmissionFeedbackPayload):
-    """
-    Endpoint Feedback Loop sau khi nộp bài:
-    ExecutionResult -> ErrorAnalyzer -> ConceptAttribution -> Deterministic MasteryUpdater -> LearnerState
-    """
-    try:
-        exec_result = ExecutionResult(
-            submission_id=payload.submission_id,
-            user_id=payload.user_id,
-            exercise_id=payload.exercise_id,
-            concept_id=payload.concept_id,
-            status=payload.status,
-            passed_count=payload.passed_count,
-            total_count=payload.total_count,
-            test_results=payload.test_results,
-            code=payload.code,
-            runtime=payload.runtime,
-            raw_error=payload.raw_error,
-            trace_id=payload.trace_id or f"trace_{uuid.uuid4().hex[:12]}"
-        )
-        res = orchestrator_v2.process_submission_feedback(exec_result)
-        return {"success": True, "data": res}
-    except Exception as e:
-        print(f"[Submission Feedback Error]: {e}")
-        raise HTTPException(status_code=500, detail=f"Lỗi xử lý phản hồi nộp bài: {e}")
-
-
-
-
-
+# Audited adaptive workflow. Legacy V1 generation/mastery endpoints are intentionally removed.
+from app.api.adaptive import router as adaptive_pipeline_router
+app.include_router(adaptive_pipeline_router)

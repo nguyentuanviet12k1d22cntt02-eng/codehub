@@ -1,0 +1,88 @@
+{
+  "kind": "REAL_END_TO_END",
+  "started_at": "2026-09-20T09:08:03.994Z",
+  "fixture_user_id": "627dc024-b951-4bba-ad4e-f5676dc44389",
+  "runs": [
+    {
+      "language": "cpp",
+      "trace_id": "trace_cd7738546857404aad9dc7b7cfc7feb4",
+      "status": "WAITING_PROVIDER",
+      "checks": {},
+      "model_calls": [
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "status": "FAILED"
+        },
+        {
+          "provider": "OPENROUTER",
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "response_id": "gen-1789895309-Rdn6yZXGaE0NPF14srzU",
+          "status": "SUCCEEDED",
+          "usage": {
+            "cost": 0.00111322,
+            "is_byok": false,
+            "cost_details": {
+              "upstream_inference_cost": 0.00111322,
+              "upstream_inference_prompt_cost": 0.00080872,
+              "upstream_inference_completions_cost": 0.0003045
+            },
+            "total_tokens": 4285,
+            "prompt_tokens": 3676,
+            "completion_tokens": 609,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "video_tokens": 0,
+              "cached_tokens": 0,
+              "cache_write_tokens": 0
+            },
+            "completion_tokens_details": {
+              "audio_tokens": 0,
+              "image_tokens": 0,
+              "reasoning_tokens": 0
+            }
+          }
+        },
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-986505e4-466c-4273-b2f6-db33c2aaf306",
+          "status": "SUCCEEDED",
+          "usage": {
+            "queue_time": 0.348529948,
+            "total_time": 3.573870355,
+            "prompt_time": 0.08704366,
+            "total_tokens": 3556,
+            "prompt_tokens": 1914,
+            "completion_time": 3.486826695,
+            "completion_tokens": 1642,
+            "completion_tokens_details": {
+              "reasoning_tokens": 583
+            }
+          }
+        },
+        {
+          "provider": "OPENROUTER",
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "status": "FAILED"
+        }
+      ],
+      "error": {
+        "code": "PROVIDER_DEADLINE_EXCEEDED",
+        "message": "Không nhận được JSON hợp lệ từ provider trong ngân sách cho phép"
+      }
+    }
+  ],
+  "ended_at": "2026-09-20T09:09:04.932Z",
+  "status": "FAILED"
+}

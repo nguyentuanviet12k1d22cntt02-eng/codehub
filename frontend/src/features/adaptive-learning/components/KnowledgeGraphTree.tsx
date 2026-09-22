@@ -17,7 +17,6 @@ import {
     Check, 
     Clock,
     Info,
-    Play,
     SlidersHorizontal,
     GraduationCap,
     BarChart2,
@@ -37,25 +36,46 @@ import { MascotWavingBannerIllustration } from '../../ai-tutor/components/AITuto
 
 export type SupportedLanguage = 'PYTHON' | 'JAVASCRIPT' | 'CPP' | 'SQL';
 
+export interface MasteryEvidence {
+    mastery: number;
+    confidence: number;
+    attempts: number;
+    passed: number;
+    failed: number;
+    source: 'COURSE_SANDBOX' | 'ADAPTIVE_SANDBOX' | 'MIXED_VERIFIED';
+    last_assessed_at: string | null;
+}
+
+const EVIDENCE_SOURCE_LABELS: Record<MasteryEvidence['source'], string> = {
+    COURSE_SANDBOX: 'bài học có test',
+    ADAPTIVE_SANDBOX: 'bài thích ứng có test',
+    MIXED_VERIFIED: 'nhiều nguồn có test'
+};
+
 export interface KnowledgeGraphTreeProps {
     userMastery: Record<string, number>;
+    userEvidence?: Record<string, MasteryEvidence>;
     activeLanguage?: SupportedLanguage;
     onLanguageChange?: (lang: SupportedLanguage) => void;
     isLoading?: boolean;
-    activeModel?: 'PAL-Net';
-    onModelChange?: (model: 'PAL-Net') => void;
-    overallScore: number;
+    activeModel?: 'Evidence-Based';
+    onModelChange?: (model: 'Evidence-Based') => void;
+    overallScore: number | null;
     streakDays?: number;
     studentMeta?: {
         username: string;
         email: string;
-        profile: 'STRUGGLING' | 'AVERAGE' | 'EXCELLENT';
+        profile: 'NEW' | 'STRUGGLING' | 'AVERAGE' | 'EXCELLENT';
     };
     stats?: {
         lessons_completed: number;
         practice_completed: number;
         streak_days: number;
         total_actions: number;
+        total_evidence_weight?: number;
+        observed_skills?: number;
+        total_skills?: number;
+        overall_mastery?: number | null;
     };
     isFullPage?: boolean;
 }
@@ -78,11 +98,11 @@ export const LANGUAGE_CONFIGS: Record<SupportedLanguage, {
     PYTHON: {
         id: 'PYTHON',
         name: 'Python',
-        badge: '33 Kỹ năng • 6 Chặng',
-        courseTitle: 'Python Toàn Diện',
-        subtitle: 'Hành trình trở thành Backend & AI Developer với Python',
+        badge: '35 Kỹ năng • 6 Chặng',
+        courseTitle: 'Nền tảng Python',
+        subtitle: 'Từ cú pháp nền tảng đến lập trình hướng đối tượng',
         syntaxLang: 'python',
-        defaultConcept: 'PY-BASICS-02',
+        defaultConcept: 'PY-BASICS-01',
         brandColor: '#2563EB',
         accentGradient: 'from-blue-600 to-indigo-700',
         activeBorderClass: 'border-blue-500 ring-2 ring-blue-500/20',
@@ -297,7 +317,7 @@ const CONCEPT_CODE_SNIPPETS: Record<string, { lines: { text: string; comment?: s
         time: '30 phút',
         lines: [
             { text: '# Khởi tạo biến và kiểu dữ liệu trong Python', comment: '' },
-            { text: 'ho_ten = "Nguyễn Tuấn Việt"', comment: '# Kiểu str' },
+            { text: 'ho_ten = "Nguyễn Văn An"', comment: '# Kiểu str minh họa' },
             { text: 'tuoi = 21', comment: '# Kiểu int' },
             { text: 'diem_tb = 8.75', comment: '# Kiểu float' },
             { text: 'is_active = True', comment: '# Kiểu bool' },
@@ -1053,15 +1073,16 @@ const CONCEPT_CODE_SNIPPETS: Record<string, { lines: { text: string; comment?: s
 
 export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
     userMastery,
+    userEvidence = {},
     activeLanguage: propActiveLanguage = 'PYTHON',
     onLanguageChange,
     isLoading = false,
     activeModel: _activeModel,
     onModelChange: _onModelChange,
     overallScore,
-    streakDays = 3,
+    streakDays = 0,
     studentMeta,
-    stats: _stats,
+    stats,
     isFullPage: _isFullPage = true
 }) => {
     const navigate = useNavigate();
@@ -1095,6 +1116,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
     const [selectedConceptId, setSelectedConceptId] = useState<string>(currentLangConfig.defaultConcept);
     const [hoveredConceptId, setHoveredConceptId] = useState<string | null>(null);
     const [isFocusMode, setIsFocusMode] = useState<boolean>(true);
+    const [viewMode, setViewMode] = useState<'GRAPH' | 'LIST'>('GRAPH');
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
     const [zoomLevel, setZoomLevel] = useState<number>(1);
     const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -1103,8 +1125,6 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
     const dragStartRef = useRef<{ x: number; y: number; panX: number; panY: number }>({ x: 0, y: 0, panX: 0, panY: 0 });
     const hasMovedRef = useRef<boolean>(false);
     const [copiedSyntax, setCopiedSyntax] = useState<boolean>(false);
-    const [isExecuting, setIsExecuting] = useState<boolean>(false);
-    const [executionOutput, setExecutionOutput] = useState<string | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
     // List of skills and edges for the active graph
@@ -1124,7 +1144,6 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
             setSelectedConceptId(currentLangConfig.defaultConcept);
         }
         setSelectedTopicPill('ALL');
-        setExecutionOutput(null);
         setPan({ x: 0, y: 0 });
         setZoomLevel(1);
     }, [activeLanguage, skillMap, currentLangConfig]);
@@ -1162,12 +1181,44 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
         });
     }, [allSkills, selectedTopicPill, searchQuery]);
 
-    // Mastery status & styling calculation
+    // A skill is assessed only when verified evidence exists. Missing data is never converted to a score.
     const getConceptStatus = (skillId: string) => {
-        const score = userMastery[skillId] ?? 0.53;
+        const skill = skillMap.get(skillId);
+        const score = userMastery[skillId];
+        const evidence = userEvidence[skillId];
+        const prerequisites: string[] = skill?.prerequisites || [];
+        const prerequisitesReady = prerequisites.every(prerequisiteId => {
+            const prerequisiteEvidence = userEvidence[prerequisiteId];
+            return typeof userMastery[prerequisiteId] === 'number'
+                && userMastery[prerequisiteId] >= .6
+                && (prerequisiteEvidence?.confidence || 0) >= .25;
+        });
+
+        if (skill?.content_status === 'PLANNED') {
+            return {
+                status: 'PLANNED', legend: 'PLANNED', label: 'Nội dung đang biên soạn',
+                badgeBg: 'bg-slate-100 text-slate-500 border-slate-200', iconColor: 'bg-slate-300 text-slate-600',
+                dotColor: 'bg-slate-400', ringColor: '#CBD5E1', labelColor: 'text-slate-500',
+                border: 'border-slate-200 opacity-80', pct: null as number | null
+            };
+        }
+
+        if (typeof score !== 'number' || !evidence || evidence.attempts <= 0) {
+            const locked = prerequisites.length > 0 && !prerequisitesReady;
+            return {
+                status: locked ? 'LOCKED' : 'UNASSESSED',
+                legend: locked ? 'LOCKED' : 'UNASSESSED',
+                label: locked ? 'Chưa đủ tiên quyết' : 'Chưa đánh giá',
+                badgeBg: 'bg-slate-50 text-slate-600 border-slate-200',
+                iconColor: locked ? 'bg-slate-300 text-slate-600' : 'bg-white text-slate-600',
+                dotColor: 'bg-slate-400', ringColor: '#94A3B8', labelColor: 'text-slate-500',
+                border: 'border-slate-200 hover:border-slate-400', pct: null as number | null
+            };
+        }
+
         const pct = Math.round(score * 100);
         
-        if (score >= 0.75) {
+        if (score >= 0.75 && evidence.confidence >= .45) {
             return {
                 status: 'COMPLETED',
                 legend: 'COMPLETED',
@@ -1176,6 +1227,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                 iconColor: 'bg-blue-600 text-white',
                 dotColor: 'bg-blue-600',
                 ringColor: '#2563EB',
+                labelColor: 'text-blue-700',
                 border: 'border-blue-200 hover:border-blue-400',
                 pct
             };
@@ -1188,31 +1240,21 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                 iconColor: 'bg-emerald-500 text-white',
                 dotColor: 'bg-emerald-500',
                 ringColor: '#10B981',
+                labelColor: 'text-emerald-700',
                 border: 'border-slate-200 hover:border-blue-400',
-                pct
-            };
-        } else if (score >= 0.35) {
-            return {
-                status: 'RECOMMENDED',
-                legend: 'RECOMMENDED',
-                label: '🟣 Đề xuất tiếp theo',
-                badgeBg: 'bg-purple-50 text-purple-700 border-purple-200',
-                iconColor: 'bg-purple-600 text-white',
-                dotColor: 'bg-purple-600',
-                ringColor: '#8B5CF6',
-                border: 'border-purple-200 hover:border-purple-400',
                 pct
             };
         } else {
             return {
-                status: 'LOCKED',
-                legend: 'LOCKED',
-                label: 'Chưa mở khóa',
-                badgeBg: 'bg-slate-100 text-slate-500 border-slate-200',
-                iconColor: 'bg-slate-300 text-slate-600',
-                dotColor: 'bg-slate-400',
-                ringColor: '#CBD5E1',
-                border: 'border-slate-200 hover:border-slate-300 opacity-80',
+                status: 'NEEDS_REVIEW',
+                legend: 'NEEDS_REVIEW',
+                label: 'Cần củng cố',
+                badgeBg: 'bg-orange-50 text-orange-700 border-orange-200',
+                iconColor: 'bg-orange-500 text-white',
+                dotColor: 'bg-orange-500',
+                ringColor: '#F97316',
+                labelColor: 'text-orange-700',
+                border: 'border-orange-200 hover:border-orange-400',
                 pct
             };
         }
@@ -1300,78 +1342,48 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
         });
     }, [visibleEdges, activeHighlightId]);
 
-    // Recommended next concept in DAG
+    // Rank every unlocked skill with evidence-aware ZPD scoring instead of taking the first outgoing edge.
     const recommendedNextConcept = useMemo(() => {
-        if (!activeConcept) return null;
-        const outgoing = allEdges.filter((e: any) => e.source === activeConcept.id);
-        if (outgoing.length > 0) {
-            return skillMap.get(outgoing[0].target) || null;
-        }
-        const idx = allSkills.findIndex((s: any) => s.id === activeConcept.id);
-        if (idx >= 0 && idx + 1 < allSkills.length) {
-            return allSkills[idx + 1];
-        }
-        return null;
-    }, [activeConcept, allEdges, skillMap, allSkills]);
+        const outgoingIds = new Set(
+            activeConcept ? allEdges.filter((edge: any) => edge.source === activeConcept.id).map((edge: any) => edge.target) : []
+        );
+        const eligible = allSkills.filter((skill: any) => {
+            if (skill.content_status === 'PLANNED') return false;
+            const evidence = userEvidence[skill.id];
+            const score = userMastery[skill.id];
+            if (typeof score === 'number' && score >= .8 && (evidence?.confidence || 0) >= .5) return false;
+            return (skill.prerequisites || []).every((prerequisiteId: string) =>
+                typeof userMastery[prerequisiteId] === 'number'
+                && userMastery[prerequisiteId] >= .6
+                && (userEvidence[prerequisiteId]?.confidence || 0) >= .25
+            );
+        });
+        if (!eligible.length) return null;
+        const ranked = eligible.map((skill: any) => {
+            const score = userMastery[skill.id];
+            const confidence = userEvidence[skill.id]?.confidence || 0;
+            const zpdFit = typeof score === 'number' ? 1 - Math.abs(score - .65) : .72;
+            const contextBonus = skill.id === activeConcept?.id ? .22 : outgoingIds.has(skill.id) ? .16 : 0;
+            const uncertaintyBonus = (1 - confidence) * .08;
+            return { skill, rank: zpdFit + contextBonus + uncertaintyBonus };
+        }).sort((left, right) => right.rank - left.rank || allSkills.indexOf(left.skill) - allSkills.indexOf(right.skill));
+        const selected = ranked[0].skill;
+        const selectedScore = userMastery[selected.id];
+        return {
+            ...selected,
+            recommendationReason: typeof selectedScore === 'number'
+                ? 'Đủ tiên quyết và đang ở vùng luyện tập phù hợp.'
+                : 'Đủ tiên quyết; cần bài chẩn đoán để xác định mức hiện tại.'
+        };
+    }, [activeConcept, allEdges, allSkills, userEvidence, userMastery]);
 
     // Rich code snippet for selected concept
     const currentCodeSnippet = useMemo(() => {
         if (!activeConcept) return null;
-        if (CONCEPT_CODE_SNIPPETS[activeConcept.id]) {
-            return CONCEPT_CODE_SNIPPETS[activeConcept.id];
-        }
-        
-        // Smart fallback syntax generator
-        if (activeLanguage === 'JAVASCRIPT') {
-            return {
-                time: '45 phút',
-                lines: [
-                    { text: `// Ví dụ mẫu: ${activeConcept.concept_name}`, comment: '' },
-                    { text: `function demo_${activeConcept.concept_id.toLowerCase().replace(/[^a-z0-9]/g, '_')}() {`, comment: '' },
-                    { text: `    const result = { concept: "${activeConcept.concept_id}", status: "OK" };`, comment: '' },
-                    { text: `    console.log("[JS Result]:", result);`, comment: '' },
-                    { text: `}`, comment: '' },
-                    { text: `demo_${activeConcept.concept_id.toLowerCase().replace(/[^a-z0-9]/g, '_')}();`, comment: '' }
-                ]
-            };
-        } else if (activeLanguage === 'CPP') {
-            return {
-                time: '45 phút',
-                lines: [
-                    { text: `// Vi du minh hoa: ${activeConcept.concept_name}`, comment: '' },
-                    { text: '#include <iostream>', comment: '' },
-                    { text: 'using namespace std;', comment: '' },
-                    { text: 'int main() {', comment: '' },
-                    { text: `    cout << "Chay thanh cong concept: ${activeConcept.concept_id}" << endl;`, comment: '' },
-                    { text: '    return 0;', comment: '' },
-                    { text: '}', comment: '' }
-                ]
-            };
-        } else if (activeLanguage === 'SQL') {
-            return {
-                time: '35 phút',
-                lines: [
-                    { text: `-- Truy vấn mẫu: ${activeConcept.concept_name}`, comment: '' },
-                    { text: 'SELECT TOP 10', comment: '' },
-                    { text: '    ID, Name, CreatedAt', comment: '' },
-                    { text: `FROM KnowledgeBase_${activeConcept.concept_id.replace(/[^A-Za-z0-9]/g, '')}`, comment: '' },
-                    { text: 'ORDER BY ID DESC;', comment: '' }
-                ]
-            };
-        } else {
-            return {
-                time: '45 phút',
-                lines: [
-                    { text: `# Ví dụ minh họa: ${activeConcept.concept_name}`, comment: '' },
-                    { text: `def execute_${activeConcept.concept_id.toLowerCase().replace(/-/g, '_')}():`, comment: '# Khởi tạo' },
-                    { text: `    status = "Mastered"`, comment: '# Trạng thái' },
-                    { text: `    print(f"Hoàn thành kiến thức {status}")`, comment: '' },
-                    { text: ``, comment: '' },
-                    { text: `execute_${activeConcept.concept_id.toLowerCase().replace(/-/g, '_')}()`, comment: '' }
-                ]
-            };
-        }
-    }, [activeConcept, activeLanguage]);
+        return CONCEPT_CODE_SNIPPETS[activeConcept.id] || null;
+    }, [activeConcept]);
+    const activeMastery = activeConcept ? userMastery[activeConcept.id] : undefined;
+    const activeEvidence = activeConcept ? userEvidence[activeConcept.id] : undefined;
 
     // Smooth wheel panning & Ctrl+wheel zooming
     useEffect(() => {
@@ -1438,44 +1450,6 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
         setTimeout(() => setCopiedSyntax(false), 2000);
     };
 
-    // Run simulated code
-    const handleRunCode = () => {
-        setIsExecuting(true);
-        setExecutionOutput(null);
-        setTimeout(() => {
-            setIsExecuting(false);
-            if (activeLanguage === 'JAVASCRIPT') {
-                if (activeConcept.id === 'JS-BASICS-01') {
-                    setExecutionOutput('[Node.js v20.11.0]: Thực thi thành công\n>>> [PyLearn JS] Xin chào Nguyễn Tuấn Việt!\n>>> Điểm số hiện tại: 95/100\n>>> Process exited with code 0 (0.02s)');
-                } else if (activeConcept.id === 'JS-TYPES-01') {
-                    setExecutionOutput('[Node.js v20.11.0]: Kiểm tra kiểu dữ liệu\n>>> Kiểm tra type: number boolean\n>>> 5 == "5": true\n>>> 5 === "5": false\n>>> Process exited with code 0 (0.01s)');
-                } else {
-                    setExecutionOutput(`[Node.js v20.11.0]: Thực thi mẫu ${activeConcept.concept_name}\n>>> Output: [JS Result]: { concept: '${activeConcept.concept_id}', status: 'OK' }\n>>> Process exited with code 0.`);
-                }
-            } else if (activeLanguage === 'CPP') {
-                if (activeConcept.id === 'CPP-BASICS-01') {
-                    setExecutionOutput('[g++ 13.2.0 -O2]: Biên dịch thành công (0.08s)\n>>> Output:\nXin chao Nguyen Tuan Viet, GPA: 3.85\n>>> Return code: 0');
-                } else if (activeConcept.id === 'CPP-LOOP-01') {
-                    setExecutionOutput('[g++ 13.2.0 -O2]: Biên dịch thành công\n>>> Output:\n17 la so nguyen to: true\n>>> Execution time: 0.003s');
-                } else {
-                    setExecutionOutput(`[g++ 13.2.0 -O2]: Thực thi ${activeConcept.concept_name}\n>>> Output: Chay thanh cong concept: ${activeConcept.concept_id}\n>>> Return code: 0`);
-                }
-            } else if (activeLanguage === 'SQL') {
-                if (activeConcept.id === 'SQL-DQL-01') {
-                    setExecutionOutput('(3 rows affected)\nMaHocVien | HoTen            | Email\n----------+------------------+--------------------\n101       | Nguyễn Tuấn Việt | viet@example.com\n102       | Trần Minh Anh    | minhanh@pylearn.vn\n103       | Lê Hoàng Nam     | namlh@pylearn.vn\n>>> Query executed successfully in 0.014s');
-                } else {
-                    setExecutionOutput(`(5 rows affected)\nID  | Status    | ExecutionDate\n----+-----------+------------------------\n1   | COMPLETED | 2026-09-13 15:30:00.000\n2   | VERIFIED  | 2026-09-13 15:30:01.120\n>>> Truy vấn đạt chuẩn chỉ số RDBMS.`);
-                }
-            } else {
-                if (activeConcept.id === 'PY-BASICS-02') {
-                    setExecutionOutput('Python 18 9.5 True\n>>> Chương trình kết thúc với mã 0 (0.04s)');
-                } else {
-                    setExecutionOutput(`[Python 3.11]: Thực thi mẫu ${activeConcept.concept_name}\n>>> Kết quả kiểm tra đạt tiêu chuẩn ZPD.`);
-                }
-            }
-        }, 600);
-    };
-
     // Adaptive personalized study routing
     const handleStartPractice = () => {
         if (!activeConcept) return;
@@ -1527,7 +1501,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
 
                 <div className="hidden lg:flex items-center gap-2 pr-3 text-[11px] font-semibold text-slate-500">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>Hệ thống Đồ thị Thích ứng PAL-Net 2.0</span>
+                    <span>Đồ thị năng lực dựa trên bằng chứng kiểm định</span>
                 </div>
             </div>
 
@@ -1550,7 +1524,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                     </p>
                     <div className="mt-5 flex items-center gap-2 text-[11px] font-mono font-bold text-slate-400 bg-slate-50 px-3.5 py-1.5 rounded-xl border border-slate-200/70">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span>Hệ thống Đồ thị Thích ứng PAL-Net 2.0</span>
+                        <span>Đồ thị năng lực dựa trên bằng chứng kiểm định</span>
                     </div>
                 </div>
             ) : (
@@ -1567,7 +1541,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                     <div>
                         <div className="flex items-center gap-2">
                             <h2 className="text-base md:text-lg font-extrabold text-slate-900 tracking-tight m-0">
-                                {studentMeta?.username || 'Nguyễn Tuấn Việt'}
+                                {studentMeta?.username || 'Học viên'}
                             </h2>
                             <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${currentLangConfig.activeBgClass}`}>
                                 {currentLangConfig.name}
@@ -1594,18 +1568,18 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                         </div>
                     </div>
 
-                    {/* Stat 2: Tiến độ tổng */}
+                    {/* Stat 2: Mastery measured from verified evidence */}
                     <div className="flex flex-col justify-center min-w-[120px]">
                         <div className="flex items-center justify-between gap-2 mb-1">
-                            <span className="text-[11px] text-slate-500 font-medium">Tiến độ tổng</span>
+                            <span className="text-[11px] text-slate-500 font-medium">Thành thạo đã đo</span>
                             <span className="text-xs font-extrabold text-blue-600">
-                                {Math.max(32, Math.round(overallScore * 100))}%
+                                {overallScore === null ? '—' : `${Math.round(overallScore * 100)}%`}
                             </span>
                         </div>
                         <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                             <div 
                                 className={`h-full bg-gradient-to-r ${currentLangConfig.accentGradient} rounded-full transition-all duration-500`} 
-                                style={{ width: `${Math.max(32, Math.round(overallScore * 100))}%` }}
+                                style={{ width: `${overallScore === null ? 0 : Math.round(overallScore * 100)}%` }}
                             />
                         </div>
                     </div>
@@ -1618,7 +1592,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                         <div>
                             <span className="text-[11px] text-slate-500 font-medium block">Streak hôm nay</span>
                             <span className="text-xs md:text-sm font-extrabold text-slate-900 block">
-                                {streakDays || 3} ngày
+                                {streakDays} ngày
                             </span>
                         </div>
                     </div>
@@ -1629,9 +1603,9 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                             <Clock className="w-5 h-5 text-blue-600" />
                         </div>
                         <div>
-                            <span className="text-[11px] text-slate-500 font-medium block">Quy mô đồ thị</span>
+                            <span className="text-[11px] text-slate-500 font-medium block">Kỹ năng đã đo</span>
                             <span className="text-xs md:text-sm font-extrabold text-slate-900 block">
-                                {allSkills.length} KCs • {allEdges.length} Cạnh
+                                {stats?.observed_skills || 0}/{stats?.total_skills || allSkills.length} kỹ năng
                             </span>
                         </div>
                     </div>
@@ -1751,19 +1725,40 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                             </div>
                         </div>
 
+                        <div className="inline-flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5" role="group" aria-label="Chế độ trình bày cây tri thức">
+                            <button
+                                type="button"
+                                aria-pressed={viewMode === 'GRAPH'}
+                                onClick={() => setViewMode('GRAPH')}
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold transition-colors ${viewMode === 'GRAPH' ? 'bg-white text-blue-700 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+                            >
+                                <Layers className="w-3 h-3" /> Đồ thị
+                            </button>
+                            <button
+                                type="button"
+                                aria-pressed={viewMode === 'LIST'}
+                                onClick={() => setViewMode('LIST')}
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold transition-colors ${viewMode === 'LIST' ? 'bg-white text-blue-700 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+                            >
+                                <BookOpen className="w-3 h-3" /> Danh sách
+                            </button>
+                        </div>
+
                         {/* Focus Mode Toggle */}
-                        <button
-                            onClick={() => setIsFocusMode(prev => !prev)}
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all cursor-pointer ${
-                                isFocusMode
-                                    ? 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 shadow-2xs'
-                                    : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200/80 hover:text-slate-900'
-                            }`}
-                            title={isFocusMode ? "Chế độ tập trung: Chỉ làm nổi bật đường đi kỹ năng đang chọn để tránh rối mắt" : "Hiển thị toàn bộ tất cả đường liên kết trên đồ thị"}
-                        >
-                            <Sparkles className="w-3 h-3 text-indigo-600" />
-                            <span>{isFocusMode ? 'Đường đi tập trung' : 'Hiện tất cả liên kết'}</span>
-                        </button>
+                        {viewMode === 'GRAPH' && (
+                            <button
+                                onClick={() => setIsFocusMode(prev => !prev)}
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all cursor-pointer ${
+                                    isFocusMode
+                                        ? 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 shadow-2xs'
+                                        : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200/80 hover:text-slate-900'
+                                }`}
+                                title={isFocusMode ? "Chế độ tập trung: Chỉ làm nổi bật đường đi kỹ năng đang chọn để tránh rối mắt" : "Hiển thị toàn bộ tất cả đường liên kết trên đồ thị"}
+                            >
+                                <Sparkles className="w-3 h-3 text-indigo-600" />
+                                <span>{isFocusMode ? 'Đường đi tập trung' : 'Hiện tất cả liên kết'}</span>
+                            </button>
+                        )}
 
                         {/* Quick Toggle Panel Button */}
                         <div className="h-4 w-px bg-slate-200 ml-1 hidden sm:block" />
@@ -1786,6 +1781,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                 <div className="relative flex-1 flex overflow-hidden">
                     
                     {/* Visual Canvas Area */}
+                    {viewMode === 'GRAPH' ? (
                     <div 
                         ref={containerRef}
                         onMouseDown={handleMouseDown}
@@ -1960,7 +1956,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                     const pos = nodeLayout.get(skill.id);
                                     if (!pos) return null;
 
-                                    const { label, ringColor, pct } = getConceptStatus(skill.id);
+                                    const { label, ringColor, pct, labelColor } = getConceptStatus(skill.id);
                                     const isSelected = selectedConceptId === skill.id;
                                     const isPrereqOfActive = activePrereqEdges.some((e: any) => e.source === skill.id);
                                     const isUnlockOfActive = activeUnlockEdges.some((e: any) => e.target === skill.id);
@@ -1970,8 +1966,17 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                     return (
                                         <div
                                             key={skill.id}
+                                            role="button"
+                                            tabIndex={0}
+                                            aria-label={`${skill.concept_name}. ${label}${pct === null ? '' : `, ${pct}%`}`}
                                             onClick={() => {
                                                 if (hasMovedRef.current) return;
+                                                setSelectedConceptId(skill.id);
+                                                setIsDrawerOpen(true);
+                                            }}
+                                            onKeyDown={(event) => {
+                                                if (event.key !== 'Enter' && event.key !== ' ') return;
+                                                event.preventDefault();
                                                 setSelectedConceptId(skill.id);
                                                 setIsDrawerOpen(true);
                                             }}
@@ -2030,7 +2035,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
 
                                             {/* Bottom Row: Status Badge + Donut Percentage Ring */}
                                             <div className="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-slate-100">
-                                                <span className="text-[10px] font-medium text-amber-600 truncate">
+                                                <span className={`text-[10px] font-medium truncate ${labelColor}`}>
                                                     {label}
                                                 </span>
 
@@ -2045,7 +2050,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                                             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                                                         />
                                                         <path
-                                                            strokeDasharray={`${pct}, 100`}
+                                                            strokeDasharray={`${pct ?? 0}, 100`}
                                                             strokeWidth="3.5"
                                                             strokeLinecap="round"
                                                             stroke={ringColor}
@@ -2054,7 +2059,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                                         />
                                                     </svg>
                                                     <span className="absolute text-[8px] font-bold font-mono text-slate-700">
-                                                        {pct}%
+                                                        {pct === null ? '—' : `${pct}%`}
                                                     </span>
                                                 </div>
                                             </div>
@@ -2064,6 +2069,61 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                             </div>
                         </div>
                     </div>
+                    ) : (
+                        <div className="flex-1 overflow-y-auto bg-slate-50 p-4 md:p-6" aria-label="Danh sách kỹ năng theo giai đoạn">
+                            <div className="mx-auto grid max-w-6xl gap-4 lg:grid-cols-2">
+                                {Object.entries(currentStageMetadata).map(([stageNum, meta]) => {
+                                    const skills = stageGroups[Number(stageNum)] || [];
+                                    if (!skills.length) return null;
+                                    return (
+                                        <section key={stageNum} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
+                                            <div className="mb-3 flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
+                                                <div>
+                                                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-600">{meta.tag}</span>
+                                                    <h4 className="m-0 mt-1 text-sm font-bold text-slate-900">{meta.title}</h4>
+                                                    <p className="m-0 mt-0.5 text-xs text-slate-500">{meta.subtitle}</p>
+                                                </div>
+                                                <span className="shrink-0 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">{skills.length} kỹ năng</span>
+                                            </div>
+                                            <ul className="m-0 space-y-2 p-0" role="list">
+                                                {skills.map((skill) => {
+                                                    const status = getConceptStatus(skill.id);
+                                                    const prerequisites = (skill.prerequisites || [])
+                                                        .map((id: string) => skillMap.get(id)?.concept_name || id);
+                                                    return (
+                                                        <li key={skill.id}>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setSelectedConceptId(skill.id);
+                                                                    setIsDrawerOpen(true);
+                                                                }}
+                                                                aria-current={selectedConceptId === skill.id ? 'true' : undefined}
+                                                                className={`w-full rounded-xl border p-3 text-left transition-colors hover:border-blue-300 hover:bg-blue-50/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${selectedConceptId === skill.id ? 'border-blue-400 bg-blue-50/50' : 'border-slate-200 bg-white'}`}
+                                                            >
+                                                                <div className="flex items-start justify-between gap-3">
+                                                                    <div className="min-w-0">
+                                                                        <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">{skill.concept_id}</span>
+                                                                        <span className="mt-0.5 block text-xs font-bold text-slate-900">{skill.concept_name}</span>
+                                                                    </div>
+                                                                    <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${status.badgeBg}`}>
+                                                                        {status.pct === null ? status.label : `${status.label} · ${status.pct}%`}
+                                                                    </span>
+                                                                </div>
+                                                                <span className="mt-2 block text-[11px] text-slate-500">
+                                                                    {prerequisites.length ? `Tiên quyết: ${prerequisites.join(', ')}` : 'Kỹ năng khởi đầu, không có tiên quyết'}
+                                                                </span>
+                                                            </button>
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
+                                        </section>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
 
                     {/* ========================================================================= */}
                     {/* 3.3 SLIDE-OUT CONCEPT DETAIL DRAWER (Right Inspector Panel)                */}
@@ -2100,7 +2160,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                 <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-3">
                                     <div className="flex items-center gap-2">
                                         <span className="text-xs font-bold bg-purple-100 text-purple-700 px-2.5 py-0.5 rounded-full">
-                                            Đang học
+                                            {getConceptStatus(activeConcept.id).label}
                                         </span>
                                         <span className="text-xs text-slate-400 font-semibold">
                                             {currentLangConfig.name} • {activeConcept.concept_id}
@@ -2158,16 +2218,27 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                         <div className="flex items-center justify-between">
                                             <span className="text-[10px] text-slate-400 font-medium">Tiến độ</span>
                                             <span className="text-[11px] font-bold text-blue-600">
-                                                {Math.round((userMastery[activeConcept.id] ?? 0.53) * 100)}%
+                                                {typeof activeMastery === 'number' ? `${Math.round(activeMastery * 100)}%` : 'Chưa đánh giá'}
                                             </span>
                                         </div>
                                         <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden mt-1">
                                             <div 
                                                 className="h-full bg-blue-600 rounded-full" 
-                                                style={{ width: `${Math.round((userMastery[activeConcept.id] ?? 0.53) * 100)}%` }}
+                                                style={{ width: `${typeof activeMastery === 'number' ? Math.round(activeMastery * 100) : 0}%` }}
                                             />
                                         </div>
                                     </div>
+                                </div>
+
+                                <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] text-slate-600">
+                                    {activeEvidence ? (
+                                        <span>
+                                            <strong className="text-slate-800">Bằng chứng kiểm định:</strong>{' '}
+                                            {activeEvidence.attempts} lượt · độ tin cậy {Math.round(activeEvidence.confidence * 100)}% · nguồn {EVIDENCE_SOURCE_LABELS[activeEvidence.source]}
+                                        </span>
+                                    ) : (
+                                        <span>Chưa có lượt chạy kiểm định cho kỹ năng này. Hệ thống chưa gán phần trăm năng lực.</span>
+                                    )}
                                 </div>
 
                                 {/* Mục tiêu học tập với Green Checkmarks */}
@@ -2190,12 +2261,13 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                     </div>
                                 </div>
 
-                                {/* Ví dụ minh họa: Code Block Box with Line Numbers & "▶ Chạy thử" */}
+                                {/* Curated examples only. No generated or simulated output is presented as execution evidence. */}
+                                {currentCodeSnippet ? (
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
                                             <Code2 className="w-4 h-4 text-blue-600" />
-                                            <span>Ví dụ cú pháp thực tế</span>
+                                            <span>Ví dụ cú pháp đã biên soạn</span>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <span className="text-[10px] font-mono text-slate-400 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
@@ -2236,17 +2308,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                         ))}
                                     </div>
 
-                                    {/* Button "Chạy thử" */}
-                                    <div className="flex items-center justify-between gap-2 pt-1">
-                                        <button
-                                            onClick={handleRunCode}
-                                            disabled={isExecuting}
-                                            className="px-4 py-2 rounded-xl bg-[#1E293B] hover:bg-[#334155] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer disabled:opacity-50"
-                                        >
-                                            <Play className="w-3.5 h-3.5 fill-current text-sky-400" />
-                                            <span>{isExecuting ? 'Đang chạy...' : 'Chạy thử'}</span>
-                                        </button>
-
+                                    <div className="flex items-center justify-end gap-2 pt-1">
                                         <button
                                             onClick={handleStartPractice}
                                             className="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer border border-blue-200/80"
@@ -2255,14 +2317,12 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                             <span>Học với AI Tutor</span>
                                         </button>
                                     </div>
-
-                                    {/* Execution Simulation Output */}
-                                    {executionOutput && (
-                                        <div className="p-2.5 rounded-xl bg-slate-900 text-emerald-400 text-[10px] font-mono whitespace-pre-wrap border border-slate-800 animate-fadeIn">
-                                            {executionOutput}
-                                        </div>
-                                    )}
                                 </div>
+                                ) : (
+                                    <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3 text-xs text-slate-500">
+                                        Chưa có ví dụ mã đã biên soạn cho kỹ năng này. Hãy mở AI Tutor để tạo bài và chạy bằng sandbox kiểm định.
+                                    </div>
+                                )}
 
                                 {/* Section: Bài học tiếp theo (Đề xuất) */}
                                 {recommendedNextConcept && (
@@ -2270,12 +2330,13 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                         <span className="text-[11px] font-bold text-purple-700 block">
                                             Bài học tiếp theo (Đề xuất)
                                         </span>
-                                        <div 
+                                        <button
+                                            type="button"
                                             onClick={() => {
                                                 setSelectedConceptId(recommendedNextConcept.id);
                                                 setIsDrawerOpen(true);
                                             }}
-                                            className="p-3 rounded-xl bg-purple-50/80 hover:bg-purple-100/90 border border-purple-200 flex items-center justify-between transition-all cursor-pointer group shadow-2xs"
+                                            className="w-full text-left p-3 rounded-xl bg-purple-50/80 hover:bg-purple-100/90 border border-purple-200 flex items-center justify-between transition-all cursor-pointer group shadow-2xs"
                                         >
                                             <div className="flex items-center gap-2.5 min-w-0">
                                                 <div className="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center shrink-0">
@@ -2285,15 +2346,15 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                                                     <span className="text-xs font-bold text-slate-900 group-hover:text-purple-700 transition-colors block truncate">
                                                         {recommendedNextConcept.concept_id} {recommendedNextConcept.concept_name}
                                                     </span>
-                                                    <span className="text-[10px] text-purple-600 font-semibold block">
-                                                        Tiến độ: 40%
+                                                    <span className="text-[10px] text-purple-600 font-semibold block whitespace-normal">
+                                                        {recommendedNextConcept.recommendationReason}
                                                     </span>
                                                 </div>
                                             </div>
                                             <div className="w-7 h-7 rounded-lg bg-white text-purple-600 flex items-center justify-center shrink-0 border border-purple-200 group-hover:bg-purple-600 group-hover:text-white transition-all">
                                                 <ArrowRight className="w-3.5 h-3.5" />
                                             </div>
-                                        </div>
+                                        </button>
                                     </div>
                                 )}
                             </div>
@@ -2352,7 +2413,7 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
                     <div className="flex items-center gap-3">
                         <div className="flex items-center bg-blue-50 px-2.5 py-1 rounded-xl border border-blue-200/80 text-[11px] font-semibold text-blue-700">
                             <span className="text-[10px] text-blue-400 mr-1.5 uppercase font-mono">Engine</span>
-                            <span className="font-bold">PAL-Net (GCN & Attention)</span>
+                            <span className="font-bold">Evidence Policy v4</span>
                         </div>
 
                         {/* Mini-map Box matching image */}

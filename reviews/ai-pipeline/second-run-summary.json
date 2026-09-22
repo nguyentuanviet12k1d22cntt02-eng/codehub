@@ -1,0 +1,906 @@
+{
+  "kind": "REAL_END_TO_END",
+  "started_at": "2026-09-18T02:09:37.015Z",
+  "fixture_user_id": "204519bf-475a-49e9-8fb7-b645a5534216",
+  "runs": [
+    {
+      "language": "cpp",
+      "trace_id": "trace_670898ccae574b8480dd2ff3e6d365a7",
+      "status": "FAILED",
+      "checks": {},
+      "model_calls": [
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "response_id": "dJ2satCxHPnZjuMP4LzjsQg",
+          "status": "SUCCEEDED",
+          "usage": {
+            "serviceTier": "standard",
+            "totalTokenCount": 5284,
+            "promptTokenCount": 3926,
+            "thoughtsTokenCount": 357,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 3926
+              }
+            ],
+            "candidatesTokenCount": 1001
+          }
+        },
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-bca2868d-601d-4175-bc7d-3affc66a676f",
+          "status": "SUCCEEDED",
+          "usage": {
+            "queue_time": 0.349799453,
+            "total_time": 3.369339851,
+            "prompt_time": 0.079112336,
+            "total_tokens": 3228,
+            "prompt_tokens": 1682,
+            "completion_time": 3.2902275149999998,
+            "completion_tokens": 1546,
+            "completion_tokens_details": {
+              "reasoning_tokens": 584
+            }
+          }
+        },
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-21d34470-4aef-4522-b621-162b1f8c417b",
+          "status": "SUCCEEDED",
+          "usage": {
+            "queue_time": 0.333691248,
+            "total_time": 2.384731242,
+            "prompt_time": 0.166614991,
+            "total_tokens": 4121,
+            "prompt_tokens": 3071,
+            "completion_time": 2.218116251,
+            "completion_tokens": 1050,
+            "completion_tokens_details": {
+              "reasoning_tokens": 847
+            }
+          }
+        },
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "status": "FAILED"
+        },
+        {
+          "provider": "OPENROUTER",
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "response_id": "gen-1789697433-hYdaoyGhi7qxUobkBtRU",
+          "status": "SUCCEEDED",
+          "usage": {
+            "cost": 0.00096504,
+            "is_byok": false,
+            "cost_details": {
+              "upstream_inference_cost": 0.00096504,
+              "upstream_inference_prompt_cost": 0.000522,
+              "upstream_inference_completions_cost": 0.00044304
+            },
+            "total_tokens": 3470,
+            "prompt_tokens": 2618,
+            "completion_tokens": 852,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "video_tokens": 0,
+              "cached_tokens": 16,
+              "cache_write_tokens": 0
+            },
+            "completion_tokens_details": {
+              "audio_tokens": 0,
+              "image_tokens": 0,
+              "reasoning_tokens": 0
+            }
+          }
+        },
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "OPENROUTER",
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "status": "FAILED"
+        }
+      ],
+      "error": {
+        "code": "PROVIDER_DEADLINE_EXCEEDED",
+        "message": "Không nhận được JSON hợp lệ từ provider trong ngân sách cho phép"
+      }
+    },
+    {
+      "language": "python",
+      "trace_id": "trace_e2f87a93a95a4dc08c5c8e8cd2a6b4b5",
+      "status": "SUCCEEDED",
+      "checks": {
+        "public_response_protects_answers": true,
+        "persisted_report_and_role_check": true,
+        "publishing_is_idempotent_and_ignores_client_artifact": true,
+        "lesson_does_not_leak_solution": true,
+        "real_submission_pass_wrong_answer_fail": true,
+        "no_duplicate_mastery_increase": true
+      },
+      "model_calls": [
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-eaec7e74-c829-4dc8-bfe1-f7a855d9628e",
+          "status": "SUCCEEDED",
+          "usage": {
+            "queue_time": 0.347915295,
+            "total_time": 3.011020113,
+            "prompt_time": 0.198197374,
+            "total_tokens": 6193,
+            "prompt_tokens": 4832,
+            "completion_time": 2.812822739,
+            "completion_tokens": 1361,
+            "completion_tokens_details": {
+              "reasoning_tokens": 165
+            }
+          }
+        },
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "status": "FAILED"
+        },
+        {
+          "provider": "OPENROUTER",
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "response_id": "gen-1789697536-HK7Cu04KKcA1xiY3aK5L",
+          "status": "SUCCEEDED",
+          "usage": {
+            "cost": 0.00035802,
+            "is_byok": false,
+            "cost_details": {
+              "upstream_inference_cost": 0.00035802,
+              "upstream_inference_prompt_cost": 0.0001561,
+              "upstream_inference_completions_cost": 0.00020192
+            },
+            "total_tokens": 2192,
+            "prompt_tokens": 1561,
+            "completion_tokens": 631,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "video_tokens": 0,
+              "cached_tokens": 0,
+              "cache_write_tokens": 0
+            },
+            "completion_tokens_details": {
+              "audio_tokens": 0,
+              "image_tokens": 0,
+              "reasoning_tokens": 0
+            }
+          }
+        },
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "OPENROUTER",
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "response_id": "gen-1789697582-ANtANiMQOBwUvEd0ZHTp",
+          "status": "SUCCEEDED",
+          "usage": {
+            "cost": 0.00034042,
+            "is_byok": false,
+            "cost_details": {
+              "upstream_inference_cost": 0.00034042,
+              "upstream_inference_prompt_cost": 0.0002825,
+              "upstream_inference_completions_cost": 0.00005792
+            },
+            "total_tokens": 3006,
+            "prompt_tokens": 2825,
+            "completion_tokens": 181,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "video_tokens": 0,
+              "cached_tokens": 0,
+              "cache_write_tokens": 0
+            },
+            "completion_tokens_details": {
+              "audio_tokens": 0,
+              "image_tokens": 0,
+              "reasoning_tokens": 0
+            }
+          }
+        }
+      ],
+      "grading": {
+        "success": true,
+        "isPassed": true,
+        "passedCases": 4,
+        "totalCases": 4,
+        "score": 100,
+        "results": [
+          {
+            "case_index": 1,
+            "is_hidden": false,
+            "category": "normal",
+            "input": "[5]",
+            "expected": "15",
+            "actual": "15",
+            "stderr": "",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 726,
+            "image": "python:3.11-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "1",
+            "expectedOutput": "15",
+            "actualOutput": "15",
+            "errorMessage": ""
+          },
+          {
+            "case_index": 2,
+            "is_hidden": false,
+            "category": "normal",
+            "input": "[10]",
+            "expected": "55",
+            "actual": "55",
+            "stderr": "",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 748,
+            "image": "python:3.11-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "2",
+            "expectedOutput": "55",
+            "actualOutput": "55",
+            "errorMessage": ""
+          },
+          {
+            "case_index": 3,
+            "is_hidden": false,
+            "category": "boundary",
+            "input": "[0]",
+            "expected": "0",
+            "actual": "0",
+            "stderr": "",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 805,
+            "image": "python:3.11-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "3",
+            "expectedOutput": "0",
+            "actualOutput": "0",
+            "errorMessage": ""
+          },
+          {
+            "case_index": 4,
+            "is_hidden": true,
+            "category": "normal",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 754,
+            "image": "python:3.11-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "4",
+            "input": "Hidden",
+            "expectedOutput": "Hidden",
+            "actualOutput": "Passed"
+          }
+        ],
+        "status": "EXECUTED",
+        "adaptiveFeedback": {
+          "submission_id": "ff425bef-9f25-4f43-a067-eed5efc18344",
+          "concept_id": "PY-FLOW-02",
+          "previous_mastery": 0.4,
+          "new_mastery": 0.48,
+          "delta": 0.08,
+          "policy_version": "evidence_policy_v3",
+          "reason": "VERIFIED_PASS",
+          "evidence": {
+            "trace_id": "trace_e2f87a93a95a4dc08c5c8e8cd2a6b4b5",
+            "harness_version": "adaptive_harness_v3",
+            "passed_cases": 4,
+            "total_cases": 4
+          }
+        },
+        "submission_id": "ff425bef-9f25-4f43-a067-eed5efc18344"
+      },
+      "wrong_grading": {
+        "success": true,
+        "isPassed": false,
+        "passedCases": 0,
+        "totalCases": 4,
+        "score": 0,
+        "results": [
+          {
+            "case_index": 1,
+            "is_hidden": false,
+            "category": "normal",
+            "input": "[5]",
+            "expected": "15",
+            "actual": "",
+            "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 24, in <module>\nValueError: CONSTRAINT_REQUIRED:while\n",
+            "passed": false,
+            "executed": true,
+            "status": "CONSTRAINT_VIOLATION",
+            "runtime_ms": 717,
+            "image": "python:3.11-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "1",
+            "expectedOutput": "15",
+            "actualOutput": "",
+            "errorMessage": "Traceback (most recent call last):\n  File \"<string>\", line 24, in <module>\nValueError: CONSTRAINT_REQUIRED:while\n"
+          },
+          {
+            "case_index": 2,
+            "is_hidden": false,
+            "category": "normal",
+            "input": "[10]",
+            "expected": "55",
+            "actual": "",
+            "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 24, in <module>\nValueError: CONSTRAINT_REQUIRED:while\n",
+            "passed": false,
+            "executed": true,
+            "status": "CONSTRAINT_VIOLATION",
+            "runtime_ms": 759,
+            "image": "python:3.11-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "2",
+            "expectedOutput": "55",
+            "actualOutput": "",
+            "errorMessage": "Traceback (most recent call last):\n  File \"<string>\", line 24, in <module>\nValueError: CONSTRAINT_REQUIRED:while\n"
+          },
+          {
+            "case_index": 3,
+            "is_hidden": false,
+            "category": "boundary",
+            "input": "[0]",
+            "expected": "0",
+            "actual": "",
+            "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 24, in <module>\nValueError: CONSTRAINT_REQUIRED:while\n",
+            "passed": false,
+            "executed": true,
+            "status": "CONSTRAINT_VIOLATION",
+            "runtime_ms": 740,
+            "image": "python:3.11-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "3",
+            "expectedOutput": "0",
+            "actualOutput": "",
+            "errorMessage": "Traceback (most recent call last):\n  File \"<string>\", line 24, in <module>\nValueError: CONSTRAINT_REQUIRED:while\n"
+          },
+          {
+            "case_index": 4,
+            "is_hidden": true,
+            "category": "normal",
+            "passed": false,
+            "executed": true,
+            "status": "CONSTRAINT_VIOLATION",
+            "runtime_ms": 942,
+            "image": "python:3.11-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "4",
+            "input": "Hidden",
+            "expectedOutput": "Hidden",
+            "actualOutput": "Mismatch"
+          }
+        ],
+        "status": "EXECUTED",
+        "adaptiveFeedback": {
+          "submission_id": "b7419d9e-3328-40fa-af80-701d4a482043",
+          "concept_id": "PY-FLOW-02",
+          "previous_mastery": 0.48,
+          "new_mastery": 0.48,
+          "delta": 0,
+          "policy_version": "evidence_policy_v3",
+          "reason": "FAILURE_OBSERVED_NO_UNCERTAIN_PENALTY",
+          "evidence": {
+            "trace_id": "trace_e2f87a93a95a4dc08c5c8e8cd2a6b4b5",
+            "harness_version": "adaptive_harness_v3",
+            "passed_cases": 0,
+            "total_cases": 4
+          }
+        },
+        "submission_id": "b7419d9e-3328-40fa-af80-701d4a482043"
+      }
+    },
+    {
+      "language": "javascript",
+      "trace_id": "trace_26d6a6a955e74e7e8f751b7e44fc4048",
+      "status": "SUCCEEDED",
+      "checks": {
+        "public_response_protects_answers": true,
+        "persisted_report_and_role_check": true,
+        "publishing_is_idempotent_and_ignores_client_artifact": true,
+        "lesson_does_not_leak_solution": true,
+        "real_submission_pass_wrong_answer_fail": true,
+        "no_duplicate_mastery_increase": true
+      },
+      "model_calls": [
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-7e6507dd-dde4-4bd8-a38d-95f88ce19e4c",
+          "status": "SUCCEEDED",
+          "usage": {
+            "queue_time": 0.318176032,
+            "total_time": 4.052699017,
+            "prompt_time": 0.158177247,
+            "total_tokens": 4906,
+            "prompt_tokens": 3060,
+            "completion_time": 3.89452177,
+            "completion_tokens": 1846,
+            "completion_tokens_details": {
+              "reasoning_tokens": 382
+            }
+          }
+        },
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-f5c22ae8-78c8-4eb9-8983-db22f7fc144e",
+          "status": "SUCCEEDED",
+          "usage": {
+            "queue_time": 0.398650201,
+            "total_time": 3.653310296,
+            "prompt_time": 0.074106108,
+            "total_tokens": 3386,
+            "prompt_tokens": 1678,
+            "completion_time": 3.579204188,
+            "completion_tokens": 1708,
+            "completion_tokens_details": {
+              "reasoning_tokens": 636
+            }
+          }
+        },
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-d8136cfd-7078-46b1-91b7-b9fd12ada3ef",
+          "status": "SUCCEEDED",
+          "usage": {
+            "queue_time": 0.213039039,
+            "total_time": 4.659672728,
+            "prompt_time": 0.18585831,
+            "total_tokens": 6165,
+            "prompt_tokens": 4045,
+            "completion_time": 4.473814418,
+            "completion_tokens": 2120,
+            "completion_tokens_details": {
+              "reasoning_tokens": 949
+            }
+          }
+        },
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "response_id": "n56sasj1Cai9juMPsI3VmAs",
+          "status": "SUCCEEDED",
+          "usage": {
+            "serviceTier": "standard",
+            "totalTokenCount": 7101,
+            "promptTokenCount": 4390,
+            "thoughtsTokenCount": 1489,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4390
+              }
+            ],
+            "candidatesTokenCount": 1222
+          }
+        },
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "status": "FAILED"
+        },
+        {
+          "provider": "OPENROUTER",
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "response_id": "gen-1789697716-LdzR76IJwtrEwAJPjSPK",
+          "status": "SUCCEEDED",
+          "usage": {
+            "cost": 0.00040274,
+            "is_byok": false,
+            "cost_details": {
+              "upstream_inference_cost": 0.00040274,
+              "upstream_inference_prompt_cost": 0.0003445,
+              "upstream_inference_completions_cost": 0.00005824
+            },
+            "total_tokens": 3627,
+            "prompt_tokens": 3445,
+            "completion_tokens": 182,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "video_tokens": 0,
+              "cached_tokens": 0,
+              "cache_write_tokens": 0
+            },
+            "completion_tokens_details": {
+              "audio_tokens": 0,
+              "image_tokens": 0,
+              "reasoning_tokens": 0
+            }
+          }
+        }
+      ],
+      "grading": {
+        "success": true,
+        "isPassed": true,
+        "passedCases": 6,
+        "totalCases": 6,
+        "score": 100,
+        "results": [
+          {
+            "case_index": 1,
+            "is_hidden": false,
+            "category": "normal",
+            "input": "[[1, 2, 3, -1, 0]]",
+            "expected": "3",
+            "actual": "3",
+            "stderr": "",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 627,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "1",
+            "expectedOutput": "3",
+            "actualOutput": "3",
+            "errorMessage": ""
+          },
+          {
+            "case_index": 2,
+            "is_hidden": false,
+            "category": "normal",
+            "input": "[[-5, -2, -3]]",
+            "expected": "0",
+            "actual": "0",
+            "stderr": "",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 634,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "2",
+            "expectedOutput": "0",
+            "actualOutput": "0",
+            "errorMessage": ""
+          },
+          {
+            "case_index": 3,
+            "is_hidden": false,
+            "category": "boundary",
+            "input": "[[]]",
+            "expected": "0",
+            "actual": "0",
+            "stderr": "",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 582,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "3",
+            "expectedOutput": "0",
+            "actualOutput": "0",
+            "errorMessage": ""
+          },
+          {
+            "case_index": 4,
+            "is_hidden": false,
+            "category": "boundary",
+            "input": "[[0, 0, 0]]",
+            "expected": "0",
+            "actual": "0",
+            "stderr": "",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 584,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "4",
+            "expectedOutput": "0",
+            "actualOutput": "0",
+            "errorMessage": ""
+          },
+          {
+            "case_index": 5,
+            "is_hidden": false,
+            "category": "normal",
+            "input": "[[10, -10, 20, -20, 30, -30, 0, 5, -5]]",
+            "expected": "4",
+            "actual": "4",
+            "stderr": "",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 619,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "5",
+            "expectedOutput": "4",
+            "actualOutput": "4",
+            "errorMessage": ""
+          },
+          {
+            "case_index": 6,
+            "is_hidden": true,
+            "category": "normal",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 622,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "6",
+            "input": "Hidden",
+            "expectedOutput": "Hidden",
+            "actualOutput": "Passed"
+          }
+        ],
+        "status": "EXECUTED",
+        "adaptiveFeedback": {
+          "submission_id": "393f0b35-61f5-4ae3-9163-82c4ae1e7a63",
+          "concept_id": "JS-PROTO-01",
+          "previous_mastery": 0.4,
+          "new_mastery": 0.48,
+          "delta": 0.08,
+          "policy_version": "evidence_policy_v3",
+          "reason": "VERIFIED_PASS",
+          "evidence": {
+            "trace_id": "trace_26d6a6a955e74e7e8f751b7e44fc4048",
+            "harness_version": "adaptive_harness_v3",
+            "passed_cases": 6,
+            "total_cases": 6
+          }
+        },
+        "submission_id": "393f0b35-61f5-4ae3-9163-82c4ae1e7a63"
+      },
+      "wrong_grading": {
+        "success": true,
+        "isPassed": false,
+        "passedCases": 0,
+        "totalCases": 6,
+        "score": 0,
+        "results": [
+          {
+            "case_index": 1,
+            "is_hidden": false,
+            "category": "normal",
+            "input": "[[1, 2, 3, -1, 0]]",
+            "expected": "3",
+            "actual": "-999",
+            "stderr": "",
+            "passed": false,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 655,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "1",
+            "expectedOutput": "3",
+            "actualOutput": "-999",
+            "errorMessage": ""
+          },
+          {
+            "case_index": 2,
+            "is_hidden": false,
+            "category": "normal",
+            "input": "[[-5, -2, -3]]",
+            "expected": "0",
+            "actual": "-999",
+            "stderr": "",
+            "passed": false,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 593,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "2",
+            "expectedOutput": "0",
+            "actualOutput": "-999",
+            "errorMessage": ""
+          },
+          {
+            "case_index": 3,
+            "is_hidden": false,
+            "category": "boundary",
+            "input": "[[]]",
+            "expected": "0",
+            "actual": "-999",
+            "stderr": "",
+            "passed": false,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 620,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "3",
+            "expectedOutput": "0",
+            "actualOutput": "-999",
+            "errorMessage": ""
+          },
+          {
+            "case_index": 4,
+            "is_hidden": false,
+            "category": "boundary",
+            "input": "[[0, 0, 0]]",
+            "expected": "0",
+            "actual": "-999",
+            "stderr": "",
+            "passed": false,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 599,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "4",
+            "expectedOutput": "0",
+            "actualOutput": "-999",
+            "errorMessage": ""
+          },
+          {
+            "case_index": 5,
+            "is_hidden": false,
+            "category": "normal",
+            "input": "[[10, -10, 20, -20, 30, -30, 0, 5, -5]]",
+            "expected": "4",
+            "actual": "-999",
+            "stderr": "",
+            "passed": false,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 618,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "5",
+            "expectedOutput": "4",
+            "actualOutput": "-999",
+            "errorMessage": ""
+          },
+          {
+            "case_index": 6,
+            "is_hidden": true,
+            "category": "normal",
+            "passed": false,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 608,
+            "image": "node:20-alpine",
+            "harness_version": "adaptive_harness_v3",
+            "testCaseId": "6",
+            "input": "Hidden",
+            "expectedOutput": "Hidden",
+            "actualOutput": "Mismatch"
+          }
+        ],
+        "status": "EXECUTED",
+        "adaptiveFeedback": {
+          "submission_id": "90943ce2-be72-453f-8919-1ff3134a16ef",
+          "concept_id": "JS-PROTO-01",
+          "previous_mastery": 0.48,
+          "new_mastery": 0.48,
+          "delta": 0,
+          "policy_version": "evidence_policy_v3",
+          "reason": "FAILURE_OBSERVED_NO_UNCERTAIN_PENALTY",
+          "evidence": {
+            "trace_id": "trace_26d6a6a955e74e7e8f751b7e44fc4048",
+            "harness_version": "adaptive_harness_v3",
+            "passed_cases": 0,
+            "total_cases": 6
+          }
+        },
+        "submission_id": "90943ce2-be72-453f-8919-1ff3134a16ef"
+      }
+    },
+    {
+      "language": "sql",
+      "trace_id": "trace_ae99858ccf4d497c8772ee9d24176811",
+      "status": "FAILED",
+      "checks": {},
+      "model_calls": [
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-d896e286-1316-4a96-9df9-47ade75d89cf",
+          "status": "SUCCEEDED",
+          "usage": {
+            "queue_time": 0.347908669,
+            "total_time": 3.351013625,
+            "prompt_time": 0.273211349,
+            "total_tokens": 6369,
+            "prompt_tokens": 4890,
+            "completion_time": 3.077802276,
+            "completion_tokens": 1479,
+            "completion_tokens_details": {
+              "reasoning_tokens": 316
+            }
+          }
+        },
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "status": "FAILED"
+        },
+        {
+          "provider": "OPENROUTER",
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "status": "FAILED"
+        }
+      ],
+      "error": {
+        "code": "PROVIDER_DEADLINE_EXCEEDED",
+        "message": "Không nhận được JSON hợp lệ từ provider trong ngân sách cho phép"
+      }
+    }
+  ],
+  "ended_at": "2026-09-18T02:16:45.565Z",
+  "status": "FAILED"
+}

@@ -3,10 +3,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import UserMenuDropdown from '../../../components/UserMenuDropdown';
 import { KnowledgeGraphTree } from '../../adaptive-learning/components/KnowledgeGraphTree';
 import type { SupportedLanguage } from '../../adaptive-learning/components/KnowledgeGraphTree';
-import pythonSkillGraph from '../../../data/pythonSkillGraph.json';
-import javascriptSkillGraph from '../../../data/javascriptSkillGraph.json';
-import cppSkillGraph from '../../../data/cppSkillGraph.json';
-import sqlSkillGraph from '../../../data/sqlSkillGraph.json';
 import { 
     AlertTriangle,
     Home,
@@ -27,16 +23,29 @@ interface UserMasteryData {
     student_meta: {
         username: string;
         email: string;
-        profile: 'STRUGGLING' | 'AVERAGE' | 'EXCELLENT';
+        profile: 'NEW' | 'STRUGGLING' | 'AVERAGE' | 'EXCELLENT';
     };
     mastery: {
-        'PAL-Net': Record<string, number>;
+        'Evidence-Based': Record<string, number>;
     };
+    evidence: Record<string, {
+        mastery: number;
+        confidence: number;
+        attempts: number;
+        passed: number;
+        failed: number;
+        source: 'COURSE_SANDBOX' | 'ADAPTIVE_SANDBOX' | 'MIXED_VERIFIED';
+        last_assessed_at: string | null;
+    }>;
     stats: {
         lessons_completed: number;
         practice_completed: number;
         streak_days: number;
         total_actions: number;
+        total_evidence_weight: number;
+        observed_skills: number;
+        total_skills: number;
+        overall_mastery: number | null;
     };
 }
 
@@ -46,8 +55,7 @@ const Profile: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
     const [data, setData] = useState<UserMasteryData | null>(null);
-    const [masteryCache, setMasteryCache] = useState<Partial<Record<SupportedLanguage, UserMasteryData>>>({});
-    const [activeModel, setActiveModel] = useState<'PAL-Net'>('PAL-Net');
+    const [activeModel, setActiveModel] = useState<'Evidence-Based'>('Evidence-Based');
     const [topSearch, setTopSearch] = useState<string>('');
 
     useEffect(() => {
@@ -58,26 +66,18 @@ const Profile: React.FC = () => {
                 return;
             }
 
-            // If already cached, switch instantly!
-            if (masteryCache[selectedLanguage]) {
-                setData(masteryCache[selectedLanguage]!);
-                setLoading(false);
-                return;
-            }
-
             try {
                 setLoading(true);
+                setError('');
+                setData(null);
                 const response = await axios.get(`${API_BASE_URL}/api/auth/user-mastery`, {
                     params: { language: selectedLanguage },
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setData(response.data);
-                setMasteryCache(prev => ({
-                    ...prev,
-                    [selectedLanguage]: response.data
-                }));
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error(err);
+                setData(null);
                 setError('Không thể tải thông tin tri thức người học.');
             } finally {
                 setLoading(false);
@@ -85,29 +85,17 @@ const Profile: React.FC = () => {
         };
 
         fetchMastery();
-    }, [navigate, selectedLanguage, masteryCache]);
+    }, [navigate, selectedLanguage]);
 
-    // Resolve active skill graph for overall score calculation
-    const activeGraph = useMemo(() => {
-        switch (selectedLanguage) {
-            case 'JAVASCRIPT': return javascriptSkillGraph;
-            case 'CPP': return cppSkillGraph;
-            case 'SQL': return sqlSkillGraph;
-            case 'PYTHON':
-            default: return pythonSkillGraph;
-        }
-    }, [selectedLanguage]);
-
-    const skillsList = useMemo(() => activeGraph.skills || [], [activeGraph]);
     const currentModelMasteries = useMemo(() => {
         return data?.mastery?.[activeModel] || {};
     }, [data, activeModel]);
 
     const overallScore = useMemo(() => {
-        if (!skillsList.length) return 0.32;
-        const total = skillsList.reduce((acc: number, s: any) => acc + (currentModelMasteries[s.id] ?? 0.5), 0);
-        return Math.max(0.32, total / skillsList.length);
-    }, [skillsList, currentModelMasteries]);
+        return typeof data?.stats?.overall_mastery === 'number'
+            ? data.stats.overall_mastery
+            : null;
+    }, [data]);
 
     if (error && !data) {
         return (
@@ -126,15 +114,19 @@ const Profile: React.FC = () => {
     }
 
     const student_meta = data?.student_meta || {
-        username: 'Nguyễn Tuấn Việt',
+        username: 'Học viên',
         email: '',
-        profile: 'AVERAGE' as const
+        profile: 'NEW' as const
     };
     const stats = data?.stats || {
         lessons_completed: 0,
         practice_completed: 0,
-        streak_days: 3,
-        total_actions: 0
+        streak_days: 0,
+        total_actions: 0,
+        total_evidence_weight: 0,
+        observed_skills: 0,
+        total_skills: 0,
+        overall_mastery: null
     };
 
     return (
@@ -256,6 +248,7 @@ const Profile: React.FC = () => {
             <main className="flex-1 flex flex-col w-full max-w-[1850px] mx-auto p-4 md:p-6 overflow-hidden">
                 <KnowledgeGraphTree
                     userMastery={currentModelMasteries}
+                    userEvidence={data?.evidence || {}}
                     activeLanguage={selectedLanguage}
                     onLanguageChange={setSelectedLanguage}
                     isLoading={loading}

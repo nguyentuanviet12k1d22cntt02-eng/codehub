@@ -1,0 +1,1002 @@
+{
+  "schema_version": "1.0",
+  "kind": "REAL_PIPELINE_EVIDENCE_INDEX",
+  "generated_at": "2026-09-20T04:06:58.600Z",
+  "status": "PASSED",
+  "statement": "Four real provider pipelines completed without fallback; every published artifact passed deterministic validation, Docker execution and critic review.",
+  "runs": [
+    {
+      "language": "python",
+      "trace_id": "trace_e2f87a93a95a4dc08c5c8e8cd2a6b4b5",
+      "status": "SUCCEEDED",
+      "artifact_hash": "4d3d0f71bc1d203457538995f4d3aa347e5a0e8bcb8b8966bc44319b9c716bfb",
+      "stages": [
+        {
+          "sequence": 1,
+          "agent": "IntentRouterAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        },
+        {
+          "sequence": 2,
+          "agent": "AdaptiveExercisePlanner",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        },
+        {
+          "sequence": 3,
+          "agent": "KnowledgeRetrievalService",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 718
+        },
+        {
+          "sequence": 4,
+          "agent": "ExplanationTutorAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 6356
+        },
+        {
+          "sequence": 5,
+          "agent": "ExerciseGeneratorAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 40149
+        },
+        {
+          "sequence": 6,
+          "agent": "SchemaValidator",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        },
+        {
+          "sequence": 7,
+          "agent": "ConstraintValidator",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 1
+        },
+        {
+          "sequence": 8,
+          "agent": "SandboxValidator",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 3072
+        },
+        {
+          "sequence": 9,
+          "agent": "CriticEvaluatorAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 22723
+        },
+        {
+          "sequence": 10,
+          "agent": "PublicationGate",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        }
+      ],
+      "model_calls": [
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "duration_ms": 1610,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-eaec7e74-c829-4dc8-bfe1-f7a855d9628e",
+          "status": "SUCCEEDED",
+          "duration_ms": 4110,
+          "usage": {
+            "queue_time": 0.347915295,
+            "total_time": 3.011020113,
+            "prompt_time": 0.198197374,
+            "total_tokens": 6193,
+            "prompt_tokens": 4832,
+            "completion_time": 2.812822739,
+            "completion_tokens": 1361,
+            "completion_tokens_details": {
+              "reasoning_tokens": 165
+            }
+          }
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "duration_ms": 1793,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "status": "FAILED",
+          "duration_ms": 605,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "OPENROUTER",
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "response_id": "gen-1789697536-HK7Cu04KKcA1xiY3aK5L",
+          "status": "SUCCEEDED",
+          "duration_ms": 37115,
+          "usage": {
+            "cost": 0.00035802,
+            "is_byok": false,
+            "cost_details": {
+              "upstream_inference_cost": 0.00035802,
+              "upstream_inference_prompt_cost": 0.0001561,
+              "upstream_inference_completions_cost": 0.00020192
+            },
+            "total_tokens": 2192,
+            "prompt_tokens": 1561,
+            "completion_tokens": 631,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "video_tokens": 0,
+              "cached_tokens": 0,
+              "cache_write_tokens": 0
+            },
+            "completion_tokens_details": {
+              "audio_tokens": 0,
+              "image_tokens": 0,
+              "reasoning_tokens": 0
+            }
+          }
+        },
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "duration_ms": 5645,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "OPENROUTER",
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "response_id": "gen-1789697582-ANtANiMQOBwUvEd0ZHTp",
+          "status": "SUCCEEDED",
+          "duration_ms": 16353,
+          "usage": {
+            "cost": 0.00034042,
+            "is_byok": false,
+            "cost_details": {
+              "upstream_inference_cost": 0.00034042,
+              "upstream_inference_prompt_cost": 0.0002825,
+              "upstream_inference_completions_cost": 0.00005792
+            },
+            "total_tokens": 3006,
+            "prompt_tokens": 2825,
+            "completion_tokens": 181,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "video_tokens": 0,
+              "cached_tokens": 0,
+              "cache_write_tokens": 0
+            },
+            "completion_tokens_details": {
+              "audio_tokens": 0,
+              "image_tokens": 0,
+              "reasoning_tokens": 0
+            }
+          }
+        }
+      ],
+      "checks": {
+        "no_fallback": true,
+        "publication_gate": true,
+        "public_report_protects_answers": true,
+        "real_correct_submission_passes": true,
+        "real_wrong_submission_fails": true,
+        "duplicate_mastery_gain_prevented": true,
+        "docker_smoke_passes": true
+      }
+    },
+    {
+      "language": "javascript",
+      "trace_id": "trace_26d6a6a955e74e7e8f751b7e44fc4048",
+      "status": "SUCCEEDED",
+      "artifact_hash": "cc4c09013285bd9d8be0550498079e63084920f0a6a1d8800732f109cc6ffb1a",
+      "stages": [
+        {
+          "sequence": 1,
+          "agent": "IntentRouterAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        },
+        {
+          "sequence": 2,
+          "agent": "AdaptiveExercisePlanner",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        },
+        {
+          "sequence": 3,
+          "agent": "KnowledgeRetrievalService",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 572
+        },
+        {
+          "sequence": 4,
+          "agent": "ExplanationTutorAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 9487
+        },
+        {
+          "sequence": 5,
+          "agent": "ExerciseGeneratorAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 43575
+        },
+        {
+          "sequence": 6,
+          "agent": "SchemaValidator",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        },
+        {
+          "sequence": 7,
+          "agent": "ConstraintValidator",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 1
+        },
+        {
+          "sequence": 8,
+          "agent": "SandboxValidator",
+          "attempt": 1,
+          "status": "REJECTED",
+          "duration_ms": 3195
+        },
+        {
+          "sequence": 9,
+          "agent": "ExerciseGeneratorAgent",
+          "attempt": 2,
+          "status": "SUCCEEDED",
+          "duration_ms": 10586
+        },
+        {
+          "sequence": 10,
+          "agent": "SchemaValidator",
+          "attempt": 2,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        },
+        {
+          "sequence": 11,
+          "agent": "ConstraintValidator",
+          "attempt": 2,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        },
+        {
+          "sequence": 12,
+          "agent": "SandboxValidator",
+          "attempt": 2,
+          "status": "REJECTED",
+          "duration_ms": 3222
+        },
+        {
+          "sequence": 13,
+          "agent": "ExerciseGeneratorAgent",
+          "attempt": 3,
+          "status": "SUCCEEDED",
+          "duration_ms": 8221
+        },
+        {
+          "sequence": 14,
+          "agent": "SchemaValidator",
+          "attempt": 3,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        },
+        {
+          "sequence": 15,
+          "agent": "ConstraintValidator",
+          "attempt": 3,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        },
+        {
+          "sequence": 16,
+          "agent": "SandboxValidator",
+          "attempt": 3,
+          "status": "SUCCEEDED",
+          "duration_ms": 3856
+        },
+        {
+          "sequence": 17,
+          "agent": "CriticEvaluatorAgent",
+          "attempt": 3,
+          "status": "SUCCEEDED",
+          "duration_ms": 21115
+        },
+        {
+          "sequence": 18,
+          "agent": "PublicationGate",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        }
+      ],
+      "model_calls": [
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "duration_ms": 3292,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-7e6507dd-dde4-4bd8-a38d-95f88ce19e4c",
+          "status": "SUCCEEDED",
+          "duration_ms": 5130,
+          "usage": {
+            "queue_time": 0.318176032,
+            "total_time": 4.052699017,
+            "prompt_time": 0.158177247,
+            "total_tokens": 4906,
+            "prompt_tokens": 3060,
+            "completion_time": 3.89452177,
+            "completion_tokens": 1846,
+            "completion_tokens_details": {
+              "reasoning_tokens": 382
+            }
+          }
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "duration_ms": 38092,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-f5c22ae8-78c8-4eb9-8983-db22f7fc144e",
+          "status": "SUCCEEDED",
+          "duration_ms": 4426,
+          "usage": {
+            "queue_time": 0.398650201,
+            "total_time": 3.653310296,
+            "prompt_time": 0.074106108,
+            "total_tokens": 3386,
+            "prompt_tokens": 1678,
+            "completion_time": 3.579204188,
+            "completion_tokens": 1708,
+            "completion_tokens_details": {
+              "reasoning_tokens": 636
+            }
+          }
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "duration_ms": 4545,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-d8136cfd-7078-46b1-91b7-b9fd12ada3ef",
+          "status": "SUCCEEDED",
+          "duration_ms": 5206,
+          "usage": {
+            "queue_time": 0.213039039,
+            "total_time": 4.659672728,
+            "prompt_time": 0.18585831,
+            "total_tokens": 6165,
+            "prompt_tokens": 4045,
+            "completion_time": 4.473814418,
+            "completion_tokens": 2120,
+            "completion_tokens_details": {
+              "reasoning_tokens": 949
+            }
+          }
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "response_id": "n56sasj1Cai9juMPsI3VmAs",
+          "status": "SUCCEEDED",
+          "duration_ms": 8216,
+          "usage": {
+            "serviceTier": "standard",
+            "totalTokenCount": 7101,
+            "promptTokenCount": 4390,
+            "thoughtsTokenCount": 1489,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4390
+              }
+            ],
+            "candidatesTokenCount": 1222
+          }
+        },
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "duration_ms": 8162,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "status": "FAILED",
+          "duration_ms": 307,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "OPENROUTER",
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "response_id": "gen-1789697716-LdzR76IJwtrEwAJPjSPK",
+          "status": "SUCCEEDED",
+          "duration_ms": 12643,
+          "usage": {
+            "cost": 0.00040274,
+            "is_byok": false,
+            "cost_details": {
+              "upstream_inference_cost": 0.00040274,
+              "upstream_inference_prompt_cost": 0.0003445,
+              "upstream_inference_completions_cost": 0.00005824
+            },
+            "total_tokens": 3627,
+            "prompt_tokens": 3445,
+            "completion_tokens": 182,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "video_tokens": 0,
+              "cached_tokens": 0,
+              "cache_write_tokens": 0
+            },
+            "completion_tokens_details": {
+              "audio_tokens": 0,
+              "image_tokens": 0,
+              "reasoning_tokens": 0
+            }
+          }
+        }
+      ],
+      "checks": {
+        "no_fallback": true,
+        "publication_gate": true,
+        "public_report_protects_answers": true,
+        "real_correct_submission_passes": true,
+        "real_wrong_submission_fails": true,
+        "duplicate_mastery_gain_prevented": true,
+        "docker_smoke_passes": true
+      }
+    },
+    {
+      "language": "cpp",
+      "trace_id": "trace_b77135a697b4405296ac1f1df43df44c",
+      "status": "SUCCEEDED",
+      "artifact_hash": "7f39b1c7a5118d815cf09b30765676dadf69aa642502772d993fa3add39502ea",
+      "stages": [
+        {
+          "sequence": 1,
+          "agent": "IntentRouterAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 2
+        },
+        {
+          "sequence": 2,
+          "agent": "AdaptiveExercisePlanner",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 4
+        },
+        {
+          "sequence": 3,
+          "agent": "KnowledgeRetrievalService",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 557
+        },
+        {
+          "sequence": 4,
+          "agent": "ExplanationTutorAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 10486
+        },
+        {
+          "sequence": 5,
+          "agent": "ExerciseGeneratorAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 9474
+        },
+        {
+          "sequence": 6,
+          "agent": "SchemaValidator",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        },
+        {
+          "sequence": 7,
+          "agent": "ConstraintValidator",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 1
+        },
+        {
+          "sequence": 8,
+          "agent": "SandboxValidator",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 13199
+        },
+        {
+          "sequence": 9,
+          "agent": "CriticEvaluatorAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 13726
+        },
+        {
+          "sequence": 10,
+          "agent": "PublicationGate",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        }
+      ],
+      "model_calls": [
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "duration_ms": 5525,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-b8e6d398-8f76-4f58-bc91-4a0d7b6420b3",
+          "status": "SUCCEEDED",
+          "duration_ms": 4211,
+          "usage": {
+            "queue_time": 0.2893011,
+            "total_time": 3.567917508,
+            "prompt_time": 0.223712629,
+            "total_tokens": 5455,
+            "prompt_tokens": 3849,
+            "completion_time": 3.344204879,
+            "completion_tokens": 1606,
+            "completion_tokens_details": {
+              "reasoning_tokens": 454
+            }
+          }
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "duration_ms": 4506,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-7e0b8f4d-c140-4903-80c8-6e977d0fe074",
+          "status": "SUCCEEDED",
+          "duration_ms": 4224,
+          "usage": {
+            "queue_time": 0.402333532,
+            "total_time": 3.046864201,
+            "prompt_time": 0.237896905,
+            "total_tokens": 3035,
+            "prompt_tokens": 1681,
+            "completion_time": 2.808967296,
+            "completion_tokens": 1354,
+            "completion_tokens_details": {
+              "reasoning_tokens": 458
+            }
+          }
+        },
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "duration_ms": 5724,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "status": "FAILED",
+          "duration_ms": 262,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "OPENROUTER",
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "response_id": "gen-1789698229-XMzfVyeGaD6rpMeQ8NhR",
+          "status": "SUCCEEDED",
+          "duration_ms": 7734,
+          "usage": {
+            "cost": 0.00076778,
+            "is_byok": false,
+            "cost_details": {
+              "upstream_inference_cost": 0.00076778,
+              "upstream_inference_prompt_cost": 0.00066528,
+              "upstream_inference_completions_cost": 0.0001025
+            },
+            "total_tokens": 3229,
+            "prompt_tokens": 3024,
+            "completion_tokens": 205,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "video_tokens": 0,
+              "cached_tokens": 0,
+              "cache_write_tokens": 0
+            },
+            "completion_tokens_details": {
+              "audio_tokens": 0,
+              "image_tokens": 0,
+              "reasoning_tokens": 0
+            }
+          }
+        }
+      ],
+      "checks": {
+        "no_fallback": true,
+        "publication_gate": true,
+        "public_report_protects_answers": true,
+        "real_correct_submission_passes": true,
+        "real_wrong_submission_fails": true,
+        "duplicate_mastery_gain_prevented": true,
+        "docker_smoke_passes": true
+      }
+    },
+    {
+      "language": "sql",
+      "trace_id": "trace_85f99ffd01014b69a929fefa60912f82",
+      "status": "SUCCEEDED",
+      "artifact_hash": "34f3e987eb68cd58914ed0175b97543d72cba85dd5541e7c66cc2a8f21722f74",
+      "stages": [
+        {
+          "sequence": 1,
+          "agent": "IntentRouterAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 2
+        },
+        {
+          "sequence": 2,
+          "agent": "AdaptiveExercisePlanner",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 3
+        },
+        {
+          "sequence": 3,
+          "agent": "KnowledgeRetrievalService",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 104
+        },
+        {
+          "sequence": 4,
+          "agent": "ExerciseGeneratorAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 14735
+        },
+        {
+          "sequence": 5,
+          "agent": "ExplanationTutorAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 5680
+        },
+        {
+          "sequence": 6,
+          "agent": "SchemaValidator",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        },
+        {
+          "sequence": 7,
+          "agent": "ConstraintValidator",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        },
+        {
+          "sequence": 8,
+          "agent": "SandboxValidator",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 3738
+        },
+        {
+          "sequence": 9,
+          "agent": "CriticEvaluatorAgent",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 9077
+        },
+        {
+          "sequence": 10,
+          "agent": "PublicationGate",
+          "attempt": 1,
+          "status": "SUCCEEDED",
+          "duration_ms": 0
+        }
+      ],
+      "model_calls": [
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "response_id": "w9usarflE8CcjuMP5N-IyAk",
+          "status": "SUCCEEDED",
+          "duration_ms": 14003,
+          "usage": {
+            "serviceTier": "standard",
+            "totalTokenCount": 3462,
+            "promptTokenCount": 1783,
+            "thoughtsTokenCount": 243,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 1783
+              }
+            ],
+            "candidatesTokenCount": 1436
+          }
+        },
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "duration_ms": 1057,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-7df345b4-bf75-4169-8116-d967418cdd8d",
+          "status": "SUCCEEDED",
+          "duration_ms": 3952,
+          "usage": {
+            "queue_time": 0.318787939,
+            "total_time": 2.9254256180000002,
+            "prompt_time": 0.23104378,
+            "total_tokens": 6180,
+            "prompt_tokens": 4889,
+            "completion_time": 2.694381838,
+            "completion_tokens": 1291,
+            "completion_tokens_details": {
+              "reasoning_tokens": 128
+            }
+          }
+        },
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "status": "FAILED",
+          "duration_ms": 1344,
+          "error_code": "PROVIDER_CALL_FAILED"
+        },
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "OPENROUTER",
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "response_id": "gen-1789713367-qSTEmOTh58wMDJG8LHgp",
+          "status": "SUCCEEDED",
+          "duration_ms": 7731,
+          "usage": {
+            "cost": 0.00040002,
+            "is_byok": false,
+            "cost_details": {
+              "upstream_inference_cost": 0.00040002,
+              "upstream_inference_prompt_cost": 0.0003485,
+              "upstream_inference_completions_cost": 0.00005152
+            },
+            "total_tokens": 3646,
+            "prompt_tokens": 3485,
+            "completion_tokens": 161,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "video_tokens": 0,
+              "cached_tokens": 0,
+              "cache_write_tokens": 0
+            },
+            "completion_tokens_details": {
+              "audio_tokens": 0,
+              "image_tokens": 0,
+              "reasoning_tokens": 0
+            }
+          }
+        }
+      ],
+      "checks": {
+        "no_fallback": true,
+        "publication_gate": true,
+        "public_report_protects_answers": true,
+        "real_correct_submission_passes": true,
+        "real_wrong_submission_fails": true,
+        "duplicate_mastery_gain_prevented": true,
+        "docker_smoke_passes": true
+      }
+    }
+  ],
+  "retained_failures": [
+    {
+      "file": "cpp-first-attempt-failed.json",
+      "sha256": "050d9e67dde916a10ef4a132d32d2fea49ff5376b78a9713612532c2c4ccdf7e",
+      "bytes": 327165
+    },
+    {
+      "file": "cpp-second-attempt-failed.json",
+      "sha256": "cedd21aba501a58a9775a0e534287866b27b8d69848ce368705b2b8a64b27065",
+      "bytes": 259219
+    },
+    {
+      "file": "sql-provider-timeout.json",
+      "sha256": "f14b6c12530abafce6af9723be5c8dcef41e8e5a1036395b6698296a723ec673",
+      "bytes": 113786
+    },
+    {
+      "file": "sql-schema-repair-failed.json",
+      "sha256": "5c18e6d314301a1734b3bceb7a5c595f2d4239f6a0b7572d424f55f1a5b298a8",
+      "bytes": 191530
+    }
+  ],
+  "files": [
+    {
+      "file": "python-live-report.json",
+      "sha256": "c01112aa2d3194c7241d37bcbeff3074290c507c49a1fde44ed5b829200fca4c",
+      "bytes": 185779
+    },
+    {
+      "file": "python-public-report.json",
+      "sha256": "cfb5cc6875b45fba7897142e1657b8a81684825488ceae9259d6543343607964",
+      "bytes": 43829
+    },
+    {
+      "file": "python-grading.json",
+      "sha256": "ce713b02d893cc214f6b5c8dee9aaf9a0e1f9ec4364b2f3fb89a26a5f0c2aa09",
+      "bytes": 11390
+    },
+    {
+      "file": "python-docker-smoke.json",
+      "sha256": "b4c79c5b78820d34688eee27ed334e52d49f18b30c1c462fb24d712579077ad2",
+      "bytes": 1905
+    },
+    {
+      "file": "javascript-live-report.json",
+      "sha256": "4b73d5821a8279629e8fb94c450ff4e9dc774e332a1ed64dabea8a2fa0862b85",
+      "bytes": 344602
+    },
+    {
+      "file": "javascript-public-report.json",
+      "sha256": "8c32bf5d1cfc38ac404c3fa06ee7e0007cdc539aad97e8b08ea448cd456c74cf",
+      "bytes": 68206
+    },
+    {
+      "file": "javascript-grading.json",
+      "sha256": "1e168b7947c43210d874c25faec5c03f22818239db85cbfae15e66dec0dcb104",
+      "bytes": 14860
+    },
+    {
+      "file": "javascript-docker-smoke.json",
+      "sha256": "fdf9de624bc2dfd5a131476101aac4d6c3b220b18b7cc35c648ff468f403742f",
+      "bytes": 1892
+    },
+    {
+      "file": "cpp-live-report.json",
+      "sha256": "79dcec6a0efcd86fa8b88994a725cd91d3ff616df31f28dc5a4b1003b25a25b0",
+      "bytes": 178437
+    },
+    {
+      "file": "cpp-public-report.json",
+      "sha256": "2138f6549b442744c73f6399934f900686d7b31429af1824bea9160f4fef76aa",
+      "bytes": 40660
+    },
+    {
+      "file": "cpp-grading.json",
+      "sha256": "0ee51e9c406c15b128df28ae4dc8a19aa9cab00db08099edc3f59050be0b11d1",
+      "bytes": 10062
+    },
+    {
+      "file": "cpp-docker-smoke.json",
+      "sha256": "626ca117ba88ed68711c0480db623becb422fbe53e313ebddfa220208b574eff",
+      "bytes": 1848
+    },
+    {
+      "file": "sql-live-report.json",
+      "sha256": "37fde22d81a0b66a5ebfaa4b08e8cc204db2239eff61d5ef8ecaf6c72c68d703",
+      "bytes": 188496
+    },
+    {
+      "file": "sql-public-report.json",
+      "sha256": "f96b7fa0fc1c1b88b05e83b8b0b8d35092306ae759579a1c57072a557edfa0f3",
+      "bytes": 45513
+    },
+    {
+      "file": "sql-grading.json",
+      "sha256": "31e2d3a42aceab79493655b5554514d715582b3ac18a0705364790ca6832db00",
+      "bytes": 13185
+    },
+    {
+      "file": "sql-docker-smoke.json",
+      "sha256": "e59ac5d98964898456656ba43dae6040f9747372784f725e2680fe4b00742a89",
+      "bytes": 1921
+    },
+    {
+      "file": "cpp-first-attempt-failed.json",
+      "sha256": "050d9e67dde916a10ef4a132d32d2fea49ff5376b78a9713612532c2c4ccdf7e",
+      "bytes": 327165
+    },
+    {
+      "file": "cpp-second-attempt-failed.json",
+      "sha256": "cedd21aba501a58a9775a0e534287866b27b8d69848ce368705b2b8a64b27065",
+      "bytes": 259219
+    },
+    {
+      "file": "sql-provider-timeout.json",
+      "sha256": "f14b6c12530abafce6af9723be5c8dcef41e8e5a1036395b6698296a723ec673",
+      "bytes": 113786
+    },
+    {
+      "file": "sql-schema-repair-failed.json",
+      "sha256": "5c18e6d314301a1734b3bceb7a5c595f2d4239f6a0b7572d424f55f1a5b298a8",
+      "bytes": 191530
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "kind": "REAL_GROQ_INTENT_ROUTER_VERIFICATION",
+  "verified_at": "2026-09-20T23:50:45.4074550+07:00",
+  "request": "Tôi muốn tìm hiểu Def trong Python.",
+  "provider_selection": "GROQ forced for this isolated live verification only",
+  "routing": {
+    "intent": "EXPLAIN_CONCEPT",
+    "language": "python",
+    "topic": "def",
+    "selection_mode": "explicit",
+    "trace_id": "trace_dd930356a78b4f1ebb91b616ac22526a"
+  },
+  "model_calls": [
+    {
+      "provider": "GROQ",
+      "model": "qwen/qwen3.8-27b",
+      "status": "SUCCEEDED",
+      "http_status": 200,
+      "response_id": "chatcmpl-152c1e67-5ccb-42dc-98d4-65876d3fbbb8",
+      "key_fingerprint": "e9c4f290796b",
+      "usage": {
+        "prompt_tokens": 455,
+        "completion_tokens": 31,
+        "total_tokens": 486
+      }
+    }
+  ],
+  "fallback_used": false,
+  "model_policy": "Groq ignores environment and cache model overrides. It evaluates llama-3.3-70b-versatile, llama-3.1-8b-instant, then qwen/qwen3.8-27b for this key; no Llama model was exposed by the active account, so Qwen was selected."
+}

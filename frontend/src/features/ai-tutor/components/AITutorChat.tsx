@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { AgentEvidencePanel, type PipelineSummary } from './AgentEvidencePanel';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {
@@ -29,8 +30,10 @@ export interface ChatMessage {
         suggestedOptions?: string[];
         intent?: string;
         agentTraces?: any[];
+        pipeline?: PipelineSummary;
         exercise?: {
             title: string;
+            exercise_id?: string;
             concept_id?: string;
             concept_name?: string;
             language?: string;
@@ -332,9 +335,9 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                 )}
 
                                 {/* Message Bubble Container */}
-                                <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} max-w-[85%]`}>
+                                <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} min-w-0 max-w-[85%]`}>
                                     <div
-                                        className={`p-4 rounded-2xl text-[13.5px] leading-relaxed shadow-xs ${
+                                        className={`w-full min-w-0 max-w-full p-4 rounded-2xl text-[13.5px] leading-relaxed shadow-xs ${
                                             isUser
                                                 ? 'bg-[#EFF6FF] border border-blue-100/90 text-slate-800 rounded-tr-none'
                                                 : 'bg-white border border-slate-200/80 text-slate-800 rounded-tl-none'
@@ -389,40 +392,8 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                             </ReactMarkdown>
                                         </div>
 
-                                        {/* Multi-Agent Coordination Traces (Collapsible Badge) */}
                                         {!isUser && meta?.agentTraces && meta.agentTraces.length > 0 && (
-                                            <div className="mt-3 pt-2.5 border-t border-slate-100">
-                                                <details className="group text-[11px] text-slate-500">
-                                                    <summary className="cursor-pointer font-semibold flex items-center justify-between select-none hover:text-blue-600 transition-colors py-0.5">
-                                                        <span className="flex items-center gap-1.5">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
-                                                            <span className="text-slate-600 font-medium">Đa tác tử đã phối hợp:</span>
-                                                            <span className="font-mono text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
-                                                                {meta.agentTraces.length} tác tử
-                                                            </span>
-                                                        </span>
-                                                        <span className="text-[10px] text-slate-400 group-open:rotate-180 transition-transform">▼</span>
-                                                    </summary>
-                                                    <div className="mt-2 space-y-1.5 pl-2.5 border-l-2 border-slate-200">
-                                                        {meta.agentTraces.map((tr: any, tIdx: number) => (
-                                                            <div key={tIdx} className="flex items-start gap-2">
-                                                                <span className="font-mono font-bold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded text-[10px] shrink-0">
-                                                                    {tr.agent || tr.step}
-                                                                </span>
-                                                                <span className="text-slate-600 text-[11px] leading-tight">
-                                                                    {tr.step === 'INTENT_ROUTED' && `Định tuyến: ${tr.intent} (${tr.language || ''})`}
-                                                                    {tr.step === 'KNOWLEDGE_RETRIEVED' && `Tri thức: ${tr.concept_id || tr.concept || 'Đã truy xuất'}`}
-                                                                    {tr.step === 'DECISION_MADE' && `Quyết định ZPD: ${tr.decision || tr.concept || 'Đã tính toán'}`}
-                                                                    {tr.step === 'THEORY_GENERATED' && 'Biên soạn lý thuyết cốt lõi'}
-                                                                    {tr.step === 'EXERCISE_GENERATED' && `Sinh bài tập: ${cleanLatexAndArtifacts(tr.title || 'Hoàn tất')}`}
-                                                                    {tr.step === 'CRITIC_EVALUATED' && `Thẩm định Critic: ${tr.score !== undefined ? `${tr.score}/100` : 'Đạt chuẩn'}`}
-                                                                    {!['INTENT_ROUTED', 'KNOWLEDGE_RETRIEVED', 'DECISION_MADE', 'THEORY_GENERATED', 'EXERCISE_GENERATED', 'CRITIC_EVALUATED'].includes(tr.step) && (tr.step || JSON.stringify(tr))}
-                                                                </span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </details>
-                                            </div>
+                                            <AgentEvidencePanel records={meta.agentTraces} pipeline={meta.pipeline} />
                                         )}
 
                                         {/* Embedded Adaptive Exercise Card */}
@@ -433,7 +404,7 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5">
                                                             <Sparkles className="w-3 h-3 text-emerald-600" />
-                                                            Thử Thách Thích Ứng ZPD
+                                                            Bài Tập Thích Ứng
                                                         </span>
                                                         {meta.exercise.language && (
                                                             <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200 font-mono">
@@ -518,7 +489,7 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                                         {meta.exercise.test_cases && meta.exercise.test_cases.length > 0 && (
                                                             <div className="pl-5 pt-0.5 flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
                                                                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                                                                <span>Đã chuẩn bị sẵn {meta.exercise.test_cases.length} bộ kiểm thử tự động (test cases).</span>
+                                                                <span>Có {meta.exercise.test_cases.length} test công khai. Test ẩn được giữ trên hệ thống chấm bài.</span>
                                                             </div>
                                                         )}
                                                     </div>

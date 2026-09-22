@@ -27,6 +27,7 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/src/infrastructure/data ./dist/infrastructure/data
 COPY --from=builder /app/src/infrastructure/sandbox/sql/sql.runner.py ./dist/infrastructure/sandbox/sql/sql.runner.py
 
 EXPOSE 3000

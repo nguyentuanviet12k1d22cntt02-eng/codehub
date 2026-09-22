@@ -1,57 +1,50 @@
-from typing import Dict, Any, List, Tuple
-from app.utils.sanitizer import contains_cjk
+import json
+from app.pipeline.contracts import ExerciseDraft
 
 
 class SchemaValidator:
-    """
-    Tầng kiểm định 1: Kiểm tra tính toàn vẹn của cấu trúc JSON bài tập (Schema Validator).
-    Deterministic 100% - Không dùng LLM.
-    """
-
-    REQUIRED_FIELDS = [
-        "title",
-        "problem_statement",
-        "starter_code",
-        "reference_solution",
-        "test_cases"
-    ]
-
     @classmethod
-    def validate(cls, exercise_data: Dict[str, Any]) -> Tuple[bool, List[str]]:
+    def validate(cls, exercise_data, spec=None):
+        try:
+            draft = ExerciseDraft.model_validate(exercise_data)
+        except Exception as exc:
+            return False, [str(exc)[:1600]]
         errors = []
-
-        if not isinstance(exercise_data, dict):
-            return False, ["Dữ liệu bài tập phải là một đối tượng JSON (dictionary)."]
-
-        # 1. Kiểm tra các trường bắt buộc
-        for field in cls.REQUIRED_FIELDS:
-            val = exercise_data.get(field)
-            if val is None or (isinstance(val, str) and not val.strip()):
-                errors.append(f"Thiếu trường bắt buộc hoặc giá trị rỗng: '{field}'.")
-
-        # 2. Kiểm tra định dạng test_cases
-        test_cases = exercise_data.get("test_cases")
-        if not isinstance(test_cases, list) or len(test_cases) < 2:
-            errors.append("Trường 'test_cases' phải là danh sách có tối thiểu 2 test cases.")
-        else:
-            for idx, tc in enumerate(test_cases):
-                if not isinstance(tc, dict):
-                    errors.append(f"Test case #{idx + 1} phải là một dictionary.")
-                    continue
-                if "expected_output" not in tc or tc["expected_output"] is None:
-                    errors.append(f"Test case #{idx + 1} thiếu trường 'expected_output'.")
-
-        # 3. Kiểm tra độ dài hợp lệ
-        statement = exercise_data.get("problem_statement", "")
-        if len(statement) < 20:
-            errors.append("Trường 'problem_statement' quá ngắn (dưới 20 ký tự), thiếu tính sư phạm.")
-
-        # 4. Kiểm tra ngôn ngữ: Tuyệt đối không được chứa ký tự tiếng Trung (CJK)
-        for field in ["title", "problem_statement", "starter_code", "reference_solution", "quick_theory"]:
-            val = exercise_data.get(field, "")
-            if isinstance(val, str) and contains_cjk(val):
-                errors.append(f"Trường '{field}' chứa ký tự tiếng Trung hoặc ngoại ngữ không hợp lệ. Toàn bộ nội dung và chú thích code bắt buộc phải dùng 100% tiếng Việt.")
-
-        is_valid = len(errors) == 0
-        return is_valid, errors
-
+        tests = draft.test_cases
+        if draft.starter_code.strip() == draft.reference_solution.strip():
+            errors.append("starter_code trùng reference_solution. Starter phải là khung TODO, không chứa nghiệm mẫu.")
+        if not any(t.is_hidden for t in tests) or not any(not t.is_hidden for t in tests):
+            errors.append("Cần cả test công khai và test ẩn")
+        if not any(t.category == "boundary" for t in tests):
+            errors.append("Thiếu test dữ liệu biên")
+        signatures = [(json.dumps(t.arguments, ensure_ascii=False, sort_keys=True, default=str), t.input, t.fixture_sql) for t in tests]
+        if len(set(signatures)) != len(signatures):
+            errors.append("Test bị lặp đầu vào/fixture")
+        if spec:
+            for index, tc in enumerate(tests):
+                if spec.execution.get("mode") == "function":
+                    if tc.input is not None:
+                        errors.append(f"test_cases[{index}].input không được dùng cho function; hãy dùng arguments có kiểu dữ liệu.")
+                    if not isinstance(tc.arguments, list):
+                        errors.append(f"test_cases[{index}].arguments phải là JSON array.")
+                    if tc.call_style not in ("spread", "single"):
+                        errors.append(f"test_cases[{index}].call_style phải là spread hoặc single.")
+                    elif tc.call_style == "single" and len(tc.arguments or []) != 1:
+                        errors.append(f"test_cases[{index}].call_style=single yêu cầu đúng một arguments.")
+                elif tc.arguments is not None or tc.call_style is not None:
+                    errors.append(f"test_cases[{index}] chỉ function mới được có arguments/call_style.")
+                elif not isinstance(tc.input, str):
+                    errors.append(f"test_cases[{index}].input phải là chuỗi cho stdio hoặc SQL.")
+                if spec.execution.get("comparator") == "json":
+                    try:
+                        expected = json.loads(tc.expected_output)
+                        if spec.language == "sql" and (not isinstance(expected, list) or any(not isinstance(row, list) for row in expected)):
+                            errors.append(f"test_cases[{index}].expected_output của SQL phải là JSON mảng các hàng.")
+                    except (ValueError, TypeError):
+                        errors.append(f'test_cases[{index}].expected_output không phải JSON hợp lệ: {tc.expected_output[:120]!r}. '
+                                      'Dùng nháy kép JSON: [["Lan"]], tuyệt đối không dùng dạng Python [[\'Lan\']].')
+                if spec.language == "sql" and not tc.fixture_sql:
+                    errors.append(f"test_cases[{index}].fixture_sql: mỗi SQL test cần fixture riêng.")
+            if len(tests) < spec.test_constraints.get("min_cases", 4):
+                errors.append("Chưa đủ số test theo đặc tả")
+        return not errors, errors

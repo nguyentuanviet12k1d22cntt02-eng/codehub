@@ -198,6 +198,7 @@ const PersonalizedPath: React.FC = () => {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let buffer = '';
+            let completed = false;
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -224,6 +225,7 @@ const PersonalizedPath: React.FC = () => {
                                 step: data.step
                             });
                         } else if (data.type === 'complete') {
+                            completed = true;
                             if (data.messages) {
                                 setChatMessages(data.messages);
                             } else if (data.aiMessage) {
@@ -239,7 +241,7 @@ const PersonalizedPath: React.FC = () => {
                             throw new Error(data.error || 'Lỗi xử lý luồng AI');
                         }
                     } catch (pe) {
-                        // ignore chunk slice parse warning
+                        throw pe;
                     }
                 }
             }
@@ -248,7 +250,9 @@ const PersonalizedPath: React.FC = () => {
             if (buffer.trim().startsWith('data: ')) {
                 try {
                     const data = JSON.parse(buffer.trim().slice(6));
+                    if (data.type === 'error') throw new Error(data.error || 'Lỗi xử lý luồng AI');
                     if (data.type === 'complete') {
+                        completed = true;
                         if (data.messages) {
                             setChatMessages(data.messages);
                         } else if (data.aiMessage) {
@@ -261,10 +265,11 @@ const PersonalizedPath: React.FC = () => {
                         setCurrentAgentStep(null);
                         fetchChatSessions(authToken || undefined);
                     }
-                } catch {
-                    // ignore
+                } catch (error) {
+                    throw error;
                 }
             }
+            if (!completed) throw new Error('Luồng kết thúc trước khi nhận được báo cáo hoàn chỉnh');
         } catch (e: any) {
             console.error('Chat stream error:', e);
             const errorMsg: ChatMessage = {
@@ -309,7 +314,7 @@ const PersonalizedPath: React.FC = () => {
         try {
             const res = await axios.post(
                 `${API_BASE_URL}/api/learning-path/adaptive/start-exercise`,
-                { sessionId: activeSessionId, exercise },
+                { exercise_id: exercise.exercise_id },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 

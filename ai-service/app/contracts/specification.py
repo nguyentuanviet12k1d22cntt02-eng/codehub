@@ -11,6 +11,16 @@ class ExerciseSpecification(BaseModel):
     - Không được tự ý thay đổi difficulty
     - Không được vi phạm forbidden_constructs và phải thỏa mãn required_constructs
     """
+    # V4 makes the invocation contract explicit.  A generated exercise is not
+    # allowed to rely on a runner guessing whether a JSON array is one list
+    # argument or several positional arguments.
+    schema_version: str = "4.0"
+    user_request: str = ""
+    selection_mode: str = "adaptive"
+    execution: Dict[str, Any] = Field(default_factory=dict)
+    learning_objectives: List[str] = Field(default_factory=list)
+    source_refs: List[Dict[str, Any]] = Field(default_factory=list)
+    learner_evidence: Dict[str, Any] = Field(default_factory=dict)
     target_concept: str = Field(
         ...,
         description="Mã node kiến thức mục tiêu trên Knowledge Graph (ví dụ: JS-FUNC-01, CPP-OOP-01, PY-DICT-01)"

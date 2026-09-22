@@ -13,6 +13,8 @@ import recommendationRoutes from './modules/recommendations/recommendationRoutes
 import adminRoutes from "./modules/admin/adminRoutes";
 import learningPathRoutes from './modules/learning-path/learningPathRoutes';
 import { aiKeyAdminRouter, aiKeyInternalRouter } from './modules/ai-keys/aiKey.routes';
+import { adaptiveInternalRouter } from './modules/adaptive/adaptiveInternal.routes';
+import { startAdaptiveRetryWorker } from './modules/adaptive/adaptiveRetryWorker';
 
 dotenv.config();
 
@@ -25,6 +27,8 @@ app.use(cors({
     credentials: true
 }))
 
+// Verify the exact signed bytes before the general JSON parser.
+app.use('/api/internal/adaptive', adaptiveInternalRouter);
 // middleware để parse JSON body
 app.use(express.json())
 
@@ -60,6 +64,7 @@ const startServer = (port: number) => {
 
     server.on('listening', () => {
         retryCount = 0;
+        startAdaptiveRetryWorker();
         console.log(`🚀 Express Backend Server đang chạy thành công tại http://localhost:${port}`);
     });
 

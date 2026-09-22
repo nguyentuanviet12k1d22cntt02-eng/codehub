@@ -1,0 +1,14 @@
+{
+  "kind": "REAL_STORED_ARTIFACT_REGRADE",
+  "trace_id": "trace_cfde85d64f2841f5b8b197fa0853135d",
+  "status": "EXECUTED",
+  "passed": true,
+  "harness_version": "adaptive_harness_v4",
+  "cases": [
+    {"case_index": 1, "status": "SUCCESS", "passed": true, "runtime_ms": 832, "is_hidden": false},
+    {"case_index": 2, "status": "SUCCESS", "passed": true, "runtime_ms": 953, "is_hidden": false},
+    {"case_index": 3, "status": "SUCCESS", "passed": true, "runtime_ms": 859, "is_hidden": false},
+    {"case_index": 4, "status": "SUCCESS", "passed": true, "runtime_ms": 811, "is_hidden": false},
+    {"case_index": 5, "status": "SUCCESS", "passed": true, "runtime_ms": 863, "is_hidden": true}
+  ]
+}

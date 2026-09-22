@@ -31,7 +31,7 @@ interface Exercise {
     difficulty: string;
     problemDescription: string;
     starterCode: string;
-    solutionCode: string;
+    solutionCode?: string;
     language?: string;
     testCases: TestCase[];
 }
@@ -66,115 +66,8 @@ export function cleanChineseArtifacts(text: any): any {
 }
 
 function getStandardizedTheory(lesson: Lesson): string {
-    const raw = cleanChineseArtifacts(stripQuizSectionFromMarkdown(lesson.theoryContent || ''));
-    if (raw && raw.includes('Bảng theo dõi thực thi') && raw.includes('Trạng thái bộ nhớ RAM')) {
-        return raw;
-    }
-
-    const title = lesson.title || 'Bài Học Trọng Tâm';
-    const skill = lesson.targetSkillId || 'Kỹ năng cốt lõi';
-    const ex = lesson.exercise;
-    const rawLang = String(ex?.language || '').toUpperCase();
-    const isCpp = rawLang === 'CPP' || rawLang.includes('C++') || (ex?.starterCode && /#include\s*<|std::/i.test(ex.starterCode));
-    const isJs = !isCpp && (rawLang === 'JAVASCRIPT' || rawLang.includes('JS') || (ex?.starterCode && /console\.log|function\s*\(|let\s+|const\s+/i.test(ex.starterCode)));
-
-    const langCode = isCpp ? 'cpp' : (isJs ? 'javascript' : 'python');
-    const langName = isCpp ? 'C++' : (isJs ? 'JavaScript' : 'Python');
-    const guidelineName = isCpp ? 'C++ Core Guidelines & RAII' : (isJs ? 'Clean Code & ESLint Modern' : 'PEP 8');
-    const namingConv = isCpp ? 'camelCase / PascalCase' : (isJs ? 'camelCase' : 'snake_case');
-
-    const defaultStarter = isCpp
-        ? '#include <iostream>\nusing namespace std;\n\nint main() {\n    // Code của bạn tại đây\n    return 0;\n}'
-        : (isJs ? '// Viết code JavaScript tại đây\n' : 'def solution():\n    pass');
-
-    const starter = ex?.starterCode || defaultStarter;
-    const solution = ex?.solutionCode || starter;
-
-    if (raw.length > 80) {
-        if (!raw.includes('Bảng theo dõi thực thi')) {
-            return `${raw}
-
----
-
-## 2. Cú pháp & Vận hành
-Dưới đây là mã nguồn mẫu và bảng theo dõi luồng thực thi trong ${langName}:
-
-\`\`\`${langCode}
-${solution}
-\`\`\`
-
-**Bảng theo dõi thực thi (Execution Trace Table):**
-| DÒNG MÃ | LỆNH ĐƯỢC CHẠY | TRẠNG THÁI BIẾN | HÀNH ĐỘNG CỦA MÁY TÍNH |
-|:---:|:---|:---|:---|
-| 1 | Khởi tạo hàm / dữ liệu | \`data\`: Đã nạp | Nạp cấu trúc dữ liệu vào bộ nhớ ${isCpp ? 'Stack/Heap' : 'Heap'} |
-| 2 | Thực thi thuật toán | \`result\`: Đang tính toán | Đọc biến và áp dụng logic xử lý |
-| 3 | Trả về kết quả | \`result\`: Hoàn tất | Xuất dữ liệu đã tính toán ra màn hình hoặc caller |
-
-**Trạng thái bộ nhớ RAM:**
-\`\`\`text
-[RAM Stack]                       [RAM Heap]
-data   ──────────────────────► [ Dữ liệu đầu vào ]
-result ──────────────────────► [ Giá trị xử lý chuẩn mực ]
-\`\`\`
-
-## 3. Lỗi thường gặp & Tối ưu
-> [!WARNING]
-> **Các lỗi thường gặp cần tránh:**
-> * **Không kiểm tra kiểu dữ liệu và ngoại lệ**: Dẫn đến sập chương trình khi dữ liệu rỗng.
-> * **Đặt tên biến cẩu thả**: Không tuân thủ chuẩn ${namingConv}, gây khó khăn khi bảo trì.
-
-> [!TIP]
-> Luôn giữ phong cách lập trình chuẩn **${guidelineName}**, ưu tiên giải pháp tối ưu và kiểm thử đầy đủ các test cases biên!
-
-## 4. Đúc kết & Đi tiếp
-* Nắm vững nguyên lý và luồng dữ liệu của **${title}** trước khi bắt tay vào viết code.
-* Bảng theo dõi thực thi (Trace Table) là công cụ đắc lực để phân tích luồng chạy của chương trình.
-* Hãy chuyển sang phần **Thực Hành Lập Trình** để tự tay viết code và kiểm thử nhé!`;
-        }
-        return raw;
-    }
-
-    return `## 1. Khái niệm & Vấn đề
-Trong lập trình ${langName} thực tế, việc nắm vững **${title}** (${skill}) là điều kiện tiên quyết để xây dựng phần mềm ổn định, chạy nhanh và an toàn.
-
-| Thuật ngữ | Định nghĩa thực tế | Phép ẩn dụ |
-| :--- | :--- | :--- |
-| **${title}** | Kỹ năng lập trình nền tảng giúp kiểm soát luồng dữ liệu và thuật toán. | Như việc xây móng nhà kiên cố trước khi dựng các tầng cao. |
-
-## 2. Cú pháp & Vận hành
-Cú pháp triển khai giải thuật trong ${langName}:
-
-\`\`\`${langCode}
-${solution}
-\`\`\`
-
-**Bảng theo dõi thực thi (Execution Trace Table):**
-| DÒNG MÃ | LỆNH ĐƯỢC CHẠY | TRẠNG THÁI BIẾN | HÀNH ĐỘNG CỦA MÁY TÍNH |
-|:---:|:---|:---|:---|
-| 1 | Khởi tạo giải thuật | \`input\`: Nạp tham số | Khởi tạo không gian bộ nhớ trong ${isCpp ? 'RAM Stack/Heap' : 'RAM Heap'} |
-| 2 | Xử lý logic nghiệp vụ | \`process\`: Tính toán | Duyệt qua dữ liệu và áp dụng điều kiện |
-| 3 | Hoàn tất & Trả về | \`output\`: Kết quả | Trả kết quả chuẩn xác cho caller |
-
-**Trạng thái bộ nhớ RAM:**
-\`\`\`text
-[RAM Stack]                       [RAM Heap]
-input  ──────────────────────► [ Tham số ban đầu ]
-output ──────────────────────► [ Dữ liệu sau xử lý ]
-\`\`\`
-
-## 3. Lỗi thường gặp & Tối ưu
-> [!WARNING]
-> **Các lỗi thường gặp cần tránh:**
-> * **Lỗi chỉ số hoặc khóa khuyết thiếu**: Luôn kiểm tra điều kiện biên trước khi truy xuất dữ liệu.
-> * **Không khởi tạo biến đúng cách**: Dẫn đến lỗi không xác định hoặc truy xuất bộ nhớ không hợp lệ.
-
-> [!TIP]
-> Luôn giữ phong cách viết code chuẩn **${guidelineName}**, đặt tên hàm tường minh theo chuẩn **${namingConv}**.
-
-## 4. Đúc kết & Đi tiếp
-* Hiểu sâu bản chất luồng thực thi từng dòng mã thông qua Execution Trace Table.
-* Luôn chuẩn bị sẵn các kịch bản kiểm thử biên (Edge cases) cho code của bạn.
-* Hãy chuyển sang tab **Thực Hành Lập Trình** để hoàn thành bài tập ngay!`;
+    // Show the actual generated/curated lesson, without fabricated execution traces or solutions.
+    return stripQuizSectionFromMarkdown(lesson.theoryContent || '');
 }
 
 export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> = ({
@@ -192,20 +85,20 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
     const rawLang = String(lesson.exercise?.language || '').toUpperCase();
     const isCpp = rawLang === 'CPP' || rawLang.includes('C++') || (lesson.exercise?.starterCode && /#include\s*<|std::/i.test(lesson.exercise.starterCode));
     const isJs = !isCpp && (rawLang === 'JAVASCRIPT' || rawLang.includes('JS') || (lesson.exercise?.starterCode && /console\.log|function\s*\(|let\s+|const\s+/i.test(lesson.exercise.starterCode)));
-    const monacoLang = isCpp ? 'cpp' : (isJs ? 'javascript' : 'python');
-    const fileLabel = isCpp ? 'solution.cpp (GCC C++17)' : (isJs ? 'solution.js (Node.js v20)' : 'solution.py (Python 3.12)');
+    const monacoLang = rawLang === 'SQL' ? 'sql' : isCpp ? 'cpp' : (isJs ? 'javascript' : 'python');
+    const fileLabel = rawLang === 'SQL' ? 'solution.sql (SQLite)' : isCpp ? 'solution.cpp (C++17)' : (isJs ? 'solution.js (Node.js)' : 'solution.py (Python 3)');
     const defaultStarter = isCpp 
         ? '#include <iostream>\nusing namespace std;\n\nint main() {\n    // Code của bạn tại đây\n    return 0;\n}'
         : (isJs ? '// Viết code JavaScript tại đây\n' : 'def solution():\n    pass');
 
     // Practice States
-    const [code, setCode] = useState<string>(cleanChineseArtifacts(lesson.exercise?.starterCode) || defaultStarter);
+    const [code, setCode] = useState<string>(lesson.exercise?.starterCode || defaultStarter);
     const [submittingCode, setSubmittingCode] = useState<boolean>(false);
     const [executionOutput, setExecutionOutput] = useState<any>(null);
 
     React.useEffect(() => {
         if (lesson.exercise?.starterCode) {
-            setCode(cleanChineseArtifacts(lesson.exercise.starterCode));
+            setCode(lesson.exercise.starterCode);
         } else {
             setCode(defaultStarter);
         }
@@ -251,6 +144,7 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                 `${API_BASE_URL}/api/learning-path/submit-exercise`,
                 {
                     exerciseId: lesson.exercise.id,
+                    submissionId: crypto.randomUUID(),
                     code
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
@@ -259,24 +153,7 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
             if (res.data.success) {
                 setExecutionOutput(res.data);
                 if (res.data.isPassed) {
-                    // Cập nhật độ thành thạo trên đồ thị tri thức DAG
-                    if (lesson.targetSkillId) {
-                        try {
-                            const masteryRes = await axios.post(
-                                `${API_BASE_URL}/api/learning-path/adaptive/update-mastery`,
-                                {
-                                    conceptId: lesson.targetSkillId,
-                                    passed: true
-                                },
-                                { headers: { Authorization: `Bearer ${token}` } }
-                            );
-                            if (masteryRes.data.success && masteryRes.data.data) {
-                                console.log('🎯 [DAG MASTERY UPDATED & NEXT NODES]:', masteryRes.data.data);
-                            }
-                        } catch (mErr) {
-                            console.warn('Could not update adaptive mastery:', mErr);
-                        }
-                    }
+                    // Mastery is updated once by the server from the verified submission.
                     if (onLessonCompleted) {
                         onLessonCompleted();
                     }

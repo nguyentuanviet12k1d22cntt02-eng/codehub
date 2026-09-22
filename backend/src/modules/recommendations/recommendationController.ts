@@ -4,6 +4,8 @@ import { prisma } from '../../infrastructure/database/prisma';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
 import fs from 'fs';
 import path from 'path';
+import { getAdaptiveMasterySnapshot } from '../adaptive/adaptiveRepository';
+import { calculateMasteryUpdate } from '../adaptive/masteryPolicy';
 
 // Define target structures
 interface RecommendItem {
@@ -26,30 +28,25 @@ export function getSkillGraphData(language: string = 'PYTHON'): any {
                    : (lang === 'SQL') ? 'sqlSkillGraph.json'
                    : 'pythonSkillGraph.json';
 
-    const localInfraPath = path.resolve(__dirname, `../../infrastructure/data/${filename}`);
-    if (fs.existsSync(localInfraPath)) {
-        try {
-            return JSON.parse(fs.readFileSync(localInfraPath, 'utf-8'));
-        } catch (e) {
-            console.error(`Error reading skill graph from infra: ${localInfraPath}`, e);
-        }
+    const candidates = [
+        path.resolve(__dirname, `../../infrastructure/data/${filename}`),
+        path.resolve(process.cwd(), `src/infrastructure/data/${filename}`),
+        path.resolve(process.cwd(), `../ai-service/data/${filename}`),
+        path.resolve(__dirname, `../../../../ai-service/data/${filename}`)
+    ];
+    if (filename === 'pythonSkillGraph.json') {
+        candidates.push(
+            path.resolve(process.cwd(), '../ai-service/data/skill_graph.json'),
+            path.resolve(__dirname, '../../../../ai-service/data/skill_graph.json')
+        );
     }
 
-    const aiServicePath = path.resolve(__dirname, `../../../ai-service/data/${filename}`);
-    if (fs.existsSync(aiServicePath)) {
+    for (const candidate of [...new Set(candidates)]) {
+        if (!fs.existsSync(candidate)) continue;
         try {
-            return JSON.parse(fs.readFileSync(aiServicePath, 'utf-8'));
+            return JSON.parse(fs.readFileSync(candidate, 'utf-8'));
         } catch (e) {
-            console.error(`Error reading skill graph from ai-service: ${aiServicePath}`, e);
-        }
-    }
-
-    const legacyPath = path.resolve(__dirname, '../../../ai-service/data/skill_graph.json');
-    if (fs.existsSync(legacyPath)) {
-        try {
-            return JSON.parse(fs.readFileSync(legacyPath, 'utf-8'));
-        } catch (e) {
-            console.error(`Error reading legacy skill graph: ${legacyPath}`, e);
+            console.error(`Error reading skill graph: ${candidate}`, e);
         }
     }
 
@@ -80,6 +77,7 @@ async function getRuleBasedFallback(userId: string, limit: number): Promise<Reco
 
     const pythonGraph = getSkillGraphData('PYTHON');
     const lessonMappings: Record<string, string> = pythonGraph?.lesson_mappings || {};
+    const lessonTitleMappings: Record<string, string> = pythonGraph?.lesson_title_mappings || {};
     const practiceMappings: Record<string, string> = pythonGraph?.practice_problem_mappings || {};
 
     // 1. Fetch completed items to filter out
@@ -136,7 +134,9 @@ async function getRuleBasedFallback(userId: string, limit: number): Promise<Reco
         if (passedExerciseIds.has(ex.id)) continue;
 
         const lessonCode = ex.lesson?.lessonId || '';
-        const kc = lessonMappings[lessonCode] || 'KC_VAR';
+        const lessonTitle = ex.lesson?.title || '';
+        const kc = lessonTitleMappings[lessonTitle] || lessonMappings[lessonCode];
+        if (!kc) continue;
 
         filteredExercises.push({
             id: ex.id,
@@ -165,7 +165,8 @@ async function getRuleBasedFallback(userId: string, limit: number): Promise<Reco
     for (const prob of practiceProblems) {
         if (passedPracticeIds.has(prob.id)) continue;
 
-        const kc = practiceMappings[prob.slug] || 'KC_LIST';
+        const kc = practiceMappings[prob.slug];
+        if (!kc) continue;
         filteredExercises.push({
             id: prob.id,
             type: 'PRACTICE_PROBLEM',
@@ -253,8 +254,57 @@ export const getRecommendations = async (
     }
 };
 
-export async function getDynamicUserMasteryFallback(userId: string, language: string = 'PYTHON') {
-    // 1. Fetch user info
+type EvidenceProfile = {
+    mastery: number;
+    confidence: number;
+    attempts: number;
+    passed: number;
+    failed: number;
+    evidence_weight: number;
+    passed_evidence: number;
+    failed_evidence: number;
+    source: 'COURSE_SANDBOX' | 'ADAPTIVE_SANDBOX' | 'MIXED_VERIFIED';
+    last_assessed_at: Date | string | null;
+};
+
+type VerifiedObservation = {
+    conceptId: string;
+    itemId: string;
+    passed: boolean;
+    passedCases: number;
+    totalCases: number;
+    difficulty: string;
+    repeatedExercise: boolean;
+    assessedAt: Date | string;
+    source: 'COURSE_SANDBOX' | 'ADAPTIVE_SANDBOX';
+};
+
+const mappedConceptIds = (value: unknown, validConcepts: Set<string>): string[] => {
+    const values = Array.isArray(value) ? value : value ? [value] : [];
+    return values.map(String).filter(id => validConcepts.has(id));
+};
+
+const bangkokDayIndex = (value: Date | string): number => {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(new Date(value));
+    const part = (type: string) => Number(parts.find(item => item.type === type)?.value || 0);
+    return Math.floor(Date.UTC(part('year'), part('month') - 1, part('day')) / 86400000);
+};
+
+const calculateCurrentStreak = (dates: Array<Date | string>): number => {
+    const activeDays = new Set(dates.map(bangkokDayIndex));
+    let cursor = bangkokDayIndex(new Date());
+    if (!activeDays.has(cursor)) return 0;
+    let streak = 0;
+    while (activeDays.has(cursor)) {
+        streak += 1;
+        cursor -= 1;
+    }
+    return streak;
+};
+
+export async function getEvidenceBasedUserMastery(userId: string, language: string = 'PYTHON') {
     const user = await prisma.user.findUnique({
         where: { id: userId },
         select: { username: true, email: true }
@@ -263,114 +313,174 @@ export async function getDynamicUserMasteryFallback(userId: string, language: st
     const username = user?.username || "Học viên";
     const email = user?.email || "";
 
-    // 2. Load skill graph for the requested language
-    const graph = getSkillGraphData(language);
-    const kcs = (graph?.skills && Array.isArray(graph.skills))
-        ? graph.skills.map((s: any) => s.id)
-        : ['KC_VAR', 'KC_COND', 'KC_LOOP', 'KC_LIST', 'KC_DICT', 'KC_FUNC', 'KC_OOP'];
+    const normalizedLanguage = language.toUpperCase();
+    const graph = getSkillGraphData(normalizedLanguage);
+    if (!graph?.skills || !Array.isArray(graph.skills)) {
+        throw new Error(`Không có đồ thị kỹ năng hợp lệ cho ${normalizedLanguage}`);
+    }
+    const kcs = graph.skills.map((skill: any) => String(skill.id));
+    const validConcepts = new Set<string>(kcs);
     const lessonMappings = graph?.lesson_mappings || {};
+    const lessonTitleMappings = graph?.lesson_title_mappings || {};
+    const multiSkillLessonMappings = graph?.multi_skill_lesson_mappings || {};
     const practiceMappings = graph?.practice_problem_mappings || {};
 
-    // 3. Fetch all lesson exercises and practice problems
     const codingExercises = await prisma.codingExercise.findMany({
         include: { lesson: true }
     });
     const practiceProblems = await prisma.practiceProblem.findMany();
-
-    // 4. Group by Knowledge Component (KC) for this language
-    const totalByKC: Record<string, number> = {};
-    kcs.forEach((kc: string) => { totalByKC[kc] = 0; });
-
-    const exerciseToKCMap: Record<string, string> = {};
-    const problemToKCMap: Record<string, string> = {};
+    const exerciseToConcepts = new Map<string, string[]>();
+    const problemToConcepts = new Map<string, string[]>();
+    const exerciseDifficulty = new Map<string, string>();
+    const problemDifficulty = new Map<string, string>();
 
     codingExercises.forEach((ex: any) => {
         const lessonCode = ex.lesson?.lessonId || '';
-        const kc = lessonMappings[lessonCode];
-        if (kc && kcs.includes(kc)) {
-            exerciseToKCMap[ex.id] = kc;
-            totalByKC[kc]++;
-        }
+        const lessonTitle = ex.lesson?.title || '';
+        const concepts = mappedConceptIds(
+            multiSkillLessonMappings[lessonCode] || lessonTitleMappings[lessonTitle] || lessonMappings[lessonCode],
+            validConcepts
+        );
+        if (concepts.length) exerciseToConcepts.set(ex.id, concepts);
+        exerciseDifficulty.set(ex.id, String(ex.difficulty || 'MEDIUM'));
     });
 
     practiceProblems.forEach((prob: any) => {
-        const kc = practiceMappings[prob.slug];
-        if (kc && kcs.includes(kc)) {
-            problemToKCMap[prob.id] = kc;
-            totalByKC[kc]++;
-        }
+        const concepts = mappedConceptIds(practiceMappings[prob.slug], validConcepts);
+        if (concepts.length) problemToConcepts.set(prob.id, concepts);
+        problemDifficulty.set(prob.id, String(prob.difficulty || 'MEDIUM'));
     });
 
-    // 5. Fetch passed submissions
-    const passedSubmissions = await prisma.submission.findMany({
-        where: { userId, status: 'PASSED' },
-        select: { exerciseId: true }
+    const submissions = await prisma.submission.findMany({
+        where: { userId, language: normalizedLanguage as any },
+        select: { exerciseId: true, status: true, submittedAt: true },
+        orderBy: { submittedAt: 'asc' }
     });
-    const passedPractice = await prisma.practiceSubmission.findMany({
-        where: { userId, status: 'PASSED' },
-        select: { problemId: true }
+    const practiceSubmissions = await prisma.practiceSubmission.findMany({
+        where: { userId, language: normalizedLanguage as any },
+        select: { problemId: true, status: true, submittedAt: true },
+        orderBy: { submittedAt: 'asc' }
+    });
+    const evidence: Record<string, EvidenceProfile> = {};
+    const activityDates: Array<Date | string> = [];
+    const completedExercises = new Set<string>();
+    const completedPractice = new Set<string>();
+    const observedExerciseConceptPairs = new Set<string>();
+    const observedPracticeConceptPairs = new Set<string>();
+    const verifiedObservations: VerifiedObservation[] = [];
+
+    submissions.forEach(submission => {
+        const concepts = exerciseToConcepts.get(submission.exerciseId) || [];
+        if (!concepts.length || (submission.status !== 'PASSED' && submission.status !== 'FAILED')) return;
+        const passed = submission.status === 'PASSED';
+        concepts.forEach(conceptId => {
+            const pairKey = `${conceptId}:${submission.exerciseId}`;
+            const repeatedExercise = observedExerciseConceptPairs.has(pairKey);
+            observedExerciseConceptPairs.add(pairKey);
+            verifiedObservations.push({
+                conceptId,itemId:submission.exerciseId,passed,passedCases:passed?1:0,totalCases:1,
+                difficulty:exerciseDifficulty.get(submission.exerciseId)||'MEDIUM',repeatedExercise,
+                assessedAt:submission.submittedAt,source:'COURSE_SANDBOX'
+            });
+        });
+        activityDates.push(submission.submittedAt);
+        if (passed) completedExercises.add(submission.exerciseId);
+    });
+    practiceSubmissions.forEach(submission => {
+        const concepts = problemToConcepts.get(submission.problemId) || [];
+        if (!concepts.length || (submission.status !== 'PASSED' && submission.status !== 'FAILED')) return;
+        const passed = submission.status === 'PASSED';
+        concepts.forEach(conceptId => {
+            const pairKey = `${conceptId}:${submission.problemId}`;
+            const repeatedExercise = observedPracticeConceptPairs.has(pairKey);
+            observedPracticeConceptPairs.add(pairKey);
+            verifiedObservations.push({
+                conceptId,itemId:submission.problemId,passed,passedCases:passed?1:0,totalCases:1,
+                difficulty:problemDifficulty.get(submission.problemId)||'MEDIUM',repeatedExercise,
+                assessedAt:submission.submittedAt,source:'COURSE_SANDBOX'
+            });
+        });
+        activityDates.push(submission.submittedAt);
+        if (passed) completedPractice.add(submission.problemId);
     });
 
-    const completedByKC: Record<string, number> = {};
-    kcs.forEach((kc: string) => { completedByKC[kc] = 0; });
-
-    let langCompletedExercises = 0;
-    passedSubmissions.forEach(s => {
-        const kc = exerciseToKCMap[s.exerciseId];
-        if (kc && kcs.includes(kc)) {
-            completedByKC[kc]++;
-            langCompletedExercises++;
-        }
+    const adaptive = await getAdaptiveMasterySnapshot(userId, normalizedLanguage);
+    activityDates.push(...adaptive.verified_activity_dates);
+    adaptive.observations.forEach((observation:any) => {
+        if (!validConcepts.has(String(observation.concept_id))) return;
+        verifiedObservations.push({
+            conceptId:String(observation.concept_id),itemId:String(observation.exercise_id),
+            passed:observation.status==='PASSED',passedCases:Number(observation.passed_cases),
+            totalCases:Number(observation.total_cases),difficulty:String(observation.difficulty||'MEDIUM'),
+            repeatedExercise:Boolean(observation.repeated_exercise),assessedAt:observation.assessed_at,
+            source:'ADAPTIVE_SANDBOX'
+        });
     });
 
-    let langCompletedPractice = 0;
-    passedPractice.forEach(p => {
-        const kc = problemToKCMap[p.problemId];
-        if (kc && kcs.includes(kc)) {
-            completedByKC[kc]++;
-            langCompletedPractice++;
-        }
-    });
+    verifiedObservations
+        .sort((left,right)=>new Date(left.assessedAt).getTime()-new Date(right.assessedAt).getTime())
+        .forEach(observation=>{
+            const current=evidence[observation.conceptId]||{
+                mastery:.4,confidence:0,attempts:0,passed:0,failed:0,evidence_weight:0,
+                passed_evidence:0,failed_evidence:0,source:observation.source,last_assessed_at:null
+            };
+            const update=calculateMasteryUpdate({
+                previousMastery:current.mastery,priorAttempts:current.attempts,
+                priorEvidenceWeight:current.evidence_weight,passedCases:observation.passedCases,
+                totalCases:observation.totalCases,difficulty:observation.difficulty,
+                repeatedExercise:observation.repeatedExercise
+            });
+            current.mastery=update.nextMastery;
+            current.attempts+=1;
+            current.passed+=observation.passed?1:0;
+            current.failed+=observation.passed?0:1;
+            current.evidence_weight+=update.observationWeight;
+            current.passed_evidence+=update.observationWeight*update.observedScore;
+            current.failed_evidence+=update.observationWeight*(1-update.observedScore);
+            current.confidence=1-Math.exp(-current.evidence_weight/3);
+            current.source=current.source===observation.source?current.source:'MIXED_VERIFIED';
+            current.last_assessed_at=observation.assessedAt;
+            evidence[observation.conceptId]=current;
+        });
 
-    // Count attempts for actions stats
-    const totalSubmitsCount = await prisma.submission.count({ where: { userId } });
-    const totalPracticeSubmitsCount = await prisma.practiceSubmission.count({ where: { userId } });
-    const totalActions = totalSubmitsCount + totalPracticeSubmitsCount;
-
-    // 6. Estimate profile status
-    const totalCompleted = langCompletedExercises + langCompletedPractice;
-    let profile: 'STRUGGLING' | 'AVERAGE' | 'EXCELLENT' = "AVERAGE";
-    if (totalActions > 0) {
-        const successRate = totalCompleted / Math.max(1, totalActions);
-        if (successRate >= 0.8 && totalCompleted >= 3) {
-            profile = "EXCELLENT";
-        } else if (successRate < 0.4 && totalActions >= 5) {
-            profile = "STRUGGLING";
-        }
+    const masteryMap = Object.fromEntries(Object.entries(evidence).map(([conceptId, item]) => [conceptId, Number(item.mastery.toFixed(4))]));
+    const observed = Object.values(evidence);
+    const totalActions = observed.reduce((sum, item) => sum + item.attempts, 0);
+    const totalEvidenceWeight = observed.reduce((sum, item) => sum + item.evidence_weight, 0);
+    const weightedMastery = totalEvidenceWeight
+        ? observed.reduce((sum, item) => sum + item.mastery * item.evidence_weight, 0) / totalEvidenceWeight
+        : null;
+    let profile: 'NEW' | 'STRUGGLING' | 'AVERAGE' | 'EXCELLENT' = 'NEW';
+    if (weightedMastery !== null) {
+        profile = weightedMastery >= .8 && totalActions >= 5 ? 'EXCELLENT'
+            : weightedMastery < .45 && totalActions >= 3 ? 'STRUGGLING' : 'AVERAGE';
     }
-
-    // 7. Calculate mastery values for PAL-Net
-    const palNetMastery: Record<string, number> = {};
-    kcs.forEach((kc: string) => {
-        const total = totalByKC[kc] || 0;
-        const completed = completedByKC[kc] || 0;
-        const pct = total > 0 ? (completed / total) : 0;
-
-        palNetMastery[kc] = 0.4 + 0.55 * pct;
-    });
 
     return {
         success: true,
-        language: language.toUpperCase(),
+        language: normalizedLanguage,
         student_meta: { username, email, profile },
         mastery: {
-            "PAL-Net": palNetMastery
+            'Evidence-Based': masteryMap
+        },
+        evidence,
+        model_metadata: {
+            engine: 'evidence_policy_v4',
+            unobserved_skills_are_null: true,
+            confidence_definition: '1 - exp(-verified_evidence_weight / 3)',
+            repeated_exercise_weight: .35,
+            estimator: 'Chronological, difficulty-weighted verified observation policy across all sources',
+            legacy_events_replayed_with_current_policy: true
         },
         stats: {
-            lessons_completed: langCompletedExercises,
-            practice_completed: langCompletedPractice,
-            streak_days: 5,
-            total_actions: totalActions
+            lessons_completed: completedExercises.size,
+            practice_completed: completedPractice.size,
+            streak_days: calculateCurrentStreak(activityDates),
+            total_actions: totalActions,
+            total_evidence_weight: Number(totalEvidenceWeight.toFixed(4)),
+            observed_skills: observed.length,
+            total_skills: kcs.length,
+            overall_mastery: weightedMastery === null ? null : Number(weightedMastery.toFixed(4))
         }
     };
 }
@@ -389,35 +499,8 @@ export const getUserMastery = async (
             return;
         }
 
-        // Nếu là Python và AI service khả dụng
-        if (language === 'PYTHON') {
-            const aiServiceUrl = process.env.AI_SERVICE_URL || 'http://localhost:8000';
-            const url = `${aiServiceUrl}/user_mastery?user_id=${userId}`;
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 2000);
-
-            try {
-                const response = await fetch(url, {
-                    method: 'GET',
-                    signal: controller.signal,
-                    headers: { 'Accept': 'application/json' }
-                });
-                clearTimeout(timeoutId);
-
-                if (response.ok) {
-                    const data = await response.json();
-                    res.status(200).json(data);
-                    return;
-                }
-            } catch {
-                clearTimeout(timeoutId);
-            }
-        }
-
-        // Với JS, C++, SQL hoặc fallback Python
-        const fallbackData = await getDynamicUserMasteryFallback(userId, language);
-        res.status(200).json(fallbackData);
+        const masteryData = await getEvidenceBasedUserMastery(userId, language);
+        res.status(200).json(masteryData);
     } catch (err) {
         next(err);
     }

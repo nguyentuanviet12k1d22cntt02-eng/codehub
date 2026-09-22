@@ -1,169 +1,94 @@
-from typing import Optional, List, Dict, Any
-from app.contracts.routing import RoutingDecision
+import math
+import re
+from app.agents.intent_router_agent import folded
 from app.contracts.specification import ExerciseSpecification
 from app.services.knowledge_graph_service import KnowledgeGraphService
-from app.services.learner_state_service import LearnerStateService
-from app.services.learning_history_service import LearningHistoryService
 
 
 class AdaptiveExercisePlanner:
-    """
-    Bộ lập kế hoạch thích ứng trung tâm (Adaptive Exercise Planner).
-    TUÂN THỦ QUY TẮC:
-    - Chỉ phát hành ExerciseSpecification JSON.
-    - Không viết mã nguồn hoặc đề bài hoàn chỉnh (việc đó là của Generator).
-    - Áp dụng ma trận chính sách sư phạm thích ứng (Adaptive Policy Matrix) theo Mục 10.
-    """
-
-    def __init__(
-        self,
-        kg_service: Optional[KnowledgeGraphService] = None,
-        learner_service: Optional[LearnerStateService] = None,
-        history_service: Optional[LearningHistoryService] = None
-    ):
+    def __init__(self, kg_service=None, learner_service=None, history_service=None):
         self.kg = kg_service or KnowledgeGraphService()
-        self.learner_service = learner_service or LearnerStateService()
-        self.history_service = history_service or LearningHistoryService()
+        self.learner_service = learner_service
 
-    def plan_exercise(
-        self,
-        routing: RoutingDecision,
-        user_id: str,
-        explicit_concept_id: Optional[str] = None
-    ) -> ExerciseSpecification:
-        language = routing.language
-        trace_id = routing.trace_id
+    def plan_exercise(self, routing, user_id, explicit_concept_id=None, learner_context=None):
+        ctx = learner_context or {}
+        states = ctx.get("states", {})
+        if not states and self.learner_service:
+            states = {cid: {"mastery": score, "attempts": 1} for cid, score in self.learner_service.get_user_mastery_map(user_id).items()}
+        concepts = [
+            concept for concept in self.kg.list_all_concepts(routing.language)
+            if concept.get("content_status", "PUBLISHED") == "PUBLISHED"
+        ]
+        if not concepts:
+            raise ValueError("Không có đồ thị tri thức cho ngôn ngữ yêu cầu")
+        requested = explicit_concept_id or self.kg.resolve_concept_by_topic(routing.language, routing.topic)
+        if (explicit_concept_id or routing.topic) and not requested:
+            raise ValueError("Chưa xác định được chủ đề trong đồ thị; cần làm rõ yêu cầu")
+        if requested and not any(concept["id"] == requested for concept in concepts):
+            raise ValueError("Chủ đề đã có trong đồ thị nhưng học liệu kiểm định chưa được phát hành")
+        recent = ctx.get("recent_exercises", [])
 
-        # 1. Xác định Concept mục tiêu
-        target_concept = explicit_concept_id
-        if not target_concept:
-            target_concept = self.kg.resolve_concept_by_topic(language, routing.topic)
+        def prerequisite_is_ready(concept_id):
+            state = states.get(concept_id, {})
+            attempts = int(state.get("attempts", 0))
+            confidence = float(state.get("confidence", 1 - math.exp(-attempts / 3)))
+            return attempts > 0 and float(state.get("mastery", 0)) >= .6 and confidence >= .25
 
-        # Lấy thông tin chi tiết concept từ Knowledge Graph
-        concept_info = self.kg.get_concept(language, target_concept) or {}
-        concept_title = concept_info.get("name") or concept_info.get("concept_name") or target_concept
-        prereqs = self.kg.get_prerequisites(language, target_concept)
-        all_sub_skills = self.kg.get_sub_skills(language, target_concept)
-
-        # 2. Truy vấn Trạng thái Người học (Learner State) & Lịch sử
-        learner_state = self.learner_service.get_learner_state(user_id, target_concept)
-        mastery = learner_state.mastery
-        is_repeated_fail = self.history_service.is_remediation_forced(user_id, target_concept)
-        recent_submissions = self.history_service.get_recent_submissions(user_id, limit=3)
-        recent_errors_list = [s.raw_error for s in recent_submissions if s.raw_error and s.concept_id == target_concept]
-
-        # 3. Áp dụng Ma trận Chính sách Thích ứng (Adaptive Policy Matrix - Mục 10)
-        mode = routing.mode
-        difficulty = "MEDIUM"
-        reasoning = ""
-        chosen_sub_skills = list(all_sub_skills)
-
-        # 3.1. Nếu lặp lỗi >= 3 lần: Bắt buộc kích hoạt chế độ Remediation
-        if is_repeated_fail or mode == "remediation" or routing.difficulty_request == "easier":
-            mode = "remediation"
-            difficulty = "EASY"
-
-            # Nếu điểm năng lực quá thấp (< 0.40), chẩn đoán xem có hổng nền tảng không
-            if mastery < 0.40 and prereqs:
-                user_mastery_map = self.learner_service.get_user_mastery_map(user_id)
-                root_gap = self.kg.find_root_gap(language, target_concept, user_mastery_map)
-                if root_gap != target_concept:
-                    # Chuyển hướng ôn tập về Root Cognitive Gap
-                    target_concept = root_gap
-                    concept_info = self.kg.get_concept(language, target_concept) or {}
-                    concept_title = concept_info.get("name") or target_concept
-                    prereqs = self.kg.get_prerequisites(language, target_concept)
-                    all_sub_skills = self.kg.get_sub_skills(language, target_concept)
-                    reasoning = f"Phát hiện lỗ hổng nền tảng tại concept tiên quyết '{concept_title}'. Hệ thống kích hoạt vi lộ trình khắc phục (Remediation) trước khi tiếp tục."
-                else:
-                    reasoning = f"Học viên có độ thành thạo thấp ({round(mastery*100)}%) tại '{concept_title}'. Tạo bài tập Remediation cấp độ EASY tập trung kỹ năng căn bản."
-            else:
-                reasoning = f"Học viên yêu cầu bài tập dễ hơn hoặc gặp lỗi lặp lại. Giảm độ phức tạp xuống EASY để củng cố kỹ năng con."
-
-            # Thu hẹp sub-skills cho bài Remediation (chỉ tập trung 1-2 kỹ năng cốt lõi)
-            chosen_sub_skills = all_sub_skills[:2] if len(all_sub_skills) >= 2 else all_sub_skills
-
-        # 3.2. Chế độ Tiến trình (Progression) dựa trên Mastery
-        elif routing.difficulty_request == "harder" or mastery >= 0.85:
-            difficulty = "HARD" if mastery < 0.90 else "CHALLENGE"
-            mode = "progression"
-            reasoning = f"Học viên đã làm chủ tốt concept '{concept_title}' (Mastery: {round(mastery*100)}%). Đưa ra bài tập tích hợp cấp độ {difficulty} có bẫy dữ liệu biên."
-            chosen_sub_skills = all_sub_skills
-        elif mastery >= 0.70:
-            difficulty = "HARD" if routing.difficulty_request == "harder" else "MEDIUM"
-            mode = "progression"
-            reasoning = f"Học viên đạt độ thành thạo khá ({round(mastery*100)}%). Tạo bài tập liên kết đa kỹ năng cấp độ {difficulty}."
-            chosen_sub_skills = all_sub_skills[:3] if len(all_sub_skills) >= 3 else all_sub_skills
-        else: # 0.40 <= mastery < 0.70
-            difficulty = "MEDIUM"
-            mode = "progression"
-            reasoning = f"Học viên đang trong vùng phát triển gần nhất (ZPD, Mastery: {round(mastery*100)}%). Tạo bài tập rèn luyện tiêu chuẩn cấp độ MEDIUM."
-            chosen_sub_skills = all_sub_skills[:2] if len(all_sub_skills) >= 2 else all_sub_skills
-
-        # 4. Xác định Ràng buộc Kỹ thuật (Required & Forbidden Constructs)
-        req_constructs, forb_constructs = self._determine_syntax_constraints(language, target_concept, difficulty, mode)
-
-        # 5. Đóng gói ExerciseSpecification
-        return ExerciseSpecification(
-            target_concept=target_concept,
-            concept_title=concept_title,
-            language=language,
-            target_sub_skills=chosen_sub_skills,
-            difficulty=difficulty,
-            mode=mode,
-            prerequisites=prereqs,
-            required_constructs=req_constructs,
-            forbidden_constructs=forb_constructs,
-            recent_errors=recent_errors_list[:3],
-            test_constraints={
-                "min_cases": 4,
-                "max_execution_time_ms": 5000,
-                "require_hidden_case": True
-            },
-            reasoning=reasoning,
-            trace_id=trace_id
-        )
-
-    def _determine_syntax_constraints(
-        self,
-        language: str,
-        concept_id: str,
-        difficulty: str,
-        mode: str
-    ) -> (List[str], List[str]):
-        cid = concept_id.upper()
-        req: List[str] = []
-        forb: List[str] = []
-
-        if "FUNC" in cid or "FUNCTION" in cid:
-            if language == "javascript":
-                req.append("function")
-                if mode == "remediation":
-                    forb.extend(["class", "closure", "prototype"])
-            elif language == "python":
-                req.append("def")
-                if mode == "remediation":
-                    forb.extend(["class", "lambda"])
-            elif language == "cpp":
-                req.append("return")
-
-        elif "OOP" in cid or "CLASS" in cid:
-            req.extend(["class"])
-            if language == "python":
-                req.append("__init__")
-            elif language == "cpp":
-                req.append("public")
-            elif language == "javascript":
-                req.append("constructor")
-            forb.append("global")
-
-        elif "LOOP" in cid or "CONTROL" in cid:
-            req.append("for" if "FOR" in cid else "while" if "WHILE" in cid else "for")
-
-        elif "DICT" in cid or "OBJECT" in cid:
-            if language == "python":
-                req.append("{")
-            elif language == "javascript":
-                req.append("{")
-
-        return req, forb
+        if requested:
+            cid, selection = requested, "explicit"
+        else:
+            eligible = [c for c in concepts if all(prerequisite_is_ready(p) for p in self.kg.get_prerequisites(routing.language, c["id"]))]
+            if not eligible:
+                eligible = [c for c in concepts if not self.kg.get_prerequisites(routing.language, c["id"])]
+            if not eligible:
+                raise ValueError("Đồ thị không có kỹ năng khởi đầu hợp lệ")
+            cid = min(eligible, key=lambda c: (states.get(c["id"], {}).get("mastery", .4) + (.12 if c["id"] in recent[:2] else 0), concepts.index(c)))["id"]
+            selection = "adaptive"
+        concept = self.kg.get_concept(routing.language, cid)
+        if not concept:
+            raise ValueError("Concept không thuộc ngôn ngữ đã chọn")
+        state = states.get(cid, {})
+        attempts = int(state.get("attempts", 0))
+        mastery = min(1., max(0., float(state.get("mastery", .4))))
+        prereqs = self.kg.get_prerequisites(routing.language, cid)
+        gaps = [p for p in prereqs if not prerequisite_is_ready(p)]
+        difficulty = "EASY" if mastery < .5 or not attempts else "MEDIUM" if mastery < .8 else "HARD"
+        mode = "diagnostic" if not attempts else "progression"
+        if routing.difficulty_request == "easier" or state.get("failure_streak", 0) >= 3:
+            difficulty, mode = "EASY", "remediation"
+        elif routing.difficulty_request == "harder":
+            levels = ["EASY", "MEDIUM", "HARD", "CHALLENGE"]
+            previous = ctx.get("last_difficulty", difficulty)
+            difficulty = levels[min(3, levels.index(previous) + 1)] if previous in levels else "HARD"
+        text = folded(routing.user_text)
+        required, forbidden = [], []
+        for construct in ["while", "for", "sum", "lambda", "class", "recursion", "sort", "sorted"]:
+            if re.search(r"(?:khong|cam|tranh)(?:\s+duoc)?(?:\s+su dung|\s+dung)?\s+`?" + construct + r"\b", text):
+                forbidden.append(construct)
+            elif re.search(r"(?:dung|su dung|bat buoc|ve)\s+`?" + construct + r"\b", text):
+                required.append(construct)
+        if routing.topic in ("while", "for") and routing.topic not in forbidden:
+            required.append(routing.topic)
+        execution = {"mode": "stdio" if routing.language == "cpp" else "sql" if routing.language == "sql" else "function", "entrypoint": "main" if routing.language == "cpp" else "query" if routing.language == "sql" else "solution", "comparator": "text" if routing.language == "cpp" else "json"}
+        if routing.language in ("python", "javascript"):
+            # The generator chooses this explicitly on every test case.  The
+            # value here declares that a call style is mandatory, not a
+            # default the runner may silently infer.
+            execution["call_style_required"] = True
+        if routing.language == "sql":
+            execution.update(dialect="sqlite", ordered=bool(re.search(r'order\s+by|sap xep|thu tu', text)))
+        focus = [f'Áp dụng {c} đúng yêu cầu và xử lý trường hợp biên.' for c in dict.fromkeys(required)]
+        sub_skills = focus or self.kg.get_sub_skills(routing.language, cid)[:1 if difficulty == 'EASY' else 2]
+        return ExerciseSpecification(target_concept=cid, concept_title=concept.get("name", cid),
+            language=routing.language, difficulty=difficulty, mode=mode, selection_mode=selection,
+            user_request=routing.user_text, execution=execution, prerequisites=prereqs,
+            learning_objectives=sub_skills,
+            target_sub_skills=sub_skills,
+            required_constructs=list(dict.fromkeys(required)), forbidden_constructs=forbidden,
+            recent_errors=ctx.get("recent_errors", [])[:3],
+            test_constraints={"min_cases": 4, "max_cases": 8, "require_hidden_case": True, "require_boundary_case": True, "max_execution_time_ms": 3000},
+            learner_evidence={"mastery": mastery if attempts else None, "attempts": attempts,
+                "confidence": state.get("confidence") if attempts else None,
+                "prerequisite_gaps": gaps, "policy": "evidence_policy_v4"},
+            reasoning=("Bám sát chủ đề được yêu cầu. " if selection == "explicit" else "Chọn kỹ năng đủ điều kiện tiên quyết và cần luyện. ") + ("Chưa đủ bằng chứng: dùng bài chẩn đoán." if not attempts else f"Dựa trên {attempts} lượt làm đã lưu; mastery {mastery:.2f}."),
+            trace_id=routing.trace_id)

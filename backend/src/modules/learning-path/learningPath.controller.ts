@@ -1,10 +1,36 @@
 import { Response } from 'express';
+import { sanitizeLegacy } from '../adaptive/adaptiveEvidence';
 import { prisma } from '../../infrastructure/database/prisma';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
 import { codeExecutionQueue } from '../../infrastructure/queue/queueService';
-import { getDynamicUserMasteryFallback } from '../recommendations/recommendationController';
+import { getEvidenceBasedUserMastery } from '../recommendations/recommendationController';
 
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000';
+
+const generatedPathValidationError = (value: any): string | null => {
+    if (!value || typeof value !== 'object') return 'Thiếu dữ liệu lộ trình';
+    if (typeof value.path_title !== 'string' || !value.path_title.trim()) return 'Thiếu tiêu đề lộ trình';
+    if (!Array.isArray(value.target_skills) || value.target_skills.length === 0) return 'Thiếu kỹ năng mục tiêu';
+    if (!Number.isFinite(Number(value.pal_net_avg_score)) || Number(value.pal_net_avg_score) < 0 || Number(value.pal_net_avg_score) > 1) return 'Điểm hồ sơ không hợp lệ';
+    if (!Array.isArray(value.lessons) || value.lessons.length === 0) return 'Lộ trình không có bài học';
+    for (const lesson of value.lessons) {
+        if (!Number.isInteger(Number(lesson?.order_index)) || Number(lesson.order_index) < 1) return 'Thứ tự bài học không hợp lệ';
+        if (typeof lesson?.title !== 'string' || !lesson.title.trim()) return 'Bài học thiếu tiêu đề';
+        if (typeof lesson?.target_skill_id !== 'string' || !lesson.target_skill_id.trim()) return 'Bài học thiếu kỹ năng mục tiêu';
+        if (typeof lesson?.theory_content !== 'string' || !lesson.theory_content.trim()) return 'Bài học thiếu nội dung lý thuyết';
+        if (lesson.exercise) {
+            if (typeof lesson.exercise.title !== 'string' || !lesson.exercise.title.trim()) return 'Bài tập thiếu tiêu đề';
+            if (!['EASY', 'MEDIUM', 'HARD'].includes(String(lesson.exercise.difficulty))) return 'Độ khó bài tập không hợp lệ';
+            if (typeof lesson.exercise.problem_description !== 'string' || !lesson.exercise.problem_description.trim()) return 'Bài tập thiếu đề bài';
+            if (typeof lesson.exercise.starter_code !== 'string' || typeof lesson.exercise.solution_code !== 'string') return 'Bài tập thiếu mã nguồn kiểm định';
+            if (!Array.isArray(lesson.exercise.test_cases) || lesson.exercise.test_cases.length === 0) return 'Bài tập thiếu bộ test';
+        }
+        for (const quiz of lesson.quizzes || []) {
+            if (!['A', 'B', 'C', 'D'].includes(String(quiz?.correct_option))) return 'Đáp án trắc nghiệm không hợp lệ';
+        }
+    }
+    return null;
+};
 
 // 1. POST /api/learning-path/generate
 export const generatePersonalizedPath = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
@@ -36,58 +62,29 @@ export const generatePersonalizedPath = async (req: AuthenticatedRequest, res: R
             console.error('Error calling AI Service /pal-net/generate-path:', e);
         }
 
-        // Fallback default structure if AI Service unreachable
         if (!aiData) {
-            aiData = {
-                path_title: "Lộ Trình Thích Ứng PAL-Net: Chinh Phục Cấu Trúc Điều Kiện & Vòng Lặp Python",
-                description: "Lộ trình được tạo tự động dựa trên vùng phát triển ZPD và lịch sử nộp bài của bạn.",
-                target_skills: ["python_loops", "python_lists"],
-                pal_net_avg_score: 0.76,
-                lessons: [
-                    {
-                        order_index: 1,
-                        title: "Nắm Vững Vòng Lặp For & Duyệt Danh Sách Python",
-                        target_skill_id: "python_loops",
-                        theory_content: "# Bài Học Cá Nhân Hóa: Vòng Lặp For trong Python\n\nVòng lặp for cho phép duyệt qua các phần tử của một chuỗi hoặc danh sách trong Python một cách dễ dàng.",
-                        quizzes: [
-                            {
-                                question: "Hàm range(1, 5) sinh ra chuỗi số nào?",
-                                option_a: "1 2 3 4 5",
-                                option_b: "1 2 3 4",
-                                option_c: "0 1 2 3 4",
-                                option_d: "1 3 5",
-                                correct_option: "B",
-                                explanation: "Hàm range(1, 5) tạo dãy số bắt đầu từ 1 và kết thúc trước 5 (tức là 4)."
-                            }
-                        ],
-                        exercise: {
-                            title: "Tính Tổng Các Số Chẵn Trong Mảng",
-                            difficulty: "MEDIUM",
-                            problem_description: "Viết hàm `sum_even(lst)` nhận vào danh sách số nguyên và trả về tổng các số chẵn.",
-                            starter_code: "def sum_even(lst):\n    pass",
-                            solution_code: "def sum_even(lst):\n    return sum(x for x in lst if x % 2 == 0)",
-                            test_cases: [
-                                { input: "[1, 2, 3, 4, 6]", expected_output: "12", is_hidden: false }
-                            ]
-                        }
-                    }
-                ]
-            };
+            res.status(503).json({ success: false, error: 'AI_PATH_PROVIDER_UNAVAILABLE: Chưa có lộ trình hợp lệ để phát hành.' });
+            return;
+        }
+        const validationError = generatedPathValidationError(aiData);
+        if (validationError) {
+            res.status(502).json({ success: false, error: `AI_PATH_SCHEMA_INVALID: ${validationError}` });
+            return;
         }
 
         // Save to Database via Prisma
         const newPath = await prisma.personalizedPath.create({
             data: {
                 userId,
-                title: aiData.path_title || 'Lộ Trình Thích Ứng Cá Nhân Hóa',
-                description: aiData.description || 'Lộ trình bài học cá nhân hóa PAL-Net',
-                targetSkills: aiData.target_skills || ['python_loops'],
-                palNetAvgScore: aiData.pal_net_avg_score || 0.75,
+                title: aiData.path_title,
+                description: aiData.description || null,
+                targetSkills: aiData.target_skills,
+                palNetAvgScore: Number(aiData.pal_net_avg_score),
                 lessons: {
                     create: (aiData.lessons || []).map((l: any) => ({
                         orderIndex: l.order_index,
                         title: l.title,
-                        targetSkillId: l.target_skill_id || 'python_loops',
+                        targetSkillId: l.target_skill_id,
                         theoryContent: l.theory_content,
                         quizzes: {
                             create: (l.quizzes || []).map((q: any) => ({
@@ -96,15 +93,15 @@ export const generatePersonalizedPath = async (req: AuthenticatedRequest, res: R
                                 optionB: q.option_b,
                                 optionC: q.option_c,
                                 optionD: q.option_d,
-                                correctOption: (q.correct_option as any) || 'A',
+                                correctOption: q.correct_option as any,
                                 explanation: q.explanation
                             }))
                         },
                         ...(l.exercise ? {
                             exercise: {
                                 create: {
-                                    title: l.exercise.title || 'Bài tập thực hành',
-                                    difficulty: (l.exercise.difficulty as any) || 'MEDIUM',
+                                    title: l.exercise.title,
+                                    difficulty: l.exercise.difficulty as any,
                                     problemDescription: l.exercise.problem_description,
                                     starterCode: l.exercise.starter_code,
                                     solutionCode: l.exercise.solution_code,
@@ -203,7 +200,7 @@ export const getPathById = async (req: AuthenticatedRequest, res: Response): Pro
             return;
         }
 
-        res.status(200).json({ success: true, data: path });
+        res.status(200).json({ success: true, data: sanitizeLegacy(path) });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
     }
@@ -631,8 +628,8 @@ export const startChatSession = async (req: AuthenticatedRequest, res: Response)
         // 2. Fetch user mastery profile
         let userMastery: Record<string, number> = {};
         try {
-            const masteryRes = await getDynamicUserMasteryFallback(userId);
-            userMastery = masteryRes?.mastery?.['PAL-Net'] || {};
+            const masteryRes = await getEvidenceBasedUserMastery(userId);
+            userMastery = masteryRes?.mastery?.['Evidence-Based'] || {};
         } catch (e) {
             console.warn('Could not load user mastery:', e);
         }
@@ -723,8 +720,8 @@ export const startChatSessionStream = async (req: AuthenticatedRequest, res: Res
         // 2. Load user mastery
         let userMastery: Record<string, number> = {};
         try {
-            const masteryRes = await getDynamicUserMasteryFallback(userId);
-            userMastery = masteryRes?.mastery?.['PAL-Net'] || {};
+            const masteryRes = await getEvidenceBasedUserMastery(userId);
+            userMastery = masteryRes?.mastery?.['Evidence-Based'] || {};
         } catch (e) {
             console.warn('Could not load user mastery:', e);
         }
@@ -859,8 +856,8 @@ export const replyChatMessage = async (req: AuthenticatedRequest, res: Response)
         // Load user mastery profile
         let userMastery: Record<string, number> = {};
         try {
-            const masteryRes = await getDynamicUserMasteryFallback(userId);
-            userMastery = masteryRes?.mastery?.['PAL-Net'] || {};
+            const masteryRes = await getEvidenceBasedUserMastery(userId);
+            userMastery = masteryRes?.mastery?.['Evidence-Based'] || {};
         } catch (e) {
             console.warn('Could not load user mastery:', e);
         }
@@ -957,8 +954,8 @@ export const replyChatMessageStream = async (req: AuthenticatedRequest, res: Res
 
         let userMastery: Record<string, number> = {};
         try {
-            const masteryRes = await getDynamicUserMasteryFallback(userId);
-            userMastery = masteryRes?.mastery?.['PAL-Net'] || {};
+            const masteryRes = await getEvidenceBasedUserMastery(userId);
+            userMastery = masteryRes?.mastery?.['Evidence-Based'] || {};
         } catch (e) {
             console.warn('Could not load user mastery:', e);
         }
@@ -1100,22 +1097,27 @@ export const confirmAndBuildPath = async (req: AuthenticatedRequest, res: Respon
         }
 
         if (!aiData) {
-            res.status(500).json({ success: false, error: 'Không nhận được dữ liệu Lộ trình từ Gemini AI.' });
+            res.status(503).json({ success: false, error: 'AI_PATH_PROVIDER_UNAVAILABLE: Chưa có lộ trình hợp lệ để phát hành.' });
+            return;
+        }
+        const validationError = generatedPathValidationError(aiData);
+        if (validationError) {
+            res.status(502).json({ success: false, error: `AI_PATH_SCHEMA_INVALID: ${validationError}` });
             return;
         }
 
         const newPath = await prisma.personalizedPath.create({
             data: {
                 userId,
-                title: aiData.path_title || 'Lộ Trình AI Tutor Cá Nhân Hóa',
-                description: aiData.description || 'Lộ trình từ phiên đối thoại AI Tutor',
-                targetSkills: aiData.target_skills || ['python_loops'],
-                palNetAvgScore: aiData.pal_net_avg_score || 0.78,
+                title: aiData.path_title,
+                description: aiData.description || null,
+                targetSkills: aiData.target_skills,
+                palNetAvgScore: Number(aiData.pal_net_avg_score),
                 lessons: {
                     create: (aiData.lessons || []).map((l: any) => ({
                         orderIndex: l.order_index,
                         title: l.title,
-                        targetSkillId: l.target_skill_id || 'python_loops',
+                        targetSkillId: l.target_skill_id,
                         theoryContent: l.theory_content,
                         quizzes: {
                             create: (l.quizzes || []).map((q: any) => ({
@@ -1124,15 +1126,15 @@ export const confirmAndBuildPath = async (req: AuthenticatedRequest, res: Respon
                                 optionB: q.option_b,
                                 optionC: q.option_c,
                                 optionD: q.option_d,
-                                correctOption: (q.correct_option as any) || 'A',
+                                correctOption: q.correct_option as any,
                                 explanation: q.explanation
                             }))
                         },
                         ...(l.exercise ? {
                             exercise: {
                                 create: {
-                                    title: l.exercise.title || 'Bài tập thực hành',
-                                    difficulty: (l.exercise.difficulty as any) || 'MEDIUM',
+                                    title: l.exercise.title,
+                                    difficulty: l.exercise.difficulty as any,
                                     problemDescription: l.exercise.problem_description,
                                     starterCode: l.exercise.starter_code,
                                     solutionCode: l.exercise.solution_code,
@@ -1422,8 +1424,8 @@ export const updateAdaptiveMastery = async (req: AuthenticatedRequest, res: Resp
         // 1. Lấy điểm năng lực hiện tại của người học
         let currentMastery: Record<string, number> = {};
         try {
-            const masteryRes = await getDynamicUserMasteryFallback(userId);
-            currentMastery = masteryRes?.mastery?.['PAL-Net'] || {};
+            const masteryRes = await getEvidenceBasedUserMastery(userId);
+            currentMastery = masteryRes?.mastery?.['Evidence-Based'] || {};
         } catch (e) {
             console.warn('Could not load user mastery:', e);
         }
@@ -1586,6 +1588,3 @@ export const deleteChatSession = async (req: AuthenticatedRequest, res: Response
         res.status(500).json({ success: false, error: error.message });
     }
 };
-
-
-

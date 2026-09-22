@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import threading
 import requests
 from typing import List, Dict, Optional, Any
 from dotenv import load_dotenv
@@ -23,7 +24,7 @@ class AIKeyPoolManager:
     - Tự động phân loại và đồng bộ từ database backend
     - Xoay vòng round-robin thông minh theo từng provider
     - Cơ chế Auto-Failover: Gemini -> Groq -> OpenRouter -> OpenAI
-    - Tự động cách ly tạm thời (Cooldown 60s) các key bị lỗi Quota 429 / Rate Limit
+    - Tự động cách ly tạm thời từng key bị lỗi quota hoặc lỗi provider có thể hồi phục
     """
     
     def __init__(self):
@@ -36,6 +37,9 @@ class AIKeyPoolManager:
         self._last_fetch_time: float = 0.0
         self._cache_ttl: float = 30.0 # Làm mới mỗi 30s
         self._cooldown_map: Dict[str, float] = {} # key -> timestamp hết hạn cooldown
+        self._lock = threading.RLock()
+        self._round_robin_index: Dict[str, int] = {}
+        self._leases: Dict[str, int] = {}
         
     def _fetch_keys_from_backend(self) -> Dict[str, List[str]]:
         now = time.time()
@@ -75,20 +79,57 @@ class AIKeyPoolManager:
 
     def get_available_keys_for_provider(self, provider: str) -> List[str]:
         pools = self._fetch_keys_from_backend()
-        keys = pools.get(provider.upper(), [])
-        now = time.time()
-        active = [k for k in keys if self._cooldown_map.get(k, 0) < now]
-        # Nếu tất cả key của provider này đang cooldown, thử reset cooldown
-        if not active and keys:
-            for k in keys:
-                self._cooldown_map.pop(k, None)
-            return keys
-        return active
+        normalized = provider.upper()
+        with self._lock:
+            now = time.time()
+            active = [k for k in pools.get(normalized, []) if self._cooldown_map.get(k, 0) < now]
+            if not active:
+                return []
+            return active
 
-    def mark_key_exhausted(self, api_key: str, provider: str, cooldown_seconds: float = 60.0, error_msg: str = "429 Quota Exceeded"):
-        """Đánh dấu key bị quá tải/hết quota và báo cáo về Backend"""
-        self._cooldown_map[api_key] = time.time() + cooldown_seconds
-        print(f"[AIKeyPool] [{provider}] Key ...{api_key[-6:]} bị quá tải ({error_msg}). Tạm ngưng trong {cooldown_seconds}s.")
+    def lease_key_for_provider(self, provider: str, excluded: Optional[List[str]] = None,
+                               preferred: Optional[List[str]] = None) -> Optional[str]:
+        """Atomically select the least busy usable key for one provider.
+
+        A transient provider failure only cools the key that received it.
+        Concurrent runs therefore spread across distinct keys when possible
+        and never revive a cooling key prematurely.
+        """
+        normalized = provider.upper()
+        excluded = set(excluded or [])
+        preferred = set(preferred or [])
+        keys = self.get_available_keys_for_provider(normalized)
+        with self._lock:
+            candidates = [key for key in keys if key not in excluded]
+            if not candidates:
+                return None
+            # A key that returned a valid LLM response earlier in this run is
+            # a better real candidate than an unproven sibling.  It is still
+            # leased normally, so concurrent runs remain accounted for.
+            known_good = [key for key in candidates if key in preferred]
+            if known_good:
+                candidates = known_good
+            least_busy = min(self._leases.get(key, 0) for key in candidates)
+            choices = [key for key in candidates if self._leases.get(key, 0) == least_busy]
+            start = self._round_robin_index.get(normalized, 0) % len(choices)
+            key = choices[start]
+            self._round_robin_index[normalized] = (start + 1) % len(choices)
+            self._leases[key] = self._leases.get(key, 0) + 1
+            return key
+
+    def release_key(self, api_key: str) -> None:
+        with self._lock:
+            remaining = self._leases.get(api_key, 0) - 1
+            if remaining > 0:
+                self._leases[api_key] = remaining
+            else:
+                self._leases.pop(api_key, None)
+
+    def mark_key_temporarily_unavailable(self, api_key: str, provider: str, cooldown_seconds: float = 60.0, error_msg: str = "provider error"):
+        """Temporarily isolate one key and report the real provider failure."""
+        with self._lock:
+            self._cooldown_map[api_key] = time.time() + cooldown_seconds
+        print(f"[AIKeyPool] [{provider}] Key ...{api_key[-6:]} tạm ngưng ({error_msg}). {cooldown_seconds}s.")
         
         try:
             requests.post(
@@ -98,6 +139,10 @@ class AIKeyPoolManager:
             )
         except Exception:
             pass
+
+    def mark_key_exhausted(self, api_key: str, provider: str, cooldown_seconds: float = 60.0, error_msg: str = "429 Quota Exceeded"):
+        """Compatibility alias for quota callers; all callers use key-scoped cooldowns."""
+        self.mark_key_temporarily_unavailable(api_key, provider, cooldown_seconds, error_msg)
 
     def report_key_success(self, api_key: str):
         """Ghi nhận lượt gọi thành công của key"""
@@ -110,7 +155,7 @@ class AIKeyPoolManager:
         except Exception:
             pass
 
-    def log_call(self, provider: str, model: str, api_key: str, status: str, status_code: int = 200, latency_ms: int = 0, prompt_sample: str = None, response_sample: str = None, error_message: str = None):
+    def log_call(self, provider: str, model: str, api_key: str, status: str, status_code: int = 200, latency_ms: int = 0, prompt_sample: str = None, response_sample: str = None, error_message: str = None, update_key_stats: bool = True):
         """Báo cáo log chi tiết về Backend để hiển thị trên Admin Dashboard"""
         try:
             requests.post(
@@ -124,12 +169,17 @@ class AIKeyPoolManager:
                     "latencyMs": latency_ms,
                     "promptSample": prompt_sample[:300] if prompt_sample else None,
                     "responseSample": response_sample[:400] if response_sample else None,
-                    "errorMessage": error_message[:300] if error_message else None
+                    "errorMessage": error_message[:300] if error_message else None,
+                    "updateKeyStats": update_key_stats,
                 },
                 timeout=1.5
             )
         except Exception:
             pass
+
+    def log_call_async(self, **kwargs):
+        """Write observability data without putting the provider call on the Admin API critical path."""
+        threading.Thread(target=self.log_call, kwargs=kwargs, daemon=True).start()
 
     # ==================== CALL PROVIDERS DIRECTLY ====================
 
@@ -177,7 +227,7 @@ class AIKeyPoolManager:
         return None
 
     def _call_groq(self, key: str, prompt: str, system_prompt: str = None) -> Optional[str]:
-        models_to_try = ["qwen/qwen3.8-27b", "openai/gpt-oss-120b", "openai/gpt-oss-20b", "groq/compound"]
+        models_to_try = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "qwen/qwen3.8-27b"]
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})

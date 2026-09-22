@@ -1,9 +1,9 @@
 {
-  "version": "2.0",
+  "version": "2.1",
   "domain": {
     "id": "PYTHON",
-    "name": "Lập trình Python Căn bản đến Nâng cao",
-    "description": "Khung chương trình đào tạo năng lực lập trình Python toàn diện dựa trên Cây tri thức định hướng DAG thích ứng."
+    "name": "Nền tảng lập trình Python",
+    "description": "Khung năng lực Python nền tảng đến lập trình hướng đối tượng, có quan hệ tiên quyết và trạng thái nội dung minh bạch."
   },
   "modules": [
     {
@@ -32,8 +32,8 @@
     },
     {
       "id": "MOD-EXC-IO",
-      "name": "Xử lý ngoại lệ & File I/O",
-      "description": "Bắt lỗi và ném ngoại lệ với try-except-finally, quản lý ngữ cảnh đọc ghi file an toàn with open.",
+      "name": "Ngoại lệ, Module & File I/O",
+      "description": "Bắt lỗi, ném ngoại lệ, tổ chức module và quản lý ngữ cảnh đọc ghi file an toàn.",
       "order_index": 5
     },
     {
@@ -127,6 +127,12 @@
       "module_id": "MOD-EXC-IO",
       "name": "Đọc ghi File văn bản",
       "description": "Thao tác tệp tin văn bản với context manager with open()."
+    },
+    {
+      "id": "TOPIC-MODULE",
+      "module_id": "MOD-EXC-IO",
+      "name": "Module & Standard Library",
+      "description": "Tách mã thành module, sử dụng import và khai thác thư viện chuẩn của Python."
     },
     {
       "id": "TOPIC-OOP-BASIC",
@@ -227,7 +233,7 @@
         "TypeError"
       ],
       "difficulty_level": 2,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "a // b",
         "a % b",
@@ -260,7 +266,7 @@
         "TypeError"
       ],
       "difficulty_level": 2,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "s[0]",
         "s[-1]",
@@ -291,7 +297,7 @@
         "ValueError"
       ],
       "difficulty_level": 2,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "s.strip()",
         "s.split(',')",
@@ -321,7 +327,7 @@
         "SyntaxError"
       ],
       "difficulty_level": 2,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "if condition:",
         "elif condition:",
@@ -347,8 +353,7 @@
         "Kết hợp vòng lặp while True với cơ chế thoát bằng break"
       ],
       "associated_errors": [
-        "TimeoutError",
-        "RecursionError"
+        "TimeoutError"
       ],
       "difficulty_level": 3,
       "bloom_level": "Analyze",
@@ -380,7 +385,7 @@
         "IndexError"
       ],
       "difficulty_level": 2,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "for i in range(n):",
         "for ch in text:",
@@ -409,7 +414,7 @@
         "SyntaxError"
       ],
       "difficulty_level": 3,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "break",
         "continue",
@@ -440,7 +445,7 @@
         "AttributeError"
       ],
       "difficulty_level": 2,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "lst.append(x)",
         "lst.insert(idx, x)",
@@ -501,12 +506,13 @@
         "NameError"
       ],
       "difficulty_level": 3,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "[x * 2 for x in nums]",
         "[x for x in nums if x % 2 == 0]"
       ],
-      "description": "Kỹ thuật tạo danh sách ngắn gọn, biểu cảm và tối ưu hóa hiệu năng bằng List Comprehension."
+      "description": "Kỹ thuật tạo danh sách ngắn gọn, biểu cảm và tối ưu hóa hiệu năng bằng List Comprehension.",
+      "content_status": "PLANNED"
     },
     {
       "id": "PY-TUPLE-01",
@@ -558,7 +564,7 @@
         "KeyError"
       ],
       "difficulty_level": 2,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "d = {'name': 'An', 'age': 20}",
         "d['name'] = 'Binh'",
@@ -588,7 +594,7 @@
         "AttributeError"
       ],
       "difficulty_level": 2,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "val = d.get(key, default)",
         "if key in d:",
@@ -618,13 +624,14 @@
         "KeyError"
       ],
       "difficulty_level": 3,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "for k, v in d.items():",
         "{k: v*2 for k, v in d.items()}",
         "d.update(other_dict)"
       ],
-      "description": "Duyệt từ điển với .items() và kỹ thuật biến đổi dữ liệu một dòng bằng Dictionary Comprehension."
+      "description": "Duyệt từ điển với .items() và kỹ thuật biến đổi dữ liệu một dòng bằng Dictionary Comprehension.",
+      "content_status": "PLANNED"
     },
     {
       "id": "PY-SET-01",
@@ -648,7 +655,7 @@
         "KeyError"
       ],
       "difficulty_level": 2,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "s = {1, 2, 3}",
         "s.add(4)",
@@ -679,7 +686,7 @@
         "UnboundLocalError"
       ],
       "difficulty_level": 2,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "def my_func():\n    return result",
         "res = my_func()"
@@ -738,7 +745,8 @@
       "code_signatures": [
         "def add_item(item, lst=None):\n    if lst is None:\n        lst = []\n    lst.append(item)\n    return lst"
       ],
-      "description": "Cấu hình tham số mặc định và cách khắc phục lỗi rò rỉ trạng thái của Mutable Default Argument."
+      "description": "Cấu hình tham số mặc định và cách khắc phục lỗi rò rỉ trạng thái của Mutable Default Argument.",
+      "content_status": "PLANNED"
     },
     {
       "id": "PY-FUNC-04",
@@ -789,13 +797,14 @@
         "TypeError"
       ],
       "difficulty_level": 3,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "def func(*args, **kwargs):",
         "func(1, 2, a=3, b=4)",
         "call_api(*params)"
       ],
-      "description": "Định nghĩa hàm nhận số lượng tham số tùy biến thông qua đóng gói/mở gói *args và **kwargs."
+      "description": "Định nghĩa hàm nhận số lượng tham số tùy biến thông qua đóng gói/mở gói *args và **kwargs.",
+      "content_status": "PLANNED"
     },
     {
       "id": "PY-FUNC-06",
@@ -818,13 +827,14 @@
         "TypeError"
       ],
       "difficulty_level": 3,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "square = lambda x: x ** 2",
         "sorted(data, key=lambda item: item['score'])",
         "list(filter(lambda x: x > 0, nums))"
       ],
-      "description": "Lập trình hàm ngắn gọn với Lambda expressions và các hàm nhận hàm làm tham số (map, filter, sorted)."
+      "description": "Lập trình hàm ngắn gọn với Lambda expressions và các hàm nhận hàm làm tham số (map, filter, sorted).",
+      "content_status": "PLANNED"
     },
     {
       "id": "PY-EXC-01",
@@ -850,7 +860,7 @@
         "ZeroDivisionError"
       ],
       "difficulty_level": 2,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "try:\n    ...\nexcept ValueError as err:\n    ..."
       ],
@@ -876,7 +886,7 @@
         "Exception"
       ],
       "difficulty_level": 3,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "try:\n    ...\nexcept Error:\n    ...\nelse:\n    ...\nfinally:\n    ..."
       ],
@@ -903,7 +913,7 @@
         "Exception"
       ],
       "difficulty_level": 3,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "raise ValueError('Invalid argument')",
         "class CustomError(Exception): pass"
@@ -933,13 +943,73 @@
         "IOError"
       ],
       "difficulty_level": 3,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "with open('file.txt', 'r', encoding='utf-8') as f:\n    content = f.read()",
         "f.readline()",
         "f.write('text')"
       ],
       "description": "Thao tác nhập xuất dữ liệu tập tin với Context Manager with open() tự động giải phóng tài nguyên."
+    },
+    {
+      "id": "PY-MODULE-01",
+      "concept_id": "PY-MODULE-01",
+      "name": "Module, import & Tổ chức mã nguồn",
+      "concept_name": "Module, import & Tổ chức mã nguồn",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-EXC-IO",
+      "topic_id": "TOPIC-MODULE",
+      "prerequisites": [
+        "PY-FUNC-01"
+      ],
+      "learning_objectives": [
+        "Phân biệt module, package và chương trình chính",
+        "Sử dụng import, from ... import và bí danh một cách rõ ràng",
+        "Tổ chức mã tái sử dụng giữa nhiều tệp Python"
+      ],
+      "associated_errors": [
+        "ModuleNotFoundError",
+        "ImportError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Apply",
+      "code_signatures": [
+        "import math",
+        "from pathlib import Path",
+        "if __name__ == '__main__':"
+      ],
+      "description": "Tổ chức chương trình thành các module và nhập đúng thành phần cần sử dụng.",
+      "content_status": "PUBLISHED"
+    },
+    {
+      "id": "PY-MODULE-02",
+      "concept_id": "PY-MODULE-02",
+      "name": "Khai thác Python Standard Library",
+      "concept_name": "Khai thác Python Standard Library",
+      "domain_id": "PYTHON",
+      "module_id": "MOD-EXC-IO",
+      "topic_id": "TOPIC-MODULE",
+      "prerequisites": [
+        "PY-MODULE-01"
+      ],
+      "learning_objectives": [
+        "Tra cứu tài liệu thư viện chuẩn theo nhu cầu bài toán",
+        "Áp dụng pathlib, datetime, random hoặc collections đúng ngữ cảnh",
+        "Tránh cài thư viện ngoài khi Standard Library đã đáp ứng yêu cầu"
+      ],
+      "associated_errors": [
+        "ImportError",
+        "AttributeError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Apply",
+      "code_signatures": [
+        "from pathlib import Path",
+        "from datetime import datetime",
+        "from collections import Counter"
+      ],
+      "description": "Lựa chọn và sử dụng những module phổ biến trong thư viện chuẩn Python.",
+      "content_status": "PUBLISHED"
     },
     {
       "id": "PY-OOP-01",
@@ -963,7 +1033,7 @@
         "AttributeError"
       ],
       "difficulty_level": 3,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "class Person:\n    def __init__(self, name):\n        self.name = name",
         "p = Person('Nam')"
@@ -1017,7 +1087,7 @@
         "AttributeError"
       ],
       "difficulty_level": 3,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "class Dog(Animal):\n    def __init__(self, name, breed):\n        super().__init__(name)\n        self.breed = breed"
       ],
@@ -1043,11 +1113,12 @@
         "AttributeError"
       ],
       "difficulty_level": 3,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "class Bird(Animal):\n    def speak(self):\n        return 'Chirp'"
       ],
-      "description": "Kỹ thuật ghi đè hành vi phương thức của lớp cha tại lớp con nhằm đáp ứng nghiệp vụ chuyên biệt."
+      "description": "Kỹ thuật ghi đè hành vi phương thức của lớp cha tại lớp con nhằm đáp ứng nghiệp vụ chuyên biệt.",
+      "content_status": "PLANNED"
     },
     {
       "id": "PY-OOP-05",
@@ -1075,7 +1146,8 @@
         "self.__private = 2",
         "@property\ndef balance(self):\n    return self._balance"
       ],
-      "description": "Bảo vệ trạng thái dữ liệu nội bộ qua tính đóng gói, quy ước ẩn thuộc tính và @property getter/setter."
+      "description": "Bảo vệ trạng thái dữ liệu nội bộ qua tính đóng gói, quy ước ẩn thuộc tính và @property getter/setter.",
+      "content_status": "PLANNED"
     },
     {
       "id": "PY-OOP-06",
@@ -1097,12 +1169,13 @@
         "TypeError"
       ],
       "difficulty_level": 4,
-      "bloom_level": "Application",
+      "bloom_level": "Apply",
       "code_signatures": [
         "def __str__(self):\n    return f'Obj({self.name})'",
         "def __len__(self):\n    return len(self.items)"
       ],
-      "description": "Tính đa hình theo phong cách Duck Typing và quá tải toán tử/hàm chuẩn thông qua Magic (Dunder) Methods."
+      "description": "Tính đa hình theo phong cách Duck Typing và quá tải toán tử/hàm chuẩn thông qua Magic (Dunder) Methods.",
+      "content_status": "PLANNED"
     }
   ],
   "edges": [
@@ -1268,6 +1341,14 @@
     },
     {
       "source": "PY-FUNC-01",
+      "target": "PY-MODULE-01"
+    },
+    {
+      "source": "PY-MODULE-01",
+      "target": "PY-MODULE-02"
+    },
+    {
+      "source": "PY-FUNC-01",
       "target": "PY-OOP-01"
     },
     {
@@ -1358,9 +1439,6 @@
     "TimeoutError": [
       "PY-FLOW-02"
     ],
-    "RecursionError": [
-      "PY-FLOW-02"
-    ],
     "KeyError": [
       "PY-DICT-01",
       "PY-DICT-02",
@@ -1400,7 +1478,6 @@
     "LS-01.08": "PY-BASICS-01",
     "LS-01.09": "PY-BASICS-01",
     "LS-01.10": "PY-BASICS-02",
-    "LS-01.MP": "PY-BASICS-03",
     "LS-02.01": "PY-BASICS-03",
     "LS-02.02": "PY-FLOW-01",
     "LS-02.03": "PY-FLOW-01",
@@ -1409,7 +1486,6 @@
     "LS-02.06": "PY-FLOW-03",
     "LS-02.07": "PY-FLOW-03",
     "LS-02.08": "PY-FLOW-04",
-    "LS-02.MP": "PY-FLOW-03",
     "LS-03.01": "PY-STRING-01",
     "LS-03.02": "PY-STRING-01",
     "LS-03.03": "PY-STRING-02",
@@ -1422,20 +1498,89 @@
     "LS-03.10": "PY-SET-01",
     "LS-03.11": "PY-DICT-01",
     "LS-03.12": "PY-DICT-02",
-    "LS-03.MP_FOR": "PY-FLOW-03",
-    "LS-03.MP_WHILE": "PY-FLOW-02",
     "LS-04.01": "PY-FUNC-01",
     "LS-04.02": "PY-FUNC-02",
-    "LS-04.03": "PY-FUNC-03",
+    "LS-04.03": "PY-FUNC-01",
     "LS-04.04": "PY-FUNC-04",
-    "LS-05.01": "PY-FUNC-01",
-    "LS-05.02": "PY-FUNC-02",
-    "LS-05.03": "PY-FUNC-05",
-    "LS-05.04": "PY-FUNC-06",
-    "LS-06.01": "PY-OOP-01",
-    "LS-06.02": "PY-OOP-02",
-    "LS-06.03": "PY-OOP-03",
-    "LS-06.04": "PY-OOP-04"
+    "LS-04.05": "PY-EXC-01",
+    "LS-04.06": "PY-EXC-01",
+    "LS-04.07": "PY-EXC-03",
+    "LS-04.08": "PY-MODULE-01",
+    "LS-04.09": "PY-MODULE-02",
+    "LS-05.01": "PY-IO-01",
+    "LS-05.02": "PY-IO-01",
+    "LS-05.03": "PY-IO-01",
+    "LS-05.04": "PY-OOP-01",
+    "LS-05.05": "PY-OOP-02",
+    "LS-05.06": "PY-OOP-01",
+    "LS-05.07": "PY-OOP-03"
   },
-  "practice_problem_mappings": {}
+  "lesson_title_mappings": {
+    "Máy tính và Ngôn ngữ lập trình": "PY-BASICS-01",
+    "Môi trường lập trình Python": "PY-BASICS-01",
+    "Chương trình Python đầu tiên": "PY-BASICS-01",
+    "Khái niệm Biến và Cách đặt tên": "PY-BASICS-01",
+    "Các kiểu dữ liệu nguyên thủy": "PY-BASICS-01",
+    "Toán tử số học": "PY-BASICS-03",
+    "Toán tử gán và Cập nhật biến": "PY-BASICS-03",
+    "Hàm xuất dữ liệu (Print)": "PY-BASICS-01",
+    "Hàm nhập dữ liệu (Input)": "PY-BASICS-01",
+    "Ép kiểu dữ liệu (Type Casting)": "PY-BASICS-02",
+    "Bài tập thực hành tổng hợp Module 1": "PY-BASICS-03",
+    "Biểu thức Logic & Toán tử so sánh": "PY-BASICS-03",
+    "Khái niệm rẽ nhánh và Lệnh if": "PY-FLOW-01",
+    "Lệnh if-else và if-elif-else": "PY-FLOW-01",
+    "Toán tử Logic kết hợp": "PY-BASICS-03",
+    "Bài tập thực hành tổng hợp Module 2": "PY-FLOW-01",
+    "Tư duy lặp và Vòng lặp while": "PY-FLOW-02",
+    "Dãy số với hàm range()": "PY-FLOW-03",
+    "Vòng lặp for": "PY-FLOW-03",
+    "Điều hướng lặp: break & continue": "PY-FLOW-04",
+    "Bài tập ôn luyện Vòng lặp For - Module 3": "PY-FLOW-03",
+    "Bài tập ôn luyện Vòng lặp While - Module 3": "PY-FLOW-02",
+    "Chuỗi như một Mảng: Indexing": "PY-STRING-01",
+    "Cắt chuỗi (Slicing)": "PY-STRING-01",
+    "Các phương thức chuỗi phổ biến": "PY-STRING-02",
+    "Định dạng chuỗi (F-string)": "PY-STRING-02",
+    "Bài tập thực hành tổng hợp Module 4": "PY-STRING-02",
+    "Khái niệm List & Khởi tạo": "PY-LIST-01",
+    "Cập nhật & Sửa đổi List": "PY-LIST-01",
+    "Duyệt mảng bằng Vòng lặp": "PY-LIST-02",
+    "Sắp xếp và Tìm kiếm cơ bản": "PY-LIST-02",
+    "Tuple: Danh sách bất biến": "PY-TUPLE-01",
+    "Bài tập thực hành tổng hợp Module 5": "PY-LIST-02",
+    "Set: Tập hợp toán học": "PY-SET-01",
+    "Dictionary: Cấu trúc Key-Value": "PY-DICT-01",
+    "Thao tác trên Dictionary": "PY-DICT-02",
+    "Bài tập thực hành tổng hợp Module 6": "PY-DICT-02",
+    "Tư duy đóng gói và Lệnh def": "PY-FUNC-01",
+    "Tham số và Đối số": "PY-FUNC-02",
+    "Trả về kết quả (Return)": "PY-FUNC-01",
+    "Phạm vi của Biến (Scope)": "PY-FUNC-04",
+    "Nhận diện Ngoại lệ (Exceptions)": "PY-EXC-01",
+    "Bắt lỗi với Try-Except": "PY-EXC-01",
+    "Luồng Finally và Ném lỗi chủ động": "PY-EXC-03",
+    "Khái niệm Module và Lệnh Import": "PY-MODULE-01",
+    "Khám phá Standard Library": "PY-MODULE-02",
+    "Bài tập thực hành tổng hợp Module 7": "PY-MODULE-02",
+    "Cấu trúc bộ nhớ và Hàm open()": "PY-IO-01",
+    "Đọc và Ghi File Text": "PY-IO-01",
+    "Context Manager với từ khóa 'with'": "PY-IO-01",
+    "Tư duy Hướng đối tượng (Class vs Object)": "PY-OOP-01",
+    "Thuộc tính và Phương thức": "PY-OOP-02",
+    "Phương thức Khởi tạo (__init__)": "PY-OOP-01",
+    "Khái quát về Kế thừa (Inheritance)": "PY-OOP-03",
+    "Bài tập thực hành tổng hợp Module 8": "PY-OOP-03"
+  },
+  "multi_skill_lesson_mappings": {
+    "LS-04.07": [
+      "PY-EXC-02",
+      "PY-EXC-03"
+    ]
+  },
+  "practice_problem_mappings": {
+    "two-sum": "PY-DICT-02",
+    "add-two-numbers": "PY-LIST-01",
+    "longest-substring-without-repeating-characters": "PY-STRING-01"
+  }
 }

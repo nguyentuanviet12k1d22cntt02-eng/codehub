@@ -1,0 +1,795 @@
+{
+  "trace_id": "trace_17b4758597ea40bab913ae6591784fc1",
+  "schema_version": "4.0",
+  "status": "SUCCEEDED",
+  "intent": "REQUEST_ADAPTIVE_EXERCISE",
+  "reply": "Bài tập **Tổng các số chẵn trong danh sách** đã qua kiểm thử và thẩm định. Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+  "exercise": {
+    "title": "Tổng các số chẵn trong danh sách",
+    "exercise_id": "d3ee73c4-281d-4550-8f3e-6b0eecfe3e37",
+    "concept_id": "PY-FLOW-03",
+    "concept_name": "Vòng lặp for ... in range() & Duyệt phần tử",
+    "language": "python",
+    "difficulty": "EASY",
+    "difficulty_stars": 1,
+    "problem_statement": "Bạn được cung cấp một danh sách các số nguyên `nums`. Hãy viết hàm `solution(nums)` để tính và trả về tổng của tất cả các số chẵn có trong danh sách.\n\nYêu cầu:\n- Sử dụng vòng lặp `for` để duyệt qua từng phần tử.\n- Kiểm tra điều kiện số chẵn (chia hết cho 2).\n- Nếu danh sách rỗng hoặc không có số chẵn nào, trả về 0.\n\nVí dụ:\n- `solution([1, 2, 3, 4])` trả về `6` (vì 2 + 4 = 6).\n- `solution([1, 3, 5])` trả về `0` (không có số chẵn).",
+    "quick_theory": "Vòng lặp `for` trong Python cho phép duyệt qua từng phần tử của một danh sách. Kết hợp với toán tử `%` (lấy phần dư) để kiểm tra số chẵn: nếu `x % 2 == 0` thì `x` là số chẵn.",
+    "starter_code": "def solution(nums):\n    # TODO: Khởi tạo biến tổng bằng 0\n    # TODO: Dùng vòng lặp for để duyệt qua từng phần tử trong nums\n    # TODO: Kiểm tra nếu phần tử là số chẵn thì cộng vào tổng\n    # TODO: Trả về tổng\n    pass",
+    "hints": {
+      "scaffold_1_conceptual": "Bạn cần duyệt qua từng số trong danh sách. Với mỗi số, hãy hỏi: 'Số này có chia hết cho 2 không?'. Nếu có, hãy cộng nó vào một biến tổng.",
+      "scaffold_2_syntax": "Cú pháp vòng lặp for: `for biến in danh sách:`. Cú pháp kiểm tra số chẵn: `if số % 2 == 0:`.",
+      "scaffold_3_pseudocode": "1. Tạo biến total = 0\n2. For each num in nums:\n3.     If num % 2 == 0:\n4.         total = total + num\n5. Return total"
+    },
+    "constraints": [
+      "0 <= len(nums) <= 1000",
+      "-1000 <= nums[i] <= 1000"
+    ],
+    "common_pitfall_warning": "Đừng quên khởi tạo biến tổng bằng 0 trước vòng lặp. Ngoài ra, hãy nhớ rằng 0 và các số âm chẵn (như -2, -4) cũng là số chẵn.",
+    "theoryContent": "# Lý thuyết: Vòng lặp `for ... in range()` & Duyệt phần tử\n\n## 1. Bản chất\nVòng lặp `for` trong Python được thiết kế để **duyệt tuần tự** qua các đối tượng lặp (iterables) như chuỗi, danh sách, hoặc các dãy số tạo ra bởi hàm `range()`. Khác với `while` (cần quản lý biến đếm thủ công), `for` tự động gán từng phần tử vào biến chạy, giúp code ngắn gọn và tránh lỗi quên cập nhật biến đếm.\n\n## 2. Cú pháp\n\n### a) Lặp theo số lần cố định với `range()`\n```python\nfor biến_chạy in range(start, stop, step):\n    # Thân vòng lặp\n```\n- `start`: Giá trị bắt đầu (mặc định là 0).\n- `stop`: Giá trị dừng (không bao gồm giá trị này).\n- `step`: Bước nhảy (mặc định là 1).\n\n**Ví dụ:**\n```python\n# In các số từ 1 đến 5\nfor i in range(1, 6):\n    print(i)\n# Kết quả: 1, 2, 3, 4, 5\n\n# In các số chẵn từ 2 đến 10\nfor i in range(2, 11, 2):\n    print(i)\n# Kết quả: 2, 4, 6, 8, 10\n```\n\n### b) Duyệt phần tử trong chuỗi hoặc danh sách\n```python\nfor phần_tử in dãy_dữ_liệu:\n    # Thân vòng lặp\n```\n\n**Ví dụ:**\n```python\n# Duyệt các ký tự trong chuỗi\nfor ch in \"Python\":\n    print(ch)\n# Kết quả: P, y, t, h, o, n (mỗi ký tự một dòng)\n\n# Duyệt các phần tử trong danh sách\nso = [10, 20, 30]\nfor x in so:\n    print(x)\n# Kết quả: 10, 20, 30\n```\n\n### c) Kết hợp `enumerate()` để lấy chỉ số và giá trị\n```python\nfor chỉ_số, giá_trị in enumerate(dãy_dữ_liệu):\n    # Thân vòng lặp\n```\n\n**Ví dụ:**\n```python\nmon_hoa = [\"Cam\", \"Quýt\", \"Bưởi\"]\nfor i, hoa in enumerate(mon_hoa):\n    print(f\"Chỉ số {i}: {hoa}\")\n# Kết quả:\n# Chỉ số 0: Cam\n# Chỉ số 1: Quýt\n# Chỉ số 2: Bưởi\n```\n\n## 3. Ví dụ thực hành (Khác với nghiệm mẫu bài tập)\n**Yêu cầu:** Tính tổng các số lẻ từ 1 đến 9.\n\n```python\ntong = 0\nfor i in range(1, 10, 2):  # Bắt đầu từ 1, dừng trước 10, bước nhảy 2\n    tong += i\nprint(tong)  # Kết quả: 1 + 3 + 5 + 7 + 9 = 25\n```\n\n**Yêu cầu:** Đếm số lượng ký tự chữ cái trong một chuỗi.\n\n```python\nchuoi = \"Hello World 123\"\nso_luong = 0\nfor ky_tu in chuoi:\n    if ky_tu.isalpha():  # Kiểm tra có phải chữ cái không\n        so_luong += 1\nprint(so_luong)  # Kết quả: 10 (bỏ qua khoảng trắng và số)\n```\n\n## 4. Lỗi thường gặp\n1. **Sai phạm vi `range()`**:\n   - `range(1, 5)` tạo dãy `[1, 2, 3, 4]`, **không bao gồm** 5.\n   - Lỗi phổ biến: Dùng `range(1, n)` khi muốn bao gồm `n`. Sửa: Dùng `range(1, n + 1)`.\n\n2. **Thay đổi biến chạy trong vòng lặp**:\n   ```python\n   for i in range(5):\n       i = 10  # Không ảnh hưởng đến lượt lặp sau, Python vẫn gán giá trị tiếp theo của range() vào i\n       print(i)\n   ```\n   *Lưu ý:* Việc này không gây lỗi cú pháp nhưng làm code khó đọc và dễ gây nhầm lẫn logic.\n\n3. **Quên thụt lề (Indentation)**:\n   Thân vòng lặp phải được thụt lề đúng chuẩn (thường là 4 khoảng trắng). Nếu không, Python sẽ báo `IndentationError`.\n\n4. **Duyệt chuỗi nhưng xử lý như danh sách**:\n   Chuỗi là bất biến (immutable). Không thể thay đổi ký tự trong chuỗi khi duyệt.\n   ```python\n   s = \"abc\"\n   for i in range(len(s)):\n       s[i] = \"A\"  # Lỗi: TypeError: 'str' object does not support item assignment\n   ```\n\n## 5. Mẹo tối ưu\n- Đặt tên biến chạy có ý nghĩa (ví dụ: `for nam in range(2020, 2026)` thay vì `for i in ...`).\n- Sử dụng `enumerate()` khi cần cả chỉ số và giá trị để tránh dùng `range(len(danh_sach))` thủ công.",
+    "execution": {
+      "mode": "function",
+      "entrypoint": "solution",
+      "comparator": "json",
+      "call_style_required": true
+    },
+    "trace_id": "trace_17b4758597ea40bab913ae6591784fc1",
+    "qc_status": "VERIFIED",
+    "harness_version": "adaptive_harness_v4",
+    "artifact_hash": "445ed65c9c3181ac302b5d0780c8d402e41317b149d6dc1a944c9b1d10ad03bd",
+    "test_cases": [
+      {
+        "input": "[[1,2,3,4]]",
+        "expected_output": "6",
+        "is_hidden": false,
+        "category": "normal",
+        "explanation": "Các số chẵn là 2 và 4. Tổng là 2 + 4 = 6."
+      },
+      {
+        "input": "[[1,3,5]]",
+        "expected_output": "0",
+        "is_hidden": false,
+        "category": "normal",
+        "explanation": "Không có số chẵn nào trong danh sách, nên tổng là 0."
+      },
+      {
+        "input": "[[]]",
+        "expected_output": "0",
+        "is_hidden": false,
+        "category": "boundary",
+        "explanation": "Danh sách rỗng, không có phần tử nào để cộng, trả về 0."
+      }
+    ]
+  },
+  "agent_traces": [
+    {
+      "id": "f0e8b2aa-76f4-4e31-8ce7-c3537a998a33",
+      "trace_id": "trace_17b4758597ea40bab913ae6591784fc1",
+      "agent": "IntentRouterAgent",
+      "method": "RULES_OR_LLM",
+      "attempt": 1,
+      "stage_attempt": 1,
+      "run_attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-21T18:22:31.012775+00:00",
+      "input_hash": "e350960ae66c30d112e2f9b19f97b840d08f9199db7531d155aeafab5048f8f6",
+      "sequence": 1,
+      "output_hash": "f24aafab954e61f87a9cddb5d1c41d4fcc3950dcfaeac0ddc8e0fe76ab40078f",
+      "ended_at": "2026-09-21T18:22:31.015629+00:00",
+      "duration_ms": 3,
+      "output": {
+        "intent": "REQUEST_ADAPTIVE_EXERCISE",
+        "language": "python",
+        "topic": "for",
+        "difficulty_request": "auto",
+        "mode": "progression",
+        "selection_mode": "explicit",
+        "confidence": 1,
+        "user_text": "hãy tạo cho tôi bài tập về for trong python",
+        "trace_id": "trace_17b4758597ea40bab913ae6591784fc1"
+      },
+      "model_calls": []
+    },
+    {
+      "id": "e3c62ff1-7bc1-4abe-99c1-57b07f860c4e",
+      "trace_id": "trace_17b4758597ea40bab913ae6591784fc1",
+      "agent": "AdaptiveExercisePlanner",
+      "method": "RULE_POLICY",
+      "attempt": 1,
+      "stage_attempt": 1,
+      "run_attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-21T18:22:31.015730+00:00",
+      "input_hash": "07800ce7215de4d759fa2231905ee8f4bd73b6ae14d8cc5d9ddbacb8cee8d05a",
+      "sequence": 2,
+      "output_hash": "2d4d6f03de01a753c7d1911c7fb947ff71612a90a09542d1090cdcbdd1321c61",
+      "ended_at": "2026-09-21T18:22:31.019052+00:00",
+      "duration_ms": 3,
+      "output": {
+        "schema_version": "4.0",
+        "user_request": "hãy tạo cho tôi bài tập về for trong python",
+        "selection_mode": "explicit",
+        "execution": {
+          "mode": "function",
+          "entrypoint": "solution",
+          "comparator": "json",
+          "call_style_required": true
+        },
+        "learning_objectives": [
+          "Áp dụng for đúng yêu cầu và xử lý trường hợp biên."
+        ],
+        "source_refs": [],
+        "learner_evidence": {
+          "mastery": null,
+          "attempts": 0,
+          "prerequisite_gaps": [
+            "PY-FLOW-01",
+            "PY-STRING-01"
+          ],
+          "policy": "adaptive_policy_v3"
+        },
+        "target_concept": "PY-FLOW-03",
+        "concept_title": "Vòng lặp for ... in range() & Duyệt phần tử",
+        "language": "python",
+        "target_sub_skills": [
+          "Áp dụng for đúng yêu cầu và xử lý trường hợp biên."
+        ],
+        "difficulty": "EASY",
+        "mode": "diagnostic",
+        "prerequisites": [
+          "PY-FLOW-01",
+          "PY-STRING-01"
+        ],
+        "required_constructs": [
+          "for"
+        ],
+        "forbidden_constructs": [],
+        "recent_errors": [],
+        "test_constraints": {
+          "min_cases": 4,
+          "max_cases": 8,
+          "require_hidden_case": true,
+          "require_boundary_case": true,
+          "max_execution_time_ms": 3000
+        },
+        "reasoning": "Bám sát chủ đề được yêu cầu. Chưa đủ bằng chứng: dùng bài chẩn đoán.",
+        "trace_id": "trace_17b4758597ea40bab913ae6591784fc1"
+      },
+      "model_calls": []
+    },
+    {
+      "id": "b5d041f1-871e-4341-ad9a-3996f4a3a849",
+      "trace_id": "trace_17b4758597ea40bab913ae6591784fc1",
+      "agent": "KnowledgeRetrievalService",
+      "method": "LOCAL_GRAPH_AND_FILES",
+      "attempt": 1,
+      "stage_attempt": 1,
+      "run_attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-21T18:22:31.019175+00:00",
+      "input_hash": "48b034ceaa9bbc01727e696dd7ee382c1e09ce66c38a0f464fec47affafe7c32",
+      "sequence": 3,
+      "output_hash": "c715f99647ce58c1053f7fabcdd5752cc76f9b809684a786dbc120e24d2217c4",
+      "ended_at": "2026-09-21T18:22:31.426733+00:00",
+      "duration_ms": 408,
+      "output": {
+        "concept": {
+          "id": "PY-FLOW-03",
+          "concept_id": "PY-FLOW-03",
+          "name": "Vòng lặp for ... in range() & Duyệt phần tử",
+          "concept_name": "Vòng lặp for ... in range() & Duyệt phần tử",
+          "domain_id": "PYTHON",
+          "module_id": "MOD-FLOW",
+          "topic_id": "TOPIC-LOOP",
+          "prerequisites": [
+            "PY-FLOW-01",
+            "PY-STRING-01"
+          ],
+          "learning_objectives": [
+            "Duyệt qua các phần tử của chuỗi, danh sách hoặc tập hợp bằng for item in sequence",
+            "Sử dụng hàm range(start, stop, step) để tạo chuỗi chỉ số tuần hoàn",
+            "Kết hợp hàm enumerate() để lấy đồng thời chỉ số và giá trị phần tử"
+          ],
+          "associated_errors": [
+            "TypeError",
+            "IndexError"
+          ],
+          "difficulty_level": 2,
+          "bloom_level": "Application",
+          "code_signatures": [
+            "for i in range(n):",
+            "for ch in text:",
+            "for idx, val in enumerate(lst):"
+          ],
+          "description": "Cơ chế duyệt tuần tự các đối tượng lặp (Iterables) bằng vòng lặp for và tạo dải số bằng range()."
+        },
+        "sources": [
+          {
+            "id": "ai-service/data/pythonSkillGraph.json#PY-FLOW-03",
+            "sha256": "e559c78d1976339a051dc46ddc41950a559c0de3fa6ac736431b7f87c455cbc6",
+            "excerpt": {
+              "id": "PY-FLOW-03",
+              "concept_id": "PY-FLOW-03",
+              "name": "Vòng lặp for ... in range() & Duyệt phần tử",
+              "concept_name": "Vòng lặp for ... in range() & Duyệt phần tử",
+              "domain_id": "PYTHON",
+              "module_id": "MOD-FLOW",
+              "topic_id": "TOPIC-LOOP",
+              "prerequisites": [
+                "PY-FLOW-01",
+                "PY-STRING-01"
+              ],
+              "learning_objectives": [
+                "Duyệt qua các phần tử của chuỗi, danh sách hoặc tập hợp bằng for item in sequence",
+                "Sử dụng hàm range(start, stop, step) để tạo chuỗi chỉ số tuần hoàn",
+                "Kết hợp hàm enumerate() để lấy đồng thời chỉ số và giá trị phần tử"
+              ],
+              "associated_errors": [
+                "TypeError",
+                "IndexError"
+              ],
+              "difficulty_level": 2,
+              "bloom_level": "Application",
+              "code_signatures": [
+                "for i in range(n):",
+                "for ch in text:",
+                "for idx, val in enumerate(lst):"
+              ],
+              "description": "Cơ chế duyệt tuần tự các đối tượng lặp (Iterables) bằng vòng lặp for và tạo dải số bằng range()."
+            }
+          },
+          {
+            "id": "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 05/Lession3.md",
+            "sha256": "18ac1308b510371d8479fcd2a2b06eeb580229e0602bfee2c1f370a736d0fa48",
+            "excerpt": "---\nlessonId: \"LS-02.07\"\ntitle: \"Vòng lặp for\"\ndifficulty: \"MEDIUM\"\nestimatedDuration: 35\nkeywords: [\"for loop\", \"looping\", \"range\", \"iteration\", \"python basics\"]\nprerequisites: [\"LS-02.06\"]\n---\n\n# 📘 Lesson 02.07: Vòng lặp for\n\n---\n\n## 1. Khái niệm & Vấn đề\n\nVới vòng lặp `while`, chúng ta phải tự quản lý biến đếm hoàn toàn thủ công (phải khai báo biến ban đầu, viết điều kiện dừng, và tự tăng biến ở cuối vòng lặp). Việc này rất dễ dẫn tới sơ suất quên cập nhật biến đếm gây lỗi treo máy.\n\nKhi chúng ta đã **xác định trước được số lần lặp** (ví dụ lặp 10 lần), hoặc muốn **duyệt qua lần lượt các phần tử** của một tập hợp dãy số, Python cung cấp câu lệnh **`for`** tối ưu, an toàn và ngắn gọn hơn nhiều.\n\n```mermaid\nflowchart TD\n    A[Bắt đầu] --> B{Còn phần tử nào trong dãy số không?}\n    B -- Yes (Còn) --> C[Tự động lấy phần tử tiếp theo gán vào biến tạm]\n    C --> D[Chạy khối lệnh con bên trong for]\n    D --> B\n    B -- No (Hết) --> E[Thoát vòng lặp và đi tiếp]\n```\n\n| Thuật ngữ | Ý nghĩa | Phép ẩn dụ thực tế |\n| :--- | :--- | :--- |\n| **Vòng lặp `for`** | Cấu trúc lặp qua một tập hợp dữ liệu có thứ tự, tự động gán từng phần tử vào biến tạm sau mỗi vòng. | Giống như **băng chuyền hành lý** tại sân bay: Các vali lần lượt chạy qua trước mặt, bạn chỉ việc nhấc từng cái lên kiểm tra đến hết thì thôi. |\n\n---\n\n## 2. Cú pháp & Vận hành\n\nCú pháp vòng lặp `for` kết hợp với hàm `range()` để thực hiện lặp theo số lần mong muốn:\n\n```python\nfor i in range(1, 4):\n    print(\"Lặp lần thứ:\", i)\nprint(\"Kết thúc chương trình.\")\n```\n\n**Bảng theo dõi thực thi (Execution Trace Table):**\n| Dòng mã | Lệnh được chạy | Trạng thái biến | Hành động của máy tính (Đầu ra màn hình) |\n|:---:|:---|:---|:---|\n| 1 | `range(1, 4)` | | Tạo dãy số nguyên ảo chứa các giá trị `[1, 2, 3]`. |\n| 1 | `for i in range(...)` | `i: 1` | Tự động lấy số đầu tiên (`1`) trong dãy gán vào biến tạm `i`. |\n| 2 | `print(...)` | `i: 1` | In ra màn hình: `Lặp lần thứ: 1`. |\n| 1 | `for i in range(...)` | `i: 2` | Tự động lấy số tiếp theo (`2`) trong dãy gán đè vào biến tạm `i`. |\n| 2 | `print(...)` | `i: 2` | In ra màn hình: `Lặp lần thứ: 2`. |\n| 1 | `for i in range(...)` | `i: 3` | Tự động lấy số cuối cùng (`3`) trong dãy gán đè vào biến tạm `i`. |\n| 2 | `print(...)` | `i: 3` | In ra màn hình: `Lặp lần thứ: 3`. |\n| 1 | `for i in range(...)` | | Dãy số đã hết phần tử. Tự động thoát khỏi vòng lặp `for`. |\n| 3 | `print(\"Kết thúc...\")`| | Chạy lệnh ngoài vòng lặp. In ra màn hình: `Kết thúc chương trình.`. |\n\n**Minh họa đường đi phần tử:**\n```text\nDãy số:     [  1,   2,   3  ]\n               │    │    │\n               ▼    ▼    ▼ (Lần lượt gán vào biến chạy)\nBiến chạy:     i = 1 ➔ i = 2 ➔ i = 3\n```\n\n---\n\n## 3. Lỗi thường gặp & Tối ưu\n\n> [!WARNING]\n> **Các lưu ý quan trọng khi sử dụng vòng lặp for:**\n> * **Không thay đổi biến chạy trong vòng lặp**: Trong thân vòng lặp `for i in range(...)`, nếu bạn cố tình viết lệnh đổi giá trị `i = 10` thì ở lượt lặp sau, Python vẫn sẽ tự động ghi đè giá trị tiếp theo của `range()` vào `i`. Thay đổi này chỉ làm code bị rối và dễ gây lỗi logic không đáng có.\n> * **Đặt tên biến chạy có nghĩa**: Thay vì luôn sử dụng các chữ cái vô nghĩa như `i`, `j`, `k`, hãy đặt tên biến chạy phản ánh đúng mục tiêu (ví dụ: `for nam in range(2020, 2026):`).\n\n---\n\n## 4. Thực hành phân bậc\n\n### Câu hỏi trắc nghiệm (Warm-up)\nVới câu lệnh `for x in range(5):`, biến chạy `x` sẽ lần lượt nhận các giá trị số nguyên nào?\n* [ ] `1, 2, 3, 4, 5`\n* [ ] `0, 1, 2, 3, 4, 5`\n* [x] `0, 1, 2, 3, 4`\n* [ ] `1, 2, 3, 4`\n\n### Thử thách sửa lỗi (Debug)\nĐoạn code sau đây muốn tính tổng các số từ 1 đến 5. Kết quả in ra mong muốn là `15`, tuy nhiên khi chạy chương trình chỉ in ra `10`. Hãy tìm lỗi logic và sửa lại cho đúng:\n```python\n# Sửa lại đoạn code tính tổng dưới đây:\ntong = 0\nfor i in range(1, 5):\n    tong += i\nprint(tong)\n```\n\n### Bài tập lập trình (Mini-task)\nHãy viết chương trình sử dụng vòng lặp `for` kết hợp với hàm `range()` để in ra màn hình các số lẻ từ 1 đến 7 (bao gồm cả số 7), mỗi số được in trên một dòng riêng biệt.\n```python\n# Nhập code của bạn ở đây\n```\n\n---\n\n## 5. Đúc kết & Đi tiếp\n\n* 🛡️ Vòng lặp `for` tự động hóa việc lặp qua một dãy số mà không cần quản lý biến chạy thủ công như `while`.\n* 🤝 Kết hợp `for` và `range()` là mô hình chuẩn mực để viết các vòng lặp đếm số lần cố định.\n\nTrong bài học tiếp theo **[LS-02.08: Điều hướng lặp: break & continue]**, chúng ta sẽ tìm hiểu hai câu lệnh đặc biệt cho phép lập trình viên chủ động ngắt sớm vòng lặp hoặc bỏ qua các lượt lặp khôn",
+            "match_score": 4
+          },
+          {
+            "id": "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 05/Lession4.md",
+            "sha256": "3ee4a860d10f77d483b4fe47e78471002b93c3e733c2a973f5770f9dc2b5fde4",
+            "excerpt": "---\nlessonId: \"LS-02.08\"\ntitle: \"Điều hướng lặp: break & continue\"\ndifficulty: \"MEDIUM\"\nestimatedDuration: 30\nkeywords: [\"break statement\", \"continue statement\", \"loop control\", \"python basics\"]\nprerequisites: [\"LS-02.07\"]\n---\n\n# 📘 Lesson 02.08: Điều hướng lặp: break & continue\n\n---\n\n## 1. Khái niệm & Vấn đề\n\nThông thường, một vòng lặp sẽ chạy tuần tự từ đầu đến cuối cho đến khi điều kiện dừng chuyển thành Sai (`False`) mới dừng lại. Tuy nhiên, trong thực tế phát triển phần mềm, ta thường cần can thiệp sâu hơn vào luồng chạy:\n1. **Dừng vòng lặp khẩn cấp**: Khi tìm thấy giá trị cần tìm (ví dụ: tìm kiếm một tài khoản trong danh sách 1 triệu người), ta muốn dừng ngay lập tức để tiết kiệm tài nguyên.\n2. **Bỏ qua một lượt lặp**: Khi gặp một phần tử không hợp lệ (ví dụ: số âm trong danh sách tính tuổi), ta muốn bỏ qua lượt này để xử lý phần tử tiếp theo.\n\nPython cung cấp hai từ khóa điều hướng vòng lặp mạnh mẽ là **`break`** và **`continue`**.\n\n| Từ khóa | Hành động | Phép ẩn dụ thực tế |\n| :--- | :--- | :--- |\n| **`break`** | Thoát hoàn toàn khỏi vòng lặp chứa nó ngay lập tức. | Giống như **nút dừng khẩn cấp** trên thang cuốn: Nhấn nút một cái là toàn bộ thang dừng hoạt động, mọi người đi ra ngoài. |\n| **`continue`** | Bỏ qua phần code còn lại của lượt lặp hiện tại, chuyển ngay tới lượt lặp tiếp theo. | Giống như việc **nhảy qua vũng nước**: Bạn không dừng hành trình đi bộ, bạn chỉ tránh vũng nước đó rồi bước tiếp các bước sau. |\n\n---\n\n## 2. Cú pháp & Vận hành\n\nCú pháp của hai từ khóa này cực kỳ ngắn gọn và luôn đi kèm bên trong các khối lệnh điều kiện `if` đặt trong vòng lặp.\n\n```python\nprint(\"--- Thử nghiệm break ---\")\nfor i in range(1, 6):\n    if i == 3:\n        break\n    print(i)\n\nprint(\"--- Thử nghiệm continue ---\")\nfor i in range(1, 6):\n    if i == 3:\n        continue\n    print(i)\n```\n\n**Bảng theo dõi thực thi (Execution Trace Table):**\n* **Với vòng lặp `break` (in số từ 1 đến 5, gặp 3 dừng):**\n  | Lượt lặp | Giá trị `i` | Kiểm tra điều kiện `i == 3` | Kết quả xuất màn hình |\n  |:---:|:---|:---|:---|\n  | 1 | `i: 1` | `1 == 3` ➔ `False`. Bỏ qua khối `if`. | In: `1` |\n  | 2 | `i: 2` | `2 == 3` ➔ `False`. Bỏ qua khối `if`. | In: `2` |\n  | 3 | `i: 3` | `3 == 3` ➔ `True`. Chạy lệnh `break`. | **Không in gì**. Thoát khỏi vòng lặp ngay lập tức. |\n\n* **Với vòng lặp `continue` (in số từ 1 đến 5, gặp 3 bỏ qua):**\n  | Lượt lặp | Giá trị `i` | Kiểm tra điều kiện `i == 3` | Kết quả xuất màn hình |\n  |:---:|:---|:---|:---|\n  | 1 | `i: 1` | `1 == 3` ➔ `False`. Bỏ qua khối `if`. | In: `1` |\n  | 2 | `i: 2` | `2 == 3` ➔ `False`. Bỏ qua khối `if`. | In: `2` |\n  | 3 | `i: 3` | `3 == 3` ➔ `True`. Chạy lệnh `continue`. | **Không in gì**. Bỏ qua lệnh `print` bên dưới, quay lại đầu vòng lặp lấy `i: 4`. |\n  | 4 | `i: 4` | `4 == 3` ➔ `False`. Bỏ qua khối `if`. | In: `4` |\n  | 5 | `i: 5` | `5 == 3` ➔ `False`. Bỏ qua khối `if`. | In: `5` |\n\n---\n\n## 3. Lỗi thường gặp & Tối ưu\n\n> [!WARNING]\n> **Các lỗi cú pháp và logic thường gặp:**\n> * **Đặt break/continue ngoài vòng lặp**: Lệnh `break` và `continue` bắt buộc phải nằm bên trong thân vòng lặp (`for` hoặc `while`). Nếu đặt ngoài, Python sẽ báo lỗi `SyntaxError: 'break' outside loop`.\n> * **Lỗi mã nguồn không bao giờ chạm tới (Unreachable Code)**: Viết các câu lệnh khác ngay phía dưới `break` hoặc `continue` cùng cấp thụt lề sẽ khiến các câu lệnh đó không bao giờ được thực thi, do chương trình đã chuyển hướng trước khi đọc tới chúng.\n\n---\n\n## 4. Thực hành phân bậc\n\n### Câu hỏi trắc nghiệm (Warm-up)\nĐoạn code sau đây sẽ in ra kết quả nào trên màn hình?\n```python\nfor x in range(1, 4):\n    if x == 2:\n        continue\n    print(x, end=\" \")\n```\n* [ ] `1 2 3`\n* [ ] `1 2`\n* [x] `1 3`\n* [ ] `1`\n\n### Thử thách sửa lỗi (Debug)\nĐoạn code sau muốn duyệt các số từ 1 đến 5, nếu gặp số chia hết cho 3 thì dừng vòng lặp. Tuy nhiên chương trình đang báo lỗi cú pháp `SyntaxError`. Hãy sửa lại cho đúng cấu trúc:\n```python\n# Sửa lại đoạn code lỗi dưới đây:\nif x == 3:\n    break\nfor x in range(1, 6):\n    print(x)\n```\n\n### Bài tập lập trình (Mini-task)\nHãy viết chương trình sử dụng vòng lặp `for` duyệt qua các số trong `range(1, 6)`. Nếu gặp số `4`, hãy dùng lệnh `break` để thoát vòng lặp. Với các số khác, hãy in giá trị của số đó ra màn hình (mỗi số trên một dòng).\n```python\n# Nhập code của bạn ở đây\n```\n\n---\n\n## 5. Đúc kết & Đi tiếp\n\n* 🛑 Lệnh `break` dùng để kết thúc và thoát hoàn toàn khỏi vòng lặp ngay lập tức.\n* ⏭️ Lệnh `continue` dùng để bỏ qua lượt lặp hiện tại và chuyển sang lượt lặp tiếp theo của vòng lặp.\n\nChúc",
+            "match_score": 4
+          }
+        ],
+        "retrieval_method": "local_graph_and_keyword_search"
+      },
+      "model_calls": []
+    },
+    {
+      "id": "e932ee56-296e-4919-a886-badbd4f11dcf",
+      "trace_id": "trace_17b4758597ea40bab913ae6591784fc1",
+      "agent": "ExerciseGeneratorAgent",
+      "method": "LLM",
+      "attempt": 1,
+      "stage_attempt": 1,
+      "run_attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-21T18:22:31.426927+00:00",
+      "input_hash": "f079eac68ddc2430daca3a54d8453ae68bb0f9ab9bd1094c11db50d50930ccfb",
+      "sequence": 4,
+      "output_hash": "6e3d56a7d4350884db14c56a69dbc0028e313e2c3f8f3565a2ebf9ae5f07b01d",
+      "ended_at": "2026-09-21T18:23:59.693733+00:00",
+      "duration_ms": 88274,
+      "output": {
+        "title": "Tổng các số chẵn trong danh sách",
+        "problem_statement": "Bạn được cung cấp một danh sách các số nguyên `nums`. Hãy viết hàm `solution(nums)` để tính và trả về tổng của tất cả các số chẵn có trong danh sách.\n\nYêu cầu:\n- Sử dụng vòng lặp `for` để duyệt qua từng phần tử.\n- Kiểm tra điều kiện số chẵn (chia hết cho 2).\n- Nếu danh sách rỗng hoặc không có số chẵn nào, trả về 0.\n\nVí dụ:\n- `solution([1, 2, 3, 4])` trả về `6` (vì 2 + 4 = 6).\n- `solution([1, 3, 5])` trả về `0` (không có số chẵn).",
+        "quick_theory": "Vòng lặp `for` trong Python cho phép duyệt qua từng phần tử của một danh sách. Kết hợp với toán tử `%` (lấy phần dư) để kiểm tra số chẵn: nếu `x % 2 == 0` thì `x` là số chẵn.",
+        "starter_code": "def solution(nums):\n    # TODO: Khởi tạo biến tổng bằng 0\n    # TODO: Dùng vòng lặp for để duyệt qua từng phần tử trong nums\n    # TODO: Kiểm tra nếu phần tử là số chẵn thì cộng vào tổng\n    # TODO: Trả về tổng\n    pass",
+        "hints": {
+          "scaffold_1_conceptual": "Bạn cần duyệt qua từng số trong danh sách. Với mỗi số, hãy hỏi: 'Số này có chia hết cho 2 không?'. Nếu có, hãy cộng nó vào một biến tổng.",
+          "scaffold_2_syntax": "Cú pháp vòng lặp for: `for biến in danh sách:`. Cú pháp kiểm tra số chẵn: `if số % 2 == 0:`.",
+          "scaffold_3_pseudocode": "1. Tạo biến total = 0\n2. For each num in nums:\n3.     If num % 2 == 0:\n4.         total = total + num\n5. Return total"
+        },
+        "constraints": [
+          "0 <= len(nums) <= 1000",
+          "-1000 <= nums[i] <= 1000"
+        ],
+        "common_pitfall_warning": "Đừng quên khởi tạo biến tổng bằng 0 trước vòng lặp. Ngoài ra, hãy nhớ rằng 0 và các số âm chẵn (như -2, -4) cũng là số chẵn.",
+        "test_cases": [
+          {
+            "input": "[[1,2,3,4]]",
+            "expected_output": "6",
+            "is_hidden": false,
+            "category": "normal",
+            "explanation": "Các số chẵn là 2 và 4. Tổng là 2 + 4 = 6."
+          },
+          {
+            "input": "[[1,3,5]]",
+            "expected_output": "0",
+            "is_hidden": false,
+            "category": "normal",
+            "explanation": "Không có số chẵn nào trong danh sách, nên tổng là 0."
+          },
+          {
+            "input": "[[]]",
+            "expected_output": "0",
+            "is_hidden": false,
+            "category": "boundary",
+            "explanation": "Danh sách rỗng, không có phần tử nào để cộng, trả về 0."
+          }
+        ]
+      },
+      "model_calls": [
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "key_fingerprint": "6e1cb9ec18a8",
+          "status": "FAILED",
+          "prompt_hash": "a2d0735f1642d4d3df3d37101eb34b4cbf2ff1a3403db158e71ee2d960b295a0",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 12712,
+          "model": "gemini-3.8-flash",
+          "http_status": 503,
+          "error_code": "PROVIDER_SERVER_ERROR",
+          "error_type": "HTTPError",
+          "error_message": "503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+          "key_cooldown_seconds": 180,
+          "duration_ms": 7583
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "key_fingerprint": "b450abb2ac63",
+          "status": "FAILED",
+          "prompt_hash": "a2d0735f1642d4d3df3d37101eb34b4cbf2ff1a3403db158e71ee2d960b295a0",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 13225,
+          "model": "gemini-3.8-flash",
+          "http_status": 503,
+          "error_code": "PROVIDER_SERVER_ERROR",
+          "error_type": "HTTPError",
+          "error_message": "503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+          "key_cooldown_seconds": 180,
+          "duration_ms": 10667
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "key_fingerprint": "291fdce483f2",
+          "status": "FAILED",
+          "prompt_hash": "a2d0735f1642d4d3df3d37101eb34b4cbf2ff1a3403db158e71ee2d960b295a0",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 13509,
+          "model": "gemini-3.8-flash",
+          "http_status": 503,
+          "error_code": "PROVIDER_SERVER_ERROR",
+          "error_type": "HTTPError",
+          "error_message": "503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+          "key_cooldown_seconds": 180,
+          "duration_ms": 7724
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "key_fingerprint": "a56219f57167",
+          "status": "FAILED",
+          "prompt_hash": "a2d0735f1642d4d3df3d37101eb34b4cbf2ff1a3403db158e71ee2d960b295a0",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 14232,
+          "model": "gemini-3.8-flash",
+          "error_code": "PROVIDER_TIMEOUT",
+          "error_type": "ReadTimeout",
+          "error_message": "HTTPSConnectionPool(host='generativelanguage.googleapis.com', port=443): Read timed out. (read timeout=14.231691818125)",
+          "key_cooldown_seconds": 120,
+          "duration_ms": 14606
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "key_fingerprint": "247d01b327a0",
+          "status": "FAILED",
+          "prompt_hash": "a2d0735f1642d4d3df3d37101eb34b4cbf2ff1a3403db158e71ee2d960b295a0",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 14157,
+          "model": "gemini-3.8-flash",
+          "http_status": 503,
+          "error_code": "PROVIDER_SERVER_ERROR",
+          "error_type": "HTTPError",
+          "error_message": "503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+          "key_cooldown_seconds": 180,
+          "duration_ms": 3569
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "key_fingerprint": "208770215ba8",
+          "status": "FAILED",
+          "prompt_hash": "a2d0735f1642d4d3df3d37101eb34b4cbf2ff1a3403db158e71ee2d960b295a0",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 15921,
+          "model": "gemini-3.8-flash",
+          "http_status": 503,
+          "error_code": "PROVIDER_SERVER_ERROR",
+          "error_type": "HTTPError",
+          "error_message": "503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+          "key_cooldown_seconds": 180,
+          "duration_ms": 8018
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "key_fingerprint": "4c8449387f36",
+          "status": "FAILED",
+          "prompt_hash": "a2d0735f1642d4d3df3d37101eb34b4cbf2ff1a3403db158e71ee2d960b295a0",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 17502,
+          "model": "gemini-3.8-flash",
+          "http_status": 503,
+          "error_code": "PROVIDER_SERVER_ERROR",
+          "error_type": "HTTPError",
+          "error_message": "503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+          "key_cooldown_seconds": 180,
+          "duration_ms": 8589
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "key_fingerprint": "006baceb0f94",
+          "status": "FAILED",
+          "prompt_hash": "a2d0735f1642d4d3df3d37101eb34b4cbf2ff1a3403db158e71ee2d960b295a0",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 19730,
+          "model": "gemini-3.8-flash",
+          "http_status": 503,
+          "error_code": "PROVIDER_SERVER_ERROR",
+          "error_type": "HTTPError",
+          "error_message": "503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+          "key_cooldown_seconds": 180,
+          "duration_ms": 6328
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "key_fingerprint": "892d41e2142d",
+          "status": "FAILED",
+          "prompt_hash": "a2d0735f1642d4d3df3d37101eb34b4cbf2ff1a3403db158e71ee2d960b295a0",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 24198,
+          "model": "gemini-3.8-flash",
+          "http_status": 503,
+          "error_code": "PROVIDER_SERVER_ERROR",
+          "error_type": "HTTPError",
+          "error_message": "503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+          "key_cooldown_seconds": 180,
+          "duration_ms": 4410
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "key_fingerprint": "656c2592e846",
+          "status": "FAILED",
+          "prompt_hash": "a2d0735f1642d4d3df3d37101eb34b4cbf2ff1a3403db158e71ee2d960b295a0",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 34021,
+          "model": "gemini-3.8-flash",
+          "http_status": 503,
+          "error_code": "PROVIDER_SERVER_ERROR",
+          "error_type": "HTTPError",
+          "error_message": "503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+          "key_cooldown_seconds": 180,
+          "duration_ms": 5665
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "key_fingerprint": "f3c6285fd145",
+          "status": "FAILED",
+          "prompt_hash": "a2d0735f1642d4d3df3d37101eb34b4cbf2ff1a3403db158e71ee2d960b295a0",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 35000,
+          "model": "gemini-3.8-flash",
+          "http_status": 503,
+          "error_code": "PROVIDER_SERVER_ERROR",
+          "error_type": "HTTPError",
+          "error_message": "503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+          "key_cooldown_seconds": 180,
+          "duration_ms": 7462
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GROQ",
+          "key_fingerprint": "78917f2e029e",
+          "status": "SUCCEEDED",
+          "prompt_hash": "a2d0735f1642d4d3df3d37101eb34b4cbf2ff1a3403db158e71ee2d960b295a0",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 5000,
+          "model": "qwen/qwen3.8-27b",
+          "http_status": 200,
+          "response_id": "chatcmpl-b338ce8f-c71f-4678-8b17-32f8015094f3",
+          "usage": {
+            "queue_time": 0.049471365,
+            "prompt_tokens": 1865,
+            "prompt_time": 0.132618694,
+            "completion_tokens": 1011,
+            "completion_time": 2.120988537,
+            "total_tokens": 2876,
+            "total_time": 2.253607231
+          },
+          "response_hash": "59b93c491fe9b3d17cec26ebcecdb8f74db9ce5b3c21a45897393e768c760245",
+          "duration_ms": 3185
+        }
+      ]
+    },
+    {
+      "id": "4ea77c83-bcbd-4d62-8191-6c510362fd51",
+      "trace_id": "trace_17b4758597ea40bab913ae6591784fc1",
+      "agent": "SchemaValidator",
+      "method": "PYDANTIC_AND_RULES",
+      "attempt": 1,
+      "stage_attempt": 1,
+      "run_attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-21T18:23:59.693950+00:00",
+      "input_hash": "d53550b97ad8a83188d70de8516fa3a1211d84edcbb44074adf982e88fdd14e5",
+      "sequence": 5,
+      "output_hash": "2ee10fda2171fbe2b6964a0753875f5ff7339044279a7bfc31b76acc59124268",
+      "ended_at": "2026-09-21T18:23:59.697174+00:00",
+      "duration_ms": 3,
+      "output": {
+        "passed": true
+      },
+      "model_calls": []
+    },
+    {
+      "id": "dd49672d-53f8-4800-9ff2-2f0c7d6fccbe",
+      "trace_id": "trace_17b4758597ea40bab913ae6591784fc1",
+      "agent": "ConstraintValidator",
+      "method": "STATIC_ANALYSIS",
+      "attempt": 1,
+      "stage_attempt": 1,
+      "run_attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-21T18:23:59.697292+00:00",
+      "input_hash": "ee473063051928c5c942919136d7560df3b19e4013ee4c1743f33caac47df7fe",
+      "sequence": 6,
+      "output_hash": "0d711a2a00c194cf09061222295a1820b3e9b5ccb0caa97531e6c75b4fd0ce45",
+      "ended_at": "2026-09-21T18:23:59.697820+00:00",
+      "duration_ms": 0,
+      "output": {
+        "passed": true
+      },
+      "model_calls": []
+    },
+    {
+      "id": "eb3f1ab4-c3ff-4b8b-9966-dd441dae02bd",
+      "trace_id": "trace_17b4758597ea40bab913ae6591784fc1",
+      "agent": "SandboxValidator",
+      "method": "DOCKER_EXECUTION",
+      "attempt": 1,
+      "stage_attempt": 1,
+      "run_attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-21T18:23:59.697876+00:00",
+      "input_hash": "d53550b97ad8a83188d70de8516fa3a1211d84edcbb44074adf982e88fdd14e5",
+      "sequence": 7,
+      "output_hash": "01497b4989b3ee99ce409b8e1d1950585527433d16859ad294c3744b94135e3a",
+      "ended_at": "2026-09-21T18:24:02.771659+00:00",
+      "duration_ms": 3074,
+      "output": {
+        "passed": true,
+        "test_results": [
+          {
+            "case_index": 1,
+            "is_hidden": false,
+            "category": "normal",
+            "input": "[[1,2,3,4]]",
+            "expected": "6",
+            "actual": "6",
+            "stderr": "",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 821,
+            "image": "python:3.11-alpine",
+            "harness_version": "adaptive_harness_v4"
+          },
+          {
+            "case_index": 2,
+            "is_hidden": false,
+            "category": "normal",
+            "input": "[[1,3,5]]",
+            "expected": "0",
+            "actual": "0",
+            "stderr": "",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 709,
+            "image": "python:3.11-alpine",
+            "harness_version": "adaptive_harness_v4"
+          },
+          {
+            "case_index": 3,
+            "is_hidden": false,
+            "category": "boundary",
+            "input": "[[]]",
+            "expected": "0",
+            "actual": "0",
+            "stderr": "",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 756,
+            "image": "python:3.11-alpine",
+            "harness_version": "adaptive_harness_v4"
+          },
+          {
+            "case_index": 4,
+            "is_hidden": true,
+            "category": "normal",
+            "passed": true,
+            "executed": true,
+            "status": "SUCCESS",
+            "runtime_ms": 764,
+            "image": "python:3.11-alpine",
+            "harness_version": "adaptive_harness_v4"
+          }
+        ],
+        "harness_version": "adaptive_harness_v4"
+      },
+      "model_calls": []
+    },
+    {
+      "id": "44526e75-ab01-4bff-bbc5-ddf0c580a876",
+      "trace_id": "trace_17b4758597ea40bab913ae6591784fc1",
+      "agent": "ExplanationTutorAgent",
+      "method": "LLM",
+      "attempt": 1,
+      "stage_attempt": 1,
+      "run_attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-21T18:24:02.771877+00:00",
+      "input_hash": "19dc15d452a3602e8871b809c143bdf3a61e4d711019050f8f354dd3a58e6a47",
+      "sequence": 8,
+      "output_hash": "d0976d15c4a7ca9993dbff4c7038e461bc1727f8c564b0a8aa54a99dce79b042",
+      "ended_at": "2026-09-21T18:24:07.365103+00:00",
+      "duration_ms": 4593,
+      "output": {
+        "reply": "# Lý thuyết: Vòng lặp `for ... in range()` & Duyệt phần tử\n\n## 1. Bản chất\nVòng lặp `for` trong Python được thiết kế để **duyệt tuần tự** qua các đối tượng lặp (iterables) như chuỗi, danh sách, hoặc các dãy số tạo ra bởi hàm `range()`. Khác với `while` (cần quản lý biến đếm thủ công), `for` tự động gán từng phần tử vào biến chạy, giúp code ngắn gọn và tránh lỗi quên cập nhật biến đếm.\n\n## 2. Cú pháp\n\n### a) Lặp theo số lần cố định với `range()`\n```python\nfor biến_chạy in range(start, stop, step):\n    # Thân vòng lặp\n```\n- `start`: Giá trị bắt đầu (mặc định là 0).\n- `stop`: Giá trị dừng (không bao gồm giá trị này).\n- `step`: Bước nhảy (mặc định là 1).\n\n**Ví dụ:**\n```python\n# In các số từ 1 đến 5\nfor i in range(1, 6):\n    print(i)\n# Kết quả: 1, 2, 3, 4, 5\n\n# In các số chẵn từ 2 đến 10\nfor i in range(2, 11, 2):\n    print(i)\n# Kết quả: 2, 4, 6, 8, 10\n```\n\n### b) Duyệt phần tử trong chuỗi hoặc danh sách\n```python\nfor phần_tử in dãy_dữ_liệu:\n    # Thân vòng lặp\n```\n\n**Ví dụ:**\n```python\n# Duyệt các ký tự trong chuỗi\nfor ch in \"Python\":\n    print(ch)\n# Kết quả: P, y, t, h, o, n (mỗi ký tự một dòng)\n\n# Duyệt các phần tử trong danh sách\nso = [10, 20, 30]\nfor x in so:\n    print(x)\n# Kết quả: 10, 20, 30\n```\n\n### c) Kết hợp `enumerate()` để lấy chỉ số và giá trị\n```python\nfor chỉ_số, giá_trị in enumerate(dãy_dữ_liệu):\n    # Thân vòng lặp\n```\n\n**Ví dụ:**\n```python\nmon_hoa = [\"Cam\", \"Quýt\", \"Bưởi\"]\nfor i, hoa in enumerate(mon_hoa):\n    print(f\"Chỉ số {i}: {hoa}\")\n# Kết quả:\n# Chỉ số 0: Cam\n# Chỉ số 1: Quýt\n# Chỉ số 2: Bưởi\n```\n\n## 3. Ví dụ thực hành (Khác với nghiệm mẫu bài tập)\n**Yêu cầu:** Tính tổng các số lẻ từ 1 đến 9.\n\n```python\ntong = 0\nfor i in range(1, 10, 2):  # Bắt đầu từ 1, dừng trước 10, bước nhảy 2\n    tong += i\nprint(tong)  # Kết quả: 1 + 3 + 5 + 7 + 9 = 25\n```\n\n**Yêu cầu:** Đếm số lượng ký tự chữ cái trong một chuỗi.\n\n```python\nchuoi = \"Hello World 123\"\nso_luong = 0\nfor ky_tu in chuoi:\n    if ky_tu.isalpha():  # Kiểm tra có phải chữ cái không\n        so_luong += 1\nprint(so_luong)  # Kết quả: 10 (bỏ qua khoảng trắng và số)\n```\n\n## 4. Lỗi thường gặp\n1. **Sai phạm vi `range()`**:\n   - `range(1, 5)` tạo dãy `[1, 2, 3, 4]`, **không bao gồm** 5.\n   - Lỗi phổ biến: Dùng `range(1, n)` khi muốn bao gồm `n`. Sửa: Dùng `range(1, n + 1)`.\n\n2. **Thay đổi biến chạy trong vòng lặp**:\n   ```python\n   for i in range(5):\n       i = 10  # Không ảnh hưởng đến lượt lặp sau, Python vẫn gán giá trị tiếp theo của range() vào i\n       print(i)\n   ```\n   *Lưu ý:* Việc này không gây lỗi cú pháp nhưng làm code khó đọc và dễ gây nhầm lẫn logic.\n\n3. **Quên thụt lề (Indentation)**:\n   Thân vòng lặp phải được thụt lề đúng chuẩn (thường là 4 khoảng trắng). Nếu không, Python sẽ báo `IndentationError`.\n\n4. **Duyệt chuỗi nhưng xử lý như danh sách**:\n   Chuỗi là bất biến (immutable). Không thể thay đổi ký tự trong chuỗi khi duyệt.\n   ```python\n   s = \"abc\"\n   for i in range(len(s)):\n       s[i] = \"A\"  # Lỗi: TypeError: 'str' object does not support item assignment\n   ```\n\n## 5. Mẹo tối ưu\n- Đặt tên biến chạy có ý nghĩa (ví dụ: `for nam in range(2020, 2026)` thay vì `for i in ...`).\n- Sử dụng `enumerate()` khi cần cả chỉ số và giá trị để tránh dùng `range(len(danh_sach))` thủ công.",
+        "source_ids": [
+          "ai-service/data/pythonSkillGraph.json#PY-FLOW-03",
+          "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 05/Lession3.md",
+          "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 05/Lession4.md"
+        ],
+        "source": "LLM"
+      },
+      "model_calls": [
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GROQ",
+          "key_fingerprint": "78917f2e029e",
+          "status": "FAILED",
+          "prompt_hash": "86944de289dbdcecff5176ddc4c40c61dd513ae7fda8c9c559ddc8f46bdae1ed",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 28000,
+          "model": "qwen/qwen3.8-27b",
+          "http_status": 429,
+          "error_code": "PROVIDER_RATE_LIMITED",
+          "error_type": "HTTPError",
+          "error_message": "429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions",
+          "retry_after_seconds": 15,
+          "duration_ms": 570
+        },
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GROQ",
+          "key_fingerprint": "db45dc6628a1",
+          "status": "SUCCEEDED",
+          "prompt_hash": "86944de289dbdcecff5176ddc4c40c61dd513ae7fda8c9c559ddc8f46bdae1ed",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 5000,
+          "model": "qwen/qwen3.8-27b",
+          "http_status": 200,
+          "response_id": "chatcmpl-404fa4f2-cfea-44de-9411-51506abbb81c",
+          "usage": {
+            "queue_time": 0.211583844,
+            "prompt_tokens": 4900,
+            "prompt_time": 0.338563662,
+            "completion_tokens": 1318,
+            "completion_time": 2.5143559570000003,
+            "total_tokens": 6218,
+            "total_time": 2.852919619
+          },
+          "response_hash": "0fd821156ceb92b58934e42992fc186d6b671eb8283895c17171def56cc6eb50",
+          "duration_ms": 4021
+        }
+      ]
+    },
+    {
+      "id": "41e7c95b-d2fd-4811-b750-132238e58c0e",
+      "trace_id": "trace_17b4758597ea40bab913ae6591784fc1",
+      "agent": "CriticEvaluatorAgent",
+      "method": "LLM",
+      "attempt": 1,
+      "stage_attempt": 1,
+      "run_attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-21T18:24:07.365508+00:00",
+      "input_hash": "06a17dd2b4fe632c60ecee8f736b273960dd18c4838fe4b79072b1ad16f6fe71",
+      "sequence": 9,
+      "output_hash": "0252b4f3ae9b4a3c18aac3c6f7da4fe343febf48f71c0b85aa72120de21ff951",
+      "ended_at": "2026-09-21T18:24:10.012107+00:00",
+      "duration_ms": 2646,
+      "output": {
+        "is_approved": true,
+        "score": 0.95,
+        "feedback_target": "NONE",
+        "theory_approved": true,
+        "exercise_approved": true,
+        "compatibility_approved": true,
+        "note": "Nhận xét chi tiết được lưu trong báo cáo quản trị."
+      },
+      "model_calls": [
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "GROQ",
+          "key_fingerprint": "db45dc6628a1",
+          "status": "FAILED",
+          "prompt_hash": "3b094042281359e81f238912611e2208f36c2e910913e172c20b875c03375ec9",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 28000,
+          "model": "qwen/qwen3.8-27b",
+          "http_status": 429,
+          "error_code": "PROVIDER_RATE_LIMITED",
+          "error_type": "HTTPError",
+          "error_message": "429 Client Error: Too Many Requests for url: https://api.groq.com/openai/v1/chat/completions",
+          "retry_after_seconds": 41,
+          "duration_ms": 760
+        },
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "GROQ",
+          "key_fingerprint": "7fb11805e712",
+          "status": "SUCCEEDED",
+          "prompt_hash": "3b094042281359e81f238912611e2208f36c2e910913e172c20b875c03375ec9",
+          "prompt_version": "adaptive_v4",
+          "deadline_ms": 9476,
+          "model": "qwen/qwen3.8-27b",
+          "http_status": 200,
+          "response_id": "chatcmpl-33e00f65-35f5-4678-a5c4-1ae293110309",
+          "usage": {
+            "queue_time": 0.054171936,
+            "prompt_tokens": 3321,
+            "prompt_time": 0.22912156,
+            "completion_tokens": 347,
+            "completion_time": 0.688147266,
+            "total_tokens": 3668,
+            "total_time": 0.917268826
+          },
+          "response_hash": "36871b08d58705e7ae4fe6ec90d0341368792fa32eb3f329da949cd40515816f",
+          "duration_ms": 1883
+        }
+      ]
+    },
+    {
+      "id": "48a82ae9-cca8-433b-82de-5d5e10fcf09a",
+      "trace_id": "trace_17b4758597ea40bab913ae6591784fc1",
+      "agent": "PublicationGate",
+      "method": "DETERMINISTIC_GATE",
+      "attempt": 1,
+      "stage_attempt": 1,
+      "run_attempt": 1,
+      "status": "SUCCEEDED",
+      "started_at": "2026-09-21T18:24:10.014747+00:00",
+      "input_hash": "96daf2db0ab6e469e07aa8bd32401738f5e5b9e0b4658f2b5db9c18e6eeb00d1",
+      "sequence": 10,
+      "output_hash": "8e44b500151c2712a35c753ba4404f118af11ce3bcca18e1b6aaacbe03a1c5ef",
+      "ended_at": "2026-09-21T18:24:10.014965+00:00",
+      "duration_ms": 0,
+      "output": {
+        "approved": true,
+        "validation_attempt": 1,
+        "critic_score": 0.95,
+        "artifact_hash": "445ed65c9c3181ac302b5d0780c8d402e41317b149d6dc1a944c9b1d10ad03bd"
+      },
+      "model_calls": []
+    }
+  ],
+  "started_at": "2026-09-21T18:22:31.012684+00:00",
+  "ended_at": "2026-09-21T18:24:10.015035+00:00",
+  "fallback_used": false,
+  "suggested_options": [
+    "Cho tôi bài dễ hơn",
+    "Giải thích thêm lý thuyết",
+    "Tạo bài tiếp theo"
+  ]
+}

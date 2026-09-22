@@ -1,0 +1,59 @@
+{
+  "kind": "REAL_END_TO_END",
+  "started_at": "2026-09-20T09:10:50.081Z",
+  "fixture_user_id": "0242b2ed-5831-48f0-9a7c-291e754a9fb5",
+  "runs": [
+    {
+      "language": "sql",
+      "trace_id": "trace_d9f600ca3d294724a2783af32300c332",
+      "status": "WAITING_PROVIDER",
+      "checks": {},
+      "model_calls": [
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "status": "FAILED"
+        },
+        {
+          "provider": "OPENROUTER",
+          "model": "meta-llama/llama-3.3-70b-instruct",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED"
+        },
+        {
+          "provider": "GROQ",
+          "model": "openai/gpt-oss-120b",
+          "response_id": "chatcmpl-e83a8b85-02e6-4df2-ac70-655265bf3726",
+          "status": "SUCCEEDED",
+          "usage": {
+            "queue_time": 0.350047812,
+            "total_time": 3.500009758,
+            "prompt_time": 0.085609238,
+            "total_tokens": 3546,
+            "prompt_tokens": 1932,
+            "completion_time": 3.41440052,
+            "completion_tokens": 1614,
+            "completion_tokens_details": {
+              "reasoning_tokens": 742
+            }
+          }
+        }
+      ],
+      "error": {
+        "code": "PROVIDER_DEADLINE_EXCEEDED",
+        "message": "Không nhận được JSON hợp lệ từ provider trong ngân sách cho phép"
+      }
+    }
+  ],
+  "ended_at": "2026-09-20T09:11:21.144Z",
+  "status": "FAILED"
+}

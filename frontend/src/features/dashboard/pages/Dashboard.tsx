@@ -33,6 +33,15 @@ interface DBLocationCourse {
     thumbnail?: string;
 }
 
+interface LearningEvidenceStats {
+    streak_days: number;
+    lessons_completed: number;
+    practice_completed: number;
+    total_actions: number;
+    observed_skills: number;
+    total_skills: number;
+}
+
 const kcNames: Record<string, string> = {
     'KC_VAR': 'Biến & Kiểu dữ liệu',
     'KC_COND': 'Câu lệnh rẽ nhánh (if/else)',
@@ -51,6 +60,7 @@ const Dashboard: React.FC = () => {
     const [recsLoading, setRecsLoading] = useState<boolean>(true);
     const [selectedAlgo] = useState<string>('PAL-Net');
     const [serviceEngine, setServiceEngine] = useState<string>('');
+    const [learningStats, setLearningStats] = useState<LearningEvidenceStats | null>(null);
 
     // Sử dụng useQuery để tự động gọi API, lưu cache và phục hồi dữ liệu tức thì
     const { data: courses = [], isLoading } = useQuery<DBLocationCourse[]>({
@@ -78,6 +88,19 @@ const Dashboard: React.FC = () => {
         }
     };
 
+    const fetchLearningStats = async (token: string) => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/api/auth/user-mastery`, {
+                params: { language: 'PYTHON' },
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setLearningStats(response.data?.stats || null);
+        } catch (err) {
+            console.error('Error fetching verified learning statistics:', err);
+            setLearningStats(null);
+        }
+    };
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -89,6 +112,7 @@ const Dashboard: React.FC = () => {
                 setRole(decoded.role);
             }
             fetchRecommendations(selectedAlgo);
+            fetchLearningStats(token);
         } else {
             navigate('/login');
         }
@@ -159,15 +183,15 @@ const Dashboard: React.FC = () => {
                     <div className="flex flex-col md:flex-row gap-5">
                         <div className="flex-1 bg-bg-secondary border border-border-custom rounded-xl p-5 md:px-6 md:py-5 flex flex-col gap-2 text-left hover:border-text-tertiary/20 hover:bg-bg-tertiary/20 transition-all duration-200">
                             <span className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">Học liên tục (Streak)</span>
-                            <span className="text-2xl font-bold text-[#ff9f0a]">🔥 5 ngày</span>
+                            <span className="text-2xl font-bold text-[#ff9f0a]">🔥 {learningStats ? `${learningStats.streak_days} ngày` : '—'}</span>
                         </div>
                         <div className="flex-1 bg-bg-secondary border border-border-custom rounded-xl p-5 md:px-6 md:py-5 flex flex-col gap-2 text-left hover:border-text-tertiary/20 hover:bg-bg-tertiary/20 transition-all duration-200">
-                            <span className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">Bài học đã hoàn thành</span>
-                            <span className="text-2xl font-bold text-text-primary">📚 3 bài</span>
+                            <span className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">Bài tập đã hoàn thành</span>
+                            <span className="text-2xl font-bold text-text-primary">📚 {learningStats ? learningStats.lessons_completed + learningStats.practice_completed : '—'} bài</span>
                         </div>
                         <div className="flex-1 bg-bg-secondary border border-border-custom rounded-xl p-5 md:px-6 md:py-5 flex flex-col gap-2 text-left hover:border-text-tertiary/20 hover:bg-bg-tertiary/20 transition-all duration-200">
-                            <span className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">Tổng thời gian tự học</span>
-                            <span className="text-2xl font-bold text-text-primary">⏱️ 2.5 giờ</span>
+                            <span className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">Kỹ năng đã đánh giá</span>
+                            <span className="text-2xl font-bold text-text-primary">🎯 {learningStats ? `${learningStats.observed_skills}/${learningStats.total_skills}` : '—'}</span>
                         </div>
                     </div>
                 </section>
