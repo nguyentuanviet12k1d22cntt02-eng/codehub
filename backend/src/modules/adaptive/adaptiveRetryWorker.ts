@@ -44,15 +44,23 @@ export async function retryAdaptiveRuns() {
     if(active) return;
     active=true;
     try {
-        for(const candidate of await dueRetries()) {
-            const row=await claimRetry(candidate.trace_id);
-            if(row) await retryRun(row);
+        const candidates = await dueRetries().catch(err => {
+            console.warn('[AdaptiveRetryWorker] Warning fetching due retries:', err?.message || err);
+            return [];
+        });
+        for(const candidate of candidates) {
+            const row=await claimRetry(candidate.trace_id).catch(() => null);
+            if(row) await retryRun(row).catch(err => {
+                console.warn('[AdaptiveRetryWorker] Warning in retryRun:', err?.message || err);
+            });
         }
+    } catch(err: any) {
+        console.warn('[AdaptiveRetryWorker] Unexpected error in retry loop:', err?.message || err);
     } finally { active=false; }
 }
 
 export function startAdaptiveRetryWorker() {
-    const timer=setInterval(()=>{retryAdaptiveRuns().catch(error=>console.error('adaptive retry worker',error));},10000);
+    const timer=setInterval(()=>{retryAdaptiveRuns().catch(error=>console.warn('adaptive retry worker',error));},10000);
     timer.unref();
-    void retryAdaptiveRuns();
+    void retryAdaptiveRuns().catch(error=>console.warn('adaptive retry worker initial run',error));
 }

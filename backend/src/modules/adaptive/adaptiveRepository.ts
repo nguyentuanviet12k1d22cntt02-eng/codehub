@@ -17,7 +17,20 @@ export const schemaStatements = [
 ];
 let ready: Promise<unknown> | undefined;
 export function ensureStorage() {
-    if (!ready) ready = prisma.$transaction(schemaStatements.map(sql=>prisma.$executeRawUnsafe(sql))).catch(error=>{ready=undefined;throw error;});
+    if (!ready) {
+        ready = (async () => {
+            for (const sql of schemaStatements) {
+                try {
+                    await prisma.$executeRawUnsafe(sql);
+                } catch (e: any) {
+                    console.warn(`[ensureStorage] Notice: ${e.message}`);
+                }
+            }
+        })().catch(error => {
+            ready = undefined;
+            console.error('[ensureStorage] Error initializing storage:', error);
+        });
+    }
     return ready;
 }
 const rows = (sql:string,...args:any[]):Promise<any[]> => prisma.$queryRawUnsafe(sql,...args);
