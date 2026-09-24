@@ -4,6 +4,7 @@ export interface TestCaseMock {
     expectedOutput: string;
     actualOutput?: string;
     passed?: boolean;
+    failureType?: 'COMPILE_ERROR';
 }
 
 export interface ExerciseMock {

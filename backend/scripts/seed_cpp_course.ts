@@ -222,6 +222,7 @@ Hãy viết một chương trình C++ hoàn chỉnh sử dụng \`std::cout\` đ
 #include <iostream>
 
 int main() {
+    // Ví dụ cú pháp: std::cout << "Noi dung" << '\n';
     // Gõ câu lệnh xuất dữ liệu của bạn ở đây:
     
     return 0;

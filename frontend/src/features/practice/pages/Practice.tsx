@@ -286,7 +286,7 @@ const Practice: React.FC = () => {
             setIsSubmitting(false);
 
             if (response.data.success) {
-                const { allPassed, results, runtimeMs, runtimeBeats, distribution, message } = response.data;
+                const { allPassed, failureType, results, runtimeMs, runtimeBeats, distribution, message } = response.data;
                 setTestCaseResults(results);
 
                 if (allPassed) {
@@ -312,7 +312,14 @@ const Practice: React.FC = () => {
                     const updatedCompleted = { ...completedExercises, [exercise.id]: false };
                     setCompletedExercises(updatedCompleted);
                     setIsCompleted(false);
-                    if (message) {
+                    if (failureType === 'COMPILE_ERROR') {
+                        const compilerOutput = results.find((result: TestCaseMock) => result.failureType === 'COMPILE_ERROR')?.actualOutput || message;
+                        const needsStdNamespace = isCpp && /['`]cout['`] was not declared|undeclared identifier ['`]cout['`]/i.test(compilerOutput || '');
+                        const hint = needsStdNamespace
+                            ? "\n\nGợi ý: trong C++, hãy dùng `std::cout` và kết thúc câu lệnh bằng dấu `;`.\nVí dụ: std::cout << \"Noi dung\" << '\\n';"
+                            : '';
+                        setConsoleOutput(`❌ [Lỗi biên dịch${isCpp ? ' C++' : ''}]:\n${compilerOutput || 'Không xác định'}${hint}`);
+                    } else if (message) {
                         setConsoleOutput(`❌ [Lỗi cấu trúc / logic code]:\n${message}`);
                     } else {
                         setConsoleOutput(`❌ Kết quả: Vượt qua ${results.filter((r: any) => r.passed).length}/${results.length} testcases. Vui lòng kiểm tra lại logic.`);

@@ -81,11 +81,12 @@ Muc tieu: Lam chu C++ va tro thanh Backend / Game Engineer!
 * Mỗi dòng xuất kết thúc bằng ký tự xuống dòng \`'\\n'\`.
 * Chương trình trả về mã kết thúc \`0\`.
 
-<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng std::cout để in thông tin ra màn hình."} -->`,
+<!-- CONSTRAINTS: {"requireComment":false,"requiredKeywords":["std::cout"],"forbiddenKeywords":[],"customErrorMessage":"Vui lòng sử dụng std::cout để in thông tin ra màn hình."} -->`,
                 starterCode: `// Viết chương trình C++ đầu tiên của bạn tại đây
 #include <iostream>
 
 int main() {
+    // Ví dụ cú pháp: std::cout << "Noi dung" << '\n';
     // Gõ câu lệnh xuất dữ liệu của bạn ở đây:
     
     return 0;

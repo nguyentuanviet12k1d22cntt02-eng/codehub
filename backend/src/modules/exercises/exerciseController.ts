@@ -293,13 +293,17 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
                     };
                     const actual = result.stdout || '';
                     const passed = matchOutput(actual, tc.expectedOutput);
+                    const failureType = result.status === 'ERROR' && /^\[Lỗi biên dịch /i.test(result.stderr)
+                        ? 'COMPILE_ERROR'
+                        : undefined;
 
                     return {
                         id: tc.id,
                         input: tc.input,
                         expectedOutput: tc.expectedOutput,
                         actualOutput: result.status === 'ERROR' ? result.stderr : actual,
-                        passed
+                        passed,
+                        failureType
                     };
                 } catch (e: any) {
                     hasSystemError = true;
@@ -320,6 +324,7 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
         }
 
         const allTestsPassed = results.every((r: any) => r.passed);
+        const compileFailure = results.find((r: any) => r.failureType === 'COMPILE_ERROR');
         // Bắt buộc thỏa mãn đồng thời: Tất cả testcases đều ĐÚNG output VÀ mã nguồn ĐẠT chuẩn cấu trúc AST
         const allPassed = allTestsPassed && astResult.isValid;
 
@@ -401,7 +406,9 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
         });
 
         let returnMessage: string | null = null;
-        if (!astResult.isValid) {
+        if (compileFailure) {
+            returnMessage = compileFailure.actualOutput;
+        } else if (!astResult.isValid) {
             returnMessage = astResult.error;
         } else if (!allTestsPassed) {
             returnMessage = `Mã nguồn chưa vượt qua tất cả testcases (${results.filter((r: any) => r.passed).length}/${results.length}). Vui lòng kiểm tra lại logic.`;
@@ -410,6 +417,7 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
         res.status(200).json({
             success: true,
             allPassed,
+            failureType: compileFailure?.failureType,
             message: returnMessage,
             submissionId: submission.id,
             results,
