@@ -1,5 +1,28 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import {
+    Activity,
+    BookOpenCheck,
+    CheckCircle2,
+    CircleHelp,
+    ClipboardCheck,
+    Clock3,
+    Layers3,
+    LibraryBig,
+    LoaderCircle,
+    RefreshCw,
+    Target,
+    TriangleAlert,
+    UsersRound,
+} from 'lucide-react';
 import { adminApi } from '../../../features/admin/services/adminApi';
+
+interface RecentUser {
+    id: string;
+    username: string;
+    email: string;
+    role: string;
+    createdAt: string;
+}
 
 interface DashboardStats {
     overview: {
@@ -9,7 +32,7 @@ interface DashboardStats {
         totalSubmissions: number;
         totalPracticeProblems: number;
     };
-    recentUsers: any[];
+    recentUsers: RecentUser[];
     charts: {
         usersByRole: { role: string; count: number }[];
         coursesByLevel: { level: string; count: number }[];
@@ -34,15 +57,13 @@ interface DashboardStats {
     };
 }
 
+const numberFormatter = new Intl.NumberFormat('vi-VN');
+
 export default function AdminDashboard() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [loading, setLoading] = useState(true);
-    const [selectedCourseId, setSelectedCourseId] = useState<string>('all');
-    const [selectedConceptId, setSelectedConceptId] = useState<string>('KC_VAR');
-
-    useEffect(() => {
-        loadStats();
-    }, []);
+    const [selectedCourseId, setSelectedCourseId] = useState('all');
+    const [selectedConceptId, setSelectedConceptId] = useState('KC_VAR');
 
     const loadStats = async () => {
         try {
@@ -51,424 +72,428 @@ export default function AdminDashboard() {
             setStats(data);
         } catch (error) {
             console.error('Failed to load stats:', error);
+            setStats(null);
         } finally {
             setLoading(false);
         }
     };
 
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch dashboard data once when the page mounts
+        void loadStats();
+    }, []);
+
+    const dashboardData = useMemo(() => {
+        if (!stats) return null;
+
+        const statusCount = (status: string) =>
+            stats.charts.submissionsByStatus.find((item) => item.status === status)?.count ?? 0;
+        const globalPassed = statusCount('PASSED');
+        const globalFailed = statusCount('FAILED');
+        const globalPending = statusCount('PENDING');
+        const globalTotal = globalPassed + globalFailed + globalPending;
+        const selectedCourse =
+            selectedCourseId === 'all'
+                ? null
+                : stats.charts.courseSubmissionsStats.find((course) => course.id === selectedCourseId);
+
+        const passed = selectedCourse?.stats.passed ?? globalPassed;
+        const failed = selectedCourse?.stats.failed ?? globalFailed;
+        const pending = selectedCourse?.stats.pending ?? globalPending;
+        const total = selectedCourse?.stats.total ?? passed + failed + pending;
+        const selectedConcept =
+            stats.charts.conceptPassReport.find((concept) => concept.id === selectedConceptId) ??
+            stats.charts.conceptPassReport[0] ??
+            null;
+
+        const percent = (value: number, base: number) =>
+            base > 0 ? Math.round((value / base) * 100) : 0;
+
+        return {
+            passed,
+            failed,
+            pending,
+            total,
+            globalPassPercent: percent(globalPassed, globalTotal),
+            passPercent: percent(passed, total),
+            failPercent: percent(failed, total),
+            pendingPercent: percent(pending, total),
+            selectedConcept,
+            conceptPassPercent: selectedConcept ? percent(selectedConcept.passed, selectedConcept.total) : 0,
+            conceptFailPercent: selectedConcept ? percent(selectedConcept.failed, selectedConcept.total) : 0,
+            coursePerformance: [...stats.charts.courseSubmissionsStats]
+                .sort((a, b) => b.stats.total - a.stats.total)
+                .slice(0, 5),
+        };
+    }, [selectedConceptId, selectedCourseId, stats]);
+
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[70vh] gap-4 bg-bg-secondary text-text-primary rounded-2xl border border-border-custom transition-colors duration-200">
-                <div className="w-12 h-12 border-4 border-accent-custom border-t-transparent rounded-full animate-spin shadow-[0_0_15px_var(--accent-border)]"></div>
-                <div className="text-xs font-black text-accent-custom tracking-widest animate-pulse">KHỞI TẠO KHÔNG GIAN BÁO CÁO...</div>
+            <div className="mx-auto flex min-h-[68vh] w-full max-w-[1480px] items-center justify-center">
+                <div className="flex flex-col items-center gap-4 rounded-3xl border border-violet-100 bg-white px-10 py-9 text-center shadow-[0_20px_60px_-38px_rgba(79,70,229,0.4)] dark:border-white/10 dark:bg-bg-secondary">
+                    <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-300">
+                        <LoaderCircle className="h-7 w-7 animate-spin" aria-hidden="true" />
+                    </span>
+                    <div>
+                        <p className="text-sm font-extrabold text-text-primary">Đang tổng hợp dữ liệu</p>
+                        <p className="mt-1 text-xs text-text-tertiary">Vui lòng chờ trong giây lát.</p>
+                    </div>
+                </div>
             </div>
         );
     }
 
-    if (!stats) {
+    if (!stats || !dashboardData) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[70vh] gap-4 bg-bg-secondary text-text-primary rounded-2xl border border-rose-500/25 transition-colors duration-200">
-                <div className="text-5xl text-rose-500"><i className="fa-solid fa-triangle-exclamation"></i></div>
-                <div className="text-sm font-black text-rose-500 uppercase tracking-widest">Không thể khởi dựng dữ liệu thống kê</div>
-                <button
-                    onClick={loadStats}
-                    className="px-6 py-3 bg-gradient-to-r from-accent-custom to-accent-hover text-xs font-bold rounded-xl shadow-lg shadow-accent-custom/20 hover:opacity-90 active:scale-95 transition-all cursor-pointer text-white border-0"
-                >
-                    Tải lại dữ liệu
-                </button>
+            <div className="mx-auto flex min-h-[68vh] w-full max-w-[1480px] items-center justify-center">
+                <div className="flex max-w-md flex-col items-center gap-4 rounded-3xl border border-rose-200 bg-white px-8 py-9 text-center shadow-sm dark:border-rose-500/20 dark:bg-bg-secondary">
+                    <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-300">
+                        <TriangleAlert className="h-7 w-7" aria-hidden="true" />
+                    </span>
+                    <div>
+                        <p className="text-base font-extrabold text-text-primary">Chưa tải được dữ liệu tổng quan</p>
+                        <p className="mt-1 text-sm leading-6 text-text-secondary">Kết nối dữ liệu có thể đang gián đoạn. Hãy thử tải lại.</p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => void loadStats()}
+                        className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl bg-violet-600 px-5 text-sm font-bold text-white shadow-lg shadow-violet-600/20 transition hover:bg-violet-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+                    >
+                        <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                        Tải lại dữ liệu
+                    </button>
+                </div>
             </div>
         );
     }
 
-    // Process variables for charts representation
-    const submissionsByStatus = stats.charts.submissionsByStatus;
-    const passedCount = submissionsByStatus.find(s => s.status === 'PASSED')?.count || 0;
-    const failedCount = submissionsByStatus.find(s => s.status === 'FAILED')?.count || 0;
-    const pendingCount = submissionsByStatus.find(s => s.status === 'PENDING')?.count || 0;
-    const totalSubmissions = passedCount + failedCount + pendingCount || stats.overview.totalSubmissions || 1;
-
-    const passerPercent = Math.round((passedCount / totalSubmissions) * 100);
-
-    // Filter calculations for Course/Topic specific rates
-    let displayPassed = passedCount;
-    let displayFailed = failedCount;
-    let displayTotal = passedCount + failedCount;
-
-    if (selectedCourseId !== 'all') {
-        const found = stats.charts.courseSubmissionsStats?.find(c => c.id === selectedCourseId);
-        if (found) {
-            displayPassed = found.stats.passed;
-            displayFailed = found.stats.failed;
-            displayTotal = found.stats.passed + found.stats.failed;
-        } else {
-            displayPassed = 0;
-            displayFailed = 0;
-            displayTotal = 0;
-        }
-    }
-
-    const displayPassPercent = displayTotal > 0 ? Math.round((displayPassed / displayTotal) * 100) : 0;
-    const displayFailPercent = displayTotal > 0 ? Math.round((displayFailed / displayTotal) * 100) : 0;
-
-    // Filter calculations for Concept Mastery Report (Passed: score >= 75%)
-    const selectedConcept = stats.charts.conceptPassReport?.find(c => c.id === selectedConceptId) || {
-        id: selectedConceptId,
-        name: 'Chủ đề kiến thức',
-        passed: 0,
-        failed: 0,
-        total: 1
-    };
-
-    const conceptPassed = selectedConcept.passed;
-    const conceptFailed = selectedConcept.failed;
-    const conceptTotal = selectedConcept.total || 1;
-
-    const conceptPassedPercent = Math.round((conceptPassed / conceptTotal) * 100);
-    const conceptFailedPercent = Math.round((conceptFailed / conceptTotal) * 100);
+    const metricCards = [
+        {
+            label: 'Tổng học viên',
+            value: stats.overview.totalUsers,
+            hint: 'Tài khoản trong hệ thống',
+            icon: UsersRound,
+            iconClass: 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300',
+            accentClass: 'from-violet-500 to-indigo-500',
+        },
+        {
+            label: 'Khóa học',
+            value: stats.overview.totalCourses,
+            hint: `${numberFormatter.format(stats.overview.totalLessons)} bài học đang quản lý`,
+            icon: LibraryBig,
+            iconClass: 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
+            accentClass: 'from-sky-400 to-cyan-500',
+        },
+        {
+            label: 'Lượt nộp bài',
+            value: stats.overview.totalSubmissions,
+            hint: `${numberFormatter.format(stats.overview.totalPracticeProblems)} bài luyện tập`,
+            icon: ClipboardCheck,
+            iconClass: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300',
+            accentClass: 'from-emerald-400 to-teal-500',
+        },
+        {
+            label: 'Tỷ lệ vượt qua',
+            value: `${dashboardData.globalPassPercent}%`,
+            hint: 'Trên toàn bộ lượt nộp',
+            icon: Target,
+            iconClass: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
+            accentClass: 'from-amber-400 to-orange-500',
+        },
+    ];
 
     return (
-        <div className="flex flex-col gap-6 w-full max-w-[1280px] mx-auto text-left select-none animate-fadeIn bg-bg-secondary text-text-primary p-5 sm:p-7 rounded-[26px] border border-border-custom shadow-sm relative overflow-hidden transition-colors duration-200">
-            {/* Background neon glows */}
-            <div className="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] bg-[radial-gradient(circle,rgba(139,92,246,0.06)_0%,transparent_70%)] pointer-events-none z-0"></div>
-            <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-[radial-gradient(circle,rgba(6,182,212,0.04)_0%,transparent_70%)] pointer-events-none z-0"></div>
-
-            {/* Dashboard Header Title */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 z-10 sticky top-0 bg-bg-secondary/85 backdrop-blur-md py-2 border-b border-border-custom transition-colors duration-200">
-                <div className="flex flex-col gap-0.5 text-left">
-                    <h1 className="text-xl font-extrabold tracking-wider text-text-primary uppercase">MCODE Analytics Workspace</h1>
-                    <p className="text-[11px] text-accent-custom font-bold uppercase tracking-widest">Hệ thống phân tích & hoạt động học thuật thông minh</p>
-                </div>
-                <div className="flex items-center gap-3">
+        <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-6 text-left text-text-primary">
+            <section className="relative overflow-hidden rounded-[28px] border border-violet-100 bg-[linear-gradient(120deg,#ffffff_0%,#f5f3ff_58%,#ecfeff_100%)] px-5 py-6 shadow-[0_20px_60px_-42px_rgba(79,70,229,0.45)] dark:border-white/10 dark:bg-[linear-gradient(120deg,#111522_0%,#18172b_58%,#102129_100%)] sm:px-7">
+                <div className="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-cyan-300/20 blur-3xl dark:bg-cyan-500/10" aria-hidden="true" />
+                <div className="absolute -bottom-24 left-1/3 h-48 w-48 rounded-full bg-violet-300/25 blur-3xl dark:bg-violet-500/10" aria-hidden="true" />
+                <div className="relative flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+                    <div>
+                        <div className="mb-2 flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-violet-600 dark:text-violet-300">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-500/15">
+                                <Activity className="h-3.5 w-3.5" aria-hidden="true" />
+                            </span>
+                            Dữ liệu vận hành
+                        </div>
+                        <h2 className="text-2xl font-black tracking-[-0.04em] text-slate-950 dark:text-white sm:text-[28px]">
+                            Bức tranh tổng quan hôm nay
+                        </h2>
+                        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                            Theo dõi học viên, học liệu và chất lượng bài nộp trong một bố cục thống nhất, dễ đọc.
+                        </p>
+                    </div>
                     <button
-                        onClick={loadStats}
-                        className="px-4 py-2 bg-bg-tertiary hover:bg-bg-tertiary/80 border border-border-custom text-xs font-bold rounded-xl text-text-secondary hover:text-text-primary transition-all cursor-pointer active:scale-95"
+                        type="button"
+                        onClick={() => void loadStats()}
+                        className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 self-start rounded-xl border border-violet-200 bg-white/90 px-4 text-sm font-bold text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 dark:border-violet-400/20 dark:bg-white/5 dark:text-violet-200 sm:self-auto"
                     >
-                        <i className="fa-solid fa-arrows-rotate mr-1.5"></i> Làm mới bộ nhớ
+                        <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                        Làm mới
                     </button>
-                    <div className="text-[10px] font-black bg-[#06b6d4]/10 text-[#06b6d4] px-3.5 py-1.5 rounded-full border border-[#06b6d4]/20 flex items-center gap-1.5 uppercase shadow-sm">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] inline-block animate-ping"></span>
-                        LIVE SYNC
-                    </div>
                 </div>
-            </div>
+            </section>
 
-            {/* Grid layout from reference image */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 z-10">
-                {/* Left region: Top metrics and main Concept Mastery Bar Chart */}
-                <div className="lg:col-span-2 flex flex-col gap-6">
-                    {/* Top highlights badges */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                        {/* Purple gradient card */}
-                        <div className="bg-gradient-to-br from-accent-custom to-accent-hover rounded-3xl p-5 text-white shadow-xl shadow-accent-custom/10 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-300 relative overflow-hidden group">
-                            <div className="absolute right-[-10px] top-[-10px] w-20 h-20 bg-white/5 rounded-full blur-xl group-hover:scale-125 transition-transform"></div>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-purple-100">Lượt nộp bài (Lessons)</span>
-                            <div className="flex items-baseline gap-1 mt-4">
-                                <span className="text-3xl font-black font-mono tracking-tighter">{stats.overview.totalSubmissions.toLocaleString()}</span>
-                                <span className="text-[10px] uppercase font-bold text-purple-200">lần</span>
+            <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Chỉ số tổng quan">
+                {metricCards.map((metric) => {
+                    const Icon = metric.icon;
+                    return (
+                        <article
+                            key={metric.label}
+                            className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_16px_42px_-34px_rgba(15,23,42,0.45)] transition duration-200 hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_22px_52px_-34px_rgba(79,70,229,0.35)] dark:border-white/10 dark:bg-bg-secondary"
+                        >
+                            <span className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${metric.accentClass}`} aria-hidden="true" />
+                            <div className="flex items-start justify-between gap-4">
+                                <div>
+                                    <p className="text-xs font-bold text-text-tertiary">{metric.label}</p>
+                                    <p className="mt-3 text-3xl font-black tracking-[-0.05em] text-text-primary">
+                                        {typeof metric.value === 'number' ? numberFormatter.format(metric.value) : metric.value}
+                                    </p>
+                                    <p className="mt-2 text-[11px] font-medium text-text-tertiary">{metric.hint}</p>
+                                </div>
+                                <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${metric.iconClass}`}>
+                                    <Icon className="h-5 w-5" aria-hidden="true" />
+                                </span>
                             </div>
-                            <div className="w-full bg-white/10 rounded-full h-1 mt-3 overflow-hidden">
-                                <div className="bg-white h-full w-[70%]" />
+                        </article>
+                    );
+                })}
+            </section>
+
+            <section className="grid grid-cols-1 gap-5 xl:grid-cols-12">
+                <article className="rounded-[24px] border border-slate-200/80 bg-white p-5 shadow-[0_18px_48px_-38px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-bg-secondary sm:p-6 xl:col-span-7">
+                    <SectionHeader
+                        icon={ClipboardCheck}
+                        title="Chất lượng bài nộp"
+                        description="Tỷ lệ theo trạng thái xử lý thực tế"
+                    >
+                        <select
+                            value={selectedCourseId}
+                            onChange={(event) => setSelectedCourseId(event.target.value)}
+                            className="min-h-10 max-w-full cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs font-bold text-slate-700 outline-none transition hover:border-violet-300 focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary dark:text-text-primary"
+                            aria-label="Lọc thống kê theo khóa học"
+                        >
+                            <option value="all">Tất cả khóa học</option>
+                            {stats.charts.courseSubmissionsStats.map((course) => (
+                                <option key={course.id} value={course.id}>{course.title}</option>
+                            ))}
+                        </select>
+                    </SectionHeader>
+
+                    <div className="mt-7 grid items-center gap-8 md:grid-cols-[180px_1fr]">
+                        <div className="mx-auto">
+                            <div
+                                className="relative flex h-40 w-40 items-center justify-center rounded-full"
+                                style={{
+                                    background: dashboardData.total > 0
+                                        ? `conic-gradient(#10b981 0 ${dashboardData.passPercent}%, #fb7185 ${dashboardData.passPercent}% ${dashboardData.passPercent + dashboardData.failPercent}%, #fbbf24 ${dashboardData.passPercent + dashboardData.failPercent}% 100%)`
+                                        : 'conic-gradient(#e2e8f0 0 100%)',
+                                }}
+                                role="img"
+                                aria-label={`Tỷ lệ bài vượt qua ${dashboardData.passPercent}%`}
+                            >
+                                <div className="flex h-[116px] w-[116px] flex-col items-center justify-center rounded-full bg-white shadow-inner dark:bg-bg-secondary">
+                                    <span className="text-3xl font-black tracking-[-0.05em] text-text-primary">{dashboardData.passPercent}%</span>
+                                    <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-text-tertiary">Vượt qua</span>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Cyan gradient card */}
-                        <div className="bg-gradient-to-br from-cyan-500 to-emerald-500 rounded-3xl p-5 text-white shadow-xl shadow-cyan-500/10 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-300 relative overflow-hidden group">
-                            <div className="absolute right-[-10px] top-[-10px] w-20 h-20 bg-white/5 rounded-full blur-xl group-hover:scale-125 transition-transform"></div>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-cyan-100">Học sinh đăng ký</span>
-                            <div className="flex items-baseline gap-1 mt-4">
-                                <span className="text-3xl font-black font-mono tracking-tighter">{stats.overview.totalUsers.toLocaleString()}</span>
-                                <span className="text-[10px] uppercase font-bold text-cyan-200">user</span>
+                        <div>
+                            <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-white/5" aria-hidden="true">
+                                <span className="bg-emerald-500" style={{ width: `${dashboardData.passPercent}%` }} />
+                                <span className="bg-rose-400" style={{ width: `${dashboardData.failPercent}%` }} />
+                                <span className="bg-amber-400" style={{ width: `${dashboardData.pendingPercent}%` }} />
                             </div>
-                            <div className="w-full bg-white/10 rounded-full h-1 mt-3 overflow-hidden">
-                                <div className="bg-white h-full w-[85%]" />
+                            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                                <StatusCard icon={CheckCircle2} label="Đã đạt" value={dashboardData.passed} percent={dashboardData.passPercent} tone="emerald" />
+                                <StatusCard icon={CircleHelp} label="Chưa đạt" value={dashboardData.failed} percent={dashboardData.failPercent} tone="rose" />
+                                <StatusCard icon={Clock3} label="Đang chờ" value={dashboardData.pending} percent={dashboardData.pendingPercent} tone="amber" />
                             </div>
-                        </div>
-
-                        {/* Neon solid styling card */}
-                        <div className="bg-bg-tertiary rounded-3xl p-5 border border-border-custom flex flex-row items-center justify-between hover:scale-[1.02] transition-transform duration-300 transition-colors duration-200">
-                            <div className="flex flex-col gap-1 text-left">
-                                <span className="text-[9px] font-bold uppercase tracking-widest text-accent-custom">Hiệu suất đúng</span>
-                                <span className="text-3xl font-black text-text-primary font-mono tracking-tighter">{passerPercent}%</span>
-                            </div>
-                            <div className="flex flex-col gap-1.5 items-end text-right">
-                                <span className="text-[10px] text-emerald-500 font-bold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md whitespace-nowrap">
-                                    Passed: {passedCount}
-                                </span>
-                                <span className="text-[10px] text-rose-500 font-bold bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded-md whitespace-nowrap">
-                                    Failed: {failedCount}
-                                </span>
-                            </div>
+                            <p className="mt-5 text-xs leading-5 text-text-tertiary">
+                                Tổng cộng <strong className="text-text-primary">{numberFormatter.format(dashboardData.total)}</strong> lượt nộp trong phạm vi đang chọn.
+                            </p>
                         </div>
                     </div>
+                </article>
 
-                    {/* NEW CONCEPT MASTERY EVALUATION BAR CHART SECTION (Replaces Wave chart) */}
-                    <div className="bg-bg-secondary border border-border-custom rounded-[32px] p-6 shadow-sm flex flex-col gap-6 relative overflow-hidden group transition-colors duration-200">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <div className="flex flex-col gap-0.5 text-left">
-                                <h3 className="text-xs font-black text-text-primary uppercase tracking-widest">Đánh giá chuẩn đạt chủ đề kiến thức</h3>
-                                <span className="text-[10px] text-accent-custom font-semibold uppercase">Độ thông thạo trên 75% trên đồ thị tri thức của học viên</span>
-                            </div>
-                            <div>
-                                <select
-                                    className="bg-bg-primary text-text-secondary border border-border-custom rounded-xl px-3 py-2 text-[11px] font-bold outline-none focus:border-accent-custom cursor-pointer shadow-sm transition-colors duration-200"
-                                    value={selectedConceptId}
-                                    onChange={(e) => setSelectedConceptId(e.target.value)}
-                                >
-                                    {stats.charts.conceptPassReport?.map((c) => (
-                                        <option key={c.id} value={c.id}>
-                                            {c.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                <article className="rounded-[24px] border border-slate-200/80 bg-white p-5 shadow-[0_18px_48px_-38px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-bg-secondary sm:p-6 xl:col-span-5">
+                    <SectionHeader
+                        icon={Layers3}
+                        title="Kho nội dung"
+                        description="Quy mô học liệu đang được quản lý"
+                    />
+                    <div className="mt-6 grid grid-cols-2 gap-3">
+                        <InventoryCard icon={LibraryBig} label="Khóa học" value={stats.overview.totalCourses} tone="violet" />
+                        <InventoryCard icon={BookOpenCheck} label="Bài học" value={stats.overview.totalLessons} tone="sky" />
+                        <InventoryCard icon={CircleHelp} label="Bài luyện tập" value={stats.overview.totalPracticeProblems} tone="emerald" />
+                        <InventoryCard icon={UsersRound} label="Người dùng" value={stats.overview.totalUsers} tone="amber" />
+                    </div>
+
+                    <div className="mt-5 rounded-2xl bg-slate-50 p-4 dark:bg-white/[0.035]">
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-text-tertiary">Phân bổ vai trò</p>
+                        <div className="mt-3 space-y-3">
+                            {stats.charts.usersByRole.map((item) => {
+                                const percent = stats.overview.totalUsers > 0
+                                    ? Math.round((item.count / stats.overview.totalUsers) * 100)
+                                    : 0;
+                                return (
+                                    <div key={item.role}>
+                                        <div className="mb-1.5 flex items-center justify-between gap-3 text-xs">
+                                            <span className="font-semibold text-text-secondary">{roleLabel(item.role)}</span>
+                                            <span className="font-extrabold text-text-primary">{numberFormatter.format(item.count)}</span>
+                                        </div>
+                                        <div className="h-1.5 overflow-hidden rounded-full bg-slate-200/70 dark:bg-white/8">
+                                            <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-sky-400" style={{ width: `${percent}%` }} />
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
+                    </div>
+                </article>
+            </section>
 
-                        {/* Bar Representation for Concept Pass / Fail ratio */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 items-center bg-bg-primary/55 border border-border-custom rounded-2xl p-6 transition-colors duration-200">
+            <section className="grid grid-cols-1 gap-5 xl:grid-cols-12">
+                <article className="rounded-[24px] border border-slate-200/80 bg-white p-5 shadow-[0_18px_48px_-38px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-bg-secondary sm:p-6 xl:col-span-7">
+                    <SectionHeader
+                        icon={Target}
+                        title="Mức độ thông thạo kiến thức"
+                        description="Đánh giá theo chủ đề với ngưỡng đạt 75%"
+                    >
+                        <select
+                            value={dashboardData.selectedConcept?.id ?? ''}
+                            onChange={(event) => setSelectedConceptId(event.target.value)}
+                            className="min-h-10 max-w-full cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs font-bold text-slate-700 outline-none transition hover:border-violet-300 focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary dark:text-text-primary"
+                            aria-label="Chọn chủ đề kiến thức"
+                        >
+                            {stats.charts.conceptPassReport.map((concept) => (
+                                <option key={concept.id} value={concept.id}>{concept.name}</option>
+                            ))}
+                        </select>
+                    </SectionHeader>
 
-                            {/* Visual Bars Container */}
-                            <div className="flex justify-around items-end h-56 px-4 bg-bg-tertiary/40 rounded-xl relative border border-border-custom/50 pt-4">
-                                <div className="absolute left-3 top-3 text-[9px] text-text-tertiary font-semibold uppercase tracking-wider">
-                                    tổng số học viên đánh giá: {conceptTotal}
-                                </div>
-
-                                {/* Column 1: Vượt qua (Passed >= 75%) */}
-                                <div className="flex flex-col items-center gap-3.5 group select-none w-24">
-                                    <div className="relative w-12 bg-bg-secondary rounded-t-2xl h-[150px] flex items-end overflow-hidden border border-border-custom shadow-inner">
-                                        <div
-                                            className="w-full bg-gradient-to-t from-emerald-500 to-teal-400 rounded-t-xl transition-all duration-700 ease-out group-hover:opacity-95 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-                                            style={{ height: `${conceptPassedPercent}%` }}
-                                        />
+                    {dashboardData.selectedConcept ? (
+                        <div className="mt-7">
+                            <div className="rounded-2xl border border-violet-100 bg-[linear-gradient(120deg,#fafaff,#f3f9ff)] p-5 dark:border-white/8 dark:bg-[linear-gradient(120deg,rgba(139,92,246,.08),rgba(14,165,233,.05))]">
+                                <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+                                    <div>
+                                        <p className="text-xs font-bold text-violet-600 dark:text-violet-300">Chủ đề đang xem</p>
+                                        <h3 className="mt-1.5 text-lg font-extrabold text-text-primary">{dashboardData.selectedConcept.name}</h3>
                                     </div>
-                                    <div className="flex flex-col items-center">
-                                        <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 font-mono">{conceptPassed} Học viên</span>
-                                        <span className="text-[8px] font-bold text-text-primary uppercase tracking-wider mt-0.5 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-md">
-                                            Vượt qua ({conceptPassedPercent}%)
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Column 2: Chưa đạt (Failed < 75%) */}
-                                <div className="flex flex-col items-center gap-3.5 group select-none w-24">
-                                    <div className="relative w-12 bg-bg-secondary rounded-t-2xl h-[150px] flex items-end overflow-hidden border border-border-custom shadow-inner">
-                                        <div
-                                            className="w-full bg-gradient-to-t from-rose-500 to-pink-500 rounded-t-xl transition-all duration-700 ease-out group-hover:opacity-95 shadow-[0_0_15px_rgba(244,63,94,0.2)]"
-                                            style={{ height: `${conceptFailedPercent}%` }}
-                                        />
-                                    </div>
-                                    <div className="flex flex-col items-center">
-                                        <span className="text-[11px] font-black text-rose-600 dark:text-rose-450 font-mono">{conceptFailed} Học viên</span>
-                                        <span className="text-[8px] font-bold text-text-primary uppercase tracking-wider mt-0.5 bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 rounded-md">
-                                            Chưa đạt ({conceptFailedPercent}%)
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Descriptive Metrics Card */}
-                            <div className="flex flex-col gap-4 text-left">
-                                <div className="p-4 bg-bg-tertiary rounded-2xl border border-border-custom flex flex-col gap-2">
-                                    <span className="text-[9px] text-accent-custom font-black uppercase tracking-widest">Tiêu chí phân cấp lý thuyết</span>
-                                    <p className="text-[11px] text-text-secondary leading-relaxed">
-                                        Học viên được xác định là <strong className="text-emerald-555">Vượt qua</strong> thành phần kiến thức nếu Chỉ số thông thạo dự đoán bởi mô phỏng AI (Mạng nơ-ron đồ thị PALNet) đạt từ <strong className="text-text-primary">75% trở lên</strong>.
+                                    <p className="text-sm font-semibold text-text-secondary">
+                                        {numberFormatter.format(dashboardData.selectedConcept.total)} học viên được đánh giá
                                     </p>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-3.5 text-xs font-semibold">
-                                    <div className="p-3 bg-bg-secondary rounded-xl border border-border-custom flex flex-col gap-0.5">
-                                        <span className="text-[8px] text-emerald-500 uppercase font-black font-mono">Tỷ lệ pass</span>
-                                        <span className="text-lg font-black text-emerald-500 font-mono tracking-tighter">{conceptPassedPercent}%</span>
+                                <div className="mt-6 flex h-5 w-full overflow-hidden rounded-full bg-white shadow-inner dark:bg-white/5">
+                                    <div
+                                        className="flex h-full items-center justify-center bg-gradient-to-r from-emerald-400 to-teal-500 text-[9px] font-black text-white transition-[width] duration-500"
+                                        style={{ width: `${dashboardData.conceptPassPercent}%` }}
+                                    >
+                                        {dashboardData.conceptPassPercent >= 15 ? `${dashboardData.conceptPassPercent}%` : ''}
                                     </div>
-                                    <div className="p-3 bg-bg-secondary rounded-xl border border-border-custom flex flex-col gap-0.5">
-                                        <span className="text-[8px] text-rose-500 uppercase font-black font-mono">Tỷ lệ chưa đạt</span>
-                                        <span className="text-lg font-black text-rose-500 font-mono tracking-tighter">{conceptFailedPercent}%</span>
+                                    <div
+                                        className="flex h-full items-center justify-center bg-gradient-to-r from-rose-400 to-pink-500 text-[9px] font-black text-white transition-[width] duration-500"
+                                        style={{ width: `${dashboardData.conceptFailPercent}%` }}
+                                    >
+                                        {dashboardData.conceptFailPercent >= 15 ? `${dashboardData.conceptFailPercent}%` : ''}
+                                    </div>
+                                </div>
+
+                                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                                    <div className="rounded-xl border border-emerald-200/70 bg-white/80 p-4 dark:border-emerald-500/20 dark:bg-white/5">
+                                        <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-emerald-600 dark:text-emerald-300">Đạt chuẩn</p>
+                                        <p className="mt-2 text-2xl font-black text-text-primary">{numberFormatter.format(dashboardData.selectedConcept.passed)}</p>
+                                        <p className="mt-1 text-xs text-text-tertiary">{dashboardData.conceptPassPercent}% tổng số đánh giá</p>
+                                    </div>
+                                    <div className="rounded-xl border border-rose-200/70 bg-white/80 p-4 dark:border-rose-500/20 dark:bg-white/5">
+                                        <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-rose-600 dark:text-rose-300">Cần củng cố</p>
+                                        <p className="mt-2 text-2xl font-black text-text-primary">{numberFormatter.format(dashboardData.selectedConcept.failed)}</p>
+                                        <p className="mt-1 text-xs text-text-tertiary">{dashboardData.conceptFailPercent}% tổng số đánh giá</p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                {/* Right region: Double small wave and vertical column graph */}
-                <div className="flex flex-col gap-6">
-                    {/* Tiny dual-wave area performance chart */}
-                    <div className="bg-bg-secondary border border-border-custom rounded-[32px] p-5 shadow-sm flex flex-col gap-4 relative overflow-hidden group transition-colors duration-200">
-                        <div className="flex justify-between items-center text-left">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] font-black tracking-wider text-text-primary uppercase">Cân bằng giải bài</span>
-                                <span className="text-[9px] text-[#ff1f0a] dark:text-[#ff9f0a] font-bold uppercase">Passed vs Failed</span>
-                            </div>
-                            <span className="text-lg font-black text-emerald-500 font-mono tracking-tighter">+{passerPercent}%</span>
-                        </div>
-
-                        {/* Small wave SVG */}
-                        <div className="w-full h-24 overflow-visible">
-                            <svg className="w-full h-full overflow-visible" viewBox="0 0 200 80" preserveAspectRatio="none">
-                                <path
-                                    d="M 0,80 Q 25,20 50,60 T 100,30 T 150,70 T 200,20"
-                                    fill="none"
-                                    stroke="url(#smallWaveGrad)"
-                                    strokeWidth="3.5"
-                                    strokeLinecap="round"
-                                />
-                                <defs>
-                                    <linearGradient id="smallWaveGrad" x1="0" y1="0" x2="1" y2="0">
-                                        <stop offset="0%" stopColor="var(--color-accent-custom)" />
-                                        <stop offset="50%" stopColor="#d946ef" />
-                                        <stop offset="100%" stopColor="#06b6d4" />
-                                    </linearGradient>
-                                </defs>
-                            </svg>
-                        </div>
-                        <div className="text-[9px] text-accent-custom font-bold uppercase tracking-wider text-center border-t border-border-custom pt-2 select-all">
-                            TỔNG QUAN TỶ LỆ CHÍNH XÁC LỜI GIẢI MÃ NGUỒN
-                        </div>
-                    </div>
-
-                    {/* Dynamic Vertical Bar Chart */}
-                    <div className="bg-bg-secondary border border-border-custom rounded-[32px] p-6 shadow-sm flex flex-col gap-6 transition-colors duration-200">
-                        <h3 className="text-xs font-black text-text-primary uppercase tracking-widest text-left">Bài nộp (Phân phối theo hoạt động)</h3>
-                        <div className="flex justify-between items-end h-[155px] px-2">
-                            <VerticalBar value={stats.overview.totalLessons * 1.5} label="Cơ bản" color="from-emerald-400 to-teal-500 shadow-emerald-450/15" />
-                            <VerticalBar value={stats.overview.totalPracticeProblems * 0.8} label="Đấu trường" color="from-cyan-400 to-indigo-500 shadow-cyan-455/15" />
-                            <VerticalBar value={stats.overview.totalCourses * 10} label="Khóa học" color="from-fuchsia-500 to-purple-600 shadow-fuchsia-545/15" />
-                            <VerticalBar value={stats.overview.totalUsers * 0.6} label="Hoạt động" color="from-[#ff9f0a] to-[#ffb03a] shadow-amber-545/15" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Bottom Section: Dynamic Course/Topic Filter Donut & Student list */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 z-10">
-                {/* 1. Dynamic Course Filter & Progress rings layout */}
-                <div className="bg-bg-secondary border border-border-custom rounded-[32px] p-6 shadow-sm flex flex-col gap-5 justify-between transition-colors duration-200">
-                    <div className="flex flex-col gap-3">
-                        <div className="flex justify-between items-center text-left">
-                            <h3 className="text-xs font-black text-text-primary uppercase tracking-widest">Đánh giá theo chủ đề</h3>
-                        </div>
-                        {/* Course Filter Dropdown styling */}
-                        <div>
-                            <select
-                                className="w-full bg-bg-primary text-xs font-bold text-text-secondary border border-border-custom rounded-xl px-3.5 py-2.5 outline-none hover:border-accent-custom transition-all cursor-pointer shadow-inner transition-colors duration-200"
-                                value={selectedCourseId}
-                                onChange={(e) => setSelectedCourseId(e.target.value)}
-                            >
-                                <option value="all">Tất cả các chủ đề học</option>
-                                {stats.charts.courseSubmissionsStats?.map((c) => (
-                                    <option key={c.id} value={c.id}>
-                                        {c.title}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    {displayTotal === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-8 gap-1.5 text-center">
-                            <span className="text-3xl text-text-tertiary animate-bounce"><i className="fa-solid fa-inbox"></i></span>
-                            <span className="text-[10px] text-accent-custom font-bold uppercase tracking-wider">Chưa có lượt nộp bài</span>
-                            <span className="text-[9px] text-[#ff9f0a]/80 font-medium">Chọn chủ đề khác để phân tích tỷ lệ</span>
                         </div>
                     ) : (
-                        <div className="flex items-center justify-around py-2">
-                            {/* Circle Donut Ring for selecting course */}
-                            <div className="relative w-28 h-28 flex items-center justify-center">
-                                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                    {/* Base track */}
-                                    <circle cx="50" cy="50" r="40" className="stroke-bg-primary" strokeWidth="9" fill="transparent" />
-                                    {/* Passed slice */}
-                                    <circle
-                                        cx="50"
-                                        cy="50"
-                                        r="40"
-                                        className="stroke-accent-custom"
-                                        strokeWidth="9"
-                                        fill="transparent"
-                                        strokeDasharray="251.2"
-                                        strokeDashoffset={251.2 - (251.2 * displayPassPercent) / 100}
-                                        strokeLinecap="round"
-                                    />
-                                    {/* Failed track layer */}
-                                    <circle
-                                        cx="50"
-                                        cy="50"
-                                        r="31"
-                                        className="stroke-bg-primary"
-                                        strokeWidth="7"
-                                        fill="transparent"
-                                    />
-                                    {/* Failed slice inner ring */}
-                                    <circle
-                                        cx="50"
-                                        cy="50"
-                                        r="31"
-                                        className="stroke-cyan-500 dark:stroke-cyan-400"
-                                        strokeWidth="7"
-                                        fill="transparent"
-                                        strokeDasharray="194.7"
-                                        strokeDashoffset={194.7 - (194.7 * displayFailPercent) / 100}
-                                        strokeLinecap="round"
-                                    />
-                                </svg>
-                                <div className="absolute inset-0 flex flex-col items-center justify-center select-none font-bold">
-                                    <span className="text-base font-black text-text-primary font-mono">{displayPassPercent}%</span>
-                                    <span className="text-[7px] text-accent-custom font-bold uppercase tracking-wider">Đúng hạn</span>
-                                </div>
-                            </div>
-
-                            {/* Circular indicators details */}
-                            <div className="flex flex-col gap-2 text-left text-xs font-semibold">
-                                <div className="flex flex-col">
-                                    <span className="text-[9px] text-accent-custom font-bold uppercase tracking-wide">Hoàn thành (Đúng)</span>
-                                    <span className="text-xs font-black text-text-primary font-mono">{displayPassPercent}% ({displayPassed} bài)</span>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[9px] text-cyan-500 dark:text-cyan-400 font-bold uppercase tracking-wide">Chưa đúng (Lỗi)</span>
-                                    <span className="text-xs font-black text-text-primary font-mono">{displayFailPercent}% ({displayFailed} bài)</span>
-                                </div>
-                            </div>
-                        </div>
+                        <EmptyState message="Chưa có dữ liệu đánh giá chủ đề." />
                     )}
+                </article>
+
+                <article className="rounded-[24px] border border-slate-200/80 bg-white p-5 shadow-[0_18px_48px_-38px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-bg-secondary sm:p-6 xl:col-span-5">
+                    <SectionHeader
+                        icon={Activity}
+                        title="Hiệu suất theo khóa học"
+                        description="Xếp theo tổng lượt nộp bài"
+                    />
+                    {dashboardData.coursePerformance.length > 0 ? (
+                        <div className="mt-6 space-y-5">
+                            {dashboardData.coursePerformance.map((course) => {
+                                const percent = course.stats.total > 0
+                                    ? Math.round((course.stats.passed / course.stats.total) * 100)
+                                    : 0;
+                                return (
+                                    <div key={course.id}>
+                                        <div className="mb-2 flex items-center justify-between gap-4">
+                                            <p className="min-w-0 truncate text-xs font-bold text-text-secondary" title={course.title}>{course.title}</p>
+                                            <span className="shrink-0 text-xs font-black text-text-primary">{percent}%</span>
+                                        </div>
+                                        <div className="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5">
+                                            <div className="h-full rounded-full bg-gradient-to-r from-violet-500 via-indigo-500 to-sky-400" style={{ width: `${percent}%` }} />
+                                        </div>
+                                        <p className="mt-1.5 text-[10px] text-text-tertiary">
+                                            {numberFormatter.format(course.stats.passed)}/{numberFormatter.format(course.stats.total)} lượt đạt
+                                        </p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <EmptyState message="Chưa có lượt nộp theo khóa học." />
+                    )}
+                </article>
+            </section>
+
+            <section className="overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-[0_18px_48px_-38px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-bg-secondary">
+                <div className="flex flex-col justify-between gap-3 border-b border-slate-100 px-5 py-5 dark:border-white/8 sm:flex-row sm:items-center sm:px-6">
+                    <SectionHeader
+                        icon={UsersRound}
+                        title="Học viên mới"
+                        description="Những tài khoản được tạo gần đây"
+                    />
+                    <span className="inline-flex w-fit items-center rounded-full bg-violet-50 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.12em] text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">
+                        {stats.recentUsers.length} tài khoản gần nhất
+                    </span>
                 </div>
 
-                {/* 2. Registered Users list (Glassmorphism layout) */}
-                <div className="lg:col-span-2 bg-bg-secondary border border-border-custom rounded-[32px] p-6 shadow-sm flex flex-col justify-between gap-5 relative overflow-hidden group transition-colors duration-200">
-                    <div className="flex justify-between items-center text-left">
-                        <div className="flex flex-col">
-                            <h3 className="text-xs font-black text-text-primary uppercase tracking-widest">Học viên mới hoạt động</h3>
-                            <span className="text-[10px] text-accent-custom font-bold uppercase">Cộng đồng lập trình MCODE Python</span>
-                        </div>
-                    </div>
-
-                    <div className="overflow-x-auto rounded-2xl border border-border-custom bg-bg-primary/45 backdrop-blur-sm transition-colors duration-200 font-medium">
-                        <table className="min-w-full divide-y divide-border-custom text-left border-collapse">
+                {stats.recentUsers.length > 0 ? (
+                    <div className="overflow-x-auto">
+                        <table className="min-w-[720px]">
                             <thead>
-                                <tr className="bg-bg-tertiary select-none">
-                                    <th className="px-5 py-3.5 text-[9px] font-black text-accent-custom uppercase tracking-wider">Học viên</th>
-                                    <th className="px-5 py-3.5 text-[9px] font-black text-accent-custom uppercase tracking-wider">Email</th>
-                                    <th className="px-5 py-3.5 text-[9px] font-black text-accent-custom uppercase tracking-wider">Quyền</th>
-                                    <th className="px-5 py-3.5 text-[9px] font-black text-accent-custom uppercase tracking-wider">Thời gian gia nhập</th>
+                                <tr>
+                                    <th className="px-6 py-3.5 text-left">Học viên</th>
+                                    <th className="px-6 py-3.5 text-left">Email</th>
+                                    <th className="px-6 py-3.5 text-left">Vai trò</th>
+                                    <th className="px-6 py-3.5 text-left">Ngày tham gia</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-border-custom/50">
-                                {stats.recentUsers.slice(0, 4).map((user) => (
-                                    <tr key={user.id} className="hover:bg-bg-tertiary/30 transition-colors">
-                                        <td className="px-5 py-3 whitespace-nowrap">
-                                            <div className="flex items-center gap-2.5">
-                                                <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-accent-custom to-accent-hover text-white flex items-center justify-center font-bold text-xs uppercase shadow-md shadow-accent-custom/10">
-                                                    {user.username.substring(0, 1).toUpperCase()}
-                                                </div>
-                                                <span className="text-xs font-bold text-text-primary select-all">{user.username}</span>
+                            <tbody>
+                                {stats.recentUsers.slice(0, 6).map((user) => (
+                                    <tr key={user.id} className="border-t border-slate-100 dark:border-white/5">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 text-xs font-black uppercase text-white shadow-sm">
+                                                    {user.username.charAt(0)}
+                                                </span>
+                                                <span className="text-xs font-bold text-text-primary">{user.username}</span>
                                             </div>
                                         </td>
-                                        <td className="px-5 py-3 whitespace-nowrap text-xs text-text-secondary select-all">{user.email}</td>
-                                        <td className="px-5 py-3 whitespace-nowrap">
-                                            <span className={`px-2 py-0.5 text-[9px] font-black rounded-md border tracking-wider ${getRoleColorBadge(user.role)}`}>
-                                                {user.role}
+                                        <td className="px-6 py-4 text-xs text-text-secondary">{user.email}</td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex rounded-full border px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.1em] ${roleBadgeClass(user.role)}`}>
+                                                {roleLabel(user.role)}
                                             </span>
                                         </td>
-                                        <td className="px-5 py-3 whitespace-nowrap text-[10px] text-text-tertiary font-mono">
+                                        <td className="px-6 py-4 text-xs font-medium text-text-tertiary">
                                             {new Date(user.createdAt).toLocaleDateString('vi-VN')}
                                         </td>
                                     </tr>
@@ -476,44 +501,121 @@ export default function AdminDashboard() {
                             </tbody>
                         </table>
                     </div>
+                ) : (
+                    <EmptyState message="Chưa có học viên mới." />
+                )}
+            </section>
+        </div>
+    );
+}
+
+function SectionHeader({
+    icon: Icon,
+    title,
+    description,
+    children,
+}: {
+    icon: typeof Activity;
+    title: string;
+    description: string;
+    children?: React.ReactNode;
+}) {
+    return (
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+            <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">
+                    <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
+                </span>
+                <div>
+                    <h3 className="text-sm font-extrabold text-text-primary">{title}</h3>
+                    <p className="mt-1 text-[11px] text-text-tertiary">{description}</p>
                 </div>
             </div>
+            {children}
         </div>
     );
 }
 
-interface VerticalBarProps {
-    value: number;
+function StatusCard({
+    icon: Icon,
+    label,
+    value,
+    percent,
+    tone,
+}: {
+    icon: typeof CheckCircle2;
     label: string;
-    color: string;
-}
-
-function VerticalBar({ value, label, color }: VerticalBarProps) {
-    const fixedHeight = Math.min(Math.max((value / 120) * 100, 15), 100);
+    value: number;
+    percent: number;
+    tone: 'emerald' | 'rose' | 'amber';
+}) {
+    const styles = {
+        emerald: 'border-emerald-100 bg-emerald-50/70 text-emerald-700 dark:border-emerald-500/15 dark:bg-emerald-500/8 dark:text-emerald-300',
+        rose: 'border-rose-100 bg-rose-50/70 text-rose-700 dark:border-rose-500/15 dark:bg-rose-500/8 dark:text-rose-300',
+        amber: 'border-amber-100 bg-amber-50/70 text-amber-700 dark:border-amber-500/15 dark:bg-amber-500/8 dark:text-amber-300',
+    };
 
     return (
-        <div className="flex flex-col items-center gap-3.5 group select-none">
-            <div className="relative w-8 bg-bg-primary rounded-t-xl h-[120px] flex items-end overflow-hidden border border-border-custom shadow-inner">
-                <div
-                    className={`w-full bg-gradient-to-t ${color} rounded-t-lg transition-all duration-700 ease-out group-hover:opacity-90 shadow-sm`}
-                    style={{ height: `${fixedHeight}%` }}
-                />
+        <div className={`rounded-xl border p-3 ${styles[tone]}`}>
+            <div className="flex items-center gap-2">
+                <Icon className="h-4 w-4" aria-hidden="true" />
+                <span className="text-[10px] font-extrabold uppercase tracking-[0.1em]">{label}</span>
             </div>
-            <div className="flex flex-col items-center">
-                <span className="text-[9px] font-bold text-text-primary font-mono select-all">{value}</span>
-                <span className="text-[8px] font-bold text-text-tertiary uppercase tracking-wide mt-0.5">{label}</span>
-            </div>
+            <p className="mt-2 text-lg font-black text-text-primary">{numberFormatter.format(value)}</p>
+            <p className="mt-0.5 text-[10px] font-bold">{percent}% tổng số</p>
         </div>
     );
 }
 
-function getRoleColorBadge(role: string) {
-    switch (role) {
-        case 'ADMIN':
-            return 'bg-rose-500/10 text-rose-500 border-rose-500/20';
-        case 'TEACHER':
-            return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
-        default:
-            return 'bg-emerald-500/10 text-emerald-500 border-emerald-555/20';
+function InventoryCard({
+    icon: Icon,
+    label,
+    value,
+    tone,
+}: {
+    icon: typeof LibraryBig;
+    label: string;
+    value: number;
+    tone: 'violet' | 'sky' | 'emerald' | 'amber';
+}) {
+    const styles = {
+        violet: 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300',
+        sky: 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
+        emerald: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300',
+        amber: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
+    };
+
+    return (
+        <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4 dark:border-white/5 dark:bg-white/[0.035]">
+            <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${styles[tone]}`}>
+                <Icon className="h-4 w-4" aria-hidden="true" />
+            </span>
+            <p className="mt-4 text-2xl font-black tracking-[-0.04em] text-text-primary">{numberFormatter.format(value)}</p>
+            <p className="mt-1 text-[11px] font-semibold text-text-tertiary">{label}</p>
+        </div>
+    );
+}
+
+function EmptyState({ message }: { message: string }) {
+    return (
+        <div className="mt-6 flex min-h-32 items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-5 text-center text-xs font-semibold text-text-tertiary dark:border-white/10 dark:bg-white/[0.025]">
+            {message}
+        </div>
+    );
+}
+
+function roleLabel(role: string) {
+    if (role === 'ADMIN') return 'Quản trị viên';
+    if (role === 'TEACHER') return 'Giảng viên';
+    return 'Học viên';
+}
+
+function roleBadgeClass(role: string) {
+    if (role === 'ADMIN') {
+        return 'border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-500/20 dark:bg-violet-500/10 dark:text-violet-300';
     }
+    if (role === 'TEACHER') {
+        return 'border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-300';
+    }
+    return 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300';
 }

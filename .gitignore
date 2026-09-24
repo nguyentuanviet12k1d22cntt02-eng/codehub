@@ -8,6 +8,8 @@ build/
 .env.local
 *.pem
 key.txt
+keys.txt
+trace_*.json
 
 # Python
 __pycache__/

@@ -21,7 +21,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 # Cài đặt docker-cli, python3 và sqlite3 để phục vụ sandbox chấm bài
-RUN apk add --no-cache docker-cli python3 py3-pip sqlite
+RUN apk add --no-cache docker-cli python3 py3-pip sqlite build-base
 
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules

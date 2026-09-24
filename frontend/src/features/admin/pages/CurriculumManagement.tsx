@@ -1,33 +1,63 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+    BookOpenCheck,
+    Check,
+    ChevronDown,
+    ChevronLeft,
+    ChevronRight,
+    CircleHelp,
+    ClipboardCheck,
+    Copy,
+    FileText,
+    FolderOpen,
+    GraduationCap,
+    Grid2X2,
+    Layers3,
+    List,
+    LoaderCircle,
+    Pencil,
+    Plus,
+    RefreshCw,
+    Search,
+    Sparkles,
+    Trash2,
+    X,
+} from 'lucide-react';
 import { API_BASE_URL } from '../../../config/api';
 import { LessonStudioEditor } from '../../../features/admin/lesson-studio/LessonStudioEditor';
+
+interface LessonSummary {
+    id: string;
+    title: string;
+    lessonId: string;
+    difficulty: string;
+    orderIndex: number;
+    isFree: boolean;
+    _count: {
+        codingExercises: number;
+        quizQuestions: number;
+    };
+}
+
+interface ChapterNode {
+    id: string;
+    title: string;
+    orderIndex: number;
+    lessons: LessonSummary[];
+}
+
+interface ModuleNode {
+    id: string;
+    title: string;
+    orderIndex: number;
+    chapters: ChapterNode[];
+}
 
 interface CourseNode {
     id: string;
     title: string;
     level?: string;
-    modules: {
-        id: string;
-        title: string;
-        orderIndex: number;
-        chapters: {
-            id: string;
-            title: string;
-            orderIndex: number;
-            lessons: {
-                id: string;
-                title: string;
-                lessonId: string;
-                difficulty: string;
-                orderIndex: number;
-                isFree: boolean;
-                _count: {
-                    codingExercises: number;
-                    quizQuestions: number;
-                };
-            }[];
-        }[];
-    }[];
+    modules: ModuleNode[];
 }
 
 interface LessonDetail {
@@ -44,957 +74,632 @@ interface LessonDetail {
     isFree: boolean;
 }
 
+interface LessonRow extends LessonDetail {
+    createdAt?: string;
+    updatedAt?: string;
+    chapter?: {
+        id: string;
+        title: string;
+        module: {
+            id: string;
+            title: string;
+            course: {
+                id: string;
+                title: string;
+            };
+        };
+    };
+    _count?: {
+        codingExercises: number;
+        quizQuestions: number;
+    };
+}
+
+type ViewMode = 'table' | 'grid';
+type SortOption = 'id_asc' | 'id_desc' | 'newest' | 'oldest' | 'title';
+
+const numberFormatter = new Intl.NumberFormat('vi-VN');
+
 export default function CurriculumManagement() {
     const [tree, setTree] = useState<CourseNode[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [lessons, setLessons] = useState<LessonRow[]>([]);
+    const [treeLoading, setTreeLoading] = useState(true);
+    const [lessonsLoading, setLessonsLoading] = useState(false);
 
-    // Filter states
-    const [searchKeyword, setSearchKeyword] = useState<string>('');
-    const [selectedCourseId, setSelectedCourseId] = useState<string>('');
-    const [selectedModuleId, setSelectedModuleId] = useState<string>('');
-    const [selectedChapterId, setSelectedChapterId] = useState<string>('ALL');
-    const [contentTypeFilter, setContentTypeFilter] = useState<string>('ALL');
-    const [statusFilter, setStatusFilter] = useState<string>('ALL');
-    const [difficultyFilter, setDifficultyFilter] = useState<string>('ALL');
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const [selectedCourseId, setSelectedCourseId] = useState('');
+    const [selectedModuleId, setSelectedModuleId] = useState('');
+    const [selectedChapterId, setSelectedChapterId] = useState('ALL');
+    const [contentTypeFilter, setContentTypeFilter] = useState('ALL');
+    const [difficultyFilter, setDifficultyFilter] = useState('ALL');
+    const [accessFilter, setAccessFilter] = useState('ALL');
+    const [viewMode, setViewMode] = useState<ViewMode>('table');
+    const [pageSize, setPageSize] = useState(12);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [sortBy, setSortBy] = useState<SortOption>('id_asc');
 
-    const [selectedLessonId, setSelectedLessonId] = useState<string>('');
-    const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
-    const [pageSize, setPageSize] = useState<number>(10);
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [sortBy, setSortBy] = useState<'id_asc' | 'id_desc' | 'newest' | 'oldest' | 'title'>('id_asc');
-
-    // Lessons state
-    const [lessons, setLessons] = useState<any[]>([]);
     const [editingLesson, setEditingLesson] = useState<LessonDetail | null>(null);
-    const [isLessonModalOpen, setIsLessonModalOpen] = useState<boolean>(false);
+    const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState<LessonRow | null>(null);
+    const [deleting, setDeleting] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
 
-    // Notification toast
-    const [toastMessage, setToastMessage] = useState<string>('');
+    const showToast = useCallback((message: string) => {
+        setToastMessage(message);
+        window.setTimeout(() => setToastMessage(''), 3500);
+    }, []);
 
-    const showToast = (msg: string) => {
-        setToastMessage(msg);
-        setTimeout(() => setToastMessage(''), 3500);
-    };
-
-    const getAuthHeaders = () => {
+    const getAuthHeaders = useCallback(() => {
         const token = localStorage.getItem('token');
         return {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
         };
-    };
-
-    // Load curriculum hierarchy
-    const fetchTree = async () => {
-        setLoading(true);
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/admin/curriculum-tree`, {
-                headers: getAuthHeaders()
-            });
-            const data = await res.json();
-            if (Array.isArray(data)) {
-                setTree(data);
-                if (data.length > 0 && !selectedCourseId) {
-                    const firstCourse = data[0];
-                    setSelectedCourseId(firstCourse.id);
-                    if (firstCourse.modules?.[0]) {
-                        const firstMod = firstCourse.modules[0];
-                        setSelectedModuleId(firstMod.id);
-                        setSelectedChapterId('ALL');
-                    }
-                }
-            } else {
-                setTree([]);
-                showToast(data.message || 'Lỗi khi tải danh mục khóa học');
-            }
-        } catch {
-            showToast('Lỗi khi tải danh mục khóa học');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchTree();
     }, []);
 
-    // Load lessons when filters change
+    const fetchTree = useCallback(async () => {
+        try {
+            setTreeLoading(true);
+            const response = await fetch(`${API_BASE_URL}/api/admin/curriculum-tree`, {
+                headers: getAuthHeaders(),
+            });
+            const data: unknown = await response.json();
+            if (!Array.isArray(data)) {
+                setTree([]);
+                showToast('Không thể tải cấu trúc chương trình');
+                return;
+            }
+
+            const courses = data as CourseNode[];
+            setTree(courses);
+            setSelectedCourseId((currentCourseId) => {
+                if (courses.some((course) => course.id === currentCourseId)) return currentCourseId;
+                return courses[0]?.id ?? '';
+            });
+        } catch (error) {
+            console.error('Failed to load curriculum tree:', error);
+            showToast('Lỗi kết nối khi tải cấu trúc chương trình');
+        } finally {
+            setTreeLoading(false);
+        }
+    }, [getAuthHeaders, showToast]);
+
+    const fetchLessons = useCallback(async () => {
+        if (!selectedCourseId) {
+            setLessons([]);
+            return;
+        }
+
+        try {
+            setLessonsLoading(true);
+            const params = new URLSearchParams();
+            if (selectedChapterId !== 'ALL') params.set('chapterId', selectedChapterId);
+            else if (selectedModuleId) params.set('moduleId', selectedModuleId);
+            else params.set('courseId', selectedCourseId);
+
+            const response = await fetch(`${API_BASE_URL}/api/admin/lessons?${params.toString()}`, {
+                headers: getAuthHeaders(),
+            });
+            const data: unknown = await response.json();
+            setLessons(Array.isArray(data) ? data as LessonRow[] : []);
+        } catch (error) {
+            console.error('Failed to load lessons:', error);
+            setLessons([]);
+            showToast('Lỗi kết nối khi tải danh sách bài học');
+        } finally {
+            setLessonsLoading(false);
+        }
+    }, [getAuthHeaders, selectedChapterId, selectedCourseId, selectedModuleId, showToast]);
+
     useEffect(() => {
-        if (selectedModuleId || selectedChapterId || selectedCourseId) {
-            fetchLessons(selectedModuleId, selectedChapterId);
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- load the curriculum once when this page mounts
+        void fetchTree();
+    }, [fetchTree]);
+
+    const currentCourse = tree.find((course) => course.id === selectedCourseId);
+    const currentCourseModules = currentCourse?.modules ?? [];
+    const currentModule = currentCourseModules.find((module) => module.id === selectedModuleId);
+    const currentModuleChapters = currentModule?.chapters ?? [];
+
+    useEffect(() => {
+        if (!selectedCourseId) return;
+        const course = tree.find((item) => item.id === selectedCourseId);
+        const moduleExists = course?.modules.some((module) => module.id === selectedModuleId);
+        if (!moduleExists) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- synchronize the module selection after course data changes
+            setSelectedModuleId(course?.modules[0]?.id ?? '');
+            setSelectedChapterId('ALL');
         }
-    }, [selectedCourseId, selectedModuleId, selectedChapterId]);
+    }, [selectedCourseId, selectedModuleId, tree]);
 
-    const fetchLessons = async (moduleId: string, chapterId: string) => {
-        try {
-            let url = `${API_BASE_URL}/api/admin/lessons?`;
-            const params: string[] = [];
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- refresh the lesson collection for the active curriculum scope
+        void fetchLessons();
+    }, [fetchLessons]);
 
-            if (chapterId && chapterId !== 'ALL') {
-                params.push(`chapterId=${chapterId}`);
-            } else if (moduleId) {
-                params.push(`moduleId=${moduleId}`);
-            } else if (selectedCourseId) {
-                params.push(`courseId=${selectedCourseId}`);
-            }
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- filtered collections always restart from their first page
+        setCurrentPage(1);
+    }, [accessFilter, contentTypeFilter, difficultyFilter, searchKeyword, selectedChapterId, selectedCourseId, selectedModuleId, sortBy]);
 
-            url += params.join('&');
+    const curriculumStats = useMemo(() => {
+        let modules = 0;
+        let chapters = 0;
+        let lessonCount = 0;
+        let exerciseCount = 0;
+        let quizCount = 0;
 
-            const res = await fetch(url, {
-                headers: getAuthHeaders()
+        tree.forEach((course) => {
+            modules += course.modules.length;
+            course.modules.forEach((module) => {
+                chapters += module.chapters.length;
+                module.chapters.forEach((chapter) => {
+                    lessonCount += chapter.lessons.length;
+                    chapter.lessons.forEach((lesson) => {
+                        exerciseCount += lesson._count.codingExercises;
+                        quizCount += lesson._count.quizQuestions;
+                    });
+                });
             });
-            const data = await res.json();
-            const result = Array.isArray(data) ? data : [];
+        });
 
-            setLessons(result);
-            if (result.length > 0) {
-                const stillExists = result.some(l => l.id === selectedLessonId);
-                if (!stillExists) {
-                    setSelectedLessonId(result[0].id);
-                }
-            } else {
-                setSelectedLessonId('');
-            }
-        } catch {
-            showToast('Lỗi khi tải danh sách bài học');
+        return { courses: tree.length, modules, chapters, lessons: lessonCount, exercises: exerciseCount, quizzes: quizCount };
+    }, [tree]);
+
+    const filteredLessons = useMemo(() => {
+        const keyword = searchKeyword.trim().toLocaleLowerCase('vi');
+        const list = lessons.filter((lesson) => {
+            const matchesKeyword =
+                !keyword ||
+                lesson.title?.toLocaleLowerCase('vi').includes(keyword) ||
+                lesson.lessonId?.toLowerCase().includes(keyword) ||
+                lesson.objective?.toLocaleLowerCase('vi').includes(keyword);
+            const isModulePractice = Boolean(lesson.lessonId?.includes('.MP'));
+            const matchesType =
+                contentTypeFilter === 'ALL' ||
+                (contentTypeFilter === 'LESSON' && !isModulePractice) ||
+                (contentTypeFilter === 'PRACTICE' && isModulePractice);
+            const normalizedDifficulty = normalizeDifficulty(lesson.difficulty);
+            const matchesDifficulty = difficultyFilter === 'ALL' || normalizedDifficulty === difficultyFilter;
+            const matchesAccess =
+                accessFilter === 'ALL' ||
+                (accessFilter === 'FREE' && lesson.isFree) ||
+                (accessFilter === 'ENROLLED' && !lesson.isFree);
+            return matchesKeyword && matchesType && matchesDifficulty && matchesAccess;
+        });
+
+        return list.sort((left, right) => {
+            if (sortBy === 'id_asc') return (left.lessonId || '').localeCompare(right.lessonId || '', undefined, { numeric: true });
+            if (sortBy === 'id_desc') return (right.lessonId || '').localeCompare(left.lessonId || '', undefined, { numeric: true });
+            if (sortBy === 'title') return (left.title || '').localeCompare(right.title || '', 'vi');
+            if (sortBy === 'oldest') return (left.orderIndex || 0) - (right.orderIndex || 0);
+            return (right.orderIndex || 0) - (left.orderIndex || 0);
+        });
+    }, [accessFilter, contentTypeFilter, difficultyFilter, lessons, searchKeyword, sortBy]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredLessons.length / pageSize));
+    const safeCurrentPage = Math.min(currentPage, totalPages);
+    const paginatedLessons = filteredLessons.slice((safeCurrentPage - 1) * pageSize, safeCurrentPage * pageSize);
+
+    const createNewLesson = () => {
+        const defaultChapterId = selectedChapterId !== 'ALL'
+            ? selectedChapterId
+            : currentModuleChapters[0]?.id ?? '';
+        if (!defaultChapterId) {
+            showToast('Hãy chọn học phần có ít nhất một chương trước khi tạo bài học');
+            return;
         }
+        setEditingLesson({
+            id: '',
+            chapterId: defaultChapterId,
+            lessonId: `LS-${Date.now().toString().slice(-6)}`,
+            title: 'Bài học mới',
+            difficulty: 'EASY',
+            durationMinutes: 15,
+            content: '# 1. Lý thuyết cốt lõi\n\nNội dung lý thuyết...\n\n# 2. Cú pháp & Code mẫu\n\n```python\nprint("Hello")\n```',
+            objective: 'Mục tiêu bài học...',
+            keyKnowledge: '',
+            orderIndex: lessons.length + 1,
+            isFree: false,
+        });
+        setIsLessonModalOpen(true);
     };
 
-    const handleDeleteLesson = async (id: string) => {
-        if (!window.confirm('Bạn có chắc chắn muốn xóa bài học này? Tất cả bài tập và câu hỏi liên quan sẽ bị xóa.')) return;
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/admin/lessons/${id}`, {
-                method: 'DELETE',
-                headers: getAuthHeaders()
-            });
-            if (res.ok) {
-                showToast('Đã xóa bài học thành công');
-                fetchLessons(selectedModuleId, selectedChapterId);
-                fetchTree();
-            } else {
-                showToast('Lỗi khi xóa bài học');
-            }
-        } catch {
-            showToast('Lỗi kết nối máy chủ');
-        }
+    const openLesson = (lesson: LessonRow) => {
+        setEditingLesson(lesson);
+        setIsLessonModalOpen(true);
     };
 
-    const handleDuplicateLesson = async (lesson: any) => {
+    const handleDuplicateLesson = async (lesson: LessonRow) => {
         try {
             const payload = {
                 ...lesson,
                 id: undefined,
                 lessonId: `${lesson.lessonId || 'LS'}-COPY`,
                 title: `${lesson.title} (Bản sao)`,
-                orderIndex: (lesson.orderIndex || 0) + 1
+                orderIndex: (lesson.orderIndex || 0) + 1,
             };
-            const res = await fetch(`${API_BASE_URL}/api/admin/lessons`, {
+            const response = await fetch(`${API_BASE_URL}/api/admin/lessons`, {
                 method: 'POST',
                 headers: getAuthHeaders(),
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload),
             });
-            if (res.ok) {
-                showToast('Đã nhân bản bài học thành công');
-                fetchLessons(selectedModuleId, selectedChapterId);
-            } else {
-                showToast('Lỗi khi nhân bản bài học');
+            if (!response.ok) {
+                showToast('Không thể nhân bản bài học');
+                return;
             }
-        } catch {
-            showToast('Lỗi kết nối máy chủ');
+            showToast('Đã nhân bản bài học');
+            await Promise.all([fetchLessons(), fetchTree()]);
+        } catch (error) {
+            console.error('Failed to duplicate lesson:', error);
+            showToast('Lỗi kết nối khi nhân bản bài học');
         }
     };
 
-    const handleResetFilters = () => {
+    const handleDeleteLesson = async () => {
+        if (!deleteTarget) return;
+        try {
+            setDeleting(true);
+            const response = await fetch(`${API_BASE_URL}/api/admin/lessons/${deleteTarget.id}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders(),
+            });
+            if (!response.ok) {
+                showToast('Không thể xóa bài học');
+                return;
+            }
+            setDeleteTarget(null);
+            showToast('Đã xóa bài học');
+            await Promise.all([fetchLessons(), fetchTree()]);
+        } catch (error) {
+            console.error('Failed to delete lesson:', error);
+            showToast('Lỗi kết nối khi xóa bài học');
+        } finally {
+            setDeleting(false);
+        }
+    };
+
+    const resetFilters = () => {
         setSearchKeyword('');
         setContentTypeFilter('ALL');
-        setStatusFilter('ALL');
         setDifficultyFilter('ALL');
-        setSelectedChapterId('ALL');
+        setAccessFilter('ALL');
     };
 
-    // Derived active items from tree
-    const currentCourse = tree.find(c => c.id === selectedCourseId);
-    const currentCourseModules = currentCourse?.modules || [];
-    const currentModule = currentCourseModules.find(m => m.id === selectedModuleId);
-    const currentModuleChapters = currentModule?.chapters || [];
+    const selectedScopeLabel = selectedChapterId !== 'ALL'
+        ? currentModuleChapters.find((chapter) => chapter.id === selectedChapterId)?.title
+        : currentModule?.title;
 
-    // Calculate aggregated summary numbers
-    const totalModulesCount = useMemo(() => {
-        return tree.reduce((acc, c) => acc + (c.modules?.length || 0), 0) || 108;
-    }, [tree]);
-
-    const totalChaptersCount = useMemo(() => {
-        return tree.reduce((acc, c) => acc + (c.modules?.reduce((mAcc, m) => mAcc + (m.chapters?.length || 0), 0) || 0), 0) || 24;
-    }, [tree]);
-
-    // Reset to page 1 whenever any filter changes
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchKeyword, selectedCourseId, selectedModuleId, selectedChapterId, contentTypeFilter, statusFilter, difficultyFilter, sortBy]);
-
-    // Filter & sort lessons
-    const filteredLessons = useMemo(() => {
-        let list = [...lessons];
-
-        if (searchKeyword.trim()) {
-            const kw = searchKeyword.toLowerCase().trim();
-            list = list.filter(l =>
-                (l.title && l.title.toLowerCase().includes(kw)) ||
-                (l.lessonId && l.lessonId.toLowerCase().includes(kw)) ||
-                (l.objective && l.objective.toLowerCase().includes(kw))
-            );
-        }
-
-        if (contentTypeFilter === 'LESSON') {
-            list = list.filter(l => !l.lessonId || !l.lessonId.includes('.MP'));
-        } else if (contentTypeFilter === 'EXERCISE') {
-            list = list.filter(l => l.lessonId && l.lessonId.includes('.MP'));
-        }
-
-        if (difficultyFilter !== 'ALL') {
-            const df = difficultyFilter.toUpperCase();
-            list = list.filter(l => {
-                const diff = (l.difficulty || 'EASY').toUpperCase();
-                if (df === 'EASY') return diff === 'EASY' || diff === 'DỄ' || diff === 'DE';
-                if (df === 'MEDIUM') return diff === 'MEDIUM' || diff === 'TRUNG BÌNH' || diff === 'TRUNGBINH';
-                if (df === 'HARD') return diff === 'HARD' || diff === 'KHÓ' || diff === 'KHO';
-                return diff === df;
-            });
-        }
-
-        if (statusFilter === 'PUBLISHED') {
-            list = list.filter(l => !l.isDraft);
-        } else if (statusFilter === 'DRAFT') {
-            list = list.filter(l => Boolean(l.isDraft));
-        }
-
-        if (sortBy === 'id_asc') {
-            list.sort((a, b) => {
-                const idA = a.lessonId || '';
-                const idB = b.lessonId || '';
-                return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' });
-            });
-        } else if (sortBy === 'id_desc') {
-            list.sort((a, b) => {
-                const idA = a.lessonId || '';
-                const idB = b.lessonId || '';
-                return idB.localeCompare(idA, undefined, { numeric: true, sensitivity: 'base' });
-            });
-        } else if (sortBy === 'title') {
-            list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-        } else if (sortBy === 'oldest') {
-            list.sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
-        } else if (sortBy === 'newest') {
-            list.sort((a, b) => (b.orderIndex || 0) - (a.orderIndex || 0));
-        } else {
-            list.sort((a, b) => {
-                const idA = a.lessonId || '';
-                const idB = b.lessonId || '';
-                return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' });
-            });
-        }
-
-        return list;
-    }, [lessons, searchKeyword, contentTypeFilter, difficultyFilter, statusFilter, sortBy]);
-
-    // Paginated lessons
-    const totalCount = filteredLessons.length || lessons.length || 1248;
-    const totalPages = Math.ceil(filteredLessons.length / pageSize) || 1;
-    const paginatedLessons = filteredLessons.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    const metricCards = [
+        { label: 'Khóa học', value: curriculumStats.courses, hint: 'Danh mục đang quản lý', icon: GraduationCap, tone: 'violet' as const },
+        { label: 'Cấu trúc nội dung', value: curriculumStats.lessons, hint: `${curriculumStats.modules} học phần · ${curriculumStats.chapters} chương`, icon: BookOpenCheck, tone: 'sky' as const },
+        { label: 'Bài tập lập trình', value: curriculumStats.exercises, hint: 'Gắn với các bài học', icon: ClipboardCheck, tone: 'emerald' as const },
+        { label: 'Câu hỏi kiểm tra', value: curriculumStats.quizzes, hint: 'Câu hỏi trắc nghiệm', icon: CircleHelp, tone: 'amber' as const },
+    ];
 
     return (
-        <div className="space-y-6 text-left pb-12">
-            {/* Toast Notification */}
+        <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-6 pb-10 text-left text-text-primary">
             {toastMessage && (
-                <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl border border-white/10 text-xs font-semibold flex items-center gap-2.5 animate-bounce">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <div className="fixed bottom-6 right-6 z-[60] flex max-w-sm items-center gap-3 rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-xs font-bold text-white shadow-2xl">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
+                        <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                    </span>
                     {toastMessage}
                 </div>
             )}
 
-            {/* 1. TOP HEADER & BREADCRUMB */}
-            <div className="space-y-2">
-                <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
-                    <span>Quản lý nội dung</span>
-                    <span>&gt;</span>
-                    <span className="text-purple-600 dark:text-purple-400 font-semibold">Nội dung &amp; Bài tập</span>
-                </div>
-
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 pt-1">
+            <section className="relative overflow-hidden rounded-[28px] border border-violet-100 bg-[linear-gradient(120deg,#ffffff_0%,#f5f3ff_54%,#ecfeff_100%)] px-5 py-6 shadow-[0_20px_60px_-42px_rgba(79,70,229,0.45)] dark:border-white/10 dark:bg-[linear-gradient(120deg,#111522_0%,#18172b_58%,#102129_100%)] sm:px-7">
+                <div className="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-cyan-300/20 blur-3xl dark:bg-cyan-500/10" aria-hidden="true" />
+                <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
                     <div>
-                        <h1 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                            Quản lý Nội Dung &amp; Bài Tập
-                        </h1>
-                        <p className="text-xs lg:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                            Tạo, quản lý và tổ chức nội dung học tập một cách hiệu quả
+                        <div className="mb-2 flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-violet-600 dark:text-violet-300">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-500/15">
+                                <Layers3 className="h-3.5 w-3.5" aria-hidden="true" />
+                            </span>
+                            Curriculum workspace
+                        </div>
+                        <h2 className="text-2xl font-black tracking-[-0.04em] text-slate-950 dark:text-white sm:text-[28px]">
+                            Nội dung và bài tập
+                        </h2>
+                        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                            Tổ chức giáo trình theo khóa học, học phần và chương; chỉnh sửa bài học trong một không gian thống nhất.
                         </p>
                     </div>
-
-                    {/* Top Action Buttons */}
-                    <div className="flex items-center gap-2.5 flex-wrap">
+                    <div className="flex flex-wrap gap-2">
                         <button
                             type="button"
-                            onClick={() => {
-                                const defaultChapterId = selectedChapterId !== 'ALL' ? selectedChapterId : currentModuleChapters[0]?.id || '';
-                                setEditingLesson({
-                                    id: '',
-                                    chapterId: defaultChapterId,
-                                    lessonId: `LS-${Date.now().toString().slice(-6)}`,
-                                    title: 'Bài học mới',
-                                    difficulty: 'EASY',
-                                    durationMinutes: 15,
-                                    content: '# 1. Lý thuyết cốt lõi\n\nNội dung lý thuyết...\n\n# 2. Cú pháp & Code mẫu\n\n```python\nprint("Hello")\n```',
-                                    objective: 'Mục tiêu bài học...',
-                                    keyKnowledge: '',
-                                    orderIndex: lessons.length + 1,
-                                    isFree: false
-                                });
-                                setIsLessonModalOpen(true);
-                            }}
-                            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md shadow-purple-500/20 transition-all cursor-pointer"
+                            onClick={() => void Promise.all([fetchTree(), fetchLessons()])}
+                            className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-violet-200 bg-white/85 px-4 text-sm font-bold text-violet-700 shadow-sm transition hover:border-violet-300 hover:bg-white dark:border-violet-500/20 dark:bg-white/5 dark:text-violet-300"
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                            </svg>
-                            <span>Tạo nội dung mới</span>
+                            <RefreshCw className={`h-4 w-4 ${treeLoading || lessonsLoading ? 'animate-spin' : ''}`} aria-hidden="true" />
+                            Làm mới
                         </button>
-
                         <button
                             type="button"
-                            onClick={() => showToast('Tính năng Tải lên & Import đang được chuẩn bị')}
-                            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-bg-secondary text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 text-xs font-semibold shadow-xs transition-all cursor-pointer"
+                            onClick={createNewLesson}
+                            className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl bg-violet-600 px-5 text-sm font-bold text-white shadow-lg shadow-violet-600/20 transition hover:-translate-y-0.5 hover:bg-violet-700"
                         >
-                            <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                            </svg>
-                            <span>Tải lên &amp; Import</span>
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() => showToast('Đang xuất dữ liệu giáo trình...')}
-                            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-bg-secondary text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 text-xs font-semibold shadow-xs transition-all cursor-pointer"
-                        >
-                            <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            <span>Xuất dữ liệu</span>
+                            <Plus className="h-4 w-4" aria-hidden="true" />
+                            Tạo bài học
                         </button>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            {/* 2. FIVE SUMMARY METRIC CARDS */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-                {/* Card 1: Tổng nội dung */}
-                <div className="p-4 rounded-2xl border border-purple-100 dark:border-purple-900/30 bg-purple-50/40 dark:bg-purple-950/20 flex items-center gap-3.5 shadow-xs">
-                    <div className="w-11 h-11 rounded-xl bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-purple-600 dark:text-purple-300 flex-shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block">Tổng nội dung</span>
-                        <span className="text-lg font-black text-slate-900 dark:text-white leading-tight block">1,248</span>
-                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5 mt-0.5">
-                            ↑ 12% so với tháng trước
-                        </span>
-                    </div>
-                </div>
+            <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Tổng quan nội dung">
+                {metricCards.map((card) => (
+                    <MetricCard key={card.label} {...card} />
+                ))}
+            </section>
 
-                {/* Card 2: Chương học */}
-                <div className="p-4 rounded-2xl border border-blue-100 dark:border-blue-900/30 bg-blue-50/40 dark:bg-blue-950/20 flex items-center gap-3.5 shadow-xs">
-                    <div className="w-11 h-11 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-300 flex-shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block">Chương học</span>
-                        <span className="text-lg font-black text-slate-900 dark:text-white leading-tight block">{totalChaptersCount}</span>
-                        <span className="text-[10px] font-bold text-slate-400 mt-0.5 block">Không đổi</span>
-                    </div>
-                </div>
-
-                {/* Card 3: Module */}
-                <div className="p-4 rounded-2xl border border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/40 dark:bg-emerald-950/20 flex items-center gap-3.5 shadow-xs">
-                    <div className="w-11 h-11 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-600 dark:text-emerald-300 flex-shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                    </div>
-                    <div>
-                        <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block">Module</span>
-                        <span className="text-lg font-black text-slate-900 dark:text-white leading-tight block">{totalModulesCount}</span>
-                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5 mt-0.5">
-                            ↑ 8% so với tháng trước
-                        </span>
-                    </div>
-                </div>
-
-                {/* Card 4: Bài tập */}
-                <div className="p-4 rounded-2xl border border-amber-100 dark:border-amber-900/30 bg-amber-50/40 dark:bg-amber-950/20 flex items-center gap-3.5 shadow-xs">
-                    <div className="w-11 h-11 rounded-xl bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center text-amber-600 dark:text-amber-300 flex-shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                        </svg>
-                    </div>
-                    <div>
-                        <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block">Bài tập</span>
-                        <span className="text-lg font-black text-slate-900 dark:text-white leading-tight block">356</span>
-                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5 mt-0.5">
-                            ↑ 15% so với tháng trước
-                        </span>
-                    </div>
-                </div>
-
-                {/* Card 5: Đang học */}
-                <div className="p-4 rounded-2xl border border-rose-100 dark:border-rose-900/30 bg-rose-50/40 dark:bg-rose-950/20 flex items-center gap-3.5 shadow-xs">
-                    <div className="w-11 h-11 rounded-xl bg-rose-100 dark:bg-rose-900/50 flex items-center justify-center text-rose-600 dark:text-rose-300 flex-shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block">Đang học</span>
-                        <span className="text-lg font-black text-slate-900 dark:text-white leading-tight block">892</span>
-                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5 mt-0.5">
-                            ↑ 6% so với tháng trước
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            {/* 3. SEARCH & FILTER PANEL */}
-            <div className="p-5 rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-bg-secondary shadow-xs space-y-4">
-                {/* Row 1: Search, Course, Module, Chapter, Content Type */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-                    {/* Search */}
-                    <div>
-                        <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1.5">
-                            Tìm kiếm
+            <section className="grid min-h-[680px] grid-cols-1 gap-5 xl:grid-cols-12">
+                <aside className="overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-[0_18px_48px_-38px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-bg-secondary xl:col-span-3">
+                    <div className="border-b border-slate-100 p-5 dark:border-white/8">
+                        <SectionHeader icon={FolderOpen} title="Cấu trúc chương trình" description="Chọn phạm vi nội dung cần quản lý" />
+                        <label className="mt-5 block">
+                            <span className="mb-2 block text-[9px] font-extrabold uppercase tracking-[0.14em] text-text-tertiary">Khóa học</span>
+                            <div className="relative">
+                                <select
+                                    value={selectedCourseId}
+                                    onChange={(event) => {
+                                        setSelectedCourseId(event.target.value);
+                                        setSelectedModuleId('');
+                                        setSelectedChapterId('ALL');
+                                    }}
+                                    className="min-h-11 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50 py-2 pl-3 pr-9 text-xs font-bold text-text-primary outline-none transition focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
+                                >
+                                    {tree.map((course) => <option key={course.id} value={course.id}>{course.title}</option>)}
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            </div>
                         </label>
-                        <div className="relative">
-                            <svg className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                            <input
-                                type="text"
-                                value={searchKeyword}
-                                onChange={(e) => setSearchKeyword(e.target.value)}
-                                placeholder="Tìm theo tiêu đề, mô tả, ID..."
-                                className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-bg-tertiary text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition-colors"
-                            />
-                        </div>
                     </div>
 
-                    {/* Course */}
-                    <div>
-                        <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1.5">
-                            Khóa học
-                        </label>
-                        <select
-                            value={selectedCourseId}
-                            onChange={(e) => {
-                                const cId = e.target.value;
-                                setSelectedCourseId(cId);
-                                const found = tree.find(c => c.id === cId);
-                                const firstM = found?.modules?.[0];
-                                setSelectedModuleId(firstM ? firstM.id : '');
-                                setSelectedChapterId('ALL');
-                            }}
-                            className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-bg-tertiary text-slate-800 dark:text-white focus:outline-none focus:border-purple-500 transition-colors cursor-pointer"
-                        >
-                            {tree.map(c => (
-                                <option key={c.id} value={c.id}>
-                                    {c.title}
-                                </option>
-                            ))}
-                        </select>
+                    <div className="admin-sidebar-scroll max-h-[590px] overflow-y-auto p-3">
+                        {treeLoading ? (
+                            <div className="flex min-h-48 items-center justify-center">
+                                <LoaderCircle className="h-6 w-6 animate-spin text-violet-600" />
+                            </div>
+                        ) : currentCourseModules.length === 0 ? (
+                            <EmptyState message="Khóa học chưa có học phần." compact />
+                        ) : (
+                            <div className="space-y-2">
+                                {currentCourseModules.map((module) => {
+                                    const active = selectedModuleId === module.id;
+                                    const moduleLessonCount = module.chapters.reduce((total, chapter) => total + chapter.lessons.length, 0);
+                                    return (
+                                        <div key={module.id} className={`rounded-2xl border transition ${active ? 'border-violet-200 bg-violet-50/60 dark:border-violet-500/20 dark:bg-violet-500/5' : 'border-transparent'}`}>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setSelectedModuleId(module.id);
+                                                    setSelectedChapterId('ALL');
+                                                }}
+                                                className="flex w-full cursor-pointer items-start gap-3 rounded-2xl p-3 text-left"
+                                            >
+                                                <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${active ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-500 dark:bg-white/5 dark:text-slate-300'}`}>
+                                                    <Layers3 className="h-4 w-4" />
+                                                </span>
+                                                <span className="min-w-0 flex-1">
+                                                    <span className="block text-xs font-extrabold leading-5 text-text-primary">{module.title}</span>
+                                                    <span className="mt-1 block text-[10px] text-text-tertiary">{module.chapters.length} chương · {moduleLessonCount} bài học</span>
+                                                </span>
+                                            </button>
+                                            {active && (
+                                                <div className="space-y-1 px-3 pb-3 pl-[60px]">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setSelectedChapterId('ALL')}
+                                                        className={`block w-full cursor-pointer rounded-lg px-2.5 py-2 text-left text-[11px] font-bold transition ${selectedChapterId === 'ALL' ? 'bg-white text-violet-700 shadow-sm dark:bg-white/8 dark:text-violet-300' : 'text-text-tertiary hover:bg-white/70 hover:text-text-primary dark:hover:bg-white/5'}`}
+                                                    >
+                                                        Tất cả chương
+                                                    </button>
+                                                    {module.chapters.map((chapter) => (
+                                                        <button
+                                                            type="button"
+                                                            key={chapter.id}
+                                                            onClick={() => setSelectedChapterId(chapter.id)}
+                                                            className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-[11px] font-semibold transition ${selectedChapterId === chapter.id ? 'bg-white text-violet-700 shadow-sm dark:bg-white/8 dark:text-violet-300' : 'text-text-tertiary hover:bg-white/70 hover:text-text-primary dark:hover:bg-white/5'}`}
+                                                        >
+                                                            <span className="line-clamp-2">{chapter.title}</span>
+                                                            <span className="shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-[9px] dark:bg-white/8">{chapter.lessons.length}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
+                </aside>
 
-                    {/* Module */}
-                    <div>
-                        <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1.5">
-                            Module (Học phần)
-                        </label>
-                        <select
-                            value={selectedModuleId}
-                            onChange={(e) => {
-                                setSelectedModuleId(e.target.value);
-                                setSelectedChapterId('ALL');
-                            }}
-                            className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-bg-tertiary text-slate-800 dark:text-white focus:outline-none focus:border-purple-500 transition-colors cursor-pointer"
-                        >
-                            {currentCourseModules.map(m => (
-                                <option key={m.id} value={m.id}>
-                                    {m.title}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Chapter */}
-                    <div>
-                        <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1.5">
-                            Chương học
-                        </label>
-                        <select
-                            value={selectedChapterId}
-                            onChange={(e) => setSelectedChapterId(e.target.value)}
-                            className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-bg-tertiary text-slate-800 dark:text-white focus:outline-none focus:border-purple-500 transition-colors cursor-pointer"
-                        >
-                            <option value="ALL">Chọn chương học</option>
-                            {currentModuleChapters.map(ch => (
-                                <option key={ch.id} value={ch.id}>
-                                    {ch.title}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Content Type */}
-                    <div>
-                        <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1.5">
-                            Loại nội dung
-                        </label>
-                        <select
-                            value={contentTypeFilter}
-                            onChange={(e) => setContentTypeFilter(e.target.value)}
-                            className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-bg-tertiary text-slate-800 dark:text-white focus:outline-none focus:border-purple-500 transition-colors cursor-pointer"
-                        >
-                            <option value="ALL">Tất cả loại</option>
-                            <option value="LESSON">Bài học lý thuyết</option>
-                            <option value="EXERCISE">Bài tập thực hành</option>
-                        </select>
-                    </div>
-                </div>
-
-                {/* Row 2: Status, Difficulty, Reset & Filter Button */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5 pt-1">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full sm:w-auto">
-                        {/* Status */}
-                        <div className="w-full sm:w-48">
-                            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1.5">
-                                Trạng thái
-                            </label>
-                            <select
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-bg-tertiary text-slate-800 dark:text-white focus:outline-none focus:border-purple-500 transition-colors cursor-pointer"
-                            >
-                                <option value="ALL">Tất cả trạng thái</option>
-                                <option value="PUBLISHED">Đã xuất bản</option>
-                                <option value="DRAFT">Bản nháp</option>
-                            </select>
+                <div className="flex min-w-0 flex-col gap-4 xl:col-span-9">
+                    <article className="rounded-[24px] border border-slate-200/80 bg-white p-4 shadow-[0_18px_48px_-38px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-bg-secondary sm:p-5">
+                        <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
+                            <div className="min-w-0">
+                                <p className="text-[9px] font-extrabold uppercase tracking-[0.14em] text-violet-600 dark:text-violet-300">Phạm vi đang chọn</p>
+                                <h3 className="mt-1 truncate text-base font-black text-text-primary">{selectedScopeLabel || currentCourse?.title || 'Kho nội dung'}</h3>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <ViewToggle mode={viewMode} onChange={setViewMode} />
+                                <select
+                                    value={sortBy}
+                                    onChange={(event) => setSortBy(event.target.value as SortOption)}
+                                    className="min-h-10 cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs font-bold text-text-secondary outline-none focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
+                                    aria-label="Sắp xếp danh sách"
+                                >
+                                    <option value="id_asc">Mã tăng dần</option>
+                                    <option value="id_desc">Mã giảm dần</option>
+                                    <option value="newest">Thứ tự mới nhất</option>
+                                    <option value="oldest">Thứ tự cũ nhất</option>
+                                    <option value="title">Tên A–Z</option>
+                                </select>
+                            </div>
                         </div>
 
-                        {/* Difficulty */}
-                        <div className="w-full sm:w-48">
-                            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1.5">
-                                Mức độ
-                            </label>
-                            <select
-                                value={difficultyFilter}
-                                onChange={(e) => setDifficultyFilter(e.target.value)}
-                                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-bg-tertiary text-slate-800 dark:text-white focus:outline-none focus:border-purple-500 transition-colors cursor-pointer"
-                            >
-                                <option value="ALL">Tất cả mức độ</option>
+                        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1.5fr)_repeat(3,minmax(130px,.65fr))_auto]">
+                            <div className="relative">
+                                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                <input
+                                    type="search"
+                                    value={searchKeyword}
+                                    onChange={(event) => setSearchKeyword(event.target.value)}
+                                    placeholder="Tìm tên, mã hoặc mục tiêu bài học..."
+                                    className="min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 text-xs font-semibold text-text-primary outline-none transition focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
+                                />
+                            </div>
+                            <FilterSelect value={contentTypeFilter} onChange={setContentTypeFilter} label="Loại nội dung">
+                                <option value="ALL">Mọi nội dung</option>
+                                <option value="LESSON">Bài học</option>
+                                <option value="PRACTICE">Bài thực hành</option>
+                            </FilterSelect>
+                            <FilterSelect value={difficultyFilter} onChange={setDifficultyFilter} label="Độ khó">
+                                <option value="ALL">Mọi độ khó</option>
                                 <option value="EASY">Dễ</option>
                                 <option value="MEDIUM">Trung bình</option>
                                 <option value="HARD">Khó</option>
-                            </select>
+                            </FilterSelect>
+                            <FilterSelect value={accessFilter} onChange={setAccessFilter} label="Quyền truy cập">
+                                <option value="ALL">Mọi phạm vi</option>
+                                <option value="FREE">Miễn phí</option>
+                                <option value="ENROLLED">Trong khóa học</option>
+                            </FilterSelect>
+                            <button
+                                type="button"
+                                onClick={resetFilters}
+                                className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-text-tertiary transition hover:border-violet-200 hover:text-violet-700 dark:border-white/10 dark:bg-white/5"
+                                title="Đặt lại bộ lọc"
+                            >
+                                <RefreshCw className="h-4 w-4" />
+                                <span className="xl:hidden 2xl:inline">Đặt lại</span>
+                            </button>
+                        </div>
+
+                        <div className="mt-4 flex flex-col justify-between gap-3 border-t border-slate-100 pt-4 dark:border-white/8 sm:flex-row sm:items-center">
+                            <p className="text-xs text-text-tertiary">
+                                <strong className="text-text-primary">{numberFormatter.format(filteredLessons.length)}</strong> bài học phù hợp
+                            </p>
+                            <label className="flex items-center gap-2 text-[11px] font-semibold text-text-tertiary">
+                                Hiển thị
+                                <select
+                                    value={pageSize}
+                                    onChange={(event) => {
+                                        setPageSize(Number(event.target.value));
+                                        setCurrentPage(1);
+                                    }}
+                                    className="cursor-pointer rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 font-bold text-text-primary outline-none dark:border-white/10 dark:bg-bg-tertiary"
+                                >
+                                    <option value={12}>12</option>
+                                    <option value={24}>24</option>
+                                    <option value={48}>48</option>
+                                </select>
+                                mục
+                            </label>
+                        </div>
+                    </article>
+
+                    <article className="min-h-[450px] overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-[0_18px_48px_-38px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-bg-secondary">
+                        {lessonsLoading ? (
+                            <div className="flex min-h-[450px] flex-col items-center justify-center gap-3">
+                                <LoaderCircle className="h-7 w-7 animate-spin text-violet-600" />
+                                <p className="text-xs font-bold text-text-tertiary">Đang tải nội dung...</p>
+                            </div>
+                        ) : paginatedLessons.length === 0 ? (
+                            <div className="flex min-h-[450px] items-center justify-center">
+                                <EmptyState message="Không có bài học phù hợp với phạm vi và bộ lọc hiện tại." />
+                            </div>
+                        ) : viewMode === 'table' ? (
+                            <LessonTable
+                                lessons={paginatedLessons}
+                                page={safeCurrentPage}
+                                pageSize={pageSize}
+                                onOpen={openLesson}
+                                onDuplicate={(lesson) => void handleDuplicateLesson(lesson)}
+                                onDelete={setDeleteTarget}
+                            />
+                        ) : (
+                            <LessonGrid
+                                lessons={paginatedLessons}
+                                onOpen={openLesson}
+                                onDuplicate={(lesson) => void handleDuplicateLesson(lesson)}
+                                onDelete={setDeleteTarget}
+                            />
+                        )}
+
+                        <Pagination
+                            currentPage={safeCurrentPage}
+                            totalPages={totalPages}
+                            totalItems={filteredLessons.length}
+                            pageSize={pageSize}
+                            onPageChange={setCurrentPage}
+                        />
+                    </article>
+                </div>
+            </section>
+
+            {deleteTarget && (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Xóa bài học">
+                    <div className="w-full max-w-md rounded-[24px] border border-white/50 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#131827]">
+                        <div className="flex items-start justify-between gap-4">
+                            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-600 dark:bg-rose-500/10 dark:text-rose-300">
+                                <Trash2 className="h-5 w-5" />
+                            </span>
+                            <button type="button" onClick={() => setDeleteTarget(null)} className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 dark:hover:bg-white/5" aria-label="Đóng">
+                                <X className="h-4 w-4" />
+                            </button>
+                        </div>
+                        <h3 className="mt-5 text-lg font-black text-text-primary">Xóa bài học?</h3>
+                        <p className="mt-2 text-sm leading-6 text-text-secondary">
+                            “{deleteTarget.title}” cùng bài tập và câu hỏi liên quan sẽ bị xóa khỏi chương trình.
+                        </p>
+                        <div className="mt-6 flex gap-3">
+                            <button type="button" onClick={() => setDeleteTarget(null)} className="min-h-11 flex-1 cursor-pointer rounded-xl border border-slate-200 text-sm font-bold text-text-secondary transition hover:bg-slate-50 dark:border-white/10 dark:hover:bg-white/5">Hủy</button>
+                            <button type="button" onClick={() => void handleDeleteLesson()} disabled={deleting} className="inline-flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-rose-600 text-sm font-bold text-white transition hover:bg-rose-700 disabled:opacity-50">
+                                {deleting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                                Xóa bài học
+                            </button>
                         </div>
                     </div>
-
-                    {/* Right Filter Actions */}
-                    <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end pt-2 sm:pt-4">
-                        <button
-                            type="button"
-                            onClick={handleResetFilters}
-                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
-                        >
-                            <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                            <span>Đặt lại bộ lọc</span>
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() => fetchLessons(selectedModuleId, selectedChapterId)}
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
-                        >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                            </svg>
-                            <span>Lọc kết quả</span>
-                        </button>
-                    </div>
                 </div>
-            </div>
+            )}
 
-            {/* 4. TABLE HEADER TOOLBAR */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    Hiển thị <span className="text-slate-900 dark:text-white font-bold">{paginatedLessons.length > 0 ? (currentPage - 1) * pageSize + 1 : 0} - {Math.min(currentPage * pageSize, filteredLessons.length)}</span> trong tổng số <span className="text-slate-900 dark:text-white font-bold">{filteredLessons.length}</span> kết quả
-                </div>
-
-                <div className="flex items-center gap-3">
-                    {/* View mode toggle */}
-                    <div className="flex items-center bg-slate-100 dark:bg-bg-secondary p-0.5 rounded-xl border border-slate-200 dark:border-white/10">
-                        <button
-                            type="button"
-                            onClick={() => setViewMode('table')}
-                            className={`p-1.5 rounded-lg transition-colors ${
-                                viewMode === 'table' ? 'bg-white dark:bg-bg-tertiary text-purple-600 shadow-xs' : 'text-slate-400 hover:text-slate-600'
-                            }`}
-                            title="Chế độ bảng"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                            </svg>
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setViewMode('grid')}
-                            className={`p-1.5 rounded-lg transition-colors ${
-                                viewMode === 'grid' ? 'bg-white dark:bg-bg-tertiary text-purple-600 shadow-xs' : 'text-slate-400 hover:text-slate-600'
-                            }`}
-                            title="Chế độ lưới"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <rect x="3" y="3" width="7" height="7" rx="1" />
-                                <rect x="14" y="3" width="7" height="7" rx="1" />
-                                <rect x="14" y="14" width="7" height="7" rx="1" />
-                                <rect x="3" y="14" width="7" height="7" rx="1" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    {/* Page size */}
-                    <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                        <span>Hiển thị</span>
-                        <select
-                            value={pageSize}
-                            onChange={(e) => {
-                                setPageSize(Number(e.target.value));
-                                setCurrentPage(1);
-                            }}
-                            className="px-2 py-1 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-bg-secondary text-xs font-semibold text-slate-800 dark:text-white"
-                        >
-                            <option value={10}>10</option>
-                            <option value={20}>20</option>
-                            <option value={50}>50</option>
-                        </select>
-                        <span>bản ghi</span>
-                    </div>
-
-                    {/* Sort Dropdown */}
-                    <select
-                        value={sortBy}
-                        onChange={(e: any) => setSortBy(e.target.value)}
-                        className="px-3 py-1.5 rounded-[4px] border border-slate-200 dark:border-white/10 bg-white dark:bg-bg-secondary text-xs font-semibold text-slate-800 dark:text-white cursor-pointer"
-                    >
-                        <option value="id_asc">ID Nội dung (Tăng dần)</option>
-                        <option value="id_desc">ID Nội dung (Giảm dần)</option>
-                        <option value="newest">Mới nhất (Thứ tự)</option>
-                        <option value="oldest">Cũ nhất (Thứ tự)</option>
-                        <option value="title">Theo tên A-Z</option>
-                    </select>
-                </div>
-            </div>
-
-            {/* 5. MAIN DATA TABLE */}
-            <div className="rounded-[5px] border border-slate-200/80 dark:border-white/10 bg-white dark:bg-bg-secondary overflow-hidden shadow-xs">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="border-b border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-bg-tertiary text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-bold">
-                                <th className="py-3.5 px-4 w-12 text-center">STT</th>
-                                <th 
-                                    onClick={() => setSortBy(sortBy === 'id_asc' ? 'id_desc' : 'id_asc')}
-                                    className="py-3.5 px-4 w-32 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors select-none"
-                                    title="Bấm để đổi chiều sắp xếp theo ID Nội dung"
-                                >
-                                    <div className="flex items-center gap-1.5">
-                                        <span>ID Nội dung</span>
-                                        <span className="text-[10px] text-purple-600 dark:text-purple-400 font-bold">
-                                            {sortBy === 'id_asc' ? '▲' : sortBy === 'id_desc' ? '▼' : '⇅'}
-                                        </span>
-                                    </div>
-                                </th>
-                                <th className="py-3.5 px-4 min-w-[220px]">Tiêu đề nội dung</th>
-                                <th className="py-3.5 px-4 min-w-[180px]">Khóa học / Module / Chương</th>
-                                <th className="py-3.5 px-4 w-24 text-center">Loại</th>
-                                <th className="py-3.5 px-4 w-24 text-center">Mức độ</th>
-                                <th className="py-3.5 px-4 w-32">Trạng thái</th>
-                                <th className="py-3.5 px-4 w-28">Cập nhật</th>
-                                <th className="py-3.5 px-4 w-28 text-center">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-white/5 text-xs">
-                            {paginatedLessons.length === 0 ? (
-                                <tr>
-                                    <td colSpan={9} className="py-12 text-center text-slate-400">
-                                        {loading ? 'Đang tải dữ liệu nội dung...' : 'Không tìm thấy bài học nào phù hợp với bộ lọc.'}
-                                    </td>
-                                </tr>
-                            ) : (
-                                paginatedLessons.map((l, idx) => {
-                                    const isMP = l.lessonId && l.lessonId.includes('.MP');
-                                    const stt = (currentPage - 1) * pageSize + idx + 1;
-
-                                    return (
-                                        <tr
-                                            key={l.id}
-                                            className="hover:bg-purple-50/30 dark:hover:bg-white/5 transition-colors group"
-                                        >
-                                            {/* 1. STT */}
-                                            <td className="py-3.5 px-4 text-center text-slate-400 font-semibold">
-                                                {stt}
-                                            </td>
-
-                                            {/* 2. ID Nội dung */}
-                                            <td className="py-3.5 px-4">
-                                                <span className="font-bold text-purple-600 dark:text-purple-400 font-mono">
-                                                    {l.lessonId || `LS-01-${String(stt).padStart(2, '0')}`}
-                                                </span>
-                                            </td>
-
-                                            {/* 3. Tiêu đề nội dung */}
-                                            <td className="py-3.5 px-4">
-                                                <div
-                                                    onClick={() => {
-                                                        setSelectedLessonId(l.id);
-                                                        setEditingLesson(l);
-                                                        setIsLessonModalOpen(true);
-                                                    }}
-                                                    className="font-bold text-slate-900 dark:text-white hover:text-purple-600 dark:hover:text-purple-400 cursor-pointer transition-colors"
-                                                >
-                                                    {l.title}
-                                                </div>
-                                                <div className="text-[11px] text-slate-400 truncate max-w-xs mt-0.5">
-                                                    {l.objective || 'Hiểu được đặc điểm và đối tượng của bài học...'}
-                                                </div>
-                                            </td>
-
-                                            {/* 4. Khóa học / Module / Chương */}
-                                            <td className="py-3.5 px-4">
-                                                <div className="font-bold text-slate-800 dark:text-slate-200">
-                                                    {currentCourse?.title || 'Lịch sử & Địa lí 4'}
-                                                </div>
-                                                <div className="text-[11px] text-slate-400 mt-0.5">
-                                                    {currentModule?.title?.split(':')[0] || 'Module 1'} • {l.chapter?.title || 'Chương 1'}
-                                                </div>
-                                            </td>
-
-                                            {/* 5. Loại */}
-                                            <td className="py-3.5 px-4 text-center">
-                                                {isMP ? (
-                                                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40 inline-block">
-                                                        Bài tập
-                                                    </span>
-                                                ) : (
-                                                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 border border-sky-200/60 dark:border-sky-800/40 inline-block">
-                                                        Bài học
-                                                    </span>
-                                                )}
-                                            </td>
-
-                                            {/* 6. Mức độ */}
-                                            <td className="py-3.5 px-4 text-center">
-                                                {(() => {
-                                                    const diff = (l.difficulty || 'EASY').toUpperCase();
-                                                    if (diff === 'HARD' || diff === 'KHÓ' || diff === 'KHO') {
-                                                        return (
-                                                            <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800/40 inline-block">
-                                                                Khó
-                                                            </span>
-                                                        );
-                                                    }
-                                                    if (diff === 'MEDIUM' || diff === 'TRUNG BÌNH' || diff === 'TRUNGBINH') {
-                                                        return (
-                                                            <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/40 inline-block">
-                                                                Trung bình
-                                                            </span>
-                                                        );
-                                                    }
-                                                    return (
-                                                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40 inline-block">
-                                                            Dễ
-                                                        </span>
-                                                    );
-                                                })()}
-                                            </td>
-
-                                            {/* 7. Trạng thái */}
-                                            <td className="py-3.5 px-4">
-                                                <div className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
-                                                    <span>Đã xuất bản</span>
-                                                </div>
-                                            </td>
-
-                                            {/* 8. Cập nhật */}
-                                            <td className="py-3.5 px-4 text-slate-500">
-                                                <div className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">2 giờ trước</div>
-                                                <div className="text-[10px] text-slate-400">22/08/2025</div>
-                                            </td>
-
-                                            {/* 9. Thao tác */}
-                                            <td className="py-3.5 px-4 text-center">
-                                                <div className="flex items-center justify-center gap-1.5">
-                                                    {/* Edit Button */}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setSelectedLessonId(l.id);
-                                                            setEditingLesson(l);
-                                                            setIsLessonModalOpen(true);
-                                                        }}
-                                                        className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/50 flex items-center justify-center transition-colors cursor-pointer"
-                                                        title="Chỉnh sửa bài học"
-                                                    >
-                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                                        </svg>
-                                                    </button>
-
-                                                    {/* Duplicate Button */}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleDuplicateLesson(l)}
-                                                        className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-white/5 text-slate-500 hover:bg-slate-100 dark:hover:bg-white/10 flex items-center justify-center transition-colors cursor-pointer"
-                                                        title="Nhân bản bài học"
-                                                    >
-                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-                                                        </svg>
-                                                    </button>
-
-                                                    {/* Delete Button */}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleDeleteLesson(l.id)}
-                                                        className="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/50 flex items-center justify-center transition-colors cursor-pointer"
-                                                        title="Xóa bài học"
-                                                    >
-                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            {/* 6. PAGINATION FOOTER */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">
-                <div className="flex items-center gap-1.5">
-                    <button
-                        type="button"
-                        disabled={currentPage === 1}
-                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                        className="w-8 h-8 rounded-lg border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                    >
-                        &lt;
-                    </button>
-
-                    {Array.from({ length: Math.min(5, totalPages) }).map((_, idx) => {
-                        const pageNum = idx + 1;
-                        return (
-                            <button
-                                key={pageNum}
-                                type="button"
-                                onClick={() => setCurrentPage(pageNum)}
-                                className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
-                                    currentPage === pageNum
-                                        ? 'bg-purple-600 text-white shadow-xs'
-                                        : 'border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'
-                                }`}
-                            >
-                                {pageNum}
-                            </button>
-                        );
-                    })}
-
-                    {totalPages > 5 && (
-                        <>
-                            <span className="px-1 text-slate-400">...</span>
-                            <button
-                                type="button"
-                                onClick={() => setCurrentPage(totalPages)}
-                                className={`w-8 h-8 rounded-lg text-xs font-bold border border-slate-200 dark:border-white/10 text-slate-600 hover:bg-slate-50`}
-                            >
-                                {totalPages}
-                            </button>
-                        </>
-                    )}
-
-                    <button
-                        type="button"
-                        disabled={currentPage === totalPages}
-                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                        className="w-8 h-8 rounded-lg border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                    >
-                        &gt;
-                    </button>
-                </div>
-
-                <div className="text-xs text-slate-400 font-medium">
-                    Hiển thị {paginatedLessons.length > 0 ? (currentPage - 1) * pageSize + 1 : 0} - {Math.min(currentPage * pageSize, filteredLessons.length)} trong tổng số {totalCount} kết quả
-                </div>
-            </div>
-
-            {/* ============ FULLSCREEN STUDIO LESSON EDITOR ============ */}
             {isLessonModalOpen && editingLesson && (
                 <LessonStudioEditor
                     lesson={editingLesson}
-                    onSave={async (updatedLesson: any) => {
+                    onSave={async (updatedLesson) => {
                         const isEdit = Boolean(updatedLesson.id);
-                        const url = isEdit
-                            ? `${API_BASE_URL}/api/admin/lessons/${updatedLesson.id}`
-                            : `${API_BASE_URL}/api/admin/lessons`;
-                        const method = isEdit ? 'PUT' : 'POST';
-
-                        const effectiveChapterId = updatedLesson.chapterId || (selectedChapterId !== 'ALL' ? selectedChapterId : currentModuleChapters[0]?.id);
-
+                        const effectiveChapterId =
+                            updatedLesson.chapterId ||
+                            (selectedChapterId !== 'ALL' ? selectedChapterId : currentModuleChapters[0]?.id);
                         if (!effectiveChapterId) {
-                            showToast('Vui lòng chọn một chương học cho bài học này');
+                            showToast('Hãy chọn chương cho bài học');
                             return;
                         }
 
-                        const payload = {
-                            ...updatedLesson,
-                            chapterId: effectiveChapterId
-                        };
-
                         try {
-                            const res = await fetch(url, {
-                                method,
-                                headers: getAuthHeaders(),
-                                body: JSON.stringify(payload)
-                            });
-
-                            if (res.ok) {
-                                showToast(isEdit ? 'Đã cập nhật bài học thành công' : 'Đã tạo bài học mới thành công');
-                                setIsLessonModalOpen(false);
-                                fetchLessons(selectedModuleId, selectedChapterId);
-                                fetchTree();
-                            } else {
-                                const err = await res.json();
-                                showToast(err.message || 'Lỗi khi lưu bài học');
+                            const response = await fetch(
+                                isEdit
+                                    ? `${API_BASE_URL}/api/admin/lessons/${updatedLesson.id}`
+                                    : `${API_BASE_URL}/api/admin/lessons`,
+                                {
+                                    method: isEdit ? 'PUT' : 'POST',
+                                    headers: getAuthHeaders(),
+                                    body: JSON.stringify({ ...updatedLesson, chapterId: effectiveChapterId }),
+                                }
+                            );
+                            if (!response.ok) {
+                                const body = await response.json();
+                                showToast(body.message || 'Không thể lưu bài học');
+                                return;
                             }
-                        } catch {
-                            showToast('Lỗi kết nối máy chủ');
+                            setIsLessonModalOpen(false);
+                            showToast(isEdit ? 'Đã cập nhật bài học' : 'Đã tạo bài học mới');
+                            await Promise.all([fetchLessons(), fetchTree()]);
+                        } catch (error) {
+                            console.error('Failed to save lesson:', error);
+                            showToast('Lỗi kết nối khi lưu bài học');
                         }
                     }}
                     onClose={() => setIsLessonModalOpen(false)}
@@ -1002,4 +707,245 @@ export default function CurriculumManagement() {
             )}
         </div>
     );
+}
+
+function MetricCard({ label, value, hint, icon: Icon, tone }: { label: string; value: number; hint: string; icon: typeof GraduationCap; tone: 'violet' | 'sky' | 'emerald' | 'amber' }) {
+    const styles = {
+        violet: 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300',
+        sky: 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
+        emerald: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300',
+        amber: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
+    };
+    return (
+        <article className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_16px_42px_-34px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-bg-secondary">
+            <div className="flex items-start justify-between gap-4">
+                <div>
+                    <p className="text-xs font-bold text-text-tertiary">{label}</p>
+                    <p className="mt-3 text-3xl font-black tracking-[-0.05em] text-text-primary">{numberFormatter.format(value)}</p>
+                    <p className="mt-2 text-[11px] text-text-tertiary">{hint}</p>
+                </div>
+                <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${styles[tone]}`}>
+                    <Icon className="h-5 w-5" />
+                </span>
+            </div>
+        </article>
+    );
+}
+
+function SectionHeader({ icon: Icon, title, description }: { icon: typeof FolderOpen; title: string; description: string }) {
+    return (
+        <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">
+                <Icon className="h-[18px] w-[18px]" />
+            </span>
+            <div>
+                <h3 className="text-sm font-extrabold text-text-primary">{title}</h3>
+                <p className="mt-1 text-[11px] text-text-tertiary">{description}</p>
+            </div>
+        </div>
+    );
+}
+
+function FilterSelect({ value, onChange, label, children }: { value: string; onChange: (value: string) => void; label: string; children: React.ReactNode }) {
+    return (
+        <div className="relative">
+            <select
+                value={value}
+                onChange={(event) => onChange(event.target.value)}
+                aria-label={label}
+                className="min-h-11 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50 py-2 pl-3 pr-9 text-xs font-bold text-text-secondary outline-none transition focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
+            >
+                {children}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+        </div>
+    );
+}
+
+function ViewToggle({ mode, onChange }: { mode: ViewMode; onChange: (mode: ViewMode) => void }) {
+    return (
+        <div className="flex rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-white/10 dark:bg-bg-tertiary">
+            <button type="button" onClick={() => onChange('table')} className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition ${mode === 'table' ? 'bg-white text-violet-700 shadow-sm dark:bg-white/10 dark:text-violet-300' : 'text-slate-400'}`} aria-label="Xem dạng bảng">
+                <List className="h-4 w-4" />
+            </button>
+            <button type="button" onClick={() => onChange('grid')} className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition ${mode === 'grid' ? 'bg-white text-violet-700 shadow-sm dark:bg-white/10 dark:text-violet-300' : 'text-slate-400'}`} aria-label="Xem dạng lưới">
+                <Grid2X2 className="h-4 w-4" />
+            </button>
+        </div>
+    );
+}
+
+function LessonTable({ lessons, page, pageSize, onOpen, onDuplicate, onDelete }: { lessons: LessonRow[]; page: number; pageSize: number; onOpen: (lesson: LessonRow) => void; onDuplicate: (lesson: LessonRow) => void; onDelete: (lesson: LessonRow) => void }) {
+    return (
+        <div className="overflow-x-auto">
+            <table className="min-w-[980px]">
+                <thead>
+                    <tr>
+                        <th className="px-5 py-3.5 text-left">Nội dung</th>
+                        <th className="px-5 py-3.5 text-left">Vị trí</th>
+                        <th className="px-5 py-3.5 text-center">Học liệu</th>
+                        <th className="px-5 py-3.5 text-left">Độ khó</th>
+                        <th className="px-5 py-3.5 text-left">Truy cập</th>
+                        <th className="px-5 py-3.5 text-left">Cập nhật</th>
+                        <th className="px-5 py-3.5 text-right">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {lessons.map((lesson, index) => (
+                        <tr key={lesson.id} className="border-t border-slate-100 dark:border-white/5">
+                            <td className="px-5 py-4">
+                                <button type="button" onClick={() => onOpen(lesson)} className="group flex max-w-sm cursor-pointer items-start gap-3 text-left">
+                                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-700 transition group-hover:bg-violet-100 dark:bg-violet-500/10 dark:text-violet-300">
+                                        {lesson.lessonId?.includes('.MP') ? <Sparkles className="h-4 w-4" /> : <FileText className="h-4 w-4" />}
+                                    </span>
+                                    <span className="min-w-0">
+                                        <span className="block truncate text-xs font-extrabold text-text-primary group-hover:text-violet-700">{lesson.title}</span>
+                                        <span className="mt-1 block font-mono text-[10px] font-bold text-violet-600 dark:text-violet-300">
+                                            {lesson.lessonId || `#${(page - 1) * pageSize + index + 1}`}
+                                        </span>
+                                        {lesson.objective && <span className="mt-1 block truncate text-[10px] text-text-tertiary">{lesson.objective}</span>}
+                                    </span>
+                                </button>
+                            </td>
+                            <td className="px-5 py-4">
+                                <p className="max-w-56 truncate text-xs font-bold text-text-secondary">{lesson.chapter?.module.title || '—'}</p>
+                                <p className="mt-1 max-w-56 truncate text-[10px] text-text-tertiary">{lesson.chapter?.title || '—'}</p>
+                            </td>
+                            <td className="px-5 py-4 text-center">
+                                <div className="inline-flex items-center gap-2">
+                                    <CountBadge icon={ClipboardCheck} value={lesson._count?.codingExercises ?? 0} label="bài tập" />
+                                    <CountBadge icon={CircleHelp} value={lesson._count?.quizQuestions ?? 0} label="câu hỏi" />
+                                </div>
+                            </td>
+                            <td className="px-5 py-4"><DifficultyBadge difficulty={lesson.difficulty} /></td>
+                            <td className="px-5 py-4"><AccessBadge isFree={lesson.isFree} /></td>
+                            <td className="px-5 py-4 text-[10px] font-medium text-text-tertiary">{lesson.updatedAt ? new Date(lesson.updatedAt).toLocaleDateString('vi-VN') : '—'}</td>
+                            <td className="px-5 py-4">
+                                <div className="flex justify-end gap-1.5">
+                                    <ActionButton label="Chỉnh sửa" onClick={() => onOpen(lesson)}><Pencil className="h-4 w-4" /></ActionButton>
+                                    <ActionButton label="Nhân bản" onClick={() => onDuplicate(lesson)}><Copy className="h-4 w-4" /></ActionButton>
+                                    <ActionButton label="Xóa" danger onClick={() => onDelete(lesson)}><Trash2 className="h-4 w-4" /></ActionButton>
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+function LessonGrid({ lessons, onOpen, onDuplicate, onDelete }: { lessons: LessonRow[]; onOpen: (lesson: LessonRow) => void; onDuplicate: (lesson: LessonRow) => void; onDelete: (lesson: LessonRow) => void }) {
+    return (
+        <div className="grid gap-4 p-4 sm:grid-cols-2 2xl:grid-cols-3">
+            {lessons.map((lesson) => (
+                <article key={lesson.id} className="group rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition hover:-translate-y-0.5 hover:border-violet-200 hover:bg-white hover:shadow-lg dark:border-white/8 dark:bg-white/[0.025] dark:hover:bg-white/5">
+                    <div className="flex items-start justify-between gap-3">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">
+                            {lesson.lessonId?.includes('.MP') ? <Sparkles className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
+                        </span>
+                        <div className="flex gap-1">
+                            <ActionButton label="Nhân bản" onClick={() => onDuplicate(lesson)}><Copy className="h-4 w-4" /></ActionButton>
+                            <ActionButton label="Xóa" danger onClick={() => onDelete(lesson)}><Trash2 className="h-4 w-4" /></ActionButton>
+                        </div>
+                    </div>
+                    <button type="button" onClick={() => onOpen(lesson)} className="mt-4 block w-full cursor-pointer text-left">
+                        <p className="font-mono text-[10px] font-bold text-violet-600 dark:text-violet-300">{lesson.lessonId || 'Chưa có mã'}</p>
+                        <h4 className="mt-2 line-clamp-2 text-sm font-extrabold leading-5 text-text-primary group-hover:text-violet-700">{lesson.title}</h4>
+                        <p className="mt-2 line-clamp-2 min-h-10 text-[11px] leading-5 text-text-tertiary">{lesson.objective || 'Chưa có mô tả mục tiêu bài học.'}</p>
+                    </button>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                        <DifficultyBadge difficulty={lesson.difficulty} />
+                        <AccessBadge isFree={lesson.isFree} />
+                    </div>
+                    <div className="mt-4 flex items-center justify-between border-t border-slate-200/70 pt-4 text-[10px] text-text-tertiary dark:border-white/8">
+                        <span>{lesson._count?.codingExercises ?? 0} bài tập · {lesson._count?.quizQuestions ?? 0} câu hỏi</span>
+                        <span>{lesson.updatedAt ? new Date(lesson.updatedAt).toLocaleDateString('vi-VN') : '—'}</span>
+                    </div>
+                </article>
+            ))}
+        </div>
+    );
+}
+
+function CountBadge({ icon: Icon, value, label }: { icon: typeof ClipboardCheck; value: number; label: string }) {
+    return (
+        <span className="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-2 py-1 text-[9px] font-bold text-slate-600 dark:bg-white/5 dark:text-slate-300" title={label}>
+            <Icon className="h-3 w-3" /> {value}
+        </span>
+    );
+}
+
+function DifficultyBadge({ difficulty }: { difficulty: string }) {
+    const normalized = normalizeDifficulty(difficulty);
+    const config = {
+        EASY: { label: 'Dễ', className: 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300' },
+        MEDIUM: { label: 'Trung bình', className: 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300' },
+        HARD: { label: 'Khó', className: 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300' },
+    }[normalized];
+    return <span className={`inline-flex rounded-full border px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.08em] ${config.className}`}>{config.label}</span>;
+}
+
+function AccessBadge({ isFree }: { isFree: boolean }) {
+    return isFree
+        ? <span className="inline-flex rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.08em] text-sky-700 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-300">Miễn phí</span>
+        : <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.08em] text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">Trong khóa</span>;
+}
+
+function ActionButton({ label, danger = false, onClick, children }: { label: string; danger?: boolean; onClick: () => void; children: React.ReactNode }) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border transition focus-visible:outline-none focus-visible:ring-2 ${danger ? 'border-rose-100 bg-rose-50 text-rose-600 hover:bg-rose-100 focus-visible:ring-rose-500 dark:border-rose-500/15 dark:bg-rose-500/10 dark:text-rose-300' : 'border-slate-200 bg-white text-slate-500 hover:border-violet-200 hover:text-violet-700 focus-visible:ring-violet-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-300'}`}
+            aria-label={label}
+            title={label}
+        >
+            {children}
+        </button>
+    );
+}
+
+function Pagination({ currentPage, totalPages, totalItems, pageSize, onPageChange }: { currentPage: number; totalPages: number; totalItems: number; pageSize: number; onPageChange: (page: number) => void }) {
+    const start = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+    const end = Math.min(currentPage * pageSize, totalItems);
+    const pageNumbers = Array.from({ length: Math.min(totalPages, 5) }, (_, index) => {
+        if (totalPages <= 5) return index + 1;
+        const first = Math.min(Math.max(currentPage - 2, 1), totalPages - 4);
+        return first + index;
+    });
+
+    return (
+        <div className="flex flex-col justify-between gap-3 border-t border-slate-100 px-5 py-4 dark:border-white/8 sm:flex-row sm:items-center">
+            <p className="text-xs text-text-tertiary">Hiển thị <strong className="text-text-primary">{start}–{end}</strong> trong {numberFormatter.format(totalItems)} kết quả</p>
+            <div className="flex items-center gap-1.5">
+                <button type="button" disabled={currentPage <= 1} onClick={() => onPageChange(currentPage - 1)} className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-violet-200 hover:text-violet-700 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10" aria-label="Trang trước">
+                    <ChevronLeft className="h-4 w-4" />
+                </button>
+                {pageNumbers.map((page) => (
+                    <button type="button" key={page} onClick={() => onPageChange(page)} className={`h-9 min-w-9 cursor-pointer rounded-lg px-2 text-xs font-black transition ${page === currentPage ? 'bg-violet-600 text-white shadow-sm' : 'border border-slate-200 text-text-secondary hover:border-violet-200 hover:text-violet-700 dark:border-white/10'}`}>
+                        {page}
+                    </button>
+                ))}
+                <button type="button" disabled={currentPage >= totalPages} onClick={() => onPageChange(currentPage + 1)} className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-violet-200 hover:text-violet-700 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10" aria-label="Trang sau">
+                    <ChevronRight className="h-4 w-4" />
+                </button>
+            </div>
+        </div>
+    );
+}
+
+function EmptyState({ message, compact = false }: { message: string; compact?: boolean }) {
+    return (
+        <div className={`flex items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-5 text-center text-xs font-semibold text-text-tertiary dark:border-white/10 dark:bg-white/[0.025] ${compact ? 'min-h-32' : 'm-5 min-h-40'}`}>
+            {message}
+        </div>
+    );
+}
+
+function normalizeDifficulty(difficulty?: string): 'EASY' | 'MEDIUM' | 'HARD' {
+    const value = (difficulty || 'EASY').toUpperCase();
+    if (value === 'HARD' || value === 'KHÓ' || value === 'KHO') return 'HARD';
+    if (value === 'MEDIUM' || value === 'TRUNG BÌNH' || value === 'TRUNGBINH') return 'MEDIUM';
+    return 'EASY';
 }

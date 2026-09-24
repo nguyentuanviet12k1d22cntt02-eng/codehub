@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../infrastructure/database/prisma';
 import bcrypt from 'bcryptjs';
+import { getEvidenceBasedUserMastery } from '../recommendations/recommendationController';
 
 // ============ DASHBOARD STATISTICS ============
 export const getDashboardStats = async (req: Request, res: Response) => {
@@ -309,10 +310,19 @@ export const getAllUsers = async (req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
+        const language = String(req.query.language || 'PYTHON').toUpperCase();
 
         const user = await prisma.user.findUnique({
             where: { id: id as string },
-            include: {
+            select: {
+                id: true,
+                username: true,
+                email: true,
+                role: true,
+                gender: true,
+                avatarUrl: true,
+                createdAt: true,
+                updatedAt: true,
                 enrollments: {
                     include: {
                         course: {
@@ -348,6 +358,19 @@ export const getUserById = async (req: Request, res: Response) => {
                         }
                     }
                 },
+                lessonProgress: {
+                    take: 20,
+                    orderBy: { updatedAt: 'desc' },
+                    include: {
+                        lesson: {
+                            select: {
+                                id: true,
+                                title: true,
+                                difficulty: true
+                            }
+                        }
+                    }
+                },
                 certificates: {
                     include: {
                         course: {
@@ -372,7 +395,12 @@ export const getUserById = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'User không tồn tại' });
         }
 
-        res.json(user);
+        const masteryProfile = await getEvidenceBasedUserMastery(id as string, language);
+
+        res.json({
+            ...user,
+            masteryProfile
+        });
     } catch (error) {
         res.status(500).json({ message: 'Lỗi khi lấy thông tin user', error });
     }

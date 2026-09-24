@@ -1,222 +1,559 @@
-import { useEffect, useState } from 'react';
-import { adminApi } from '../../../features/admin/services/adminApi';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import {
+    Activity,
+    AlertTriangle,
+    BookOpenCheck,
+    CheckCircle2,
+    ChevronLeft,
+    ChevronRight,
+    Eye,
+    GraduationCap,
+    KeyRound,
+    LoaderCircle,
+    Mail,
+    RefreshCw,
+    Search,
+    ShieldCheck,
+    Trash2,
+    UserRound,
+    UserRoundPlus,
+    UsersRound,
+    X,
+} from 'lucide-react';
+import { adminApi } from '../../../features/admin/services/adminApi';
+
+interface ManagedUser {
+    id: string;
+    username: string;
+    email: string;
+    role: 'STUDENT' | 'TEACHER' | 'ADMIN';
+    gender?: 'MALE' | 'FEMALE' | 'OTHER' | null;
+    avatarUrl?: string | null;
+    createdAt: string;
+    _count: {
+        enrollments: number;
+        submissions: number;
+        practiceSubmissions: number;
+    };
+}
+
+interface PaginationState {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+}
+
+interface UserTarget {
+    id: string;
+    username: string;
+}
+
+const numberFormatter = new Intl.NumberFormat('vi-VN');
 
 export default function UserManagement() {
-    const [users, setUsers] = useState<any[]>([]);
+    const [users, setUsers] = useState<ManagedUser[]>([]);
     const [loading, setLoading] = useState(true);
-    const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 0 });
+    const [pagination, setPagination] = useState<PaginationState>({ page: 1, limit: 10, total: 0, totalPages: 0 });
     const [filters, setFilters] = useState({ role: '', search: '' });
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState<UserTarget | null>(null);
+    const [resetTarget, setResetTarget] = useState<UserTarget | null>(null);
+    const [newPassword, setNewPassword] = useState('');
+    const [actionLoading, setActionLoading] = useState(false);
 
-    useEffect(() => {
-        loadUsers();
-    }, [pagination.page, filters]);
-
-    const loadUsers = async () => {
+    const loadUsers = useCallback(async () => {
         try {
             setLoading(true);
             const data = await adminApi.getAllUsers({
                 page: pagination.page,
                 limit: pagination.limit,
                 role: filters.role || undefined,
-                search: filters.search || undefined
+                search: filters.search || undefined,
             });
             setUsers(data.users);
-            setPagination(prev => ({ ...prev, ...data.pagination }));
+            setPagination((current) => ({ ...current, ...data.pagination }));
         } catch (error) {
             console.error('Failed to load users:', error);
         } finally {
             setLoading(false);
         }
+    }, [filters.role, filters.search, pagination.limit, pagination.page]);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch the current page when filters or pagination change
+        void loadUsers();
+    }, [loadUsers]);
+
+    const pageStats = useMemo(() => {
+        const students = users.filter((user) => user.role === 'STUDENT').length;
+        const enrollments = users.reduce((total, user) => total + user._count.enrollments, 0);
+        const activities = users.reduce(
+            (total, user) => total + user._count.submissions + user._count.practiceSubmissions,
+            0
+        );
+        return { students, enrollments, activities };
+    }, [users]);
+
+    const updateFilter = (key: 'role' | 'search', value: string) => {
+        setFilters((current) => ({ ...current, [key]: value }));
+        setPagination((current) => ({ ...current, page: 1 }));
     };
 
-    const handleDelete = async (id: string, username: string) => {
-        if (!confirm(`Bạn có chắc muốn xóa user "${username}"?`)) return;
-
+    const handleDelete = async () => {
+        if (!deleteTarget) return;
         try {
-            await adminApi.deleteUser(id);
-            alert('Xóa user thành công');
-            loadUsers();
+            setActionLoading(true);
+            await adminApi.deleteUser(deleteTarget.id);
+            setDeleteTarget(null);
+            await loadUsers();
         } catch (error) {
-            alert('Lỗi khi xóa user');
+            console.error('Failed to delete user:', error);
+        } finally {
+            setActionLoading(false);
         }
     };
 
-    const handleResetPassword = async (id: string, username: string) => {
-        const newPassword = prompt(`Nhập mật khẩu mới cho user "${username}":`);
-        if (!newPassword) return;
-
+    const handleResetPassword = async () => {
+        if (!resetTarget || !newPassword.trim()) return;
         try {
-            await adminApi.resetUserPassword(id, newPassword);
-            alert('Reset mật khẩu thành công');
+            setActionLoading(true);
+            await adminApi.resetUserPassword(resetTarget.id, newPassword);
+            setResetTarget(null);
+            setNewPassword('');
         } catch (error) {
-            alert('Lỗi khi reset mật khẩu');
+            console.error('Failed to reset password:', error);
+        } finally {
+            setActionLoading(false);
         }
     };
+
+    const summaryCards = [
+        {
+            label: 'Tài khoản theo bộ lọc',
+            value: pagination.total,
+            hint: 'Tổng kết quả phù hợp',
+            icon: UsersRound,
+            tone: 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300',
+        },
+        {
+            label: 'Học viên ở trang này',
+            value: pageStats.students,
+            hint: `${users.length} tài khoản đang hiển thị`,
+            icon: GraduationCap,
+            tone: 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
+        },
+        {
+            label: 'Lượt đăng ký khóa học',
+            value: pageStats.enrollments,
+            hint: 'Trong trang hiện tại',
+            icon: BookOpenCheck,
+            tone: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300',
+        },
+        {
+            label: 'Hoạt động luyện tập',
+            value: pageStats.activities,
+            hint: 'Bài học và bài luyện tập',
+            icon: Activity,
+            tone: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
+        },
+    ];
 
     return (
-        <div className="flex flex-col gap-8 w-full max-w-[1240px] mx-auto text-left select-none animate-fadeIn">
-            {/* Header Block */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="flex flex-col gap-1 text-left">
-                    <h1 className="text-3xl font-extrabold tracking-tight text-text-primary">Quản lý Học viên</h1>
-                    <p className="text-text-tertiary text-sm">Xem chi tiết thông tin, đặt lại mật khẩu, phân chia vai trò hoặc xóa tài khoản học viên.</p>
-                </div>
-                <button
-                    onClick={() => setShowCreateModal(true)}
-                    className="px-5 py-3 bg-gradient-to-r from-accent-custom to-accent-hover text-white text-xs font-bold rounded-xl hover:shadow-lg hover:shadow-accent-custom/20 transition-all duration-200 active:scale-[0.98] cursor-pointer"
-                >
-                    + Tạo Học viên Mới
-                </button>
-            </div>
-
-            {/* Filters Section */}
-            <div className="bg-bg-secondary border border-border-custom rounded-2xl p-5 shadow-sm hover:border-border-custom/80 transition-all duration-300">
-                <div className="flex flex-col sm:flex-row gap-4 items-stretch">
-                    <div className="flex-1 relative flex items-center">
-                        <span className="absolute left-4 text-text-tertiary text-sm"><i className="fa-solid fa-magnifying-glass"></i></span>
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm theo tên đăng nhập hoặc email..."
-                            className="w-full bg-bg-primary text-text-primary border border-border-custom rounded-xl pl-10 pr-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-accent-custom focus:ring-1 focus:ring-accent-custom/30 transition-all"
-                            value={filters.search}
-                            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                        />
+        <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-6 text-left text-text-primary">
+            <section className="relative overflow-hidden rounded-[28px] border border-violet-100 bg-[linear-gradient(120deg,#ffffff_0%,#f5f3ff_54%,#ecfeff_100%)] px-5 py-6 shadow-[0_20px_60px_-42px_rgba(79,70,229,0.45)] dark:border-white/10 dark:bg-[linear-gradient(120deg,#111522_0%,#18172b_58%,#102129_100%)] sm:px-7">
+                <div className="absolute -right-14 -top-16 h-48 w-48 rounded-full bg-sky-300/20 blur-3xl dark:bg-sky-500/10" aria-hidden="true" />
+                <div className="relative flex flex-col justify-between gap-5 md:flex-row md:items-center">
+                    <div>
+                        <div className="mb-2 flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-violet-600 dark:text-violet-300">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-500/15">
+                                <UsersRound className="h-3.5 w-3.5" aria-hidden="true" />
+                            </span>
+                            Learner intelligence
+                        </div>
+                        <h2 className="text-2xl font-black tracking-[-0.04em] text-slate-950 dark:text-white sm:text-[28px]">
+                            Quản lý học viên và tri thức
+                        </h2>
+                        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                            Theo dõi tài khoản, hoạt động học tập và mở hồ sơ năng lực dựa trên bằng chứng của từng học viên.
+                        </p>
                     </div>
-
-                    <div className="w-full sm:w-48">
-                        <select
-                            className="w-full bg-bg-primary text-text-primary border border-border-custom rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-accent-custom cursor-pointer transition-all"
-                            value={filters.role}
-                            onChange={(e) => setFilters({ ...filters, role: e.target.value })}
-                        >
-                            <option value="">Tất cả Vai trò</option>
-                            <option value="STUDENT">Học viên (STUDENT)</option>
-                            <option value="TEACHER">Giáo viên (TEACHER)</option>
-                            <option value="ADMIN">Quản trị viên (ADMIN)</option>
-                        </select>
-                    </div>
-
                     <button
-                        onClick={() => setPagination({ ...pagination, page: 1 })}
-                        className="px-6 py-2.5 bg-bg-tertiary hover:bg-bg-tertiary/80 text-text-primary text-xs font-bold rounded-xl border border-border-custom transition-all active:scale-[0.98] cursor-pointer"
+                        type="button"
+                        onClick={() => setShowCreateModal(true)}
+                        className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 self-start rounded-xl bg-violet-600 px-5 text-sm font-bold text-white shadow-lg shadow-violet-600/20 transition hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 md:self-auto"
                     >
-                        Tải lại danh sách
+                        <UserRoundPlus className="h-4 w-4" aria-hidden="true" />
+                        Tạo học viên
                     </button>
                 </div>
-            </div>
+            </section>
 
-            {/* Users Table Card */}
-            <div className="bg-bg-secondary border border-border-custom rounded-2xl p-6 shadow-sm overflow-hidden flex flex-col gap-6">
-                <div className="overflow-x-auto rounded-xl border border-border-custom/50">
-                    {loading ? (
-                        <div className="flex flex-col items-center justify-center py-20 gap-4">
-                            <div className="w-8 h-8 border-3 border-accent-custom border-t-transparent rounded-full animate-spin"></div>
-                            <span className="text-xs font-bold text-text-tertiary tracking-wider animate-pulse">ĐANG TẢI DANH SÁCH...</span>
+            <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Tóm tắt học viên">
+                {summaryCards.map((card) => {
+                    const Icon = card.icon;
+                    return (
+                        <article key={card.label} className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_16px_42px_-34px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-bg-secondary">
+                            <div className="flex items-start justify-between gap-4">
+                                <div>
+                                    <p className="text-xs font-bold text-text-tertiary">{card.label}</p>
+                                    <p className="mt-3 text-3xl font-black tracking-[-0.05em] text-text-primary">{numberFormatter.format(card.value)}</p>
+                                    <p className="mt-2 text-[11px] font-medium text-text-tertiary">{card.hint}</p>
+                                </div>
+                                <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${card.tone}`}>
+                                    <Icon className="h-5 w-5" aria-hidden="true" />
+                                </span>
+                            </div>
+                        </article>
+                    );
+                })}
+            </section>
+
+            <section className="rounded-[24px] border border-slate-200/80 bg-white p-4 shadow-[0_18px_48px_-38px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-bg-secondary sm:p-5">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+                    <div className="relative flex-1">
+                        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+                        <input
+                            type="search"
+                            value={filters.search}
+                            onChange={(event) => updateFilter('search', event.target.value)}
+                            placeholder="Tìm theo tên đăng nhập hoặc email..."
+                            className="min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 text-sm font-medium text-text-primary outline-none transition placeholder:text-slate-400 hover:border-violet-200 focus:border-violet-500 focus:bg-white dark:border-white/10 dark:bg-bg-tertiary"
+                        />
+                    </div>
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                        <select
+                            value={filters.role}
+                            onChange={(event) => updateFilter('role', event.target.value)}
+                            className="min-h-11 cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-text-secondary outline-none transition hover:border-violet-200 focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
+                            aria-label="Lọc theo vai trò"
+                        >
+                            <option value="">Tất cả vai trò</option>
+                            <option value="STUDENT">Học viên</option>
+                            <option value="TEACHER">Giảng viên</option>
+                            <option value="ADMIN">Quản trị viên</option>
+                        </select>
+                        <button
+                            type="button"
+                            onClick={() => void loadUsers()}
+                            className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-4 text-sm font-bold text-violet-700 transition hover:bg-violet-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 dark:border-violet-500/20 dark:bg-violet-500/10 dark:text-violet-300"
+                        >
+                            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
+                            Làm mới
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section className="overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-[0_18px_48px_-38px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-bg-secondary">
+                <div className="flex items-center justify-between border-b border-slate-100 px-5 py-5 dark:border-white/8 sm:px-6">
+                    <div>
+                        <h3 className="text-sm font-extrabold text-text-primary">Danh sách tài khoản</h3>
+                        <p className="mt-1 text-[11px] text-text-tertiary">Chọn “Hồ sơ tri thức” để xem dữ liệu cá nhân chi tiết.</p>
+                    </div>
+                    <span className="rounded-full bg-slate-100 px-3 py-1.5 text-[10px] font-extrabold text-slate-600 dark:bg-white/5 dark:text-slate-300">
+                        Trang {pagination.page}/{pagination.totalPages || 1}
+                    </span>
+                </div>
+
+                {loading ? (
+                    <div className="flex min-h-72 flex-col items-center justify-center gap-3">
+                        <LoaderCircle className="h-7 w-7 animate-spin text-violet-600" aria-hidden="true" />
+                        <p className="text-xs font-bold text-text-tertiary">Đang tải danh sách học viên...</p>
+                    </div>
+                ) : users.length === 0 ? (
+                    <div className="flex min-h-72 flex-col items-center justify-center gap-3 px-5 text-center">
+                        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-500 dark:bg-white/5">
+                            <Search className="h-5 w-5" aria-hidden="true" />
+                        </span>
+                        <div>
+                            <p className="text-sm font-extrabold text-text-primary">Không tìm thấy tài khoản</p>
+                            <p className="mt-1 text-xs text-text-tertiary">Hãy thay đổi từ khóa hoặc bộ lọc vai trò.</p>
                         </div>
-                    ) : (
-                        <>
-                            <table className="min-w-full divide-y divide-border-custom bg-transparent text-left">
-                                <thead className="bg-bg-tertiary/30">
+                    </div>
+                ) : (
+                    <>
+                        <div className="hidden overflow-x-auto md:block">
+                            <table className="min-w-[980px]">
+                                <thead>
                                     <tr>
-                                        <th className="px-6 py-4 text-xs font-bold text-text-tertiary uppercase tracking-wider">Học viên</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-text-tertiary uppercase tracking-wider">Email</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-text-tertiary uppercase tracking-wider">Vai trò</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-text-tertiary uppercase tracking-wider text-center">Khóa đăng ký</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-text-tertiary uppercase tracking-wider text-center">Số bài nộp</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-text-tertiary uppercase tracking-wider">Gia nhập</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-text-tertiary uppercase tracking-wider">Thao tác</th>
+                                        <th className="px-6 py-3.5 text-left">Học viên</th>
+                                        <th className="px-6 py-3.5 text-left">Vai trò</th>
+                                        <th className="px-6 py-3.5 text-center">Khóa học</th>
+                                        <th className="px-6 py-3.5 text-center">Hoạt động</th>
+                                        <th className="px-6 py-3.5 text-left">Ngày tham gia</th>
+                                        <th className="px-6 py-3.5 text-right">Quản lý</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-border-custom/50 divide-dashed">
-                                    {users.map((user) => (
-                                        <tr key={user.id} className="hover:bg-bg-tertiary/20 transition-colors group">
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-accent-bg text-accent-custom flex items-center justify-center font-bold text-xs uppercase border border-accent-border/20 group-hover:scale-105 transition-transform">
-                                                        {user.username.substring(0, 1).toUpperCase()}
+                                <tbody>
+                                    {users.map((user) => {
+                                        const activityCount = user._count.submissions + user._count.practiceSubmissions;
+                                        return (
+                                            <tr key={user.id} className="border-t border-slate-100 dark:border-white/5">
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <UserAvatar user={user} />
+                                                        <div className="min-w-0">
+                                                            <p className="truncate text-xs font-extrabold text-text-primary">{user.username}</p>
+                                                            <p className="mt-1 flex items-center gap-1.5 truncate text-[11px] text-text-tertiary">
+                                                                <Mail className="h-3 w-3 shrink-0" aria-hidden="true" />
+                                                                {user.email}
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                    <span className="text-[13px] font-bold text-text-primary">{user.username}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-[13px] text-text-secondary select-all">{user.email}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`px-2.5 py-1 text-[10px] font-black rounded-lg border tracking-wider ${getRoleBadgeStyle(user.role)}`}>
-                                                    {user.role}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-mono font-bold text-text-secondary">{user._count.enrollments}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-mono font-bold text-text-secondary">
-                                                {user._count.submissions + user._count.practiceSubmissions}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-xs text-text-tertiary">
-                                                {new Date(user.createdAt).toLocaleDateString('vi-VN')}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-xs">
-                                                <div className="flex items-center gap-3 font-semibold">
-                                                    <Link
-                                                        to={`/admin/users/${user.id}`}
-                                                        className="text-accent-custom hover:text-accent-hover no-underline text-xs flex items-center gap-1.5"
-                                                    >
-                                                        <i className="fa-solid fa-circle-info"></i> Chi tiết
-                                                    </Link>
-                                                    <button
-                                                        onClick={() => handleResetPassword(user.id, user.username)}
-                                                        className="text-[#ff9f0a] hover:text-[#ffb03a] bg-transparent border-0 cursor-pointer p-0 text-xs flex items-center gap-1.5 font-semibold whitespace-nowrap"
-                                                    >
-                                                        <i className="fa-solid fa-key"></i> Reset PW
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(user.id, user.username)}
-                                                        className="text-red-400 hover:text-red-500 bg-transparent border-0 cursor-pointer p-0 text-xs flex items-center gap-1.5 font-semibold"
-                                                    >
-                                                        <i className="fa-solid fa-trash-can"></i> Xóa
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                                </td>
+                                                <td className="px-6 py-4"><RoleBadge role={user.role} /></td>
+                                                <td className="px-6 py-4 text-center text-sm font-black text-text-primary">{user._count.enrollments}</td>
+                                                <td className="px-6 py-4 text-center">
+                                                    <p className="text-sm font-black text-text-primary">{activityCount}</p>
+                                                    <p className="mt-1 text-[9px] uppercase tracking-[0.1em] text-text-tertiary">lượt nộp</p>
+                                                </td>
+                                                <td className="px-6 py-4 text-xs font-medium text-text-tertiary">
+                                                    {new Date(user.createdAt).toLocaleDateString('vi-VN')}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center justify-end gap-1.5">
+                                                        <Link
+                                                            to={`/admin/users/${user.id}`}
+                                                            className="inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-violet-50 px-3 text-[11px] font-extrabold text-violet-700 transition hover:bg-violet-100 dark:bg-violet-500/10 dark:text-violet-300"
+                                                        >
+                                                            <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+                                                            Hồ sơ tri thức
+                                                        </Link>
+                                                        <IconButton label="Đặt lại mật khẩu" onClick={() => setResetTarget({ id: user.id, username: user.username })}>
+                                                            <KeyRound className="h-4 w-4" aria-hidden="true" />
+                                                        </IconButton>
+                                                        <IconButton label="Xóa tài khoản" danger onClick={() => setDeleteTarget({ id: user.id, username: user.username })}>
+                                                            <Trash2 className="h-4 w-4" aria-hidden="true" />
+                                                        </IconButton>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                                 </tbody>
                             </table>
+                        </div>
 
-                            {/* Pagination controls */}
-                            <div className="pt-4 flex justify-between items-center text-xs font-semibold border-t border-border-custom/50">
-                                <span className="text-text-tertiary">
-                                    Hiển thị trang <strong className="text-text-primary">{pagination.page}</strong> / {pagination.totalPages || 1} (Tổng số {pagination.total} học viên)
-                                </span>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => setPagination({ ...pagination, page: pagination.page - 1 })}
-                                        disabled={pagination.page === 1}
-                                        className="px-4 py-2 border border-border-custom rounded-xl disabled:opacity-40 transition-all font-bold text-text-secondary hover:bg-bg-tertiary/50 hover:text-text-primary active:scale-[0.97] cursor-pointer"
-                                    >
-                                        &larr; Trang trước
-                                    </button>
-                                    <button
-                                        onClick={() => setPagination({ ...pagination, page: pagination.page + 1 })}
-                                        disabled={pagination.page === pagination.totalPages || pagination.totalPages === 0}
-                                        className="px-4 py-2 border border-border-custom rounded-xl disabled:opacity-40 transition-all font-bold text-text-secondary hover:bg-bg-tertiary/50 hover:text-text-primary active:scale-[0.97] cursor-pointer"
-                                    >
-                                        Trang sau &rarr;
-                                    </button>
-                                </div>
-                            </div>
-                        </>
-                    )}
+                        <div className="grid gap-3 p-4 md:hidden">
+                            {users.map((user) => (
+                                <article key={user.id} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/8 dark:bg-white/[0.025]">
+                                    <div className="flex items-start gap-3">
+                                        <UserAvatar user={user} />
+                                        <div className="min-w-0 flex-1">
+                                            <p className="truncate text-sm font-extrabold text-text-primary">{user.username}</p>
+                                            <p className="mt-1 truncate text-xs text-text-tertiary">{user.email}</p>
+                                            <div className="mt-2"><RoleBadge role={user.role} /></div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 grid grid-cols-2 gap-2">
+                                        <MiniStat label="Khóa học" value={user._count.enrollments} />
+                                        <MiniStat label="Lượt nộp" value={user._count.submissions + user._count.practiceSubmissions} />
+                                    </div>
+                                    <div className="mt-4 flex gap-2">
+                                        <Link
+                                            to={`/admin/users/${user.id}`}
+                                            className="inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-violet-600 px-3 text-xs font-bold text-white"
+                                        >
+                                            <Eye className="h-4 w-4" aria-hidden="true" />
+                                            Hồ sơ tri thức
+                                        </Link>
+                                        <IconButton label="Đặt lại mật khẩu" onClick={() => setResetTarget({ id: user.id, username: user.username })}>
+                                            <KeyRound className="h-4 w-4" />
+                                        </IconButton>
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
+                    </>
+                )}
+
+                <div className="flex flex-col justify-between gap-3 border-t border-slate-100 px-5 py-4 dark:border-white/8 sm:flex-row sm:items-center sm:px-6">
+                    <p className="text-xs text-text-tertiary">
+                        Tổng cộng <strong className="text-text-primary">{numberFormatter.format(pagination.total)}</strong> tài khoản phù hợp
+                    </p>
+                    <div className="flex gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setPagination((current) => ({ ...current, page: current.page - 1 }))}
+                            disabled={pagination.page <= 1}
+                            className="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-text-secondary transition hover:border-violet-200 hover:text-violet-700 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-white/5"
+                        >
+                            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                            Trang trước
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setPagination((current) => ({ ...current, page: current.page + 1 }))}
+                            disabled={pagination.page >= pagination.totalPages || pagination.totalPages === 0}
+                            className="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-text-secondary transition hover:border-violet-200 hover:text-violet-700 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-white/5"
+                        >
+                            Trang sau
+                            <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </section>
 
-            {/* Create New User Modal */}
             {showCreateModal && (
                 <CreateUserModal
                     onClose={() => setShowCreateModal(false)}
                     onSuccess={() => {
                         setShowCreateModal(false);
-                        loadUsers();
+                        void loadUsers();
                     }}
                 />
             )}
+
+            {resetTarget && (
+                <ActionModal
+                    title="Đặt lại mật khẩu"
+                    description={`Tạo mật khẩu mới cho tài khoản “${resetTarget.username}”.`}
+                    icon={KeyRound}
+                    onClose={() => {
+                        setResetTarget(null);
+                        setNewPassword('');
+                    }}
+                >
+                    <label className="block text-[11px] font-extrabold uppercase tracking-[0.12em] text-text-tertiary" htmlFor="new-password">
+                        Mật khẩu mới
+                    </label>
+                    <input
+                        id="new-password"
+                        type="password"
+                        value={newPassword}
+                        onChange={(event) => setNewPassword(event.target.value)}
+                        className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-text-primary outline-none focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
+                        autoFocus
+                    />
+                    <button
+                        type="button"
+                        onClick={() => void handleResetPassword()}
+                        disabled={!newPassword.trim() || actionLoading}
+                        className="mt-5 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 text-sm font-bold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        {actionLoading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                        Xác nhận đổi mật khẩu
+                    </button>
+                </ActionModal>
+            )}
+
+            {deleteTarget && (
+                <ActionModal
+                    title="Xóa tài khoản"
+                    description={`Tài khoản “${deleteTarget.username}” và dữ liệu liên quan sẽ bị xóa khỏi hệ thống.`}
+                    icon={AlertTriangle}
+                    danger
+                    onClose={() => setDeleteTarget(null)}
+                >
+                    <button
+                        type="button"
+                        onClick={() => void handleDelete()}
+                        disabled={actionLoading}
+                        className="mt-2 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 text-sm font-bold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        {actionLoading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                        Xóa tài khoản
+                    </button>
+                </ActionModal>
+            )}
+        </div>
+    );
+}
+
+function UserAvatar({ user }: { user: ManagedUser }) {
+    if (user.avatarUrl) {
+        return <img src={user.avatarUrl} alt="" className="h-10 w-10 shrink-0 rounded-xl object-cover" />;
+    }
+    return (
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 text-sm font-black uppercase text-white shadow-sm">
+            {user.username.charAt(0)}
+        </span>
+    );
+}
+
+function RoleBadge({ role }: { role: ManagedUser['role'] }) {
+    const styles = {
+        ADMIN: 'border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-500/20 dark:bg-violet-500/10 dark:text-violet-300',
+        TEACHER: 'border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-300',
+        STUDENT: 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300',
+    };
+    const labels = { ADMIN: 'Quản trị viên', TEACHER: 'Giảng viên', STUDENT: 'Học viên' };
+    return (
+        <span className={`inline-flex rounded-full border px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.1em] ${styles[role]}`}>
+            {labels[role]}
+        </span>
+    );
+}
+
+function IconButton({
+    label,
+    danger = false,
+    onClick,
+    children,
+}: {
+    label: string;
+    danger?: boolean;
+    onClick: () => void;
+    children: React.ReactNode;
+}) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border transition focus-visible:outline-none focus-visible:ring-2 ${
+                danger
+                    ? 'border-rose-100 bg-rose-50 text-rose-600 hover:bg-rose-100 focus-visible:ring-rose-500 dark:border-rose-500/15 dark:bg-rose-500/10 dark:text-rose-300'
+                    : 'border-slate-200 bg-white text-slate-500 hover:border-violet-200 hover:text-violet-700 focus-visible:ring-violet-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-300'
+            }`}
+            aria-label={label}
+            title={label}
+        >
+            {children}
+        </button>
+    );
+}
+
+function MiniStat({ label, value }: { label: string; value: number }) {
+    return (
+        <div className="rounded-xl bg-white p-3 dark:bg-white/5">
+            <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-text-tertiary">{label}</p>
+            <p className="mt-1 text-lg font-black text-text-primary">{numberFormatter.format(value)}</p>
+        </div>
+    );
+}
+
+function ActionModal({
+    title,
+    description,
+    icon: Icon,
+    danger = false,
+    onClose,
+    children,
+}: {
+    title: string;
+    description: string;
+    icon: typeof KeyRound;
+    danger?: boolean;
+    onClose: () => void;
+    children: React.ReactNode;
+}) {
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={title}>
+            <div className="w-full max-w-md rounded-[24px] border border-white/50 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#131827]">
+                <div className="flex items-start justify-between gap-4">
+                    <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${danger ? 'bg-rose-100 text-rose-600 dark:bg-rose-500/10 dark:text-rose-300' : 'bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300'}`}>
+                        <Icon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <button type="button" onClick={onClose} className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 dark:hover:bg-white/5" aria-label="Đóng">
+                        <X className="h-4 w-4" />
+                    </button>
+                </div>
+                <h3 className="mt-5 text-lg font-black text-text-primary">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-text-secondary">{description}</p>
+                <div className="mt-5">{children}</div>
+            </div>
         </div>
     );
 }
@@ -227,115 +564,99 @@ function CreateUserModal({ onClose, onSuccess }: { onClose: () => void; onSucces
         email: '',
         password: '',
         role: 'STUDENT',
-        gender: 'MALE'
+        gender: 'MALE',
     });
-
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
+    const handleSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
         try {
+            setIsSubmitting(true);
             await adminApi.createUser(formData);
-            alert('Tạo học viên thành công');
             onSuccess();
-        } catch (error: any) {
-            alert(error.response?.data?.message || 'Lỗi khi tạo user');
+        } catch (error) {
+            console.error('Failed to create user:', error);
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 box-border">
-            <div className="bg-bg-secondary border border-border-custom rounded-2xl p-6 w-full max-w-md shadow-2xl relative animate-zoomIn flex flex-col gap-6 text-left">
-                <div className="flex justify-between items-center">
-                    <h2 className="text-lg font-black text-text-primary">Tạo Học viên Mới</h2>
-                    <button
-                        onClick={onClose}
-                        className="w-7 h-7 rounded-full bg-bg-tertiary text-text-tertiary hover:text-text-primary border border-border-custom/50 flex items-center justify-center font-bold cursor-pointer"
-                    >
-                        ✕
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Tạo học viên mới">
+            <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-[26px] border border-white/50 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#131827] sm:p-7">
+                <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">
+                            <UserRoundPlus className="h-5 w-5" aria-hidden="true" />
+                        </span>
+                        <div>
+                            <h3 className="text-lg font-black text-text-primary">Tạo học viên mới</h3>
+                            <p className="mt-1 text-xs text-text-tertiary">Khởi tạo tài khoản và phân quyền truy cập.</p>
+                        </div>
+                    </div>
+                    <button type="button" onClick={onClose} className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 dark:hover:bg-white/5" aria-label="Đóng">
+                        <X className="h-4 w-4" />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left">
-                    <div className="flex flex-col gap-1.5">
-                        <label className="text-[11px] font-bold text-text-tertiary uppercase tracking-wider">Tên đăng nhập (Username)</label>
+                <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                    <FormField label="Tên đăng nhập" icon={UserRound}>
                         <input
-                            type="text"
                             required
-                            className="bg-bg-primary text-text-primary border border-border-custom focus:border-accent-custom rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none transition-colors"
                             value={formData.username}
-                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                            onChange={(event) => setFormData((current) => ({ ...current, username: event.target.value }))}
+                            className="min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-text-primary outline-none focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
                         />
-                    </div>
-
-                    <div className="flex flex-col gap-1.5">
-                        <label className="text-[11px] font-bold text-text-tertiary uppercase tracking-wider">Hòm thư Email</label>
+                    </FormField>
+                    <FormField label="Email" icon={Mail}>
                         <input
+                            required
                             type="email"
-                            required
-                            className="bg-bg-primary text-text-primary border border-border-custom focus:border-accent-custom rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none transition-colors"
                             value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            onChange={(event) => setFormData((current) => ({ ...current, email: event.target.value }))}
+                            className="min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-text-primary outline-none focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
                         />
-                    </div>
-
-                    <div className="flex flex-col gap-1.5">
-                        <label className="text-[11px] font-bold text-text-tertiary uppercase tracking-wider">Mật khẩu khởi tạo</label>
+                    </FormField>
+                    <FormField label="Mật khẩu khởi tạo" icon={KeyRound}>
                         <input
-                            type="password"
                             required
-                            className="bg-bg-primary text-text-primary border border-border-custom focus:border-accent-custom rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none transition-colors"
+                            type="password"
                             value={formData.password}
-                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                            onChange={(event) => setFormData((current) => ({ ...current, password: event.target.value }))}
+                            className="min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-text-primary outline-none focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
                         />
-                    </div>
-
-                    <div className="flex gap-4">
-                        <div className="flex-1 flex flex-col gap-1.5">
-                            <label className="text-[11px] font-bold text-text-tertiary uppercase tracking-wider">Vai trò</label>
+                    </FormField>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <FormField label="Vai trò" icon={ShieldCheck}>
                             <select
-                                className="bg-bg-primary text-text-primary border border-border-custom rounded-xl px-3 py-2.5 text-xs font-bold focus:outline-none cursor-pointer"
                                 value={formData.role}
-                                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                onChange={(event) => setFormData((current) => ({ ...current, role: event.target.value }))}
+                                className="min-h-11 w-full cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-text-primary outline-none focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
                             >
-                                <option value="STUDENT">Student</option>
-                                <option value="TEACHER">Teacher</option>
-                                <option value="ADMIN">Admin</option>
+                                <option value="STUDENT">Học viên</option>
+                                <option value="TEACHER">Giảng viên</option>
+                                <option value="ADMIN">Quản trị viên</option>
                             </select>
-                        </div>
-
-                        <div className="flex-1 flex flex-col gap-1.5">
-                            <label className="text-[11px] font-bold text-text-tertiary uppercase tracking-wider">Giới tính</label>
+                        </FormField>
+                        <FormField label="Giới tính" icon={UserRound}>
                             <select
-                                className="bg-bg-primary text-text-primary border border-border-custom rounded-xl px-3 py-2.5 text-xs font-bold focus:outline-none cursor-pointer"
                                 value={formData.gender}
-                                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                                onChange={(event) => setFormData((current) => ({ ...current, gender: event.target.value }))}
+                                className="min-h-11 w-full cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-text-primary outline-none focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
                             >
-                                <option value="MALE">Nam (Male)</option>
-                                <option value="FEMALE">Nữ (Female)</option>
-                                <option value="OTHER">Khác (Other)</option>
+                                <option value="MALE">Nam</option>
+                                <option value="FEMALE">Nữ</option>
+                                <option value="OTHER">Khác</option>
                             </select>
-                        </div>
+                        </FormField>
                     </div>
-
-                    <div className="flex gap-3 pt-4 font-bold text-xs">
-                        <button
-                            type="button"
-                            disabled={isSubmitting}
-                            onClick={onClose}
-                            className="flex-1 border border-border-custom hover:bg-bg-tertiary rounded-xl py-3.5 transition-colors cursor-pointer text-text-secondary active:scale-[0.98]"
-                        >
+                    <div className="flex flex-col-reverse gap-3 pt-3 sm:flex-row">
+                        <button type="button" onClick={onClose} className="min-h-11 flex-1 cursor-pointer rounded-xl border border-slate-200 text-sm font-bold text-text-secondary transition hover:bg-slate-50 dark:border-white/10 dark:hover:bg-white/5">
                             Hủy
                         </button>
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="flex-1 bg-accent-custom hover:bg-accent-hover text-white rounded-xl py-3.5 transition-all shadow-md cursor-pointer active:scale-[0.98] disabled:opacity-50"
-                        >
-                            {isSubmitting ? 'Đang tạo...' : 'Tạo Học viên'}
+                        <button type="submit" disabled={isSubmitting} className="inline-flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-violet-600 text-sm font-bold text-white transition hover:bg-violet-700 disabled:opacity-50">
+                            {isSubmitting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <UserRoundPlus className="h-4 w-4" />}
+                            Tạo tài khoản
                         </button>
                     </div>
                 </form>
@@ -344,13 +665,22 @@ function CreateUserModal({ onClose, onSuccess }: { onClose: () => void; onSucces
     );
 }
 
-function getRoleBadgeStyle(role: string) {
-    switch (role) {
-        case 'ADMIN':
-            return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
-        case 'TEACHER':
-            return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
-        default:
-            return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-    }
+function FormField({
+    label,
+    icon: Icon,
+    children,
+}: {
+    label: string;
+    icon: typeof UserRound;
+    children: React.ReactNode;
+}) {
+    return (
+        <label className="block">
+            <span className="mb-2 flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-text-tertiary">
+                <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                {label}
+            </span>
+            {children}
+        </label>
+    );
 }

@@ -68,7 +68,7 @@ export class CppRunner implements ICodeRunner {
         const startTime = Date.now();
 
         const compilerCmd = this.language === 'CPP'
-            ? `g++ -O2 -o /tmp/sol_bin /tmp/${fileName} 2>&1`
+            ? `g++ -std=c++17 -O2 -o /tmp/sol_bin /tmp/${fileName} 2>&1`
             : `gcc -O2 -o /tmp/sol_bin /tmp/${fileName} -lm 2>&1`;
 
         const runCommand = [
@@ -170,23 +170,27 @@ export class CppRunner implements ICodeRunner {
 
     private runLocally(filePath: string, inputData: string, timeoutMs: number): Promise<ExecuteResult> {
         const startTime = Date.now();
-        const compiler = this.language === 'CPP' ? 'g++' : 'gcc';
         const outputPath = filePath.replace(/\.(cpp|c)$/, process.platform === 'win32' ? '.exe' : '');
+        const compileCmd = this.language === 'CPP'
+            ? `g++ -std=c++17 -O2 "${filePath}" -o "${outputPath}"`
+            : `gcc -O2 "${filePath}" -o "${outputPath}" -lm`;
 
         try {
-            execSync(`${compiler} -O3 "${filePath}" -o "${outputPath}"`);
+            execSync(compileCmd, { stdio: ['pipe', 'pipe', 'pipe'], timeout: 10000 });
         } catch (err: any) {
             safeUnlink(filePath);
+            safeUnlink(outputPath);
+            const compilerErr = err.stderr ? err.stderr.toString('utf-8').trim() : (err.message || '');
             return Promise.resolve({
                 stdout: '',
-                stderr: `[Lỗi biên dịch ${this.language} cục bộ] ${err.message}`,
+                stderr: `[Lỗi biên dịch ${this.language}] ${compilerErr}`,
                 status: 'ERROR',
                 runtimeMs: Date.now() - startTime
             });
         }
 
         return new Promise((resolve) => {
-            const child = spawn(outputPath, []);
+            const child = spawn(outputPath, [], { windowsHide: true });
 
             let stdout = '';
             let stderr = '';
@@ -194,22 +198,24 @@ export class CppRunner implements ICodeRunner {
 
             if (inputData) {
                 const formattedInput = inputData.endsWith('\n') ? inputData : inputData + '\n';
-                child.stdin.write(formattedInput);
+                child.stdin.write(formattedInput, 'utf-8');
             }
             child.stdin.end();
 
+            child.stdout.setEncoding('utf-8');
             child.stdout.on('data', (data) => {
-                stdout += data.toString();
+                stdout += data;
             });
 
+            child.stderr.setEncoding('utf-8');
             child.stderr.on('data', (data) => {
-                stderr += data.toString();
+                stderr += data;
             });
 
             const timer = setTimeout(() => {
                 if (!isFinished) {
                     isFinished = true;
-                    child.kill();
+                    child.kill('SIGKILL');
                     safeUnlink(filePath);
                     safeUnlink(outputPath);
                     resolve({
@@ -221,17 +227,34 @@ export class CppRunner implements ICodeRunner {
                 }
             }, timeoutMs);
 
-            child.on('close', async (code) => {
+            child.on('close', async (code, signal) => {
                 if (isFinished) return;
                 isFinished = true;
                 clearTimeout(timer);
                 await safeUnlink(filePath);
                 await safeUnlink(outputPath);
 
+                let finalStderr = stderr.trim();
+                const isSuccess = code === 0 && !signal;
+
+                if (!isSuccess && !finalStderr) {
+                    if (signal === 'SIGSEGV') {
+                        finalStderr = '[Runtime Error] Segmentation fault (truy cập bộ nhớ không hợp lệ).';
+                    } else if (signal === 'SIGFPE') {
+                        finalStderr = '[Runtime Error] Floating point exception (lỗi chia cho 0).';
+                    } else if (signal === 'SIGABRT') {
+                        finalStderr = '[Runtime Error] Aborted (chương trình bị dừng đột ngột).';
+                    } else if (signal) {
+                        finalStderr = `[Runtime Error] Tiến trình bị huỷ bởi tín hiệu ${signal}.`;
+                    } else if (code !== 0 && code !== null) {
+                        finalStderr = `[Runtime Error] Chương trình kết thúc với mã lỗi ${code}.`;
+                    }
+                }
+
                 resolve({
                     stdout,
-                    stderr,
-                    status: code === 0 ? 'SUCCESS' : 'ERROR',
+                    stderr: finalStderr,
+                    status: isSuccess ? 'SUCCESS' : 'ERROR',
                     runtimeMs: Date.now() - startTime
                 });
             });

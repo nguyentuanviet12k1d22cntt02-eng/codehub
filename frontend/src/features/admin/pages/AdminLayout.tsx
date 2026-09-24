@@ -1,30 +1,138 @@
-import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import {
+    BarChart3,
+    BookCopy,
+    BookOpenCheck,
+    ChevronDown,
+    ChevronLeft,
+    CircleHelp,
+    ClipboardCheck,
+    Code2,
+    ExternalLink,
+    KeyRound,
+    LayoutDashboard,
+    LibraryBig,
+    LogOut,
+    Menu,
+    PanelLeftOpen,
+    UsersRound,
+    X,
+} from 'lucide-react';
 import { ThemeToggle } from '../../../components/ThemeToggle';
+
+interface AdminUser {
+    fullName?: string;
+    username?: string;
+    email?: string;
+    role?: string;
+}
+
+interface NavigationItem {
+    to: string;
+    label: string;
+    icon: typeof LayoutDashboard;
+    matches: (pathname: string) => boolean;
+}
+
+const primaryNavigation: NavigationItem[] = [
+    {
+        to: '/admin',
+        label: 'Tổng quan',
+        icon: LayoutDashboard,
+        matches: (pathname) => pathname === '/admin',
+    },
+    {
+        to: '/admin/analytics',
+        label: 'Phân tích dữ liệu',
+        icon: BarChart3,
+        matches: (pathname) => pathname === '/admin/analytics',
+    },
+    {
+        to: '/admin/users',
+        label: 'Quản lý học viên',
+        icon: UsersRound,
+        matches: (pathname) => pathname.startsWith('/admin/users'),
+    },
+];
+
+const learningNavigation: NavigationItem[] = [
+    {
+        to: '/admin/curriculum',
+        label: 'Nội dung & bài tập',
+        icon: BookOpenCheck,
+        matches: (pathname) => pathname.startsWith('/admin/curriculum'),
+    },
+    {
+        to: '/admin/courses',
+        label: 'Danh mục khóa học',
+        icon: LibraryBig,
+        matches: (pathname) => pathname === '/admin/courses',
+    },
+    {
+        to: '/admin/practice-problems',
+        label: 'Ngân hàng câu hỏi',
+        icon: CircleHelp,
+        matches: (pathname) => pathname === '/admin/practice-problems',
+    },
+];
+
+const operationsNavigation: NavigationItem[] = [
+    {
+        to: '/admin/submissions',
+        label: 'Duyệt bài nộp',
+        icon: ClipboardCheck,
+        matches: (pathname) => pathname.startsWith('/admin/submissions'),
+    },
+    {
+        to: '/admin/ai-keys',
+        label: 'Hồ chứa AI Keys',
+        icon: KeyRound,
+        matches: (pathname) => pathname.startsWith('/admin/ai-keys'),
+    },
+];
+
+const pageMeta = [
+    { match: (path: string) => path === '/admin', title: 'Tổng quan vận hành', eyebrow: 'Command center' },
+    { match: (path: string) => path === '/admin/analytics', title: 'Phân tích dữ liệu', eyebrow: 'Learning intelligence' },
+    { match: (path: string) => path.startsWith('/admin/users/'), title: 'Hồ sơ học viên', eyebrow: 'Learner profile' },
+    { match: (path: string) => path === '/admin/users', title: 'Quản lý học viên', eyebrow: 'User operations' },
+    { match: (path: string) => path.startsWith('/admin/curriculum'), title: 'Nội dung & bài tập', eyebrow: 'Curriculum studio' },
+    { match: (path: string) => path === '/admin/courses', title: 'Danh mục khóa học', eyebrow: 'Course catalog' },
+    { match: (path: string) => path === '/admin/practice-problems', title: 'Ngân hàng câu hỏi', eyebrow: 'Practice library' },
+    { match: (path: string) => path.startsWith('/admin/submissions'), title: 'Duyệt bài nộp', eyebrow: 'Submission review' },
+    { match: (path: string) => path.startsWith('/admin/ai-keys'), title: 'Hồ chứa AI Keys', eyebrow: 'AI infrastructure' },
+];
 
 export default function AdminLayout() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<AdminUser | null>(null);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-    const [isLessonsOpen, setIsLessonsOpen] = useState(true);
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+    const [isLearningOpen, setIsLearningOpen] = useState(true);
 
     useEffect(() => {
         const userData = localStorage.getItem('user');
-        if (userData) {
-            const parsedUser = JSON.parse(userData);
-            setUser(parsedUser);
-
-            if (parsedUser.role !== 'ADMIN') {
-                alert('Bạn không có quyền truy cập trang này');
-                navigate('/');
-            }
-        } else {
+        if (!userData) {
             navigate('/login');
+            return;
+        }
+
+        const parsedUser = JSON.parse(userData) as AdminUser;
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate the authenticated administrator once on mount
+        setUser(parsedUser);
+        if (parsedUser.role !== 'ADMIN') {
+            alert('Bạn không có quyền truy cập trang này');
+            navigate('/');
         }
     }, [navigate]);
 
-    // Force body background to theme color
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- close the mobile drawer after route navigation
+        setIsMobileSidebarOpen(false);
+    }, [location.pathname]);
+
     useEffect(() => {
         const originalBg = document.body.style.backgroundColor;
         document.body.style.backgroundColor = 'var(--bg-primary)';
@@ -32,6 +140,14 @@ export default function AdminLayout() {
             document.body.style.backgroundColor = originalBg;
         };
     }, []);
+
+    const currentPage = useMemo(
+        () => pageMeta.find((item) => item.match(location.pathname)) || pageMeta[0],
+        [location.pathname]
+    );
+
+    const displayName = user?.fullName || user?.username || 'Quản trị viên';
+    const initialLetter = displayName.charAt(0).toUpperCase();
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -41,320 +157,225 @@ export default function AdminLayout() {
 
     if (!user) return null;
 
-    const displayName = user.fullName || user.username || 'Nguyễn Minh Nhật';
-    const initialLetter = (displayName.charAt(0) || 'N').toUpperCase();
-
     return (
-        <div className="flex min-h-screen bg-bg-primary text-text-primary font-sans selection:bg-accent-custom/30 selection:text-text-primary transition-colors duration-200 relative">
-            {/* Sidebar fixed to the left viewport boundary */}
+        <div className="admin-modern min-h-screen bg-bg-primary font-sans text-text-primary selection:bg-accent-custom/20">
+            {isMobileSidebarOpen && (
+                <button
+                    type="button"
+                    className="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm lg:hidden"
+                    onClick={() => setIsMobileSidebarOpen(false)}
+                    aria-label="Đóng menu quản trị"
+                />
+            )}
+
             <aside
-                className={`${
-                    isSidebarCollapsed ? 'w-20' : 'w-72'
-                } bg-bg-secondary border-r border-border-custom flex flex-col justify-between z-20 fixed left-0 top-0 h-screen select-none transition-all duration-300 overflow-y-auto scrollbar-thin shadow-sm`}
+                className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-indigo-100 bg-[linear-gradient(180deg,#ffffff_0%,#fafaff_48%,#f1f5ff_100%)] text-slate-700 shadow-[16px_0_50px_-38px_rgba(79,70,229,0.38)] transition-all duration-300 dark:border-white/8 dark:bg-[linear-gradient(180deg,#101321_0%,#121628_55%,#111827_100%)] dark:text-slate-200 lg:z-30 ${
+                    isSidebarCollapsed ? 'lg:w-[88px]' : 'lg:w-[280px]'
+                } ${isMobileSidebarOpen ? 'w-[280px] translate-x-0' : 'w-[280px] -translate-x-full lg:translate-x-0'}`}
             >
-                <div className="flex-shrink-0">
-                    {/* Header Logo */}
-                    <div className="p-5 flex items-center justify-between">
-                        {!isSidebarCollapsed && (
-                            <div
-                                onClick={() => navigate('/admin')}
-                                className="flex items-center gap-3 cursor-pointer group"
-                            >
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center font-black text-white text-lg shadow-md shadow-indigo-500/20">
-                                    M
-                                </div>
-                                <div className="flex flex-col text-left">
-                                    <span className="text-sm font-black tracking-tight text-slate-900 dark:text-white leading-none">
-                                        MCODE
-                                    </span>
-                                    <span className="text-xs font-extrabold tracking-wider text-slate-800 dark:text-slate-200 leading-tight mt-0.5">
-                                        CRM
-                                    </span>
-                                </div>
-                            </div>
-                        )}
-
-                        {isSidebarCollapsed && (
-                            <div
-                                onClick={() => navigate('/admin')}
-                                className="w-10 h-10 mx-auto rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center font-black text-white text-lg shadow-md shadow-indigo-500/20 cursor-pointer"
-                            >
-                                M
-                            </div>
-                        )}
-
-                        <button
-                            type="button"
-                            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                            className="w-7 h-7 rounded-full border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-all shadow-xs"
-                            title={isSidebarCollapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
-                        >
-                            <svg
-                                className={`w-3.5 h-3.5 transition-transform duration-300 ${
-                                    isSidebarCollapsed ? 'rotate-180' : ''
-                                }`}
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.5"
-                                viewBox="0 0 24 24"
-                            >
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    {/* Navigation Menu */}
-                    <nav className="px-3.5 py-2 space-y-1 flex flex-col text-left">
-                        {/* 1. Dashboard */}
-                        <SidebarLink
-                            to="/admin"
-                            active={location.pathname === '/admin'}
-                            icon={
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                                    <rect x="3" y="12" width="6" height="8" rx="1" />
-                                    <rect x="9" y="8" width="6" height="12" rx="1" />
-                                    <rect x="15" y="4" width="6" height="16" rx="1" />
-                                </svg>
-                            }
-                            collapsed={isSidebarCollapsed}
-                        >
-                            Dashboard
-                        </SidebarLink>
-
-                        {/* 2. Analytics */}
-                        <SidebarLink
-                            to="/admin/analytics"
-                            active={location.pathname === '/admin/analytics'}
-                            icon={
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                                </svg>
-                            }
-                            collapsed={isSidebarCollapsed}
-                        >
-                            Analytics
-                        </SidebarLink>
-
-                        {/* 3. Học viên */}
-                        <SidebarLink
-                            to="/admin/users"
-                            active={location.pathname.startsWith('/admin/users')}
-                            badge="1,248"
-                            icon={
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                    <circle cx="9" cy="7" r="4" />
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                </svg>
-                            }
-                            collapsed={isSidebarCollapsed}
-                        >
-                            Học viên
-                        </SidebarLink>
-
-                        {/* 4. Bài học (Accordion Group) */}
-                        <div className="space-y-1">
-                            <button
-                                type="button"
-                                onClick={() => setIsLessonsOpen(!isLessonsOpen)}
-                                className={`w-full px-3.5 py-2.5 rounded-xl flex items-center justify-between text-xs font-semibold tracking-normal transition-all text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 ${
-                                    isLessonsOpen ? 'text-indigo-600 dark:text-indigo-400 font-bold' : ''
-                                }`}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <svg className="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                                        <rect x="3" y="3" width="7" height="7" rx="1" />
-                                        <rect x="14" y="3" width="7" height="7" rx="1" />
-                                        <rect x="14" y="14" width="7" height="7" rx="1" />
-                                        <rect x="3" y="14" width="7" height="7" rx="1" />
-                                    </svg>
-                                    {!isSidebarCollapsed && <span>Bài học</span>}
-                                </div>
-                                {!isSidebarCollapsed && (
-                                    <svg
-                                        className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${
-                                            isLessonsOpen ? '' : 'rotate-180'
-                                        }`}
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-                                    </svg>
-                                )}
-                            </button>
-
-                            {/* Submenu for Bài học: Clean indented list items with hover effects */}
-                            {isLessonsOpen && !isSidebarCollapsed && (
-                                <div className="pl-6 pr-1 py-1 space-y-0.5 border-l border-slate-200/80 dark:border-white/10 ml-4 my-1">
-                                    {/* 1. Nội dung & Bài tập */}
-                                    <Link
-                                        to="/admin/curriculum"
-                                        className={`block px-3 py-2 rounded-xl text-xs font-semibold transition-all no-underline ${
-                                            location.pathname.startsWith('/admin/curriculum')
-                                                ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-bold'
-                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/5'
-                                        }`}
-                                    >
-                                        Nội dung & Bài tập
-                                    </Link>
-
-                                    {/* 2. Danh mục */}
-                                    <Link
-                                        to="/admin/courses"
-                                        className={`block px-3 py-2 rounded-xl text-xs font-semibold transition-all no-underline ${
-                                            location.pathname === '/admin/courses'
-                                                ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-bold'
-                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/5'
-                                        }`}
-                                    >
-                                        Danh mục
-                                    </Link>
-
-                                    {/* 3. Ngân hàng câu hỏi */}
-                                    <Link
-                                        to="/admin/practice-problems"
-                                        className={`block px-3 py-2 rounded-xl text-xs font-semibold transition-all no-underline ${
-                                            location.pathname === '/admin/practice-problems'
-                                                ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-bold'
-                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/5'
-                                        }`}
-                                    >
-                                        Ngân hàng câu hỏi
-                                    </Link>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* 5. Submit review */}
-                        <SidebarLink
-                            to="/admin/submissions"
-                            active={location.pathname.startsWith('/admin/submissions')}
-                            icon={
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                                    <line x1="22" y1="2" x2="11" y2="13" />
-                                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                                </svg>
-                            }
-                            collapsed={isSidebarCollapsed}
-                        >
-                            Submit review
-                        </SidebarLink>
-
-                        {/* 6. AI API Keys */}
-                        <SidebarLink
-                            to="/admin/ai-keys"
-                            active={location.pathname.startsWith('/admin/ai-keys')}
-                            icon={
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                                </svg>
-                            }
-                            collapsed={isSidebarCollapsed}
-                        >
-                            Hồ chứa AI Keys
-                        </SidebarLink>
-                    </nav>
-                </div>
-
-                {/* Footer Section in Sidebar */}
-                <div className="p-4 border-t border-border-custom space-y-2 text-left bg-bg-secondary transition-colors duration-200 flex-shrink-0">
-                    {/* User Profile Card */}
-                    {!isSidebarCollapsed ? (
-                        <div className="px-3.5 py-3 rounded-2xl flex items-center gap-3 bg-[#f8f9fc] dark:bg-[#161622] border border-slate-200/80 dark:border-white/5 mb-3 transition-colors duration-200">
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center font-extrabold text-white text-sm shadow-sm select-none flex-shrink-0">
-                                {initialLetter}
-                            </div>
-                            <div className="flex flex-col text-left overflow-hidden min-w-0 flex-1">
-                                <span className="text-xs font-extrabold text-slate-900 dark:text-white truncate">
-                                    {displayName}
-                                </span>
-                                <span className="text-[11px] text-sky-600 dark:text-sky-400 font-semibold flex items-center gap-1.5 mt-0.5">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-                                    Quản trị viên
-                                </span>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="w-9 h-9 mx-auto rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center font-extrabold text-white text-sm shadow-sm mb-3">
-                            {initialLetter}
-                        </div>
-                    )}
-
-                    {/* Cài đặt hệ thống / Theme Toggle */}
-                    <div className="flex items-center justify-between px-2">
-                        <Link
-                            to="/dashboard"
-                            className="px-2 py-1.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2.5 text-xs font-semibold transition-all no-underline"
-                        >
-                            <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="3" />
-                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                            </svg>
-                            {!isSidebarCollapsed && <span>Cài đặt hệ thống</span>}
-                        </Link>
-                        {!isSidebarCollapsed && <ThemeToggle />}
-                    </div>
-
-                    {/* Đăng xuất */}
+                <div className="flex h-[76px] shrink-0 items-center justify-between border-b border-indigo-100/80 px-5 dark:border-white/8">
                     <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-2 py-2 rounded-xl text-rose-500/90 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 flex items-center gap-2.5 text-xs font-bold tracking-wide transition-all cursor-pointer bg-transparent"
+                        type="button"
+                        onClick={() => navigate('/admin')}
+                        className={`group flex items-center gap-3 rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${isSidebarCollapsed ? 'lg:mx-auto' : ''}`}
+                        aria-label="Về trang tổng quan quản trị"
                     >
-                        <svg className="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
-                        {!isSidebarCollapsed && <span>Đăng xuất</span>}
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-lg shadow-violet-950/35">
+                            <Code2 className="h-5 w-5" aria-hidden="true" />
+                        </span>
+                        <span className={isSidebarCollapsed ? 'lg:hidden' : ''}>
+                            <span className="block text-[15px] font-black leading-none tracking-[-0.02em] text-slate-950 dark:text-white">MCODE</span>
+                            <span className="mt-1 block text-[9px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-300">Admin console</span>
+                        </span>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => setIsMobileSidebarOpen(false)}
+                        className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition-colors hover:bg-violet-50 hover:text-violet-700 dark:text-slate-400 dark:hover:bg-white/8 dark:hover:text-white lg:hidden"
+                        aria-label="Đóng menu"
+                    >
+                        <X className="h-5 w-5" />
                     </button>
                 </div>
+
+                <nav className="admin-sidebar-scroll flex-1 overflow-y-auto px-3 py-5" aria-label="Điều hướng quản trị">
+                    <NavigationGroup
+                        label="Không gian làm việc"
+                        items={primaryNavigation}
+                        pathname={location.pathname}
+                        collapsed={isSidebarCollapsed}
+                    />
+
+                    <div className="my-5 h-px bg-indigo-100/80 dark:bg-white/8" />
+
+                    <div>
+                        <button
+                            type="button"
+                            onClick={() => setIsLearningOpen((open) => !open)}
+                            className={`mb-2 flex w-full items-center justify-between px-3 text-[9px] font-extrabold uppercase tracking-[0.18em] text-slate-400 transition-colors hover:text-violet-700 dark:text-slate-500 dark:hover:text-slate-300 ${isSidebarCollapsed ? 'lg:justify-center' : ''}`}
+                            aria-expanded={isLearningOpen}
+                        >
+                            <span className={isSidebarCollapsed ? 'lg:hidden' : ''}>Học liệu</span>
+                            <BookCopy className={`hidden h-4 w-4 ${isSidebarCollapsed ? 'lg:block' : ''}`} aria-hidden="true" />
+                            <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isLearningOpen ? '' : '-rotate-90'} ${isSidebarCollapsed ? 'lg:hidden' : ''}`} aria-hidden="true" />
+                        </button>
+                        {(isLearningOpen || isSidebarCollapsed) && (
+                            <div className="space-y-1">
+                                {learningNavigation.map((item) => (
+                                    <NavigationLink
+                                        key={item.to}
+                                        item={item}
+                                        active={item.matches(location.pathname)}
+                                        collapsed={isSidebarCollapsed}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="my-5 h-px bg-indigo-100/80 dark:bg-white/8" />
+
+                    <NavigationGroup
+                        label="Vận hành hệ thống"
+                        items={operationsNavigation}
+                        pathname={location.pathname}
+                        collapsed={isSidebarCollapsed}
+                    />
+                </nav>
+
+                <div className="shrink-0 border-t border-indigo-100/80 p-3 dark:border-white/8">
+                    <div className={`mb-2 rounded-2xl border border-indigo-100 bg-white/80 p-3 shadow-sm dark:border-white/8 dark:bg-white/[0.045] ${isSidebarCollapsed ? 'lg:flex lg:justify-center lg:p-2' : ''}`}>
+                        <div className="flex items-center gap-3">
+                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 text-sm font-black text-white shadow-md">
+                                {initialLetter}
+                            </span>
+                            <span className={`min-w-0 flex-1 ${isSidebarCollapsed ? 'lg:hidden' : ''}`}>
+                                <span className="block truncate text-xs font-bold text-slate-900 dark:text-white">{displayName}</span>
+                                <span className="mt-1 flex items-center gap-1.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-300">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                                    Quản trị viên
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className={`grid gap-1 ${isSidebarCollapsed ? 'lg:justify-items-center' : ''}`}>
+                        <Link
+                            to="/dashboard"
+                            className={`flex min-h-10 items-center gap-3 rounded-xl px-3 text-xs font-semibold text-slate-500 transition-colors hover:bg-white hover:text-violet-700 dark:text-slate-400 dark:hover:bg-white/8 dark:hover:text-white ${isSidebarCollapsed ? 'lg:w-11 lg:justify-center lg:px-0' : ''}`}
+                            title="Về trang học viên"
+                        >
+                            <ExternalLink className="h-4 w-4 shrink-0" aria-hidden="true" />
+                            <span className={isSidebarCollapsed ? 'lg:hidden' : ''}>Về trang học viên</span>
+                        </Link>
+                        <button
+                            type="button"
+                            onClick={handleLogout}
+                            className={`flex min-h-10 w-full items-center gap-3 rounded-xl px-3 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-50 hover:text-rose-700 dark:text-rose-300 dark:hover:bg-rose-500/10 dark:hover:text-rose-200 ${isSidebarCollapsed ? 'lg:w-11 lg:justify-center lg:px-0' : ''}`}
+                            title="Đăng xuất"
+                        >
+                            <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
+                            <span className={isSidebarCollapsed ? 'lg:hidden' : ''}>Đăng xuất</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={() => setIsSidebarCollapsed((collapsed) => !collapsed)}
+                    className="absolute -right-3 top-24 hidden h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-md transition-colors hover:text-violet-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 lg:flex"
+                    aria-label={isSidebarCollapsed ? 'Mở rộng thanh điều hướng' : 'Thu gọn thanh điều hướng'}
+                    title={isSidebarCollapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
+                >
+                    {isSidebarCollapsed ? <PanelLeftOpen className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
+                </button>
             </aside>
 
-            {/* Main Content Area shifted to the right */}
-            <main
-                className={`flex-1 min-h-screen relative overflow-hidden z-10 flex flex-col transition-all duration-300 ${
-                    isSidebarCollapsed ? 'pl-20' : 'pl-72'
-                }`}
-            >
-                <div className="p-6 md:p-8 flex-1 box-border">
+            <div className={`min-h-screen transition-[padding] duration-300 ${isSidebarCollapsed ? 'lg:pl-[88px]' : 'lg:pl-[280px]'}`}>
+                <header className="sticky top-0 z-20 border-b border-indigo-100/70 bg-white/82 shadow-[0_10px_32px_-30px_rgba(79,70,229,0.4)] backdrop-blur-xl dark:border-white/8 dark:bg-bg-primary/88">
+                    <div className="flex h-[76px] items-center justify-between gap-4 px-4 sm:px-6 xl:px-8">
+                        <div className="flex min-w-0 items-center gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setIsMobileSidebarOpen(true)}
+                                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border-custom bg-bg-secondary text-text-secondary shadow-sm hover:text-accent-custom focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-custom lg:hidden"
+                                aria-label="Mở menu quản trị"
+                            >
+                                <Menu className="h-5 w-5" />
+                            </button>
+                            <div className="min-w-0">
+                                <p className="truncate text-[9px] font-extrabold uppercase tracking-[0.18em] text-accent-custom">{currentPage.eyebrow}</p>
+                                <h1 className="mt-1 truncate text-[17px] font-extrabold tracking-[-0.02em] text-text-primary">{currentPage.title}</h1>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="hidden items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[10px] font-bold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300 sm:flex">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                Hệ thống hoạt động
+                            </div>
+                            <ThemeToggle />
+                            <div className="hidden h-8 w-px bg-border-custom sm:block" />
+                            <div className="hidden items-center gap-2.5 sm:flex">
+                                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-bg text-xs font-black text-accent-custom">{initialLetter}</span>
+                                <div className="hidden text-left xl:block">
+                                    <p className="max-w-36 truncate text-xs font-bold text-text-primary">{displayName}</p>
+                                    <p className="mt-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-text-tertiary">Administrator</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <main className="admin-content min-h-[calc(100vh-76px)] px-4 py-6 sm:px-6 sm:py-7 xl:px-8 xl:py-8">
                     <Outlet />
-                </div>
-            </main>
+                </main>
+            </div>
         </div>
     );
 }
 
-interface SidebarLinkProps {
-    to: string;
-    active: boolean;
-    icon: React.ReactNode;
-    badge?: string;
-    collapsed?: boolean;
-    children: React.ReactNode;
+function NavigationGroup({
+    label,
+    items,
+    pathname,
+    collapsed,
+}: {
+    label: string;
+    items: NavigationItem[];
+    pathname: string;
+    collapsed: boolean;
+}) {
+    return (
+        <div>
+            <p className={`mb-2 px-3 text-[9px] font-extrabold uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500 ${collapsed ? 'lg:text-center lg:text-[0]' : ''}`}>
+                {collapsed ? '•' : label}
+            </p>
+            <div className="space-y-1">
+                {items.map((item) => (
+                    <NavigationLink key={item.to} item={item} active={item.matches(pathname)} collapsed={collapsed} />
+                ))}
+            </div>
+        </div>
+    );
 }
 
-function SidebarLink({ to, active, icon, badge, collapsed, children }: SidebarLinkProps) {
+function NavigationLink({ item, active, collapsed }: { item: NavigationItem; active: boolean; collapsed: boolean }) {
+    const Icon = item.icon;
     return (
         <Link
-            to={to}
-            className={`px-3.5 py-2.5 rounded-xl flex items-center justify-between text-xs font-semibold tracking-normal transition-all no-underline ${
+            to={item.to}
+            title={collapsed ? item.label : undefined}
+            className={`group relative flex min-h-11 items-center gap-3 rounded-xl px-3 text-xs font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
                 active
-                    ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-bold'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5'
-            }`}
+                    ? 'border border-violet-200/80 bg-gradient-to-r from-violet-100 to-indigo-50 text-violet-800 shadow-sm shadow-violet-200/30 dark:border-white/8 dark:from-white/10 dark:to-white/5 dark:text-white dark:shadow-inner dark:shadow-white/5'
+                    : 'border border-transparent text-slate-600 hover:border-indigo-100 hover:bg-white/80 hover:text-violet-700 dark:text-slate-400 dark:hover:border-transparent dark:hover:bg-white/[0.055] dark:hover:text-slate-100'
+            } ${collapsed ? 'lg:justify-center lg:px-0' : ''}`}
         >
-            <div className="flex items-center gap-3">
-                <span className={`transition-colors ${active ? 'text-purple-600 dark:text-purple-400' : 'text-slate-500 dark:text-slate-400'}`}>
-                    {icon}
-                </span>
-                {!collapsed && <span>{children}</span>}
-            </div>
-            {!collapsed && badge && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300">
-                    {badge}
-                </span>
-            )}
+            {active && <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-violet-600 dark:bg-violet-400" aria-hidden="true" />}
+            <Icon className={`h-[18px] w-[18px] shrink-0 ${active ? 'text-violet-700 dark:text-violet-300' : 'text-slate-400 group-hover:text-violet-600 dark:text-slate-500 dark:group-hover:text-slate-300'}`} aria-hidden="true" />
+            <span className={collapsed ? 'lg:hidden' : ''}>{item.label}</span>
         </Link>
     );
 }

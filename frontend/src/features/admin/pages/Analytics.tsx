@@ -54,7 +54,7 @@ export default function Analytics() {
     }
 
     return (
-        <div className="flex flex-col gap-8 w-full max-w-[1240px] mx-auto text-left select-none animate-fadeIn">
+        <div className="flex flex-col gap-6 w-full max-w-[1480px] mx-auto text-left animate-fadeIn">
             {/* Header Block */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div className="flex flex-col gap-1 text-left">

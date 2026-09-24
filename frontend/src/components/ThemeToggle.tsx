@@ -24,8 +24,9 @@ export const ThemeToggle: React.FC = () => {
     return (
         <button
             onClick={toggleTheme}
-            className="flex items-center justify-center w-8 h-8 rounded-full border border-border-custom hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-all duration-200 cursor-pointer focus:outline-none"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-border-custom bg-bg-secondary text-text-secondary shadow-sm transition-all duration-200 hover:bg-bg-tertiary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-custom focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
             title={theme === 'dark' ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'}
+            aria-label={theme === 'dark' ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'}
         >
             {theme === 'dark' ? (
                 // Icon Mặt trời (Sun) cho chế độ tối -> sáng

@@ -213,7 +213,7 @@ export default function AIKeyManagement() {
     };
 
     return (
-        <div className="flex flex-col gap-8 w-full max-w-[1240px] mx-auto text-left select-none animate-fadeIn font-sans pb-16">
+        <div className="flex flex-col gap-6 w-full max-w-[1480px] mx-auto text-left animate-fadeIn font-sans pb-16">
             {/* 1. Header Section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-custom pb-6">
                 <div>

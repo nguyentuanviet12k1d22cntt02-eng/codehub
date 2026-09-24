@@ -33,9 +33,10 @@ export const adminApi = {
         return response.data;
     },
 
-    getUserById: async (id: string) => {
+    getUserById: async (id: string, language: string = 'PYTHON') => {
         const response = await axios.get(`${API_URL}/users/${id}`, {
-            headers: getAuthHeader()
+            headers: getAuthHeader(),
+            params: { language }
         });
         return response.data;
     },
