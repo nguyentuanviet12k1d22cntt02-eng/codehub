@@ -2,15 +2,18 @@ import {
     ICodeRunner,
     SupportedLanguage,
     ExecuteResult,
-    ExecutionOptions
+    ExecutionOptions,
+    BatchExecutionOptions
 } from './sandbox.types';
 import { PythonRunner } from './python/python.runner';
 import { SqlRunner } from './sql/sql.runner';
 import { JavaScriptRunner } from './js/js.runner';
 import { CppRunner } from './cpp/cpp.runner';
+import { BatchCodeRunner } from './batch/batch.runner';
 
 export class SandboxService {
     private runners: Map<SupportedLanguage, ICodeRunner> = new Map();
+    private readonly batchRunner = new BatchCodeRunner();
 
     constructor() {
         // Đăng ký mặc định các runner ngôn ngữ trong các thư mục chuyên biệt
@@ -52,6 +55,26 @@ export class SandboxService {
     }
 
     /**
+     * Chấm nhiều testcase trong cùng một sandbox. C++ chỉ được biên dịch một lần;
+     * Python và JavaScript cũng chỉ khởi tạo một container cho toàn bộ lượt nộp.
+     */
+    public async executeBatch(
+        code: string,
+        language: SupportedLanguage,
+        inputData: string[],
+        options?: BatchExecutionOptions
+    ): Promise<ExecuteResult[]> {
+        if (language !== 'PYTHON' && language !== 'JAVASCRIPT' && language !== 'CPP' && language !== 'C') {
+            const { compileTimeoutMs: _compileTimeoutMs, ...executionOptions } = options || {};
+            return Promise.all(inputData.map((input) => this.execute(code, language, {
+                ...executionOptions,
+                inputData: input
+            })));
+        }
+        return this.batchRunner.run(code, language, inputData, options);
+    }
+
+    /**
      * Phương thức tiện ích duy trì tương thích ngược 100% với chữ ký cũ
      */
     public async runCodeInDocker(
@@ -72,3 +95,4 @@ export const sandboxService = new SandboxService();
 
 // Export hàm runCodeInDocker tiện ích trực tiếp
 export const runCodeInDocker = sandboxService.runCodeInDocker.bind(sandboxService);
+export const runCodeBatch = sandboxService.executeBatch.bind(sandboxService);

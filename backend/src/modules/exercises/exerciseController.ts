@@ -4,6 +4,7 @@ import { codeExecutionQueue } from '../../infrastructure/queue/queueService';
 import { exerciseService } from './exercise.service';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
 import { StaticCodeAnalyzer } from '../../infrastructure/analysis/staticCodeAnalyzer';
+import { ExecuteResult } from '../../infrastructure/sandbox/sandbox.types';
 
 // Chạy thử code (không lưu database)
 export const runCodeDynamic = async (req: Request, res: Response): Promise<void> => {
@@ -254,69 +255,81 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
             }
         }
 
-        // 3. Thực thi song song tất cả các testcase trong môi trường Sandbox/Local
+        // 3. Chuẩn bị mã nguồn một lần, sau đó chạy độc lập từng testcase trong cùng sandbox.
+        // Tránh việc C++ phải biên dịch lại và tạo container mới cho mỗi testcase.
         let totalRuntime = 0;
         let hasSystemError = false;
+        const testCases = exercise.testCases || [];
+        let executionResults: ExecuteResult[] = [];
+        try {
+            executionResults = await codeExecutionQueue.pushBatchJob(
+                code,
+                execLanguage as any,
+                testCases.map((tc: any) => tc.input),
+                { timeoutMs: 5000 }
+            );
+        } catch (error: any) {
+            hasSystemError = true;
+            executionResults = [];
+            console.error('Lỗi batch sandbox:', error);
+        }
 
-        const results = await Promise.all(
-            (exercise.testCases || []).map(async (tc: any) => {
+        const results = testCases.map((tc: any, index: number) => {
+            const result = executionResults[index];
+            if (!result) {
+                hasSystemError = true;
+                return {
+                    id: tc.id,
+                    input: tc.input,
+                    expectedOutput: tc.expectedOutput,
+                    actualOutput: 'Lỗi hệ thống: Sandbox không trả về kết quả.',
+                    passed: false
+                };
+            }
+
+            totalRuntime += result.runtimeMs;
+            if (result.status === 'TIMEOUT') {
+                return {
+                    id: tc.id,
+                    input: tc.input,
+                    expectedOutput: tc.expectedOutput,
+                    actualOutput: 'Lỗi: Quá thời gian thực thi (5s)',
+                    passed: false
+                };
+            }
+
+            const matchOutput = (act: string, exp: string): boolean => {
+                const cleanActual = act.replace(/\r\n/g, '\n').trim().replace(/\s+/g, ' ');
+                const cleanExpected = exp.replace(/\r\n/g, '\n').trim().replace(/\s+/g, ' ');
+                if (cleanActual === cleanExpected) return true;
+                if (cleanActual.endsWith(cleanExpected)) return true;
+
+                // Chuẩn hóa dấu nháy đơn / nháy kép
+                const normQuotes = (s: string) => s.replace(/["']/g, '"').trim();
+                if (normQuotes(cleanActual) === normQuotes(cleanExpected)) return true;
+                if (normQuotes(cleanActual).endsWith(normQuotes(cleanExpected))) return true;
+
                 try {
-                    const result = await codeExecutionQueue.pushJob(code, execLanguage as any, tc.input, 5000);
-                    totalRuntime += result.runtimeMs;
+                    const pyToJson = (s: string) => s.trim().replace(/\(/g, '[').replace(/\)/g, ']').replace(/'/g, '"').replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+                    if (JSON.stringify(JSON.parse(pyToJson(cleanActual))) === JSON.stringify(JSON.parse(pyToJson(cleanExpected)))) return true;
+                } catch {}
+                return false;
+            };
+            const actual = result.stdout || '';
+            const passed = result.status === 'SUCCESS' && matchOutput(actual, tc.expectedOutput);
+            const failureType = result.status === 'ERROR' && /^\[Lỗi biên dịch /i.test(result.stderr)
+                ? 'COMPILE_ERROR'
+                : undefined;
 
-                    if (result.status === 'TIMEOUT') {
-                        return {
-                            id: tc.id,
-                            input: tc.input,
-                            expectedOutput: tc.expectedOutput,
-                            actualOutput: "Lỗi: Quá thời gian thực thi (5s)",
-                            passed: false
-                        };
-                    }
-
-                    const matchOutput = (act: string, exp: string): boolean => {
-                        const cleanActual = act.replace(/\r\n/g, '\n').trim().replace(/\s+/g, ' ');
-                        const cleanExpected = exp.replace(/\r\n/g, '\n').trim().replace(/\s+/g, ' ');
-                        if (cleanActual === cleanExpected) return true;
-                        if (cleanActual.endsWith(cleanExpected)) return true;
-                        
-                        // Chuẩn hóa dấu nháy đơn / nháy kép
-                        const normQuotes = (s: string) => s.replace(/["']/g, '"').trim();
-                        if (normQuotes(cleanActual) === normQuotes(cleanExpected)) return true;
-                        if (normQuotes(cleanActual).endsWith(normQuotes(cleanExpected))) return true;
-
-                        try {
-                            const pyToJson = (s: string) => s.trim().replace(/\(/g, '[').replace(/\)/g, ']').replace(/'/g, '"').replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
-                            if (JSON.stringify(JSON.parse(pyToJson(cleanActual))) === JSON.stringify(JSON.parse(pyToJson(cleanExpected)))) return true;
-                        } catch {}
-                        return false;
-                    };
-                    const actual = result.stdout || '';
-                    const passed = matchOutput(actual, tc.expectedOutput);
-                    const failureType = result.status === 'ERROR' && /^\[Lỗi biên dịch /i.test(result.stderr)
-                        ? 'COMPILE_ERROR'
-                        : undefined;
-
-                    return {
-                        id: tc.id,
-                        input: tc.input,
-                        expectedOutput: tc.expectedOutput,
-                        actualOutput: result.status === 'ERROR' ? result.stderr : actual,
-                        passed,
-                        failureType
-                    };
-                } catch (e: any) {
-                    hasSystemError = true;
-                    return {
-                        id: tc.id,
-                        input: tc.input,
-                        expectedOutput: tc.expectedOutput,
-                        actualOutput: `Lỗi hệ thống: ${e.message}`,
-                        passed: false
-                    };
-                }
-            })
-        );
+            return {
+                id: tc.id,
+                input: tc.input,
+                expectedOutput: tc.expectedOutput,
+                actualOutput: result.status === 'ERROR' ? result.stderr : actual,
+                passed,
+                failureType
+            };
+        });
 
         if (hasSystemError) {
             res.status(500).json({ error: "Lỗi trong quá trình chấm bài." });

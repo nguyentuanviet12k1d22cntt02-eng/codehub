@@ -209,77 +209,82 @@ export const submitPracticeCode = async (req: AuthenticatedRequest, res: Respons
             astResult = StaticCodeAnalyzer.analyze(code, language, problem.description || '', problem.title);
         }
 
-        // Thực thi song song tất cả các testcase
+        // Chuẩn bị mã nguồn một lần, sau đó chạy từng testcase độc lập trong một sandbox.
         let totalRuntime = 0;
         let hasSystemError = false;
+        // Python/JavaScript vẫn giữ ngưỡng 5 giây; C/C++ có thêm 1 giây cho runtime.
+        const timeoutMs = language === 'CPP' || language === 'C' ? 6000 : 5000;
+        let executionResults = [] as Awaited<ReturnType<typeof codeExecutionQueue.pushBatchJob>>;
+        try {
+            executionResults = await codeExecutionQueue.pushBatchJob(
+                code,
+                language as ProgrammingLanguage,
+                problem.testCases.map((tc: any) => tc.input),
+                { timeoutMs }
+            );
+        } catch (error: any) {
+            hasSystemError = true;
+            console.error('Lỗi batch sandbox:', error);
+        }
 
-        const results = await Promise.all(
-            problem.testCases.map(async (tc: any) => {
-                try {
-                    // Timeout bao gồm: subprocess wrapper overhead (~200ms) + thời gian chạy user code
-                    // Python/JS: 5s (3s user code + ~200ms wrapper + buffer)
-                    // C/C++: 6s (5s build+run timeout trong sandboxService)
-                    const timeoutMs = language === 'CPP' || language === 'C' ? 6000 : 5000;
-                    const result = await codeExecutionQueue.pushJob(code, language as ProgrammingLanguage, tc.input, timeoutMs);
-                    totalRuntime += result.runtimeMs;
+        const results = problem.testCases.map((tc: any, index: number) => {
+            const result = executionResults[index];
+            if (!result) {
+                hasSystemError = true;
+                return {
+                    id: tc.id,
+                    input: tc.isHidden ? '📌 [Ẩn]' : tc.input,
+                    expectedOutput: tc.isHidden ? '📌 [Ẩn]' : tc.expectedOutput,
+                    actualOutput: 'Lỗi hệ thống: Sandbox không trả về kết quả.',
+                    passed: false,
+                    isHidden: tc.isHidden
+                };
+            }
 
-                    if (result.status === 'TIMEOUT') {
-                        return {
-                            id: tc.id,
-                            input: tc.isHidden ? '📌 [Ẩn]' : tc.input,
-                            expectedOutput: tc.isHidden ? '📌 [Ẩn]' : tc.expectedOutput,
-                            actualOutput: "Lỗi: Quá thời gian thực thi (Timeout)",
-                            passed: false,
-                            isHidden: tc.isHidden
-                        };
+            totalRuntime += result.runtimeMs;
+            if (result.status === 'TIMEOUT') {
+                return {
+                    id: tc.id,
+                    input: tc.isHidden ? '📌 [Ẩn]' : tc.input,
+                    expectedOutput: tc.isHidden ? '📌 [Ẩn]' : tc.expectedOutput,
+                    actualOutput: 'Lỗi: Quá thời gian thực thi (Timeout)',
+                    passed: false,
+                    isHidden: tc.isHidden
+                };
+            }
+
+            const matchOutput = (act: string, exp: string): boolean => {
+                const cleanActual = act.replace(/\r\n/g, '\n').trim();
+                const cleanExpected = exp.replace(/\r\n/g, '\n').trim();
+                if (cleanActual === cleanExpected) return true;
+                if (cleanActual.endsWith(cleanExpected)) {
+                    const prefixLen = cleanActual.length - cleanExpected.length;
+                    if (prefixLen > 0) {
+                        const boundary = cleanActual[prefixLen - 1];
+                        return /\s|:|：|>|\)|\]/.test(boundary);
                     }
-
-                    const matchOutput = (act: string, exp: string): boolean => {
-                        const cleanActual = act.replace(/\r\n/g, '\n').trim();
-                        const cleanExpected = exp.replace(/\r\n/g, '\n').trim();
-                        if (cleanActual === cleanExpected) return true;
-                        if (cleanActual.endsWith(cleanExpected)) {
-                            const prefixLen = cleanActual.length - cleanExpected.length;
-                            if (prefixLen > 0) {
-                                const boundary = cleanActual[prefixLen - 1];
-                                if (/\s|:|：|>|\)|\]/.test(boundary)) {
-                                    return true;
-                                }
-                            }
-                        }
-                        return false;
-                    };
-                    const actual = result.stdout || '';
-                    const passed = matchOutput(actual, tc.expectedOutput);
-
-                    return {
-                        id: tc.id,
-                        input: tc.isHidden ? '📌 [Ẩn]' : tc.input,
-                        expectedOutput: tc.isHidden ? '📌 [Ẩn]' : tc.expectedOutput,
-                        actualOutput: tc.isHidden && !passed ? '❌ Kết quả sai (Ẩn)' : (result.status === 'ERROR' ? result.stderr : actual),
-                        passed,
-                        isHidden: tc.isHidden
-                    };
-                } catch (e: any) {
-                    hasSystemError = true;
-                    return {
-                        id: tc.id,
-                        input: tc.isHidden ? '📌 [Ẩn]' : tc.input,
-                        expectedOutput: tc.isHidden ? '📌 [Ẩn]' : tc.expectedOutput,
-                        actualOutput: `Lỗi hệ thống: ${e.message}`,
-                        passed: false,
-                        isHidden: tc.isHidden
-                    };
                 }
-            })
-        );
+                return false;
+            };
+            const actual = result.stdout || '';
+            const passed = result.status === 'SUCCESS' && matchOutput(actual, tc.expectedOutput);
+
+            return {
+                id: tc.id,
+                input: tc.isHidden ? '📌 [Ẩn]' : tc.input,
+                expectedOutput: tc.isHidden ? '📌 [Ẩn]' : tc.expectedOutput,
+                actualOutput: tc.isHidden && !passed ? '❌ Kết quả sai (Ẩn)' : (result.status === 'ERROR' ? result.stderr : actual),
+                passed,
+                isHidden: tc.isHidden
+            };
+        });
 
         if (hasSystemError) {
             res.status(500).json({ error: "Lỗi trong quá trình chấm bài." });
             return;
         }
 
-        const allTestsPassed = results.every(r => r.passed);
+        const allTestsPassed = results.every((r: { passed: boolean }) => r.passed);
         const allPassed = allTestsPassed && astResult.isValid;
 
         // Tính toán thời gian chạy thực tế trung bình cho các testcase
@@ -337,7 +342,7 @@ export const submitPracticeCode = async (req: AuthenticatedRequest, res: Respons
         if (!astResult.isValid) {
             returnMessage = astResult.error;
         } else if (!allTestsPassed) {
-            returnMessage = `Chưa vượt qua tất cả các testcase (${results.filter(r => r.passed).length}/${results.length}).`;
+            returnMessage = `Chưa vượt qua tất cả các testcase (${results.filter((r: { passed: boolean }) => r.passed).length}/${results.length}).`;
         }
 
         res.status(200).json({

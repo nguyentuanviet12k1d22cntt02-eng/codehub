@@ -17,6 +17,10 @@ export interface ExecutionOptions {
     memoryLimit?: string;
 }
 
+export interface BatchExecutionOptions extends Omit<ExecutionOptions, 'inputData'> {
+    compileTimeoutMs?: number;
+}
+
 export interface ICodeRunner {
     readonly language: SupportedLanguage;
     run(code: string, options?: ExecutionOptions): Promise<ExecuteResult>;

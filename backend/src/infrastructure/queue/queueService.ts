@@ -1,13 +1,13 @@
-import { runCodeInDocker } from '../sandbox/sandbox.service';
-import { ExecuteResult, SupportedLanguage } from '../sandbox/sandbox.types';
+import { runCodeBatch, runCodeInDocker } from '../sandbox/sandbox.service';
+import { BatchExecutionOptions, ExecuteResult, SupportedLanguage } from '../sandbox/sandbox.types';
+
+type QueueExecutionResult = ExecuteResult | ExecuteResult[];
 
 interface ExecutionJob {
     id: string;
-    userCode: string;
     language: SupportedLanguage;
-    inputData: string;
-    timeoutMs: number;
-    resolve: (value: ExecuteResult) => void;
+    execute: () => Promise<QueueExecutionResult>;
+    resolve: (value: QueueExecutionResult) => void;
     reject: (reason: any) => void;
 }
 
@@ -30,25 +30,43 @@ class CodeExecutionQueue {
         inputData: string = '',
         timeoutMs?: number
     ): Promise<ExecuteResult> {
-        return new Promise<ExecuteResult>((resolve, reject) => {
-            let defaultTimeout = 3000;
-            if (language === 'CPP' || language === 'C') {
-                defaultTimeout = 5000; // đồng bộ với sandboxService
-            }
-            const actualTimeout = timeoutMs ?? defaultTimeout;
+        const actualTimeout = timeoutMs ?? this.defaultTimeout(language);
+        return this.enqueue(language, () => runCodeInDocker(userCode, language, inputData, actualTimeout)) as Promise<ExecuteResult>;
+    }
 
-            const job: ExecutionJob = {
-                id: `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                userCode,
+    /**
+     * Một job batch chiếm đúng một slot trong queue, dù nó có nhiều testcase.
+     * Nhờ vậy một lượt nộp không tạo nhiều container cạnh tranh CPU với chính nó.
+     */
+    public pushBatchJob(
+        userCode: string,
+        language: SupportedLanguage,
+        inputs: string[],
+        options?: BatchExecutionOptions
+    ): Promise<ExecuteResult[]> {
+        const timeoutMs = options?.timeoutMs ?? this.defaultTimeout(language);
+        return this.enqueue(language, () => runCodeBatch(userCode, language, inputs, {
+            ...options,
+            timeoutMs
+        })) as Promise<ExecuteResult[]>;
+    }
+
+    private defaultTimeout(language: SupportedLanguage): number {
+        return language === 'CPP' || language === 'C' ? 5000 : 3000;
+    }
+
+    private enqueue(
+        language: SupportedLanguage,
+        execute: () => Promise<QueueExecutionResult>
+    ): Promise<QueueExecutionResult> {
+        return new Promise<QueueExecutionResult>((resolve, reject) => {
+            this.queue.push({
+                id: `job_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
                 language,
-                inputData,
-                timeoutMs: actualTimeout,
+                execute,
                 resolve,
                 reject
-            };
-
-            this.queue.push(job);
-            // Flush queue mỗi khi có job mới, đảm bảo không bỏ sót slot trống
+            });
             this.drainQueue();
         });
     }
@@ -67,7 +85,7 @@ class CodeExecutionQueue {
             console.log(`[Queue] Bắt đầu Job ${job.id} (${job.language}). Active: ${this.activeCount}/${this.maxConcurrency}. Queue: ${this.queue.length}`);
 
             // Chạy job bất đồng bộ, không await ở đây để loop tiếp tục lấy job tiếp theo
-            runCodeInDocker(job.userCode, job.language, job.inputData, job.timeoutMs)
+            job.execute()
                 .then((result) => {
                     job.resolve(result);
                 })

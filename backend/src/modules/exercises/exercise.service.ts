@@ -51,55 +51,55 @@ export class ExerciseService {
         testCases: Array<{ id: string; input: string; expectedOutput: string }>,
         timeoutMs: number = 5000
     ): Promise<EvaluationResult> {
+        const executionResults = await codeExecutionQueue.pushBatchJob(
+            code,
+            language,
+            testCases.map((testCase) => testCase.input),
+            { timeoutMs }
+        );
         let totalRuntimeMs = 0;
 
-        const results = await Promise.all(
-            testCases.map(async (tc) => {
-                try {
-                    const result = await codeExecutionQueue.pushJob(code, language, tc.input, timeoutMs);
-                    totalRuntimeMs += result.runtimeMs;
+        const results = testCases.map((tc, index) => {
+            const result = executionResults[index];
+            if (!result) {
+                return {
+                    id: tc.id,
+                    input: tc.input,
+                    expectedOutput: tc.expectedOutput,
+                    actualOutput: 'Lỗi hệ thống: Sandbox không trả về kết quả.',
+                    passed: false,
+                    runtimeMs: 0
+                };
+            }
 
-                    if (result.status === 'TIMEOUT') {
-                        return {
-                            id: tc.id,
-                            input: tc.input,
-                            expectedOutput: tc.expectedOutput,
-                            actualOutput: `Lỗi: Quá thời gian thực thi (${timeoutMs / 1000}s)`,
-                            passed: false,
-                            runtimeMs: result.runtimeMs
-                        };
-                    }
+            totalRuntimeMs += result.runtimeMs;
+            if (result.status === 'TIMEOUT') {
+                return {
+                    id: tc.id,
+                    input: tc.input,
+                    expectedOutput: tc.expectedOutput,
+                    actualOutput: `Lỗi: Quá thời gian thực thi (${timeoutMs / 1000}s)`,
+                    passed: false,
+                    runtimeMs: result.runtimeMs
+                };
+            }
 
-                    const matchOutput = (act: string, exp: string): boolean => {
-                        const cleanActual = act.replace(/\r\n/g, '\n').trim().replace(/\s+/g, ' ');
-                        const cleanExpected = exp.replace(/\r\n/g, '\n').trim().replace(/\s+/g, ' ');
-                        if (cleanActual === cleanExpected) return true;
-                        if (cleanActual.endsWith(cleanExpected)) return true;
-                        return false;
-                    };
+            const matchOutput = (act: string, exp: string): boolean => {
+                const cleanActual = act.replace(/\r\n/g, '\n').trim().replace(/\s+/g, ' ');
+                const cleanExpected = exp.replace(/\r\n/g, '\n').trim().replace(/\s+/g, ' ');
+                return cleanActual === cleanExpected || cleanActual.endsWith(cleanExpected);
+            };
+            const isPassed = result.status === 'SUCCESS' && matchOutput(result.stdout, tc.expectedOutput);
 
-                    const isPassed = result.status === 'SUCCESS' && matchOutput(result.stdout, tc.expectedOutput);
-
-                    return {
-                        id: tc.id,
-                        input: tc.input,
-                        expectedOutput: tc.expectedOutput,
-                        actualOutput: result.status === 'SUCCESS' ? result.stdout.trim() : (result.stderr || 'Lỗi thực thi').trim(),
-                        passed: isPassed,
-                        runtimeMs: result.runtimeMs
-                    };
-                } catch (err: any) {
-                    return {
-                        id: tc.id,
-                        input: tc.input,
-                        expectedOutput: tc.expectedOutput,
-                        actualOutput: `Lỗi hệ thống: ${err.message}`,
-                        passed: false,
-                        runtimeMs: 0
-                    };
-                }
-            })
-        );
+            return {
+                id: tc.id,
+                input: tc.input,
+                expectedOutput: tc.expectedOutput,
+                actualOutput: result.status === 'SUCCESS' ? result.stdout.trim() : (result.stderr || 'Lỗi thực thi').trim(),
+                passed: isPassed,
+                runtimeMs: result.runtimeMs
+            };
+        });
 
         const allPassed = results.length > 0 && results.every((r) => r.passed);
         return { allPassed, totalRuntimeMs, results };
