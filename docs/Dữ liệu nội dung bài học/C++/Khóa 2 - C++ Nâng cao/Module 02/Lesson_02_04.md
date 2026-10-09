@@ -21,7 +21,7 @@ Mỗi phần tử được gọi là một **Nút (Node)**, chứa 2 thông tin:
 | :--- | :--- | :--- |
 | **Bố trí RAM** | Liên tiếp nhau | Nằm rải rác |
 | **Truy xuất theo chỉ số `a[i]`** | Tức thì $O(1)$ | Phải duyệt từ đầu $O(N)$ |
-| **Chèn/Xóa tại đầu danh sách** | Chậm (phải dồn mảng) | **Tức thì $O(1)$** |
+| **Chèn/Xóa tại đầu danh sách** | Chậm (phải dồn mảng) | **$O(1)$ khi đã có vị trí/iterator cần thiết** |
 
 ## 2. Cú pháp & Quy tắc hoạt động
 
@@ -58,5 +58,5 @@ std::cout << head->next->data; // In ra: 20
 ## 5. Ghi nhớ trọng tâm
 
 - Danh sách liên kết là tập hợp các nút rời rạc liên kết với nhau qua con trỏ.
-- Ưu thế vượt trội khi chèn và xóa phần tử ở đầu danh sách ($O(1)$).
+- Ưu thế khi chèn và xóa gần đầu danh sách, hoặc sau một iterator đã biết, với chi phí thao tác $O(1)$; việc tìm vị trí vẫn có thể cần $O(N)$.
 - Luôn giữ gìn con trỏ `head` cẩn thận để không bị mất kết nối danh sách.

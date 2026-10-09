@@ -55,13 +55,11 @@ std::string ketQua = (diem >= 5) ? "Qua mon" : "Thi lai";
 ```cpp
 void chiaTien(int tongTien, int soNguoi) {
     if (soNguoi <= 0) {
-        std::cout << "So nguoi khong hop le!
-";
+        std::cout << "So nguoi khong hop le!\\n";
         return; // Dừng hàm ngay lập tức
     }
 
-    std::cout << "Moi nguoi duoc: " << tongTien / soNguoi << '
-';
+    std::cout << "Moi nguoi duoc: " << tongTien / soNguoi << '\n';
 }
 ```
 

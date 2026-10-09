@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 500" width="100%" height="100%">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0F19" />
+      <stop offset="100%" stop-color="#111827" />
+    </linearGradient>
+    <linearGradient id="cardGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="initGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+    <linearGradient id="condGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="updateGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A855F7" />
+      <stop offset="100%" stop-color="#7E22CE" />
+    </linearGradient>
+    <linearGradient id="exitGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#EF4444" />
+      <stop offset="100%" stop-color="#B91C1C" />
+    </linearGradient>
+
+    <!-- Filters & Shadows -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Markers -->
+    <marker id="arrowSky" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#38BDF8" />
+    </marker>
+    <marker id="arrowEmerald" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#10B981" />
+    </marker>
+    <marker id="arrowPurple" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#A855F7" />
+    </marker>
+    <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#EF4444" />
+    </marker>
+  </defs>
+
+  <style>
+    .title { font-family: system-ui, -apple-system, sans-serif; font-size: 20px; font-weight: 800; fill: #F8FAFC; letter-spacing: 0.5px; }
+    .subtitle { font-family: system-ui, -apple-system, sans-serif; font-size: 13px; font-weight: 500; fill: #94A3B8; }
+    .card-title { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; font-weight: 800; letter-spacing: 0.5px; }
+    .card-desc { font-family: system-ui, -apple-system, sans-serif; font-size: 13px; font-weight: 500; fill: #CBD5E1; }
+    .code-text { font-family: 'Fira Code', monospace; font-size: 13px; font-weight: 600; }
+    .badge { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  </style>
+
+  <!-- Canvas Background -->
+  <rect width="880" height="500" rx="24" fill="url(#bgGrad)" stroke="#1E293B" stroke-width="2" />
+
+  <!-- Header -->
+  <g transform="translate(40, 42)">
+    <rect x="0" y="0" width="36" height="36" rx="10" fill="#3B82F6" fill-opacity="0.15" stroke="#3B82F6" stroke-width="1.5" />
+    <path d="M12 18 A6 6 0 1 1 24 18 A6 6 0 0 1 12 18 M24 14 L24 20" fill="none" stroke="#60A5FA" stroke-width="2.5" stroke-linecap="round" />
+    <text x="48" y="22" class="title">CHU TRÌNH 4 BƯỚC CỦA MỌI VÒNG LẶP</text>
+    <text x="48" y="38" class="subtitle">4 Trụ cột bất biến điều khiển dòng chảy chương trình trong lập trình</text>
+  </g>
+
+  <!-- STEP 1: KHỞI TẠO (INITIALIZATION) -->
+  <g transform="translate(50, 110)" filter="url(#shadow)">
+    <rect width="210" height="120" rx="16" fill="url(#cardGrad1)" stroke="#38BDF8" stroke-width="1.8" />
+    <rect x="16" y="14" width="76" height="22" rx="6" fill="#38BDF8" fill-opacity="0.2" />
+    <text x="24" y="29" class="badge" fill="#38BDF8">BƯỚC 1</text>
+    <text x="16" y="58" class="card-title" fill="#38BDF8">KHỞI TẠO (INIT)</text>
+    <text x="16" y="80" class="card-desc">Thiết lập vạch xuất phát</text>
+    <rect x="16" y="90" width="178" height="22" rx="5" fill="#090D16" />
+    <text x="24" y="105" class="code-text" fill="#7DD3FC">dem = 1</text>
+  </g>
+
+  <!-- Connector Step 1 -> Step 2 -->
+  <path d="M 260 170 L 330 170" fill="none" stroke="#38BDF8" stroke-width="2.5" marker-end="url(#arrowSky)" />
+
+  <!-- STEP 2: ĐIỀU KIỆN (CONDITION) -->
+  <g transform="translate(340, 110)" filter="url(#shadow)">
+    <rect width="230" height="120" rx="16" fill="url(#cardGrad1)" stroke="#F59E0B" stroke-width="1.8" />
+    <rect x="16" y="14" width="76" height="22" rx="6" fill="#F59E0B" fill-opacity="0.2" />
+    <text x="24" y="29" class="badge" fill="#F59E0B">BƯỚC 2</text>
+    <text x="16" y="58" class="card-title" fill="#F59E0B">ĐIỀU KIỆN (CONDITION)</text>
+    <text x="16" y="80" class="card-desc">Còn được phép chạy tiếp?</text>
+    <rect x="16" y="90" width="198" height="22" rx="5" fill="#090D16" />
+    <text x="24" y="105" class="code-text" fill="#FCD34D">dem &lt;= 3  ➔  Đúng / Sai</text>
+  </g>
+
+  <!-- EXIT BRANCH (IF CONDITION IS FALSE) -->
+  <path d="M 570 170 L 650 170" fill="none" stroke="#EF4444" stroke-width="2.5" marker-end="url(#arrowRed)" />
+  <rect x="580" y="145" width="55" height="20" rx="4" fill="#EF4444" fill-opacity="0.2" />
+  <text x="590" y="159" font-family="system-ui" font-size="11" font-weight="800" fill="#F87171">NẾU SAI</text>
+
+  <!-- EXIT BOX -->
+  <g transform="translate(660, 125)" filter="url(#shadow)">
+    <rect width="170" height="90" rx="14" fill="#1C1917" stroke="#EF4444" stroke-width="1.8" stroke-dasharray="4 2" />
+    <text x="20" y="38" class="card-title" fill="#EF4444">THOÁT VÒNG LẶP</text>
+    <text x="20" y="60" class="card-desc" font-size="12">Cán đích thành công</text>
+    <text x="20" y="78" class="code-text" font-size="11" fill="#FDA4AF">print("Hoàn thành!")</text>
+  </g>
+
+  <!-- TRUE BRANCH -> STEP 3 -->
+  <path d="M 455 230 L 455 290" fill="none" stroke="#10B981" stroke-width="2.5" marker-end="url(#arrowEmerald)" />
+  <rect x="465" y="248" width="65" height="20" rx="4" fill="#10B981" fill-opacity="0.2" />
+  <text x="473" y="262" font-family="system-ui" font-size="11" font-weight="800" fill="#34D399">NẾU ĐÚNG</text>
+
+  <!-- STEP 3: THÂN VÒNG LẶP (LOOP BODY) -->
+  <g transform="translate(340, 300)" filter="url(#shadow)">
+    <rect width="230" height="120" rx="16" fill="url(#cardGrad1)" stroke="#10B981" stroke-width="1.8" />
+    <rect x="16" y="14" width="76" height="22" rx="6" fill="#10B981" fill-opacity="0.2" />
+    <text x="24" y="29" class="badge" fill="#10B981">BƯỚC 3</text>
+    <text x="16" y="58" class="card-title" fill="#10B981">THỰC HIỆN (ACTION)</text>
+    <text x="16" y="80" class="card-desc">Công việc chính của vòng lặp</text>
+    <rect x="16" y="90" width="198" height="22" rx="5" fill="#090D16" />
+    <text x="24" y="105" class="code-text" fill="#6EE7B7">print("Lượt:", dem)</text>
+  </g>
+
+  <!-- STEP 3 -> STEP 4 -->
+  <path d="M 340 360 L 260 360" fill="none" stroke="#A855F7" stroke-width="2.5" marker-end="url(#arrowPurple)" />
+
+  <!-- STEP 4: CẬP NHẬT BIẾN ĐẾM (UPDATE) -->
+  <g transform="translate(40, 300)" filter="url(#shadow)">
+    <rect width="210" height="120" rx="16" fill="url(#cardGrad1)" stroke="#A855F7" stroke-width="1.8" />
+    <rect x="16" y="14" width="76" height="22" rx="6" fill="#A855F7" fill-opacity="0.2" />
+    <text x="24" y="29" class="badge" fill="#A855F7">BƯỚC 4</text>
+    <text x="16" y="58" class="card-title" fill="#A855F7">CẬP NHẬT (UPDATE)</text>
+    <text x="16" y="80" class="card-desc">Tiến thêm 1 bước về đích</text>
+    <rect x="16" y="90" width="178" height="22" rx="5" fill="#090D16" />
+    <text x="24" y="105" class="code-text" fill="#D8B4FE">dem = dem + 1</text>
+  </g>
+
+  <!-- LOOP-BACK CYCLE ARROW (Step 4 back to Step 2) -->
+  <path d="M 145 300 L 145 260 C 145 250, 160 240, 175 240 L 270 240 C 290 240, 305 230, 315 210 L 330 185" 
+        fill="none" stroke="#A855F7" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrowPurple)" />
+  <rect x="155" y="228" width="105" height="20" rx="4" fill="#A855F7" fill-opacity="0.25" />
+  <text x="162" y="242" font-family="system-ui" font-size="10.5" font-weight="700" fill="#E9D5FF">QUAY LẠI BƯỚC 2</text>
+
+  <!-- BOTTOM WARNING BANNER -->
+  <g transform="translate(50, 440)">
+    <rect width="780" height="42" rx="10" fill="#7F1D1D" fill-opacity="0.35" stroke="#DC2626" stroke-width="1.2" />
+    <text x="20" y="26" font-family="system-ui" font-size="12.5" font-weight="700" fill="#FCA5A5">
+      ⚠️ BẪY CHẾT NGƯỜI: Nếu quên Bước 4 (dem = dem + 1), điều kiện dem &lt;= 3 luôn ĐÚNG ➔ VÒNG LẶP VÔ HẠN (Treo máy!)
+    </text>
+  </g>
+</svg>

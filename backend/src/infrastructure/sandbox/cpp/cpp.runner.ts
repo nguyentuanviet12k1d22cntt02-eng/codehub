@@ -9,26 +9,15 @@ import {
     safeUnlink,
     checkDockerDaemon,
     setDockerDaemonStatus,
-    parseRuntimeStderr
+    parseRuntimeStderr,
+    getAvailableGccImage
 } from '../utils/docker.utils';
-
-let isGccDockerImageAvailable: boolean | null = null;
 
 export class CppRunner implements ICodeRunner {
     public readonly language: SupportedLanguage;
 
     constructor(language: 'CPP' | 'C' = 'CPP') {
         this.language = language;
-    }
-
-    private checkDockerImage(): Promise<boolean> {
-        if (isGccDockerImageAvailable !== null) return Promise.resolve(isGccDockerImageAvailable);
-        return new Promise((resolve) => {
-            exec('docker images -q gcc:12-alpine', { timeout: 1500 }, (err, stdout) => {
-                isGccDockerImageAvailable = !err && !!stdout && stdout.trim().length > 0;
-                resolve(isGccDockerImageAvailable);
-            });
-        });
     }
 
     public async run(code: string, options?: ExecutionOptions): Promise<ExecuteResult> {
@@ -46,13 +35,13 @@ export class CppRunner implements ICodeRunner {
         await fs.writeFile(filePath, code, 'utf-8');
 
         const hasDocker = await checkDockerDaemon();
-        const hasImage = hasDocker ? await this.checkDockerImage() : false;
+        const dockerImage = hasDocker ? await getAvailableGccImage() : null;
 
-        if (!hasDocker || !hasImage) {
+        if (!hasDocker || !dockerImage) {
             return this.runLocally(filePath, inputData, timeoutMs);
         }
 
-        return this.runInDocker(filePath, fileName, uniqueId, inputData, timeoutMs, memoryLimit);
+        return this.runInDocker(filePath, fileName, uniqueId, inputData, timeoutMs, memoryLimit, dockerImage, code);
     }
 
     private async runInDocker(
@@ -61,9 +50,10 @@ export class CppRunner implements ICodeRunner {
         uniqueId: string,
         inputData: string,
         timeoutMs: number,
-        memoryLimit: string
+        memoryLimit: string,
+        dockerImage: string,
+        code: string
     ): Promise<ExecuteResult> {
-        const hostDir = temp_dir.replace(/\\/g, '/');
         const containerName = `sandbox_cpp_${uniqueId}`;
         const startTime = Date.now();
 
@@ -86,6 +76,8 @@ export class CppRunner implements ICodeRunner {
             `"`
         ].join('');
 
+        const codeB64 = Buffer.from(code, 'utf-8').toString('base64');
+
         return new Promise((resolve) => {
             const child = spawn('docker', [
                 'run',
@@ -96,10 +88,10 @@ export class CppRunner implements ICodeRunner {
                 '--network', 'none',
                 '--memory', memoryLimit,
                 '--cpus', '0.5',
-                '-v', `${hostDir}:/code:ro`,
+                '-e', `CODE_B64=${codeB64}`,
                 '-w', '/tmp',
-                'gcc:12-alpine',
-                'sh', '-c', `cp /code/${fileName} /tmp/${fileName} && ${runCommand}`
+                dockerImage,
+                'sh', '-c', `echo "$CODE_B64" | base64 -d > /tmp/${fileName} && ${runCommand}`
             ]);
 
             let stdout = '';

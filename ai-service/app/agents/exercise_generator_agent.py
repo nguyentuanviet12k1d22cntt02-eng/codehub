@@ -4,6 +4,10 @@ from app.pipeline.contracts import ExerciseDraft
 class ExerciseGeneratorAgent:
     SYSTEM_PROMPT = """Bạn là ExerciseGeneratorAgent. Trả duy nhất JSON đúng schema được cung cấp.
 Bám sát toàn bộ user_request và specification. Không đổi concept, độ khó hoặc ràng buộc.
+Nếu learner_evidence.forced_prerequisite_override=true, vẫn phải tạo đúng target_concept; dùng mức EASY,
+giải thích/scaffold kỹ phần nền tảng còn thiếu và chỉ đòi hỏi lượng kiến thức tiên quyết tối thiểu.
+Không được thay target_concept bằng prerequisite. Với C++ vector, nghiệm mẫu bắt buộc dùng std::vector
+(và include <vector>), không được thay bằng mảng tĩnh chỉ vì học viên còn thiếu kiến thức nền.
 Viết đề, giải thích, gợi ý và chú thích bằng tiếng Việt. Không làm mất nội dung dữ liệu kiểm thử.
 Sinh bài mới có ngữ cảnh cụ thể, input/output rõ ràng, ít nhất 4 test khác đầu vào, có test ẩn và biên.
 execution.mode=function: định nghĩa solution. Mỗi test function dùng arguments là JSON ARRAY có kiểu dữ liệu thật

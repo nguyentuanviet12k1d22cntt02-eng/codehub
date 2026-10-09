@@ -23,9 +23,9 @@ Giải pháp chuẩn trong C++ là: **Tham chiếu Hằng (`const Type&`)** — 
 
 | Cách truyền | Sao chép dữ liệu? | Cho phép sửa biến gốc? | Mục đích sử dụng |
 | :--- | :---: | :---: | :--- |
-| **Tham trị (`Type x`)** | Có | Không | Dành cho các kiểu số nguyên thủy nhỏ (`int`, `double`, `bool`, `char`). |
+| **Tham trị (`Type x`)** | Có | Không | Thường phù hợp với kiểu nhỏ, dễ sao chép và khi hàm cần bản sao riêng. |
 | **Tham chiếu (`Type& x`)** | Không | **Có** | Dùng khi CỐ Ý muốn hàm thay đổi biến gốc (như hàm `swap`). |
-| **Tham chiếu Hằng (`const Type& x`)** | **Không (Zero-copy)** | **Tuyệt đối KHÔNG** | **Tiêu chuẩn cho chuỗi (`string`) và các cấu trúc dữ liệu lớn.** |
+| **Tham chiếu Hằng (`const Type& x`)** | Không sao chép đối tượng | Không qua tham chiếu này | Phù hợp với đối tượng chỉ đọc mà việc sao chép không rẻ. |
 
 ## 2. Cú pháp & Quy tắc hoạt động
 
@@ -50,8 +50,7 @@ Truyền vào biến: s = "Xin chao"
 ```cpp
 // Truyền chuỗi bằng const Reference: Nhanh và An toàn
 void inThongBao(const std::string& loiNhan) {
-    std::cout << "Thong bao: " << loiNhan << '
-';
+    std::cout << "Thong bao: " << loiNhan << '\n';
     // loiNhan = "Thay doi"; // Lỗi biên dịch: không được phép sửa biến const!
 }
 
@@ -65,11 +64,11 @@ inThongBao("Tam biet");     // const& cho phép truyền trực tiếp cả chu�
 > [!WARNING]
 > **1. Lạm dụng `const&` cho các kiểu dữ liệu nhỏ cơ bản**
 > * *Lỗi:* Viết `void tinhTong(const int& a, const int& b)`.
-> * *Giải thích:* Kiểu `int` chỉ có 4 byte, bằng hoặc nhỏ hơn kích thước một con trỏ địa chỉ. Việc truyền tham trị trực tiếp `int a` còn nhanh và gọn hơn.
-> * *Quy tắc:* Kiểu nguyên thủy (`int`, `double`, `char`, `bool`) ➔ Truyền tham trị bình thường. Kiểu phức tạp (`string`, cấu trúc lớn) ➔ Dùng `const&`.
+> * *Giải thích:* Kích thước của `int`, `double` và con trỏ phụ thuộc nền tảng; không có ngưỡng kích thước phổ quát. Với kiểu nhỏ, sao chép rẻ và biểu đạt ý nghĩa rõ ràng, truyền tham trị thường là lựa chọn tốt. Với đối tượng có chi phí sao chép đáng kể, `const&` thường phù hợp hơn.
+> * *Quy tắc:* Chọn cách truyền theo ngữ nghĩa ownership, khả năng thay đổi và chi phí sao chép thực tế; đo đạc nếu đây là điểm nóng hiệu năng.
 
 ## 5. Ghi nhớ trọng tâm
 
 - `const Type&` kết hợp 2 ưu điểm: không sao chép dữ liệu thừa và bảo vệ dữ liệu ở chế độ chỉ đọc (Read-only).
-- Luôn ưu tiên dùng `const std::string&` khi truyền chuỗi văn bản vào hàm.
-- Với các kiểu dữ liệu nguyên thủy nhỏ như `int`, `double`, hãy truyền tham trị thông thường.
+- `const std::string&` là lựa chọn hợp lý khi hàm chỉ đọc chuỗi và không cần sở hữu bản sao.
+- Với kiểu nhỏ, ưu tiên cách truyền biểu đạt ý nghĩa rõ nhất; không suy luận hiệu năng chỉ từ số byte cố định.

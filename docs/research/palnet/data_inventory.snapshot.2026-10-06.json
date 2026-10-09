@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "palnet-data-inventory/1.0.0",
+  "capturedAt": "2026-10-05T17:10:03.724Z",
+  "capturedTimezone": "Asia/Bangkok",
+  "mode": "READ_ONLY",
+  "sources": {
+    "codingSubmissions": [
+      {
+        "language": "CPP",
+        "labeled_events": 35,
+        "first_attempt_labeled_events": 15,
+        "learners": 2,
+        "passed_events": 20,
+        "covered_lessons": 13,
+        "sequence_min": 1,
+        "sequence_median": 7.5,
+        "sequence_p90": 12.7,
+        "sequence_max": 14
+      },
+      {
+        "language": "JAVASCRIPT",
+        "labeled_events": 10,
+        "first_attempt_labeled_events": 4,
+        "learners": 1,
+        "passed_events": 9,
+        "covered_lessons": 5,
+        "sequence_min": 4,
+        "sequence_median": 4,
+        "sequence_p90": 4,
+        "sequence_max": 4
+      },
+      {
+        "language": "PYTHON",
+        "labeled_events": 759,
+        "first_attempt_labeled_events": 460,
+        "learners": 7,
+        "passed_events": 514,
+        "covered_lessons": 59,
+        "sequence_min": 1,
+        "sequence_median": 31,
+        "sequence_p90": 156.4,
+        "sequence_max": 322
+      }
+    ],
+    "practiceSubmissions": [],
+    "validatedPretestAnswers": [],
+    "globalCatalog": [
+      {
+        "course_status": "PUBLISHED",
+        "courses": 6,
+        "lessons": 181,
+        "coding_exercises": 722
+      }
+    ]
+  },
+  "knownLimitations": [
+    "Course has no language column; catalog coverage cannot be attributed safely by language.",
+    "Coding/practice events require a verified item-to-skill mapping before they are KT-ready.",
+    "PASSED/FAILED is an attempt outcome, not automatically a first-attempt label."
+  ]
+}

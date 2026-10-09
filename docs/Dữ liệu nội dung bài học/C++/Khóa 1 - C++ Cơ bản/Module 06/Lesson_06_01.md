@@ -4,7 +4,7 @@ title: "Bản chất Chuỗi ký tự: Phân biệt C-string và std::string Hi�
 difficulty: "EASY"
 estimatedDuration: 15
 keywords: ["string", "c-string", "null-terminator", "std::string"]
-prerequisites: ["CPP-05.01"]
+prerequisites: ["CPP-01.02"]
 ---
 
 # Bản chất Chuỗi ký tự: Phân biệt C-string và std::string Hiện đại

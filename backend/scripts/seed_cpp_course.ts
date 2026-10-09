@@ -1,6 +1,6 @@
 import { prisma } from '../src/infrastructure/database/prisma';
-import * as fs from 'fs';
 import * as path from 'path';
+import { readCppLessonMetadata } from './lib/cppLessonMetadata';
 
 async function main() {
     console.log('🚀 Bắt đầu triển khai Khóa học C++ Cơ bản (CPP-BASIC) lên hệ thống...');
@@ -77,8 +77,8 @@ async function main() {
         },
         {
             moduleId: 'CPP-MOD-05',
-            title: 'Module 5: Mảng 1 Chiều và std::vector Động',
-            objective: 'Lưu trữ dữ liệu tuyến tính, thuật toán sắp xếp (Bubble, Selection, Insertion) và mảng động std::vector chuẩn Modern C++.',
+            title: 'Module 5: Mảng 1 Chiều và Thuật toán trên Dãy',
+            objective: 'Lưu trữ dữ liệu tuyến tính bằng mảng tĩnh; duyệt, tìm kiếm, đếm tần suất, chèn và xóa phần tử có kiểm soát biên.',
             duration: '12 giờ',
             orderIndex: 5
         },
@@ -155,13 +155,7 @@ async function main() {
 
     // 5. Đọc nội dung Markdown của Bài 1.1 từ docs
     const lesson1Path = path.resolve(__dirname, '../../docs/Dữ liệu nội dung bài học/C++/Khóa 1 - C++ Cơ bản/Module 01/Lesson_01_01.md');
-    let lesson1Content = '';
-    if (fs.existsSync(lesson1Path)) {
-        lesson1Content = fs.readFileSync(lesson1Path, 'utf-8');
-    } else {
-        console.warn('⚠️ Không tìm thấy file Lesson_01_01.md, dùng nội dung fallback');
-        lesson1Content = `# Bài 1.1: Tổng quan ngôn ngữ C++ và Quy trình Biên dịch`;
-    }
+    const lesson1Metadata = readCppLessonMetadata(lesson1Path);
 
     // 6. Tạo hoặc Cập nhật Lesson 1.1
     let lesson1 = await prisma.lesson.findFirst({
@@ -176,11 +170,11 @@ async function main() {
             data: {
                 chapterId: chapter1.id,
                 lessonId: 'CPP-01.01',
-                title: 'Bài 1.1: Tổng quan ngôn ngữ C++ và Quy trình Biên dịch',
-                objective: 'Nắm vững 4 giai đoạn biên dịch C++ và viết chương trình Hello World chuẩn C++17.',
-                content: lesson1Content,
-                difficulty: 'EASY',
-                durationMinutes: 15,
+                title: lesson1Metadata.title,
+                objective: lesson1Metadata.objective,
+                content: lesson1Metadata.content,
+                difficulty: lesson1Metadata.difficulty as any,
+                durationMinutes: lesson1Metadata.durationMinutes,
                 isFree: true,
                 orderIndex: 1
             }
@@ -189,11 +183,11 @@ async function main() {
         lesson1 = await prisma.lesson.update({
             where: { id: lesson1.id },
             data: {
-                title: 'Bài 1.1: Tổng quan ngôn ngữ C++ và Quy trình Biên dịch',
-                objective: 'Nắm vững 4 giai đoạn biên dịch C++ và viết chương trình Hello World chuẩn C++17.',
-                content: lesson1Content,
-                difficulty: 'EASY',
-                durationMinutes: 15,
+                title: lesson1Metadata.title,
+                objective: lesson1Metadata.objective,
+                content: lesson1Metadata.content,
+                difficulty: lesson1Metadata.difficulty as any,
+                durationMinutes: lesson1Metadata.durationMinutes,
                 isFree: true,
                 orderIndex: 1
             }

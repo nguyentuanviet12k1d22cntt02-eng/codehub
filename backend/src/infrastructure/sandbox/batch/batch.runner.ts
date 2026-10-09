@@ -11,7 +11,8 @@ import {
     ensureTempDir,
     generateUniqueId,
     setDockerDaemonStatus,
-    temp_dir
+    temp_dir,
+    getAvailableGccImage
 } from '../utils/docker.utils';
 
 type BatchLanguage = 'PYTHON' | 'JAVASCRIPT' | 'CPP' | 'C';
@@ -52,7 +53,17 @@ export class BatchCodeRunner {
         const runtimeMs = options?.timeoutMs ?? (language === 'CPP' || language === 'C' ? 5000 : 3000);
         const compileTimeoutMs = options?.compileTimeoutMs ?? COMPILATION_TIMEOUT_MS;
         const memoryLimit = options?.memoryLimit ?? (language === 'CPP' || language === 'C' ? '64m' : '128m');
-        const config = this.getConfig(language);
+
+        const hasDocker = await checkDockerDaemon();
+        if (options?.strictIsolation && !hasDocker) {
+            throw new Error('RUNNER_UNAVAILABLE: Docker sandbox is required for this run.');
+        }
+        let gccImage: string | null = null;
+        if (hasDocker && (language === 'CPP' || language === 'C')) {
+            gccImage = await getAvailableGccImage();
+        }
+
+        const config = this.getConfig(language, gccImage || undefined);
         const uniqueId = generateUniqueId();
         const workspace = path.join(temp_dir, `batch_${uniqueId}`);
 
@@ -62,7 +73,7 @@ export class BatchCodeRunner {
         try {
             await fs.writeFile(path.join(workspace, config.sourceFile), code, 'utf8');
 
-            if (await checkDockerDaemon()) {
+            if (hasDocker && (language !== 'CPP' && language !== 'C' || gccImage)) {
                 return await this.runInDocker({
                     workspace,
                     language,
@@ -71,7 +82,9 @@ export class BatchCodeRunner {
                     uniqueId,
                     runtimeMs,
                     compileTimeoutMs,
-                    memoryLimit
+                    memoryLimit,
+                    code,
+                    strictIsolation: options?.strictIsolation ?? false
                 });
             }
 
@@ -85,7 +98,7 @@ export class BatchCodeRunner {
         return language === 'PYTHON' || language === 'JAVASCRIPT' || language === 'CPP' || language === 'C';
     }
 
-    private getConfig(language: BatchLanguage): RuntimeConfig {
+    private getConfig(language: BatchLanguage, gccImage?: string): RuntimeConfig {
         const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
         const cppOutput = process.platform === 'win32' ? 'program.exe' : 'program';
 
@@ -94,7 +107,7 @@ export class BatchCodeRunner {
                 return {
                     sourceFile: 'solution.py',
                     dockerImage: 'python:3.10-alpine',
-                    dockerPrepareCommand: 'cp /code/solution.py /tmp/solution.py && timeout -s KILL __COMPILE_SECONDS__ python3 -m py_compile /tmp/solution.py',
+                    dockerPrepareCommand: 'timeout -s KILL __COMPILE_SECONDS__ python3 -m py_compile /tmp/solution.py',
                     dockerRunCommand: 'python3 -X utf8 /tmp/solution.py',
                     localPrepare: (workspace) => ({ command: pythonCommand, args: ['-m', 'py_compile', path.join(workspace, 'solution.py')] }),
                     localRun: (workspace) => ({ command: pythonCommand, args: ['-X', 'utf8', path.join(workspace, 'solution.py')] })
@@ -103,7 +116,7 @@ export class BatchCodeRunner {
                 return {
                     sourceFile: 'solution.js',
                     dockerImage: 'node:18-alpine',
-                    dockerPrepareCommand: 'cp /code/solution.js /tmp/solution.js && timeout -s KILL __COMPILE_SECONDS__ node --check /tmp/solution.js',
+                    dockerPrepareCommand: 'timeout -s KILL __COMPILE_SECONDS__ node --check /tmp/solution.js',
                     dockerRunCommand: 'node /tmp/solution.js',
                     localPrepare: (workspace) => ({ command: 'node', args: ['--check', path.join(workspace, 'solution.js')] }),
                     localRun: (workspace) => ({ command: 'node', args: [path.join(workspace, 'solution.js')] })
@@ -111,8 +124,8 @@ export class BatchCodeRunner {
             case 'CPP':
                 return {
                     sourceFile: 'solution.cpp',
-                    dockerImage: 'gcc:12-alpine',
-                    dockerPrepareCommand: 'timeout -s KILL __COMPILE_SECONDS__ g++ -std=c++17 -O2 -pipe /code/solution.cpp -o /tmp/program',
+                    dockerImage: gccImage || 'gcc:12-alpine',
+                    dockerPrepareCommand: 'timeout -s KILL __COMPILE_SECONDS__ g++ -std=c++17 -O2 -pipe /tmp/solution.cpp -o /tmp/program',
                     dockerRunCommand: '/tmp/program',
                     localPrepare: (workspace) => ({
                         command: 'g++',
@@ -123,8 +136,8 @@ export class BatchCodeRunner {
             case 'C':
                 return {
                     sourceFile: 'solution.c',
-                    dockerImage: 'gcc:12-alpine',
-                    dockerPrepareCommand: 'timeout -s KILL __COMPILE_SECONDS__ gcc -O2 -pipe /code/solution.c -lm -o /tmp/program',
+                    dockerImage: gccImage || 'gcc:12-alpine',
+                    dockerPrepareCommand: 'timeout -s KILL __COMPILE_SECONDS__ gcc -O2 -pipe /tmp/solution.c -lm -o /tmp/program',
                     dockerRunCommand: '/tmp/program',
                     localPrepare: (workspace) => ({
                         command: 'gcc',
@@ -167,16 +180,18 @@ export class BatchCodeRunner {
         runtimeMs: number;
         compileTimeoutMs: number;
         memoryLimit: string;
+        code: string;
+        strictIsolation: boolean;
     }): Promise<ExecuteResult[]> {
-        const hostDir = params.workspace.replace(/\\/g, '/');
         const containerName = `sandbox_batch_${params.uniqueId}`;
         const compileSeconds = Math.max(1, Math.ceil(params.compileTimeoutMs / 1000));
         const runtimeSeconds = Math.max(1, Math.ceil(params.runtimeMs / 1000));
         const prepareCommand = params.config.dockerPrepareCommand.replace('__COMPILE_SECONDS__', String(compileSeconds));
-        const script = this.dockerHarness(prepareCommand, params.config.dockerRunCommand, runtimeSeconds);
+        const script = this.dockerHarness(params.config.sourceFile, prepareCommand, params.config.dockerRunCommand, runtimeSeconds);
         const totalTimeoutMs = params.compileTimeoutMs + (params.inputs.length * params.runtimeMs) + SANDBOX_STARTUP_BUFFER_MS;
+        const codeB64 = Buffer.from(params.code, 'utf8').toString('base64');
 
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const child = spawn('docker', [
                 'run',
                 '--name', containerName,
@@ -190,7 +205,7 @@ export class BatchCodeRunner {
                 '-e', 'PYTHONUTF8=1',
                 '-e', 'PYTHONIOENCODING=utf-8',
                 '-e', 'LANG=C.UTF-8',
-                '-v', `${hostDir}:/code:ro`,
+                '-e', `CODE_B64=${codeB64}`,
                 '-w', '/tmp',
                 params.config.dockerImage,
                 'sh', '-c', script
@@ -225,6 +240,10 @@ export class BatchCodeRunner {
 
                 if (exitCode !== 0 && /docker API|Cannot connect to the Docker daemon|docker\.sock|no such file or directory|Unable to find image|failed to resolve reference|pull access denied/i.test(stderr)) {
                     setDockerDaemonStatus(false);
+                    if (params.strictIsolation) {
+                        reject(new Error('RUNNER_UNAVAILABLE: Docker sandbox failed during execution.'));
+                        return;
+                    }
                     resolve(await this.runLocally(params));
                     return;
                 }
@@ -237,13 +256,19 @@ export class BatchCodeRunner {
                 isFinished = true;
                 clearTimeout(timer);
                 console.warn(`[BatchCodeRunner] Không thể tạo Docker sandbox: ${error.message}`);
+                if (params.strictIsolation) {
+                    setDockerDaemonStatus(false);
+                    reject(new Error('RUNNER_UNAVAILABLE: Docker sandbox could not start.'));
+                    return;
+                }
                 resolve(await this.runLocally(params));
             });
         });
     }
 
-    private dockerHarness(prepareCommand: string, runCommand: string, runtimeSeconds: number): string {
+    private dockerHarness(sourceFile: string, prepareCommand: string, runCommand: string, runtimeSeconds: number): string {
         return `
+echo "$CODE_B64" | base64 -d > /tmp/${sourceFile}
 ${prepareCommand} >/tmp/compile.stdout 2>/tmp/compile.stderr
 compile_status=$?
 if [ "$compile_status" -ne 0 ]; then

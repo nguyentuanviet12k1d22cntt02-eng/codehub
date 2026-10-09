@@ -1,40 +1,19 @@
 import os
 import sys
 import json
-import uuid
-import numpy as np
 import torch
-import psycopg2
-import queue
-import threading
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
-from dotenv import load_dotenv
+from typing import List, Optional, Dict
+from pathlib import Path
+from app.recommendation.serving_registry import checkpoint_metadata_matches, inspect_serving_model
+from app.knowledge_tracing.palnet import PALNet
 
 if sys.stdout.encoding != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8')
 
 # Ensure core directory is accessible
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-try:
-    from app.knowledge_tracing.palnet import PALNet
-    from app.adaptive.path_generator import generate_personalized_learning_path, interact_ai_tutor_dialogue
-    from app.agents.adaptive_agent_orchestrator import AdaptiveAgentOrchestrator
-    from app.orchestrator.adaptive_learning_orchestrator import AdaptiveLearningOrchestrator
-    from app.contracts.execution import ExecutionResult
-except ImportError:
-    from core.palnet import PALNet
-    from core.path_generator import generate_personalized_learning_path, interact_ai_tutor_dialogue
-    from core.adaptive_agent_orchestrator import AdaptiveAgentOrchestrator
-    from app.orchestrator.adaptive_learning_orchestrator import AdaptiveLearningOrchestrator
-    from app.contracts.execution import ExecutionResult
-
-# Adaptive orchestrators are instantiated per request to isolate budgets and evidence.
-
-
 
 app = FastAPI(
     title="PAL-Net Recommendation AI Service",
@@ -44,8 +23,7 @@ app = FastAPI(
 
 # Load configuration and models during startup
 SKILL_GRAPH_PATH = os.path.join(BASE_DIR, "data", "skill_graph.json")
-PALNET_MODEL_PATH = os.path.join(BASE_DIR, "models", "palnet_model.pth") if os.path.exists(os.path.join(BASE_DIR, "models", "palnet_model.pth")) else os.path.join(BASE_DIR, "data", "palnet_model.pth")
-BACKEND_ENV_PATH = os.path.join(os.path.dirname(BASE_DIR), "backend", ".env")
+SERVING_REGISTRY_PATH = Path(BASE_DIR) / "models" / "serving" / "registry.json"
 
 # Global state
 skill_graph = {}
@@ -54,28 +32,21 @@ kc_to_idx = {}
 idx_to_kc = {}
 palnet_model = None
 palnet_adj = None
-
-def get_db_connection():
-    if not os.path.exists(BACKEND_ENV_PATH):
-        return None
-    load_dotenv(BACKEND_ENV_PATH)
-    db_url = os.getenv("DATABASE_URL")
-    if not db_url:
-        return None
-    if "?schema=" in db_url:
-        connection_url = db_url.split("?schema=")[0]
-    else:
-        connection_url = db_url
-    try:
-        conn = psycopg2.connect(connection_url)
-        return conn
-    except Exception as e:
-        print(f"Database connection error: {e}")
-        return None
+palnet_readiness = "NOT_LOADED"
+palnet_model_version = None
 
 @app.on_event("startup")
 def startup_event():
-    global skill_graph, skills_list, kc_to_idx, idx_to_kc, palnet_model, palnet_adj
+    global skill_graph, skills_list, kc_to_idx, idx_to_kc, palnet_model, palnet_adj, palnet_readiness, palnet_model_version
+
+    palnet_model = None
+    palnet_adj = None
+    palnet_model_version = None
+    palnet_readiness = "GRAPH_UNAVAILABLE"
+    skill_graph = {}
+    skills_list = []
+    kc_to_idx = {}
+    idx_to_kc = {}
     
     # 1. Load skill graph
     print("Loading skill graph config...")
@@ -88,6 +59,9 @@ def startup_event():
         print(f"Loaded {len(skills_list)} Knowledge Components.")
     else:
         print("Error: skill_graph.json not found!")
+    if not skills_list:
+        palnet_readiness = "GRAPH_UNAVAILABLE"
+        return
         
     # 2. Load PAL-Net Model weights & Build Adjacency Matrix
     num_skills = len(skills_list)
@@ -102,38 +76,37 @@ def startup_event():
             palnet_adj[u, v] = 1.0
             palnet_adj[v, u] = 1.0 # Symmetric graph convolution
 
-    if os.path.exists(PALNET_MODEL_PATH):
+    readiness = inspect_serving_model(
+        SERVING_REGISTRY_PATH,
+        language="PYTHON",
+        graph_version=str(skill_graph.get("version", "")),
+        mapping_version="lesson-skill-mapping/1.0.0",
+        skill_ids=tuple(skills_list),
+    )
+    palnet_readiness = readiness.reason
+    if readiness.ready:
         try:
             device = torch.device("cpu")
-            checkpoint = torch.load(PALNET_MODEL_PATH, map_location=device, weights_only=False)
-            if checkpoint.get('num_skills') == num_skills:
-                palnet_model = PALNet(num_skills=num_skills, skill_dim=16, learner_dim=16, hidden_dim=32)
-                palnet_model.load_state_dict(checkpoint['model_state_dict'])
-                palnet_model.eval()
-                print("PAL-Net Model weights loaded successfully.")
+            checkpoint = torch.load(readiness.checkpoint_path, map_location=device, weights_only=True)
+            if not checkpoint_metadata_matches(
+                checkpoint, language="PYTHON", graph_version=str(skill_graph.get("version", "")),
+                mapping_version="lesson-skill-mapping/1.0.0",
+                skill_ids=tuple(skills_list), model_version=readiness.model_version,
+            ):
+                palnet_readiness = "CHECKPOINT_METADATA_MISMATCH"
             else:
-                print(f"PAL-Net checkpoint num_skills ({checkpoint.get('num_skills')}) mismatch with DAG ({num_skills}). Initializing calibrated PAL-Net model.")
-                palnet_model = PALNet(num_skills=num_skills, skill_dim=16, learner_dim=16, hidden_dim=32)
-                palnet_model.eval()
+                loaded = PALNet(num_skills=num_skills, skill_dim=16, learner_dim=16, hidden_dim=32)
+                loaded.load_state_dict(checkpoint["model_state_dict"], strict=True)
+                loaded.eval()
+                palnet_model = loaded
+                palnet_model_version = readiness.model_version
+                palnet_readiness = "READY"
+                print("Validated serving PAL-Net checkpoint loaded.")
         except Exception as e:
             print(f"Error loading PAL-Net model: {e}")
-            palnet_model = PALNet(num_skills=num_skills, skill_dim=16, learner_dim=16, hidden_dim=32)
-            palnet_model.eval()
+            palnet_readiness = "CHECKPOINT_LOAD_FAILED"
     else:
-        print("PAL-Net model initialized for current DAG skill set.")
-        palnet_model = PALNet(num_skills=num_skills, skill_dim=16, learner_dim=16, hidden_dim=32)
-        palnet_model.eval()
-
-class RecommendResponse(BaseModel):
-    id: str
-    type: str  # LESSON_EXERCISE or PRACTICE_PROBLEM
-    title: str
-    kc_id: str
-    predicted_mastery: float
-    zpd_score: float
-    difficulty: str
-    lesson_id: Optional[str] = None
-    slug: Optional[str] = None
+        print(f"PAL-Net not ready: {palnet_readiness}; using named rule fallback upstream.")
 
 @app.get("/")
 def read_root():
@@ -143,387 +116,41 @@ def read_root():
 def model_status():
     return {
         "palnet_active": palnet_model is not None,
+        "readiness": palnet_readiness,
+        "model_version": palnet_model_version,
+        "fallback": "FALLBACK_RULE_BASED",
+        "lesson_policy_status": "NOT_ACTIVE",
         "knowledge_graph_skills": skills_list,
         "total_skills": len(skills_list)
     }
 
-def query_student_history(conn, user_id):
-    cursor = conn.cursor()
-    
-    # Get user details for profile estimation
-    cursor.execute("SELECT username, email FROM users WHERE id = %s;", (user_id,))
-    user_row = cursor.fetchone()
-    if not user_row:
-        cursor.close()
-        return None, []
-        
-    username, email = user_row
-    
-    # 1. Fetch lesson exercises submissions
-    # Map from coding_exercises via lessons to know KC mapping
-    cursor.execute("""
-        SELECT 
-            ce.id as exercise_id, 
-            ce.title, 
-            l.lesson_id as lesson_code, 
-            sub.status, 
-            sub.submitted_at
-        FROM submissions sub
-        JOIN coding_exercises ce ON sub.exercise_id = ce.id
-        JOIN lessons l ON ce.lesson_id = l.id
-        WHERE sub.user_id = %s
-        ORDER BY sub.submitted_at ASC;
-    """, (user_id,))
-    lesson_subs = cursor.fetchall()
-    
-    # 2. Fetch practice problem submissions
-    cursor.execute("""
-        SELECT 
-            pp.id as problem_id, 
-            pp.title, 
-            pp.slug, 
-            psub.status, 
-            psub.submitted_at
-        FROM practice_submissions psub
-        JOIN practice_problems pp ON psub.problem_id = pp.id
-        WHERE psub.user_id = %s
-        ORDER BY psub.submitted_at ASC;
-    """, (user_id,))
-    practice_subs = cursor.fetchall()
-    cursor.close()
-    
-    # Combine and sort responses chronologically
-    actions = []
-    lesson_maps = skill_graph.get("lesson_mappings", {})
-    practice_maps = skill_graph.get("practice_problem_mappings", {})
-    
-    for row in lesson_subs:
-        ex_id, title, lesson_code, status, submitted_at = row
-        kc_id = lesson_maps.get(lesson_code)
-        if kc_id:
-            actions.append({
-                "item_id": ex_id,
-                "type": "LESSON",
-                "title": title,
-                "correct": 1 if status == "PASSED" else 0,
-                "kc_id": kc_id,
-                "timestamp": submitted_at
-            })
-            
-    for row in practice_subs:
-        p_id, title, slug, status, submitted_at = row
-        kc_id = practice_maps.get(slug)
-        if kc_id:
-            actions.append({
-                "item_id": p_id,
-                "type": "PRACTICE",
-                "title": title,
-                "correct": 1 if status == "PASSED" else 0,
-                "kc_id": kc_id,
-                "timestamp": submitted_at
-            })
-            
-    actions.sort(key=lambda x: x["timestamp"])
-    
-    # Calculate inferred student profile
-    profile = "AVERAGE"
-    if len(actions) > 0:
-        passed_count = sum(1 for a in actions if a["correct"] == 1)
-        success_rate = passed_count / len(actions)
-        if success_rate >= 0.8 and len(actions) >= 5:
-            profile = "EXCELLENT"
-        elif success_rate < 0.4 and len(actions) >= 5:
-            profile = "STRUGGLING"
-            
-    student_meta = {"username": username, "email": email, "profile": profile}
-    return student_meta, actions
-
-def get_cold_start_recommendations(conn, limit):
-    """
-    Cold start fallback: Recommend the first few unpassed coding exercises
-    conforming to course progression order.
-    """
-    cursor = conn.cursor()
-    # Fetch coding exercises ordered by lesson ordering
-    cursor.execute("""
-        SELECT ce.id, ce.title, l.lesson_id, ce.difficulty
-        FROM coding_exercises ce
-        JOIN lessons l ON ce.lesson_id = l.id
-        JOIN modules m ON l.module_id = m.id
-        ORDER BY m.order_index ASC, l.order_index ASC, ce.created_at ASC
-        LIMIT %s;
-    """, (limit,))
-    rows = cursor.fetchall()
-    cursor.close()
-    
-    recs = []
-    lesson_maps = skill_graph.get("lesson_mappings", {})
-    for idx, row in enumerate(rows):
-        ex_id, title, lesson_code, diff = row
-        kc_id = lesson_maps.get(lesson_code, "KC_VAR")
-        recs.append({
-            "id": ex_id,
-            "type": "LESSON_EXERCISE",
-            "title": title,
-            "kc_id": kc_id,
-            "predicted_mastery": 0.5, # default
-            "zpd_score": 1.0 - abs(0.5 - 0.775), # default ZPD score
-            "difficulty": str(diff)
-        })
-    return recs
-
-@app.get("/recommend", response_model=List[RecommendResponse])
+@app.get("/recommend")
 def recommend(
     user_id: str,
     algo: str = Query(default="PAL-Net"),
-    limit: int = Query(default=5, ge=1, le=20)
+    limit: int = Query(default=5, ge=1, le=20),
 ):
-    conn = get_db_connection()
-    if not conn:
-        raise HTTPException(status_code=500, detail="Could not connect to database")
-        
-    try:
-        # 1. Fetch student history
-        student_meta, actions = query_student_history(conn, user_id)
-        if not student_meta:
-            # User doesn't exist: return cold-start recs
-            return get_cold_start_recommendations(conn, limit)
-            
-        # 2. Cold-start check (fewer than 2 submissions):
-        if len(actions) < 2:
-            print(f"Cold-start recommendation triggered for {user_id}")
-            recs = get_cold_start_recommendations(conn, limit)
-            conn.close()
-            return recs
-            
-        # 3. Calculate mastery scores per skill using PAL-Net (GCN & Attention)
-        num_skills = len(skills_list)
-        p_correct_by_kc = {}
-        
-        if palnet_model is None:
-            raise HTTPException(status_code=503, detail="PAL-Net Model is currently offline. Train the model first.")
-            
-        profile_map = {"STRUGGLING": 0, "AVERAGE": 1, "EXCELLENT": 2}
-        profile_idx_val = profile_map[student_meta["profile"]]
-        
-        # Cumulative user stats
-        attempts = np.zeros(num_skills)
-        corrects = np.zeros(num_skills)
-        raw_masteries = np.full(num_skills, 0.5)
-        
-        for a in actions:
-            k_idx = kc_to_idx[a["kc_id"]]
-            attempts[k_idx] += 1
-            if a["correct"] == 1:
-                corrects[k_idx] += 1
-            # EMA update
-            raw_masteries[k_idx] = 0.7 * raw_masteries[k_idx] + 0.3 * a["correct"]
-            
-        stats = np.zeros(num_skills * 2)
-        for k in range(num_skills):
-            stats[k * 2] = attempts[k]
-            stats[k * 2 + 1] = corrects[k] / attempts[k] if attempts[k] > 0 else 0.0
-            
-        # Forward pass through model for each skill
-        stats_tensor = torch.tensor([stats], dtype=torch.float)
-        profile_tensor = torch.tensor([profile_idx_val], dtype=torch.long)
-        masteries_tensor = torch.tensor([raw_masteries], dtype=torch.float)
-        adj_tensor = palnet_adj
-        
-        with torch.no_grad():
-            for kc in skills_list:
-                k_idx = kc_to_idx[kc]
-                k_idx_tensor = torch.tensor([k_idx], dtype=torch.long)
-                # Predict correctness probability
-                pred_prob = palnet_model(
-                    k_idx_tensor, stats_tensor, profile_tensor, masteries_tensor, adj_tensor
-                )
-                p_correct_by_kc[kc] = float(pred_prob[0].item())
-                
-        # 4. Score skills based on ZPD (Zone of Proximal Development: Range 0.70 - 0.85)
-        # We calculate the absolute distance of predicted masteries to the target median (0.775)
-        # ZPD_Score = 1.0 - |P(correct) - 0.775|
-        # Higher score = closest to ZPD center
-        zpd_scores = {}
-        for kc, p_correct in p_correct_by_kc.items():
-            zpd_scores[kc] = 1.0 - abs(p_correct - 0.775)
-            
-        print(f"Calculated predicted masteries: {p_correct_by_kc}")
-        print(f"Calculated ZPD scores: {zpd_scores}")
-        
-        # 5. Fetch all available exercises from DB
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, title, difficulty, lesson_id FROM coding_exercises;")
-        lesson_exs = cursor.fetchall()
-        
-        cursor.execute("SELECT id, title, difficulty, slug FROM practice_problems;")
-        practice_exs = cursor.fetchall()
-        
-        # 6. Fetch already passed exercises by user to filter them profile
-        cursor.execute("SELECT exercise_id FROM submissions WHERE user_id = %s AND status = 'PASSED';", (user_id,))
-        passed_lesson_ex_ids = {row[0] for row in cursor.fetchall()}
-        
-        cursor.execute("SELECT problem_id FROM practice_submissions WHERE user_id = %s AND status = 'PASSED';", (user_id,))
-        passed_practice_ex_ids = {row[0] for row in cursor.fetchall()}
-        
-        # Resolve lesson codes mapped to UUIDs
-        cursor.execute("SELECT id, lesson_id FROM lessons;")
-        lessons_map = {row[0]: row[1] for row in cursor.fetchall()}
-        
-        cursor.close()
-        conn.close()
-        
-        recommendation_candidates = []
-        lesson_mappings = skill_graph.get("lesson_mappings", {})
-        practice_mappings = skill_graph.get("practice_problem_mappings", {})
-        
-        # 7. Add Lesson Exercises candidates
-        for row in lesson_exs:
-            ex_id, title, diff, lesson_uuid = row
-            # Filter passed ones
-            if ex_id in passed_lesson_ex_ids:
-                continue
-                
-            lesson_code = lessons_map.get(lesson_uuid)
-            if lesson_code:
-                kc = lesson_mappings.get(lesson_code)
-                if kc:
-                    recommendation_candidates.append({
-                        "id": ex_id,
-                        "type": "LESSON_EXERCISE",
-                        "title": title,
-                        "kc_id": kc,
-                        "predicted_mastery": p_correct_by_kc[kc],
-                        "zpd_score": zpd_scores[kc],
-                        "difficulty": str(diff),
-                        "lesson_id": lesson_uuid
-                    })
-                    
-        # 8. Add Practice Problems candidates
-        for row in practice_exs:
-            p_id, title, diff, slug = row
-            # Filter passed ones
-            if p_id in passed_practice_ex_ids:
-                continue
-                
-            kc = practice_mappings.get(slug)
-            if kc:
-                recommendation_candidates.append({
-                    "id": p_id,
-                    "type": "PRACTICE_PROBLEM",
-                    "title": title,
-                    "kc_id": kc,
-                    "predicted_mastery": p_correct_by_kc[kc],
-                    "zpd_score": zpd_scores[kc],
-                    "difficulty": str(diff),
-                    "slug": slug
-                })
-                
-        # 9. Sort candidates:
-        # First choice: candidate ZPD scores descending.
-        # This ranks items inside the zone [0.70, 0.85] highest!
-        recommendation_candidates.sort(key=lambda x: x["zpd_score"], reverse=True)
-        
-        # Return top N
-        return recommendation_candidates[:limit]
-        
-    except Exception as e:
-        if conn and not conn.closed:
-            conn.close()
-        print(f"Error generating recommendation: {e}")
-        raise HTTPException(status_code=500, detail=f"Recommendation Error: {str(e)}")
+    """Retired exercise endpoint; backend retains its named existing-rule fallback."""
+    raise HTTPException(status_code=410, detail={
+        "code": "LEGACY_EXERCISE_RECOMMENDER_RETIRED",
+        "fallback": "FALLBACK_RULE_BASED",
+    })
 
-# Optional retrain endpoint
+
 @app.post("/train")
 def trigger_training(model_type: str = Query(default="PAL-Net")):
-    try:
-        import subprocess
-        results = {}
-        script = "scripts/train_palnet.py"
-        print(f"Triggering training script: {script}")
-        p = subprocess.run([sys.executable, script], capture_output=True, text=True, cwd=BASE_DIR)
-        if p.returncode == 0:
-            results["PAL-Net"] = "Success"
-        else:
-            results["PAL-Net"] = f"Failed (Code {p.returncode}): {p.stderr}"
-            
-        startup_event()
-        return {"status": "Training cycle complete", "details": results}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Training Trigger Error: {e}")
+    """Mock-data training must never promote a serving checkpoint."""
+    raise HTTPException(
+        status_code=410,
+        detail="LEGACY_TRAINING_RETIRED_USE_VALIDATED_IN_DOMAIN_PIPELINE",
+    )
+
 
 @app.get("/user_mastery")
 def get_user_mastery(user_id: str):
-    conn = get_db_connection()
-    if not conn:
-        raise HTTPException(status_code=500, detail="Could not connect to database")
-    try:
-        student_meta, actions = query_student_history(conn, user_id)
-        if not student_meta:
-            conn.close()
-            return {
-                "success": False,
-                "error": "User footprint not found."
-            }
-            
-        # Initialize default maps (PAL-Net)
-        masteries = {
-            "PAL-Net": {kc: 0.50 for kc in skills_list}
-        }
-        
-        # PAL-Net GCN & Attention inference
-        if len(actions) >= 2 and palnet_model is not None:
-            profile_map = {"STRUGGLING": 0, "AVERAGE": 1, "EXCELLENT": 2}
-            profile_idx_val = profile_map[student_meta["profile"]]
-            attempts = np.zeros(len(skills_list))
-            corrects = np.zeros(len(skills_list))
-            raw_masteries = np.full(len(skills_list), 0.5)
-            for a in actions:
-                k_idx = kc_to_idx[a["kc_id"]]
-                attempts[k_idx] += 1
-                if a["correct"] == 1:
-                    corrects[k_idx] += 1
-                raw_masteries[k_idx] = 0.7 * raw_masteries[k_idx] + 0.3 * a["correct"]
-            stats = np.zeros(len(skills_list) * 2)
-            for k in range(len(skills_list)):
-                stats[k * 2] = attempts[k]
-                stats[k * 2 + 1] = corrects[k] / attempts[k] if attempts[k] > 0 else 0.0
-            stats_tensor = torch.tensor([stats], dtype=torch.float)
-            profile_tensor = torch.tensor([profile_idx_val], dtype=torch.long)
-            masteries_tensor = torch.tensor([raw_masteries], dtype=torch.float)
-            with torch.no_grad():
-                for kc in skills_list:
-                    k_idx = kc_to_idx[kc]
-                    k_idx_tensor = torch.tensor([k_idx], dtype=torch.long)
-                    pred_prob = palnet_model(
-                        k_idx_tensor, stats_tensor, profile_tensor, masteries_tensor, palnet_adj
-                    )
-                    masteries["PAL-Net"][kc] = float(pred_prob[0].item())
-                    
-        # Get count of exercises completed and stats
-        cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(DISTINCT exercise_id) FROM submissions WHERE user_id = %s AND status = 'PASSED';", (user_id,))
-        lessons_completed = cursor.fetchone()[0]
-        cursor.execute("SELECT COUNT(DISTINCT problem_id) FROM practice_submissions WHERE user_id = %s AND status = 'PASSED';", (user_id,))
-        practice_completed = cursor.fetchone()[0]
-        cursor.close()
-        conn.close()
-        
-        return {
-            "success": True,
-            "student_meta": student_meta,
-            "mastery": masteries,
-            "stats": {
-                "lessons_completed": lessons_completed,
-                "practice_completed": practice_completed,
-                "streak_days": 5,
-                "total_actions": len(actions)
-            }
-        }
-    except Exception as e:
-        if conn and not conn.closed:
-            conn.close()
-        raise HTTPException(status_code=500, detail=str(e))
+    """The backend provides language-scoped evidence-based mastery."""
+    raise HTTPException(status_code=410, detail="USE_BACKEND_EVIDENCE_BASED_MASTERY")
+
 
 class GeneratePathRequest(BaseModel):
     user_id: str
@@ -555,3 +182,5 @@ def chat_interact_ai_tutor(req: ChatInteractRequest):
 # Audited adaptive workflow. Legacy V1 generation/mastery endpoints are intentionally removed.
 from app.api.adaptive import router as adaptive_pipeline_router
 app.include_router(adaptive_pipeline_router)
+from app.api.module_practice_pilot import router as module_practice_pilot_router
+app.include_router(module_practice_pilot_router)

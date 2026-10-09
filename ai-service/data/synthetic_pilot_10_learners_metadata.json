@@ -1,0 +1,20 @@
+{
+  "dataset_name": "LearnPython Synthetic Pilot Interaction Dataset (40 Learners)",
+  "version": "2.0",
+  "generated_at": "2026-10-08T13:55:36.683245",
+  "total_learners": 40,
+  "total_interactions": 1552,
+  "provenance": {
+    "DATA_TYPE": "SYNTHETIC",
+    "SOURCE_OF_BEHAVIORAL_TEMPLATES": "Hân (Struggling template) / Thịnh (Average trial-and-error template)",
+    "SOURCE_OF_PARAMETERS": "Synthetic assumptions calibrated by simulation",
+    "REAL_LEARNER_DATA": "NOT USED AS TRAINING DATA",
+    "PURPOSE": "Synthetic technical feasibility / pipeline validation / DKT & PAL-Net architecture check"
+  },
+  "persona_breakdown": {
+    "P-STRUGGLE": 10,
+    "P-AVERAGE": 10,
+    "P-FAST": 10,
+    "P-ERRATIC": 10
+  }
+}

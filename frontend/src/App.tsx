@@ -16,6 +16,10 @@ import Profile from "./pages/Profile";
 import ModulePracticeSelect from "./pages/ModulePracticeSelect";
 import PersonalizedPath from "./pages/PersonalizedPath";
 import PersonalizedPathWorkspace from "./pages/PersonalizedPathWorkspace";
+import OnboardingSurvey from "./pages/OnboardingSurvey";
+import PretestPage from "./features/onboarding/pages/PretestPage";
+import PretestResultPage from "./features/onboarding/pages/PretestResultPage";
+import RoadmapPage from "./features/onboarding/pages/RoadmapPage";
 import AdminLayout from "./pages/admin/AdminLayout";
 
 
@@ -69,6 +73,11 @@ function App() {
           <Route path="/adaptive-practice" element={<AdaptivePractice />} />
           <Route path="/personalized-path" element={<PersonalizedPath />} />
           <Route path="/personalized-path/:pathId" element={<PersonalizedPathWorkspace />} />
+          <Route path="/onboarding" element={<OnboardingSurvey />} />
+          <Route path="/pretest/:surveyId" element={<PretestPage />} />
+          <Route path="/pretest/result/:assessmentId" element={<PretestResultPage />} />
+          <Route path="/roadmap" element={<RoadmapPage />} />
+          <Route path="/roadmap/:roadmapId" element={<RoadmapPage />} />
           <Route path="/profile" element={<Profile />} />
 
 

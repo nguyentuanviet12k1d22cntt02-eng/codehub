@@ -11,10 +11,12 @@ export interface AgentEvidence {
 }
 export interface PipelineSummary {trace_id: string; status: string; schema_version?: string; error?: {code?: string}}
 const labels:Record<string,string>={IntentRouterAgent:'Hiểu yêu cầu',AdaptiveExercisePlanner:'Chọn mục tiêu và độ khó',
+    PrerequisiteAdvisorAgent:'Đánh giá điều kiện tiên quyết',
     KnowledgeRetrievalService:'Tra cứu học liệu',ExplanationTutorAgent:'Biên soạn lý thuyết',ExerciseGeneratorAgent:'Sinh đề và bộ test',
     SchemaValidator:'Kiểm tra cấu trúc',ConstraintValidator:'Kiểm tra ràng buộc',SandboxValidator:'Chạy nghiệm mẫu',
     ResumeCheckpointAgent:'Dùng lại candidate đã kiểm định',CriticEvaluatorAgent:'Thẩm định nội dung',PublicationGate:'Kiểm tra điều kiện phát hành',GeneralChatAgent:'Trả lời hội thoại',LearnerStateService:'Đọc bằng chứng học tập'};
-const statuses:Record<string,string>={RUNNING:'Đang chạy',WAITING_PROVIDER:'Đang chờ provider để thử lại',SUCCEEDED:'Hoàn thành',REJECTED:'Chưa đạt',FAILED:'Lỗi'};
+const statuses:Record<string,string>={RUNNING:'Đang chạy',WAITING_PROVIDER:'Đang chờ provider để thử lại',
+    AWAITING_CONFIRMATION:'Chờ học viên xác nhận',SUCCEEDED:'Hoàn thành',REJECTED:'Chưa đạt',FAILED:'Lỗi'};
 
 export function AgentEvidencePanel({records,pipeline}:{records:AgentEvidence[];pipeline?:PipelineSummary}) {
     const [error,setError]=useState('');

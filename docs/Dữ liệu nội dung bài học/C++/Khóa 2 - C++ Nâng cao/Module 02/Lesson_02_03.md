@@ -4,7 +4,7 @@ title: "std::pair, std::tuple và Cú pháp Structured Binding trong C++17"
 difficulty: "MEDIUM"
 estimatedDuration: 20
 keywords: ["pair", "tuple", "structured binding", "multiple return values"]
-prerequisites: ["CPP-04.01"]
+prerequisites: ["CPP2-01.02"]
 ---
 
 # std::pair, std::tuple và Cú pháp Structured Binding trong C++17
@@ -33,8 +33,7 @@ std::pair<int, int> toaDo = {3, 5};
 
 // Cú pháp C++17 mở gói trực tiếp
 auto [x, y] = toaDo;
-std::cout << "x = " << x << ", y = " << y << '
-'; // x = 3, y = 5
+std::cout << "x = " << x << ", y = " << y << '\n'; // x = 3, y = 5
 ```
 
 ### Ví dụ 2: Hàm trả về nhiều giá trị cùng lúc

@@ -4,7 +4,7 @@ title: "Cấu trúc Cây Đỏ-Đen: std::set, std::map và Độ phức tạp O
 difficulty: "MEDIUM"
 estimatedDuration: 20
 keywords: ["set", "map", "red-black tree", "unique", "sorted"]
-prerequisites: ["CPP2-05.01"]
+prerequisites: ["CPP-01.03"]
 ---
 
 # Cấu trúc Cây Đỏ-Đen: std::set, std::map và Độ phức tạp O(log N)

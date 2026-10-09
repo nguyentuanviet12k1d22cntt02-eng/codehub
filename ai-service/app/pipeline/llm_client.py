@@ -61,6 +61,19 @@ def is_key_scoped_provider_failure(error_code, http_status=None):
     }
 
 
+def is_request_scoped_provider_failure(error_code):
+    """Whether retrying the identical payload with a sibling key is wasteful.
+
+    Authentication, quota, network and server failures can differ by key. A
+    rejected or oversized request cannot, so it must move to the next
+    provider without consuming the current provider's entire key pool.
+    """
+    return error_code in {
+        "PROVIDER_REQUEST_TOO_LARGE",
+        "PROVIDER_REQUEST_REJECTED",
+    }
+
+
 def _provider_available(provider):
     with _provider_lock:
         return _provider_blocked_until.get(provider, 0) <= time.monotonic()
@@ -76,7 +89,7 @@ def stage_output_limit(stage):
     """Keep calls within provider quota; these are ceilings, not fallback content."""
     defaults = {
         "ExerciseGeneratorAgent": 2800,
-        "ExplanationTutorAgent": 1800,
+        "ExplanationTutorAgent": 2200,
         "CriticEvaluatorAgent": 900,
         "GeneralChatAgent": 900,
     }
@@ -108,7 +121,7 @@ def stage_budget_seconds(stage):
     """One real time budget for a whole LLM stage, not one budget per key."""
     defaults = {
         "ExerciseGeneratorAgent": 150,
-        "ExplanationTutorAgent": 60,
+        "ExplanationTutorAgent": 90,
         "CriticEvaluatorAgent": 110,
         "GeneralChatAgent": 40,
         "IntentRouterAgent": 25,
@@ -150,6 +163,27 @@ def fair_attempt_timeout(stage, remaining_stage_seconds, candidate_count,
     reserved = minimum * max(0, fallback_provider_count)
     fair_share = (remaining_stage_seconds - reserved) / max(1, candidate_count)
     return max(1, min(normal, max(minimum, fair_share)))
+
+
+def provider_attempt_limit(stage):
+    """Bound sibling-key retries so another provider gets a real chance.
+
+    A 5xx can be key-specific, so more than one key is still tried.  Large key
+    pools must not consume the entire stage on the same model and payload.
+    """
+    defaults = {
+        "ExerciseGeneratorAgent": 3,
+        "ExplanationTutorAgent": 3,
+        "CriticEvaluatorAgent": 3,
+        "GeneralChatAgent": 2,
+        "IntentRouterAgent": 2,
+    }
+    configured = os.getenv("ADAPTIVE_" + stage.upper() + "_MAX_ATTEMPTS_PER_PROVIDER")
+    try:
+        requested = int(configured or defaults.get(stage, 3))
+    except ValueError:
+        requested = defaults.get(stage, 3)
+    return max(1, min(requested, 8))
 
 
 def retry_after_seconds(response, default=75):
@@ -362,12 +396,23 @@ class PipelineLLMClient:
             attempted_keys = self._failed_keys(provider)
             provider_failure_codes = []
             provider_exhausted = False
+            provider_attempts = 0
             while _provider_available(provider):
+                if provider_attempts >= provider_attempt_limit(stage):
+                    if self._candidate_count(provider, attempted_keys) == 0:
+                        provider_exhausted = True
+                    else:
+                        self._scheduler_receipt(stage, provider, "PROVIDER_ATTEMPT_LIMIT_REACHED", {
+                            "attempted_key_count": provider_attempts,
+                            "limit": provider_attempt_limit(stage),
+                        })
+                    break
                 key = key_pool.lease_key_for_provider(provider, attempted_keys, self._preferred_keys(provider))
                 if key is None:
                     provider_exhausted = True
                     break
                 attempted_keys.append(key)
+                provider_attempts += 1
                 attempted_any = True
                 with self.lock:
                     if self.tokens >= 32000:
@@ -376,6 +421,7 @@ class PipelineLLMClient:
                 started = time.monotonic()
                 response = None
                 raw = None
+                stop_provider_after_receipt = False
                 receipt = {"stage": stage, "provider": provider, "key_fingerprint": digest(key)[:12], "status": "FAILED", "prompt_hash": digest({"system": system, "user": data}), "prompt_version": "adaptive_v4", "input": data, "deadline_ms": 0}
                 try:
                     global_remaining = self.remaining()
@@ -465,6 +511,11 @@ class PipelineLLMClient:
                             error_msg=f"{last_error} from adaptive pipeline",
                         )
                         provider_failure_codes.append(last_error)
+                    elif is_request_scoped_provider_failure(last_error):
+                        # The payload and model are identical for sibling keys.
+                        # Preserve the receipt, leave key health unchanged and
+                        # give the next provider the remaining stage budget.
+                        stop_provider_after_receipt = True
                     # The run envelope has expired.  Preserve this final receipt,
                     # then stop rather than manufacturing no-op attempts for every
                     # remaining key and provider.
@@ -502,6 +553,8 @@ class PipelineLLMClient:
                     )
                     with self.lock:
                         self.calls.append(receipt)
+                if stop_provider_after_receipt:
+                    break
             # A provider circuit opens only after the key pool reports that no
             # untried eligible key remains.  A single 5xx/timeout must never
             # suppress the other keys held by the same provider.

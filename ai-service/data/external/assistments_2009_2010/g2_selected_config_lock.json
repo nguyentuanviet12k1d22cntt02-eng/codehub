@@ -1,0 +1,40 @@
+{
+  "calibration": "identity/no post-hoc calibration",
+  "config_sha256": "087ac5e37f29273cacab1dc4f62d56931a0e464cb5ef88433e44f87356d1df47",
+  "development_summary_sha256": "72a86b72a056ae7bb07d0b7f21ce7b505d87749eaa65fdd9ebcd3abe67d56161",
+  "final_test_status": "AWAITING_RESEARCH_OWNER_SIGN_OFF",
+  "final_training_epochs_from_cv_median_best_epoch": {
+    "dkt_lstm": 8,
+    "palnet": 8,
+    "palnet_no_graph": 8,
+    "palnet_no_history": 8
+  },
+  "locked_at_utc": "2026-10-05T18:22:10.157507Z",
+  "models_to_evaluate_once_on_final_test": [
+    "global_rate",
+    "skill_rate",
+    "bkt",
+    "dkt_lstm",
+    "palnet",
+    "palnet_no_graph",
+    "palnet_no_history"
+  ],
+  "protocol_version": "palnet-research-protocol/1.0.0",
+  "required_before_final_test": [
+    "research owner names the protocol version and explicitly authorizes the first final-test run",
+    "lock file is updated with the development summary checksum",
+    "one immutable final-test run id is recorded"
+  ],
+  "schema_version": "kt-selected-config-lock/1.0.0",
+  "selected_f1_thresholds": {
+    "bkt": 0.407378426864,
+    "dkt_lstm": 0.424768716097,
+    "global_rate": 0.0,
+    "palnet": 0.430540710688,
+    "palnet_no_graph": 0.423937886953,
+    "palnet_no_history": 0.366098493338,
+    "skill_rate": 0.414261460102
+  },
+  "split_manifest_sha256": "67ce644d257c88bf8d55f4fef6f564a87cb657c20716d48a0540822f10634e24",
+  "status": "LOCKED_BEFORE_FINAL_TEST"
+}

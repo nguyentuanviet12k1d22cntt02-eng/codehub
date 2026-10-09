@@ -7,6 +7,7 @@ import { internalHeaders, publicCase, publicExercise, publicRecord, publicReport
 import { createRun, deferRun, finishRun, getRun, getRunForExercise, learnerContext, reserveSubmission, saveStage, storeGrading } from './adaptiveRepository';
 import { runExercise } from './adaptiveRunner';
 import { consumeSse } from './sse';
+import { getEvidenceBasedUserMastery } from '../recommendations/recommendationController';
 
 const idSchema=z.string().uuid();
 const sessionsRunning=new Set<string>();
@@ -39,7 +40,14 @@ async function chat(req:AuthenticatedRequest,res:Response,isStart:boolean,stream
         sessionsRunning.add(session.id);
         userMessage=await prisma.pathChatMessage.create({data:{sessionId:session.id,sender:'USER',content}});
         traceId='trace_'+randomUUID().replace(/-/g,'');
-        const context=await learnerContext(userId,session.id,req.body.language);
+        const context:any=await learnerContext(userId,session.id,req.body.language);
+        const masteryProfile=await getEvidenceBasedUserMastery(userId,context.language);
+        context.states=masteryProfile.evidence||{};
+        context.mastery_source='EVIDENCE_BASED_UNIFIED';
+        context.mastery_stats=masteryProfile.stats;
+        const previousTutorMessage=[...(session.messages||[])].reverse().find((message:any)=>message.sender==='AI_TUTOR');
+        const pendingConfirmation=previousTutorMessage?.metadata?.pendingConfirmation;
+        if(pendingConfirmation?.target_concept_id) context.pending_confirmation=pendingConfirmation;
         const request={user_id:userId,session_id:session.id,trace_id:traceId,
             messages:[...session.messages,userMessage].slice(-20).map((m:any)=>({sender:m.sender,content:m.content})),
             language:req.body.language||context.language||'python',target_concept_id:req.body.target_concept_id||null,learner_context:context,
@@ -86,7 +94,8 @@ async function chat(req:AuthenticatedRequest,res:Response,isStart:boolean,stream
     const safe=publicReport(report);
     const aiMessage=await prisma.pathChatMessage.create({data:{sessionId:session.id,sender:'AI_TUTOR',content:safe.reply,
         metadata:{intent:safe.intent,pipeline:{trace_id:safe.trace_id,status:safe.status,schema_version:safe.schema_version,error:safe.error},
-            agentTraces:safe.agent_traces,exercise:safe.exercise,suggestedOptions:safe.suggested_options||[],step:safe.exercise?'EXERCISE_READY':'CHAT'}}});
+            agentTraces:safe.agent_traces,exercise:safe.exercise,suggestedOptions:safe.suggested_options||[],
+            pendingConfirmation:safe.pending_confirmation||null,step:safe.exercise?'EXERCISE_READY':'CHAT'}}});
     const payload={type:'complete',success:true,sessionId:session.id,userMessage,aiMessage,
         ...(isStart?{messages:[userMessage,aiMessage]}:{}),pipeline:safe,exercise:safe.exercise};
     if(autoPublish && report.exercise) {

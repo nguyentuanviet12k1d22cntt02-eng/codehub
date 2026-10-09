@@ -146,11 +146,14 @@ class AstConstraintValidator:
     def _validate_cpp_constructs(cls, code: str, spec: ExerciseSpecification, errors: List[str]):
         has_class = bool(re.search(r"\bclass\s+\w+|\bstruct\s+\w+", code))
         has_func = bool(re.search(r"\w+\s+\w+\s*\([^)]*\)\s*\{", code))
+        has_vector = bool(re.search(r"#\s*include\s*<vector>|\b(?:std::)?vector\s*<", code))
 
         for req in spec.required_constructs:
             r = req.lower().strip()
             if r == "class" and not has_class:
                 errors.append("Đặc tả yêu cầu dùng 'class/struct' trong C++, nhưng code không có.")
+            elif r == "vector" and not has_vector:
+                errors.append("Đặc tả yêu cầu dùng std::vector trong C++, nhưng reference_solution không có vector.")
 
         for forb in spec.forbidden_constructs:
             f = forb.lower().strip()

@@ -1,6 +1,9 @@
 import { Course } from "@prisma/client";
+import { randomUUID } from "crypto";
 import { NextFunction, Request, response, Response } from "express";
 import { prisma } from "../../infrastructure/database/prisma";
+import { AuthenticatedRequest } from "../../shared/middleware/auth";
+import { parseInteractionTelemetry } from "../learning-events/interactionTelemetry";
 
 export const getCourses = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -98,13 +101,10 @@ export const getLessonById = async (req: Request, res: Response, next: NextFunct
         const { id } = req.params;
 
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-        if (!uuidRegex.test(id as string)) {
-            res.status(400).json({ message: "ID bài học không đúng định dạng UUID" });
-            return;
-        }
+        const lessonWhere = uuidRegex.test(id as string) ? { id: id as string } : { lessonId: id as string };
 
-        const lesson = await prisma.lesson.findUnique({
-            where: { id: id as string },
+        const lesson = await prisma.lesson.findFirst({
+            where: lessonWhere,
             include: {
                 codingExercises: {
                     include: {
@@ -186,11 +186,18 @@ export const completeLesson = async (req: Request, res: Response, next: NextFunc
             return;
         }
 
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        let actualLessonId = id;
+        if (!uuidRegex.test(id)) {
+            const found = await prisma.lesson.findFirst({ where: { lessonId: id }, select: { id: true } });
+            if (found) actualLessonId = found.id;
+        }
+
         const progress = await prisma.lessonProgress.upsert({
             where: {
                 userId_lessonId: {
                     userId,
-                    lessonId: id
+                    lessonId: actualLessonId
                 }
             },
             update: {
@@ -199,7 +206,7 @@ export const completeLesson = async (req: Request, res: Response, next: NextFunc
             },
             create: {
                 userId,
-                lessonId: id,
+                lessonId: actualLessonId,
                 isCompleted: true,
                 completedAt: new Date()
             }
@@ -215,9 +222,15 @@ export const completeLesson = async (req: Request, res: Response, next: NextFunc
 export const getLessonQuiz = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const id = req.params.id as string;
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        let actualLessonId = id;
+        if (!uuidRegex.test(id)) {
+            const found = await prisma.lesson.findFirst({ where: { lessonId: id }, select: { id: true } });
+            if (found) actualLessonId = found.id;
+        }
 
         const questions = await prisma.lessonQuizQuestion.findMany({
-            where: { lessonId: id },
+            where: { lessonId: actualLessonId },
             orderBy: { orderIndex: 'asc' },
             include: {
                 options: {
@@ -242,22 +255,45 @@ export const getLessonQuiz = async (req: Request, res: Response, next: NextFunct
 };
 
 // Chấm điểm bài trắc nghiệm và trả về kết quả kèm lời giải thích
-export const submitLessonQuiz = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const submitLessonQuiz = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         const id = req.params.id as string;
+        const userId = req.user?.id;
         const { answers } = req.body; // { [questionId]: 'A' | 'B' | 'C' | 'D' }
+        const telemetry = parseInteractionTelemetry(req.body.telemetry);
+
+        if (!userId) {
+            res.status(401).json({ error: "Người dùng chưa đăng nhập." });
+            return;
+        }
 
         if (!answers || typeof answers !== 'object') {
             res.status(400).json({ error: "Dữ liệu câu trả lời không hợp lệ." });
             return;
         }
 
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        let actualLessonId = id;
+        if (!uuidRegex.test(id)) {
+            const found = await prisma.lesson.findFirst({ where: { lessonId: id }, select: { id: true } });
+            if (found) actualLessonId = found.id;
+        }
+
         const questions = await prisma.lessonQuizQuestion.findMany({
-            where: { lessonId: id },
+            where: { lessonId: actualLessonId },
             include: {
                 options: true
             },
             orderBy: { orderIndex: 'asc' }
+        });
+        const lessonContext = await prisma.lesson.findUnique({
+            where: { id: actualLessonId },
+            select: {
+                lessonId: true,
+                difficulty: true,
+                updatedAt: true,
+                chapter: { select: { module: { select: { courseId: true } } } }
+            }
         });
 
         let correctCount = 0;
@@ -279,6 +315,40 @@ export const submitLessonQuiz = async (req: Request, res: Response, next: NextFu
                 explanation: q.explanation || 'Chúc mừng bạn đã chọn đáp án chính xác!'
             };
         });
+
+        const difficultyMap: Record<string, number> = { EASY: 1, MEDIUM: 2, HARD: 3 };
+        const difficulty = lessonContext?.difficulty
+            ? difficultyMap[String(lessonContext.difficulty).toUpperCase()] ?? null
+            : null;
+        const answeredResults = results.filter(result => result.selectedKey !== null);
+        if (answeredResults.length > 0) {
+            await prisma.learningInteraction.createMany({
+                data: answeredResults.map(result => ({
+                    sourceType: 'LESSON_QUIZ',
+                    sourceRecordId: randomUUID(),
+                    userId,
+                    courseId: lessonContext?.chapter.module.courseId ?? null,
+                    lessonId: actualLessonId,
+                    itemId: result.questionId,
+                    difficulty,
+                    mappingStatus: 'UNVERIFIED',
+                    contentVersion: lessonContext?.updatedAt.toISOString() ?? null,
+                    sessionId: telemetry.sessionId,
+                    openedAt: telemetry.openedAt,
+                    submittedAt: new Date(),
+                    activeTimeSeconds: telemetry.activeTimeSeconds,
+                    hintCount: telemetry.hintCount,
+                    status: result.isCorrect ? 'PASSED' : 'FAILED',
+                    isCorrect: result.isCorrect,
+                    score: result.isCorrect ? 1 : 0,
+                    dataOrigin: 'REAL',
+                    payload: {
+                        stableLessonId: lessonContext?.lessonId ?? null,
+                        selectedOption: result.selectedKey,
+                    },
+                })),
+            });
+        }
 
         res.status(200).json({
             success: true,

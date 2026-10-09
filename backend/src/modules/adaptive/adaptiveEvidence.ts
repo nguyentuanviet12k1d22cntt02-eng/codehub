@@ -22,6 +22,23 @@ export function verifyInternal(body: Buffer, timestamp: string, signature: strin
 
 const resumeCoreAgents=['AdaptiveExercisePlanner','ExerciseGeneratorAgent','SchemaValidator','ConstraintValidator','SandboxValidator'];
 const resumeOptionalAgents=['ExplanationTutorAgent','KnowledgeRetrievalService'];
+const conceptIdPattern=/^(?:PY|JS|CPP|SQL)-[A-Z0-9-]+$/;
+
+/**
+ * Recover the latest graph concept that the deterministic planner already
+ * accepted.  A retry must not ask the intent router to infer the topic again:
+ * doing so can turn PY-LIST-02 back into a loose label such as "array".
+ */
+export function verifiedTargetConcept(report: any): string|undefined {
+    const records=Array.isArray(report?.agent_traces)?report.agent_traces:[];
+    for(let index=records.length-1;index>=0;index--) {
+        const record=records[index];
+        const candidate=record?.agent==='AdaptiveExercisePlanner' && record?.status==='SUCCEEDED'
+            ? record?.output?.target_concept : undefined;
+        if(typeof candidate==='string' && conceptIdPattern.test(candidate)) return candidate;
+    }
+    return undefined;
+}
 
 /**
  * Build the smallest server-owned checkpoint that the Python orchestrator can
@@ -71,7 +88,7 @@ export function publicRecord(record: any): any {
     else if (record.agent==='CriticEvaluatorAgent') safeOutput=output && {is_approved:output.is_approved,score:output.score,feedback_target:output.feedback_target,
         theory_approved:output.theory_approved,exercise_approved:output.exercise_approved,compatibility_approved:output.compatibility_approved,
         note:'Nhận xét chi tiết được lưu trong báo cáo quản trị.'};
-    else if (['IntentRouterAgent','AdaptiveExercisePlanner','KnowledgeRetrievalService','ExplanationTutorAgent','PublicationGate','LearnerStateService'].includes(record.agent)) safeOutput=output;
+    else if (['IntentRouterAgent','PrerequisiteAdvisorAgent','AdaptiveExercisePlanner','KnowledgeRetrievalService','ExplanationTutorAgent','PublicationGate','LearnerStateService'].includes(record.agent)) safeOutput=output;
     else safeOutput=output && {passed:output.passed,approved:output.approved};
     return {...metadata, output:safeOutput, model_calls:(model_calls||[]).map(({input,output,private_response_excerpt,...receipt}:any)=>receipt),
         error:record.error ? {code:record.error.code,message:'Bước này thất bại; mã lỗi được lưu cùng báo cáo.'}:undefined};

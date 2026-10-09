@@ -50,8 +50,7 @@ enum class VaiTro : uint8_t {
 VaiTro nguoiDung = VaiTro::HOC_SINH;
 
 if (nguoiDung == VaiTro::HOC_SINH) {
-    std::cout << "Xin chao hoc sinh!
-";
+    std::cout << "Xin chao hoc sinh!\\n";
 }
 ```
 

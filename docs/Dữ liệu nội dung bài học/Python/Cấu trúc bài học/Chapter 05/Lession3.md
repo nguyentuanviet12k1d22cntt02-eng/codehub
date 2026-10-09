@@ -1,109 +1,148 @@
 ---
-lessonId: "LS-02.07"
-title: "Vòng lặp for"
-difficulty: "MEDIUM"
+lessonId: "LS-03.03"
+title: "Lesson 3.3: Vòng lặp for và range()"
+difficulty: "EASY"
 estimatedDuration: 35
-keywords: ["for loop", "looping", "range", "iteration", "python basics"]
-prerequisites: ["LS-02.06"]
+prerequisites: ["LS-03.02"]
 ---
 
-# 📘 Lesson 02.07: Vòng lặp for
+# Lesson 3.3: Vòng lặp for và range()
 
----
+## Mục tiêu
 
-## 1. Khái niệm & Vấn đề
+* Hiểu rõ bản chất của vòng lặp `for`: Vòng lặp điều khiển theo số lượt biết trước (Count-controlled loop).
+* Làm chủ **3 biến thể** của hàm `range()` để sinh dãy số theo ý muốn: `range(stop)`, `range(start, stop)`, và `range(start, stop, step)`.
+* Hiểu cơ chế hoạt động của **biến lặp** (Loop Variable) tự động nhận giá trị qua từng vòng.
+* Tránh được bẫy kinh điển: **Lỗi lệch 1 đơn vị (Off-by-one error)** và lỗi đếm lùi không có bước nhảy âm.
 
-Với vòng lặp `while`, chúng ta phải tự quản lý biến đếm hoàn toàn thủ công (phải khai báo biến ban đầu, viết điều kiện dừng, và tự tăng biến ở cuối vòng lặp). Việc này rất dễ dẫn tới sơ suất quên cập nhật biến đếm gây lỗi treo máy.
+## Kiến thức chính
 
-Khi chúng ta đã **xác định trước được số lần lặp** (ví dụ lặp 10 lần), hoặc muốn **duyệt qua lần lượt các phần tử** của một tập hợp dãy số, Python cung cấp câu lệnh **`for`** tối ưu, an toàn và ngắn gọn hơn nhiều.
+Vòng lặp `for` trong Python được thiết kế để duyệt lần lượt qua từng phần tử của một tập hợp hoặc một dãy số được tạo bởi hàm `range()`.
 
-```mermaid
-flowchart TD
-    A[Bắt đầu] --> B{Còn phần tử nào trong dãy số không?}
-    B -- Yes (Còn) --> C[Tự động lấy phần tử tiếp theo gán vào biến tạm]
-    C --> D[Chạy khối lệnh con bên trong for]
-    D --> B
-    B -- No (Hết) --> E[Thoát vòng lặp và đi tiếp]
-```
+### Bảng tra cứu 3 dạng của hàm `range()`:
 
-| Thuật ngữ | Ý nghĩa | Phép ẩn dụ thực tế |
-| :--- | :--- | :--- |
-| **Vòng lặp `for`** | Cấu trúc lặp qua một tập hợp dữ liệu có thứ tự, tự động gán từng phần tử vào biến tạm sau mỗi vòng. | Giống như **băng chuyền hành lý** tại sân bay: Các vali lần lượt chạy qua trước mặt, bạn chỉ việc nhấc từng cái lên kiểm tra đến hết thì thôi. |
+| Dạng hàm | Ý nghĩa | Ví dụ | Dãy số sinh ra |
+| :--- | :--- | :--- | :--- |
+| **`range(stop)`**<br>*(1 tham số)* | Bắt đầu mặc định từ `0`, tăng mỗi lần `1`, dừng **trước** `stop`. | `range(5)` | `0, 1, 2, 3, 4` *(đủ 5 số)* |
+| **`range(start, stop)`**<br>*(2 tham số)* | Bắt đầu từ `start`, tăng mỗi lần `1`, dừng **trước** `stop`. | `range(1, 6)` | `1, 2, 3, 4, 5` |
+| **`range(start, stop, step)`**<br>*(3 tham số - Đếm tiến)* | Bắt đầu từ `start`, mỗi lần tăng `step` đơn vị, dừng **trước** `stop`. | `range(2, 11, 2)` | `2, 4, 6, 8, 10` *(số chẵn)* |
+| **`range(start, stop, -step)`**<br>*(3 tham số - Đếm lùi)* | Bắt đầu từ `start`, mỗi lần giảm `step` đơn vị, dừng **trước** `stop`. | `range(5, 0, -1)` | `5, 4, 3, 2, 1` *(đếm lùi)* |
 
----
+> [!IMPORTANT]
+> **Quy tắc "Không lấy điểm dừng (Stop)"**:
+> Giá trị `stop` **không bao giờ** nằm trong dãy số được sinh ra! Vòng lặp luôn dừng lại ngay trước ngưỡng `stop` (tức là chạy đến `stop - 1` khi đếm tiến, hoặc `stop + 1` khi đếm lùi).
 
-## 2. Cú pháp & Vận hành
+## Hiểu
 
-Cú pháp vòng lặp `for` kết hợp với hàm `range()` để thực hiện lặp theo số lần mong muốn:
+### 1. Ẩn dụ thực tế: Băng chuyền nhà máy và Chiếc gắp tự động
 
-```python
-for i in range(1, 4):
-    print("Lặp lần thứ:", i)
-print("Kết thúc chương trình.")
-```
+Hãy tưởng tượng bạn đang quan sát một dây chuyền đóng gói bánh:
+* Hàm `range(1, 6)` đóng vai trò như **cỗ máy cấp phát**, lần lượt nhả 5 chiếc bánh có dán nhãn số `1, 2, 3, 4, 5` lên băng chuyền.
+* Cú pháp `for banh in range(1, 6):` đóng vai trò như **chiếc gắp tự động**:
+  * Lượt 1: Gắp chiếc bánh số `1` đặt vào biến `banh` ➔ Thực hiện đóng gói.
+  * Lượt 2: Gắp chiếc bánh số `2` đặt vào biến `banh` ➔ Thực hiện đóng gói.
+  * ...
+  * Lượt 5: Gắp chiếc bánh số `5` đặt vào biến `banh` ➔ Thực hiện đóng gói.
+  * Khi băng chuyền hết bánh: Chiếc gắp tự động dừng lại. Bạn không cần phải tự tăng biến đếm thủ công như ở Lesson 3.2 nữa!
 
-**Bảng theo dõi thực thi (Execution Trace Table):**
-| Dòng mã | Lệnh được chạy | Trạng thái biến | Hành động của máy tính (Đầu ra màn hình) |
-|:---:|:---|:---|:---|
-| 1 | `range(1, 4)` | | Tạo dãy số nguyên ảo chứa các giá trị `[1, 2, 3]`. |
-| 1 | `for i in range(...)` | `i: 1` | Tự động lấy số đầu tiên (`1`) trong dãy gán vào biến tạm `i`. |
-| 2 | `print(...)` | `i: 1` | In ra màn hình: `Lặp lần thứ: 1`. |
-| 1 | `for i in range(...)` | `i: 2` | Tự động lấy số tiếp theo (`2`) trong dãy gán đè vào biến tạm `i`. |
-| 2 | `print(...)` | `i: 2` | In ra màn hình: `Lặp lần thứ: 2`. |
-| 1 | `for i in range(...)` | `i: 3` | Tự động lấy số cuối cùng (`3`) trong dãy gán đè vào biến tạm `i`. |
-| 2 | `print(...)` | `i: 3` | In ra màn hình: `Lặp lần thứ: 3`. |
-| 1 | `for i in range(...)` | | Dãy số đã hết phần tử. Tự động thoát khỏi vòng lặp `for`. |
-| 3 | `print("Kết thúc...")`| | Chạy lệnh ngoài vòng lặp. In ra màn hình: `Kết thúc chương trình.`. |
+### 2. Trục số trực quan (Visual Number Line)
 
-**Minh họa đường đi phần tử:**
+![Giải mã 4 biến thể của hàm range()](/images/lessons/module3/range_mechanics.svg)
+
 ```text
-Dãy số:     [  1,   2,   3  ]
-               │    │    │
-               ▼    ▼    ▼ (Lần lượt gán vào biến chạy)
-Biến chạy:     i = 1 ➔ i = 2 ➔ i = 3
+Dạng 1: range(5)  -->  Mặc định bắt đầu từ 0, dừng TRƯỚC 5
+Trục số:  [0] ──► [1] ──► [2] ──► [3] ──► [4] ──| (DỪNG, KHÔNG LẤY 5)
+
+Dạng 2: range(1, 6)  -->  Bắt đầu từ 1, dừng TRƯỚC 6
+Trục số:  [1] ──► [2] ──► [3] ──► [4] ──► [5] ──| (DỪNG, KHÔNG LẤY 6)
+
+Dạng 3 (Tiến): range(2, 11, 2)  -->  Bước nhảy +2
+Trục số:  [2] ────► [4] ────► [6] ────► [8] ────► [10] ──| (DỪNG, KHÔNG LẤY 11/12)
+
+Dạng 3 (Lùi): range(5, 0, -1)  -->  Bước nhảy -1
+Trục số:  [5] ──► [4] ──► [3] ──► [2] ──► [1] ──| (DỪNG, KHÔNG LẤY 0)
 ```
 
----
+## Làm theo
 
-## 3. Lỗi thường gặp & Tối ưu
+### Ví dụ 1: In lần lượt các số từ 1 đến N
 
-> [!WARNING]
-> **Các lưu ý quan trọng khi sử dụng vòng lặp for:**
-> * **Không thay đổi biến chạy trong vòng lặp**: Trong thân vòng lặp `for i in range(...)`, nếu bạn cố tình viết lệnh đổi giá trị `i = 10` thì ở lượt lặp sau, Python vẫn sẽ tự động ghi đè giá trị tiếp theo của `range()` vào `i`. Thay đổi này chỉ làm code bị rối và dễ gây lỗi logic không đáng có.
-> * **Đặt tên biến chạy có nghĩa**: Thay vì luôn sử dụng các chữ cái vô nghĩa như `i`, `j`, `k`, hãy đặt tên biến chạy phản ánh đúng mục tiêu (ví dụ: `for nam in range(2020, 2026):`).
+Muốn in các số từ 1 đến $N$, ta cần đặt điểm dừng là $N + 1$:
 
----
-
-## 4. Thực hành phân bậc
-
-### Câu hỏi trắc nghiệm (Warm-up)
-Với câu lệnh `for x in range(5):`, biến chạy `x` sẽ lần lượt nhận các giá trị số nguyên nào?
-* [ ] `1, 2, 3, 4, 5`
-* [ ] `0, 1, 2, 3, 4, 5`
-* [x] `0, 1, 2, 3, 4`
-* [ ] `1, 2, 3, 4`
-
-### Thử thách sửa lỗi (Debug)
-Đoạn code sau đây muốn tính tổng các số từ 1 đến 5. Kết quả in ra mong muốn là `15`, tuy nhiên khi chạy chương trình chỉ in ra `10`. Hãy tìm lỗi logic và sửa lại cho đúng:
 ```python
-# Sửa lại đoạn code tính tổng dưới đây:
-tong = 0
-for i in range(1, 5):
-    tong += i
-print(tong)
+n = int(input())
+
+# Vì cần lấy cả số n, ta phải đặt stop là n + 1
+for so in range(1, n + 1):
+    print(so)
 ```
 
-### Bài tập lập trình (Mini-task)
-Hãy viết chương trình sử dụng vòng lặp `for` kết hợp với hàm `range()` để in ra màn hình các số lẻ từ 1 đến 7 (bao gồm cả số 7), mỗi số được in trên một dòng riêng biệt.
+### Ví dụ 2: Đếm ngược thời gian đón giao thừa (Đếm lùi)
+
 ```python
-# Nhập code của bạn ở đây
+# Bắt đầu từ 5, dừng trước 0 (lấy đến 1), mỗi lần lùi 1 đơn vị
+for giay in range(5, 0, -1):
+    print(giay)
+
+print("Chúc mừng năm mới!")
 ```
+
+### Bảng theo dõi thực thi của vòng lặp đếm lùi:
+
+| Lượt lặp | Giá trị nhận bởi biến `giay` | Hành động in ra màn hình | Kiểm tra phần tử tiếp theo |
+| :---: | :---: | :--- | :--- |
+| **Lượt 1** | `5` | `5` | Còn số `4` ➔ Tiếp tục |
+| **Lượt 2** | `4` | `4` | Còn số `3` ➔ Tiếp tục |
+| **Lượt 3** | `3` | `3` | Còn số `2` ➔ Tiếp tục |
+| **Lượt 4** | `2` | `2` | Còn số `1` ➔ Tiếp tục |
+| **Lượt 5** | `1` | `1` | Chạm ngưỡng `0` ➔ Dừng lại |
+| **Sau vòng lặp** | — | `Chúc mừng năm mới!` | Kết thúc chương trình |
+
+### Ví dụ 3: Tính tổng các số chẵn từ 2 đến N
+
+```python
+n = 8
+tong_chan = 0
+
+for so in range(2, n + 1, 2):
+    tong_chan += so
+    print("Vừa cộng số:", so, "--> Tổng hiện tại:", tong_chan)
+
+print("Tổng cuối cùng:", tong_chan)
+```
+
+* Lượt 1 (`so = 2`): `tong_chan = 0 + 2 = 2`
+* Lượt 2 (`so = 4`): `tong_chan = 2 + 4 = 6`
+* Lượt 3 (`so = 6`): `tong_chan = 6 + 6 = 12`
+* Lượt 4 (`so = 8`): `tong_chan = 12 + 8 = 20`
+
+## Tự làm
+
+1. **Thử thách đọc nhanh:** Đoạn code sau sẽ in ra các số nào?
+   ```python
+   for i in range(3, 15, 3):
+       print(i, end=" ")
+   ```
+   *Số 15 có được in ra không? Vì sao?*
+2. **Bẫy đếm lùi:** Một bạn học sinh muốn đếm từ 10 về 1 và viết code như sau:
+   ```python
+   for x in range(10, 1):
+       print(x)
+   ```
+   *Khi chạy, chương trình không in ra bất kỳ dòng nào! Bạn hãy giải thích lý do và sửa lại cho đúng.*
+3. **Thử thách viết code:** Viết một vòng lặp `for` in ra bảng nhân của số 5 (từ `5 x 1 = 5` đến `5 x 10 = 50`).
+
+## Vận dụng
+
+Vòng lặp `for` kết hợp `range()` là công cụ được sử dụng nhiều nhất trong lập trình khi bạn **đã biết trước số lần cần làm việc**:
+* **Xử lý hoạt ảnh trong game:** Cập nhật vị trí nhân vật trong 60 khung hình mỗi giây (`range(60)`).
+* **Gửi thông báo hàng loạt:** Duyệt qua danh sách 50 khách hàng trúng thưởng để gửi email chúc mừng.
+* **Tạo bảng biểu:** Lặp qua từng hàng và cột trong bảng tính Excel.
 
 ---
 
-## 5. Đúc kết & Đi tiếp
+### 🚀 Bước tiếp theo
 
-* 🛡️ Vòng lặp `for` tự động hóa việc lặp qua một dãy số mà không cần quản lý biến chạy thủ công như `while`.
-* 🤝 Kết hợp `for` và `range()` là mô hình chuẩn mực để viết các vòng lặp đếm số lần cố định.
+Vòng lặp `for` rất tuyệt vời khi ta biết trước số lượt lặp. Nhưng nếu bài toán yêu cầu: *"Cứ lặp cho đến khi người dùng nhập đúng mật khẩu thì mới dừng"* — lúc này ta hoàn toàn không biết người dùng sẽ gõ đúng ở lần thứ 1, thứ 5 hay thứ 100!
 
-Trong bài học tiếp theo **[LS-02.08: Điều hướng lặp: break & continue]**, chúng ta sẽ tìm hiểu hai câu lệnh đặc biệt cho phép lập trình viên chủ động ngắt sớm vòng lặp hoặc bỏ qua các lượt lặp không cần thiết.
+Đó chính là lúc chúng ta cần đến người bạn đồng hành tiếp theo: **Lesson 3.4: Vòng lặp while và điều kiện dừng**.

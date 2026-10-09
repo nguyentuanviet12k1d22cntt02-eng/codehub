@@ -1,0 +1,38 @@
+{
+  "status": "RUNNER_QC_PASSED",
+  "draftSha256": "9048eb9f86553977e47f5f99760c73e85c0d8c7122b002cc4de3c0629f1aba68",
+  "runnerSourceSha256": "34de11a824f30a86b7646344fdfedaca8886ebe04ab9d238200e3b18aba67945",
+  "dockerServerVersion": "28.4.0",
+  "dockerImage": "python:3.10-alpine",
+  "dockerImageId": "sha256:b974a5de91b4ac6da8313502cd5bfe65c499e390d32658e1f2deea26fa5afb14",
+  "strictIsolation": true,
+  "fallbackToLocalAllowed": false,
+  "cases": [
+    {
+      "questionId": "PT-PYB-010",
+      "testCases": 3,
+      "hiddenCases": 2,
+      "referencePassed": 3,
+      "incorrectCaught": 2,
+      "passed": true
+    },
+    {
+      "questionId": "PT-PYB-011",
+      "testCases": 3,
+      "hiddenCases": 2,
+      "referencePassed": 3,
+      "incorrectCaught": 3,
+      "passed": true
+    },
+    {
+      "questionId": "PT-PYB-012",
+      "testCases": 3,
+      "hiddenCases": 2,
+      "referencePassed": 3,
+      "incorrectCaught": 2,
+      "passed": true
+    }
+  ],
+  "testedAt": "2026-10-06T10:19:49.130Z",
+  "evidenceDigest": "5d3a2895b47f6f13238ce356988a81fd58ce12d814a0832b9541505819717234"
+}

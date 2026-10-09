@@ -1,0 +1,17 @@
+{
+  "artifact_manifest_sha256": "ba422257641fb41004ae7e25ba0b5cd9db40aeac0bc85c336013c50788f0756f",
+  "attempt": 1,
+  "authorization_sha256": "44d7ac46641fdab681cfc26c61289512647a99c4cca22ebef16ec2083983826e",
+  "completed_at_utc": "2026-10-05T18:33:30.520983Z",
+  "config_sha256": "087ac5e37f29273cacab1dc4f62d56931a0e464cb5ef88433e44f87356d1df47",
+  "dataset_sha256": "d612d7464795bf7fa43c84ed19cb5f8855aadb636added5eb0d9192a2fc6026e",
+  "final_result_sha256": "ba422257641fb41004ae7e25ba0b5cd9db40aeac0bc85c336013c50788f0756f",
+  "lock_sha256_before_evaluation": "0b55e96424237c675d1ecb9c12348da9b99cc70562eadda0e06b913e7fa97225",
+  "protocol_version": "palnet-research-protocol/1.0.0",
+  "reason": "First and only preregistered held-out final-test evaluation for G2.",
+  "run_id": "final-g2-20261005T182731Z",
+  "schema_version": "kt-final-test-run-record/1.0.0",
+  "split_manifest_sha256_before_evaluation": "67ce644d257c88bf8d55f4fef6f564a87cb657c20716d48a0540822f10634e24",
+  "started_at_utc": "2026-10-05T18:30:41.530251Z",
+  "status": "COMPLETED_EVALUATED_ONCE"
+}

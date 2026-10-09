@@ -5,6 +5,8 @@ import { exerciseService } from './exercise.service';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
 import { StaticCodeAnalyzer } from '../../infrastructure/analysis/staticCodeAnalyzer';
 import { ExecuteResult } from '../../infrastructure/sandbox/sandbox.types';
+import { parseInteractionTelemetry } from '../learning-events/interactionTelemetry';
+import { buildGradingDiagnostics } from '../learning-events/interactionErrorClassifier';
 
 // Chạy thử code (không lưu database)
 export const runCodeDynamic = async (req: Request, res: Response): Promise<void> => {
@@ -213,6 +215,7 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
     try {
         const id = req.params.id as string; // ID của CodingExercise
         const { code } = req.body;
+        const telemetry = parseInteractionTelemetry(req.body.telemetry);
         const userId = req.user?.id as string;
 
         if (!userId) {
@@ -340,46 +343,80 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
         const compileFailure = results.find((r: any) => r.failureType === 'COMPILE_ERROR');
         // Bắt buộc thỏa mãn đồng thời: Tất cả testcases đều ĐÚNG output VÀ mã nguồn ĐẠT chuẩn cấu trúc AST
         const allPassed = allTestsPassed && astResult.isValid;
+        const diagnostics = buildGradingDiagnostics({
+            language: execLanguage,
+            allPassed,
+            astResult,
+            executionResults,
+            testResults: results,
+        });
 
         // Đo lường thời gian chạy trung bình thực tế cho 1 testcase
         const avgRuntime = (exercise.testCases || []).length > 0 ? totalRuntime / exercise.testCases.length : 15;
         const normalizedRuntime = Math.max(5, avgRuntime);
 
         // 4. Lưu kết quả nộp bài vào DB
-        const submission = await prisma.submission.create({
-            data: {
-                userId,
-                exerciseId: id,
-                code,
-                language: execLanguage as any,
-                status: allPassed ? 'PASSED' : 'FAILED',
-                runtime: normalizedRuntime
-            }
-        });
-
-        // 5. Cập nhật tiến trình bài học (hoàn thành) nếu người dùng đã vượt qua bài tập
-        if (allPassed) {
-            await prisma.lessonProgress.upsert({
-                where: {
-                    userId_lessonId: {
-                        userId,
-                        lessonId: exercise.lessonId
-                    }
-                },
-                update: {
-                    isCompleted: true,
-                    lastCode: code,
-                    completedAt: new Date()
-                },
-                create: {
+        const submission = await prisma.$transaction(async tx => {
+            const created = await tx.submission.create({
+                data: {
                     userId,
-                    lessonId: exercise.lessonId,
-                    isCompleted: true,
-                    lastCode: code,
-                    completedAt: new Date()
+                    exerciseId: id,
+                    code,
+                    language: execLanguage as any,
+                    status: allPassed ? 'PASSED' : 'FAILED',
+                    runtime: normalizedRuntime
                 }
             });
-        }
+            // The database trigger creates the canonical event in this same
+            // transaction. Enrich it with trusted grading output and optional
+            // browser telemetry before committing the submission.
+            await tx.learningInteraction.updateMany({
+                where: { sourceType: 'COURSE_SUBMISSION', sourceRecordId: created.id },
+                data: {
+                    sessionId: telemetry.sessionId,
+                    openedAt: telemetry.openedAt,
+                    activeTimeSeconds: telemetry.activeTimeSeconds,
+                    hintCount: telemetry.hintCount,
+                    errorType: diagnostics.errorType,
+                    testsPassed: diagnostics.testsPassed,
+                    testsTotal: diagnostics.testsTotal,
+                    payload: {
+                        stableLessonId: exercise.lesson?.lessonId || null,
+                        runtimeMs: normalizedRuntime,
+                        errorSummary: diagnostics.errorSummary,
+                        testOutcomes: results.map((result: any, index: number) => ({
+                            caseIndex: index + 1,
+                            passed: result.passed,
+                        })),
+                    },
+                },
+            });
+
+            // 5. Cập nhật tiến trình bài học (hoàn thành) nếu người dùng đã vượt qua bài tập
+            if (allPassed) {
+                await tx.lessonProgress.upsert({
+                    where: {
+                        userId_lessonId: {
+                            userId,
+                            lessonId: exercise.lessonId
+                        }
+                    },
+                    update: {
+                        isCompleted: true,
+                        lastCode: code,
+                        completedAt: new Date()
+                    },
+                    create: {
+                        userId,
+                        lessonId: exercise.lessonId,
+                        isCompleted: true,
+                        lastCode: code,
+                        completedAt: new Date()
+                    }
+                });
+            }
+            return created;
+        });
 
         // 6. Tính toán Leetcode Beats Percentile từ dữ liệu thực tế
         let beats = 100;

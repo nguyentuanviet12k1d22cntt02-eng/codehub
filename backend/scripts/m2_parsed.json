@@ -1,0 +1,242 @@
+[
+  {
+    "title": "Kiểm tra Số Chẵn hay Lẻ (Toán tử 3 ngôi)",
+    "difficulty": "EASY",
+    "problemDescription": "Kiểm tra Số Chẵn hay Lẻ (Toán tử 3 ngôi)\n* **Mục tiêu:** Áp dụng toán tử chia lấy dư `%` và biểu thức điều kiện 3 ngôi `? :` để xác định tính chẵn lẻ của một số nguyên.\n* **Mô tả:** Nhập vào một số nguyên N từ bàn phím. Hãy in ra `CHAN` nếu N là số chẵn, hoặc in ra `LE` nếu N là số lẻ.\n* **Ràng buộc:** Bắt buộc sử dụng toán tử 3 ngôi để chọn chuỗi kết quả.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một số nguyên N (-10^9 <= N <= 10^9).\n* **Đầu ra (Output):** In ra `CHAN` hoặc `LE`.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n8\n```\n\n**Khung Đầu ra (Output):**\n```text\nCHAN\n```\n\n**Giải thích chi tiết:**\n* Số 8 chia hết cho 2 (8 % 2 == 0) nên là số chẵn.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      long long n = 0;\n      std::cin >> n;\n\n      std::cout << ((n % 2 == 0) ? \"CHAN\" : \"LE\") << '\\n';\n      return 0;\n  }\n",
+    "exampleInput": "8",
+    "exampleOutput": "CHAN"
+  },
+  {
+    "title": "Tìm Số Lớn Nhất trong 2 số",
+    "difficulty": "EASY",
+    "problemDescription": "Tìm Số Lớn Nhất trong 2 số\n* **Mục tiêu:** Sử dụng cấu trúc `if-else if-else` cơ bản để so sánh hai số nguyên.\n* **Mô tả:** Nhập vào hai số nguyên a và b từ bàn phím. Hãy in ra số có giá trị lớn hơn. Nếu hai số bằng nhau, in ra dòng chữ `BANG NHAU`.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Hai số nguyên a và b cách nhau một khoảng trắng (-10^9 <= a, b <= 10^9).\n* **Đầu ra (Output):** Số lớn hơn hoặc chuỗi `BANG NHAU`.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n15 42\n```\n\n**Khung Đầu ra (Output):**\n```text\n42\n```\n\n**Giải thích chi tiết:**\n* So sánh 15 và 42, ta thấy 42 > 15 nên in ra 42.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      long long a = 0, b = 0;\n      std::cin >> a >> b;\n\n      if (a > b) {\n          std::cout << a << '\\n';\n      } else if (b > a) {\n          std::cout << b << '\\n';\n      } else {\n          std::cout << \"BANG NHAU\\n\";\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "15 42",
+    "exampleOutput": "42"
+  },
+  {
+    "title": "Phân loại Số Dương, Âm hay Bằng Không",
+    "difficulty": "EASY",
+    "problemDescription": "Phân loại Số Dương, Âm hay Bằng Không\n* **Mục tiêu:** Rèn luyện phản xạ xây dựng chuỗi điều kiện 3 nhánh hoàn chỉnh.\n* **Mô tả:** Nhập vào một số nguyên N. Hãy in ra:\n  * `DUONG` nếu N > 0.\n  * `AM` nếu N < 0.\n  * `KHONG` nếu N == 0.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một số nguyên N (-10^9 <= N <= 10^9).\n* **Đầu ra (Output):** Chuỗi ký tự tương ứng: `DUONG`, `AM` hoặc `KHONG`.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n-75\n```\n\n**Khung Đầu ra (Output):**\n```text\nAM\n```\n\n**Giải thích chi tiết:**\n* Số -75 nhỏ hơn 0 nên in ra `AM`.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      long long n = 0;\n      std::cin >> n;\n\n      if (n > 0) {\n          std::cout << \"DUONG\\n\";\n      } else if (n < 0) {\n          std::cout << \"AM\\n\";\n      } else {\n          std::cout << \"KHONG\\n\";\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "-75",
+    "exampleOutput": "AM"
+  },
+  {
+    "title": "Kiểm tra Tuổi Bầu Cử (Kỹ thuật Early Return)",
+    "difficulty": "EASY",
+    "problemDescription": "Kiểm tra Tuổi Bầu Cử (Kỹ thuật Early Return)\n* **Mục tiêu:** Áp dụng kỹ thuật Early Return để xử lý và kết thúc luồng chương trình nhanh chóng, giữ cấu trúc code mạch lạc.\n* **Mô tả:** Nhập vào tuổi của một công dân. Theo quy định pháp luật:\n  * Nếu tuổi hợp lệ và từ 18 tuổi trở lên, in: `DU TUOI`.\n  * Nếu tuổi hợp lệ nhưng dưới 18 tuổi, in: `CHUA DU TUOI`.\n  * Nếu tuổi < 0 hoặc tuổi > 150 (dữ liệu không hợp lý), in: `KHONG HOP LE`.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một số nguyên Tuoi (-1000 <= Tuoi <= 1000).\n* **Đầu ra (Output):** `DU TUOI`, `CHUA DU TUOI` hoặc `KHONG HOP LE`.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n19\n```\n\n**Khung Đầu ra (Output):**\n```text\nDU TUOI\n```\n\n**Giải thích chi tiết:**\n* 19 nằm trong khoảng hợp lệ và >= 18 nên đủ tuổi tham gia bầu cử.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      int tuoi = 0;\n      std::cin >> tuoi;\n\n      if (tuoi < 0 || tuoi > 150) {\n          std::cout << \"KHONG HOP LE\\n\";\n          return 0; // Early Return thoát sớm\n      }\n\n      if (tuoi >= 18) {\n          std::cout << \"DU TUOI\\n\";\n      } else {\n          std::cout << \"CHUA DU TUOI\\n\";\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "19",
+    "exampleOutput": "DU TUOI"
+  },
+  {
+    "title": "Tra cứu Thứ trong Tuần (switch-case)",
+    "difficulty": "EASY",
+    "problemDescription": "Tra cứu Thứ trong Tuần (switch-case)\n* **Mục tiêu:** Sử dụng cấu trúc rẽ nhánh `switch-case` với từ khóa `break` và nhánh `default` an toàn.\n* **Mô tả:** Nhập vào một số nguyên từ 2 đến 8 đại diện cho ngày trong tuần. Hãy in ra tên thứ tương ứng bằng tiếng Việt không dấu:\n  * 2: `Thu Hai`\n  * 3: `Thu Ba`\n  * 4: `Thu Tu`\n  * 5: `Thu Nam`\n  * 6: `Thu Sau`\n  * 7: `Thu Bay`\n  * 8: `Chu Nhat`\n  * Các số còn lại: In `KHONG HOP LE`.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một số nguyên N.\n* **Đầu ra (Output):** Tên thứ tương ứng hoặc `KHONG HOP LE`.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n8\n```\n\n**Khung Đầu ra (Output):**\n```text\nChu Nhat\n```\n\n**Giải thích chi tiết:**\n* Số 8 ứng với Chủ Nhật theo quy ước lịch Việt Nam.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      int n = 0;\n      std::cin >> n;\n\n      switch (n) {\n          case 2: std::cout << \"Thu Hai\\n\"; break;\n          case 3: std::cout << \"Thu Ba\\n\"; break;\n          case 4: std::cout << \"Thu Tu\\n\"; break;\n          case 5: std::cout << \"Thu Nam\\n\"; break;\n          case 6: std::cout << \"Thu Sau\\n\"; break;\n          case 7: std::cout << \"Thu Bay\\n\"; break;\n          case 8: std::cout << \"Chu Nhat\\n\"; break;\n          default: std::cout << \"KHONG HOP LE\\n\"; break;\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "8",
+    "exampleOutput": "Chu Nhat"
+  },
+  {
+    "title": "Đánh giá Điểm Học Phần (if-else if)",
+    "difficulty": "EASY",
+    "problemDescription": "Đánh giá Điểm Học Phần (if-else if)\n* **Mục tiêu:** Xếp loại học lực sinh viên dựa trên thang điểm 10 theo thứ tự điều kiện giảm dần.\n* **Mô tả:** Nhập vào điểm tổng kết học phần D (số thực, 0 <= D <= 10). Phân loại theo quy định sau:\n  * D >= 8.5: `Xuat sac`\n  * 7.0 <= D < 8.5: `Gioi`\n  * 5.5 <= D < 7.0: `Kha`\n  * 4.0 <= D < 5.5: `Trung binh`\n  * D < 4.0: `Yeu`\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một số thực D (0 <= D <= 10).\n* **Đầu ra (Output):** Chuỗi xếp loại học lực tương ứng.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n7.8\n```\n\n**Khung Đầu ra (Output):**\n```text\nGioi\n```\n\n**Giải thích chi tiết:**\n* Điểm 7.8 thỏa mãn 7.0 <= D < 8.5 nên được xếp loại `Gioi`.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      double d = 0.0;\n      std::cin >> d;\n\n      if (d >= 8.5) {\n          std::cout << \"Xuat sac\\n\";\n      } else if (d >= 7.0) {\n          std::cout << \"Gioi\\n\";\n      } else if (d >= 5.5) {\n          std::cout << \"Kha\\n\";\n      } else if (d >= 4.0) {\n          std::cout << \"Trung binh\\n\";\n      } else {\n          std::cout << \"Yeu\\n\";\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "7.8",
+    "exampleOutput": "Gioi"
+  },
+  {
+    "title": "Kiểm tra Ký tự Chữ Hoa, Chữ Thường hay Chữ Số",
+    "difficulty": "EASY",
+    "problemDescription": "Kiểm tra Ký tự Chữ Hoa, Chữ Thường hay Chữ Số\n* **Mục tiêu:** Vận dụng so sánh mã ký tự trong bảng mã ASCII kết hợp toán tử logic `&&`.\n* **Mô tả:** Nhập vào một ký tự C bất kỳ từ bàn phím. Xác định ký tự đó thuộc nhóm nào:\n  * Nếu C là chữ cái in hoa ('A' đến 'Z'): In `HOA`\n  * Nếu C là chữ cái in thường ('a' đến 'z'): In `THUONG`\n  * Nếu C là chữ số ('0' đến '9'): In `SO`\n  * Ký tự khác: In `KHAC`\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một ký tự C.\n* **Đầu ra (Output):** Chuỗi tương ứng (`HOA`, `THUONG`, `SO`, hoặc `KHAC`).\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\nG\n```\n\n**Khung Đầu ra (Output):**\n```text\nHOA\n```\n\n**Giải thích chi tiết:**\n* 'G' nằm trong khoảng 'A' đến 'Z' nên là chữ cái in hoa.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      char c = ' ';\n      std::cin >> c;\n\n      if (c >= 'A' && c <= 'Z') {\n          std::cout << \"HOA\\n\";\n      } else if (c >= 'a' && c <= 'z') {\n          std::cout << \"THUONG\\n\";\n      } else if (c >= '0' && c <= '9') {\n          std::cout << \"SO\\n\";\n      } else {\n          std::cout << \"KHAC\\n\";\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "G",
+    "exampleOutput": "HOA"
+  },
+  {
+    "title": "Máy tính Bỏ túi 4 Phép tính Cơ bản",
+    "difficulty": "EASY",
+    "problemDescription": "Máy tính Bỏ túi 4 Phép tính Cơ bản\n* **Mục tiêu:** Sử dụng `switch-case` để phân nhánh thao tác toán học dựa trên ký tự toán tử và phòng ngừa lỗi chia cho 0.\n* **Mô tả:** Nhập vào hai số nguyên a, b và một ký tự toán tử op (`+`, `-`, `*`, `/`). Hãy tính và in ra kết quả của phép tính `a op b`.\n* Nếu op là `/` mà b == 0, in ra thông báo: `Loi chia cho 0`.\n* Với phép chia `/`, kết quả lấy phần nguyên (chia nguyên).\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Gồm số a, ký tự op và số b trên cùng một dòng cách nhau bởi dấu cách.\n* **Đầu ra (Output):** Giá trị kết quả hoặc thông báo lỗi.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n20 / 4\n```\n\n**Khung Đầu ra (Output):**\n```text\n5\n```\n\n**Giải thích chi tiết:**\n* 20 chia 4 được kết quả là 5.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      long long a = 0, b = 0;\n      char op = ' ';\n      std::cin >> a >> op >> b;\n\n      switch (op) {\n          case '+':\n              std::cout << a + b << '\\n';\n              break;\n          case '-':\n              std::cout << a - b << '\\n';\n              break;\n          case '*':\n              std::cout << a * b << '\\n';\n              break;\n          case '/':\n              if (b == 0) {\n                  std::cout << \"Loi chia cho 0\\n\";\n              } else {\n                  std::cout << a / b << '\\n';\n              }\n              break;\n          default:\n              std::cout << \"Toan tu khong hop le\\n\";\n              break;\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "20 / 4",
+    "exampleOutput": "5"
+  },
+  {
+    "title": "Kiểm tra Bội số Đồng thời (Toán tử &&)",
+    "difficulty": "EASY",
+    "problemDescription": "Kiểm tra Bội số Đồng thời (Toán tử &&)\n* **Mục tiêu:** Luyện tập sử dụng toán tử logic VÀ `&&` để kiểm tra nhiều điều kiện chia hết cùng lúc.\n* **Mô tả:** Nhập vào số nguyên dương N. Kiểm tra xem N có đồng thời chia hết cho cả 3 VÀ 5 hay không.\n* Nếu thỏa mãn, in ra `YES`. Ngược lại in ra `NO`.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một số nguyên dương N (1 <= N <= 10^9).\n* **Đầu ra (Output):** In ra `YES` hoặc `NO`.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n30\n```\n\n**Khung Đầu ra (Output):**\n```text\nYES\n```\n\n**Giải thích chi tiết:**\n* 30 % 3 == 0 (đúng) và 30 % 5 == 0 (đúng) -> Cả hai điều kiện đều đúng nên in `YES`.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      long long n = 0;\n      std::cin >> n;\n\n      if (n % 3 == 0 && n % 5 == 0) {\n          std::cout << \"YES\\n\";\n      } else {\n          std::cout << \"NO\\n\";\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "30",
+    "exampleOutput": "YES"
+  },
+  {
+    "title": "Trị tuyệt đối không dùng thư viện cmath (Toán tử 3 ngôi)",
+    "difficulty": "EASY",
+    "problemDescription": "Trị tuyệt đối không dùng thư viện cmath (Toán tử 3 ngôi)\n* **Mục tiêu:** Tự cài đặt hàm trị tuyệt đối dựa trên định nghĩa toán học thuần túy bằng toán tử 3 ngôi.\n* **Mô tả:** Nhập vào một số nguyên N bất kỳ. Hãy in ra giá trị tuyệt đối |N| của số đó mà không dùng hàm `abs()` hay `std::abs()` của thư viện `<cmath>`.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một số nguyên N (-10^9 <= N <= 10^9).\n* **Đầu ra (Output):** Giá trị tuyệt đối của N.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n-987654\n```\n\n**Khung Đầu ra (Output):**\n```text\n987654\n```\n\n**Giải thích chi tiết:**\n* Vì N < 0 nên |N| = -N = -(-987654) = 987654.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      long long n = 0;\n      std::cin >> n;\n\n      long long triTuyetDoi = (n >= 0) ? n : -n;\n\n      std::cout << triTuyetDoi << '\\n';\n      return 0;\n  }\n",
+    "exampleInput": "-987654",
+    "exampleOutput": "987654"
+  },
+  {
+    "title": "Tìm Số Lớn Nhất và Nhỏ Nhất trong 3 số",
+    "difficulty": "MEDIUM",
+    "problemDescription": "Tìm Số Lớn Nhất và Nhỏ Nhất trong 3 số\n* **Mục tiêu:** Rèn luyện kỹ năng lồng ghép điều kiện hoặc dùng biến gán cực trị để tìm Max và Min trong 3 số.\n* **Mô tả:** Nhập vào 3 số nguyên a, b, c từ bàn phím. Hãy tìm và in ra giá trị nhỏ nhất (Min) và giá trị lớn nhất (Max) trong 3 số đó, cách nhau bởi một dấu cách.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Ba số nguyên a, b, c (-10^9 <= a, b, c <= 10^9).\n* **Đầu ra (Output):** Hai số nguyên tương ứng là Min và Max, cách nhau một khoảng trắng.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n14 -5 29\n```\n\n**Khung Đầu ra (Output):**\n```text\n-5 29\n```\n\n**Giải thích chi tiết:**\n* Trong 3 số 14, -5, 29 thì -5 là số nhỏ nhất, 29 là số lớn nhất.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      long long a = 0, b = 0, c = 0;\n      std::cin >> a >> b >> c;\n\n      long long minVal = a;\n      if (b < minVal) minVal = b;\n      if (c < minVal) minVal = c;\n\n      long long maxVal = a;\n      if (b > maxVal) maxVal = b;\n      if (c > maxVal) maxVal = c;\n\n      std::cout << minVal << \" \" << maxVal << '\\n';\n      return 0;\n  }\n",
+    "exampleInput": "14 -5 29",
+    "exampleOutput": "-5 29"
+  },
+  {
+    "title": "Kiểm tra Điều kiện Tam giác và Phân loại",
+    "difficulty": "MEDIUM",
+    "problemDescription": "Kiểm tra Điều kiện Tam giác và Phân loại\n* **Mục tiêu:** Vận dụng bất đẳng thức tam giác và định lý Pytago để phân loại tam giác.\n* **Mô tả:** Nhập vào 3 số nguyên dương a, b, c đại diện cho độ dài 3 cạnh.\n  1. Kiểm tra 3 cạnh có tạo thành tam giác hợp lệ hay không (tổng 2 cạnh bất kỳ phải lớn hơn cạnh còn lại: a + b > c && a + c > b && b + c > a).\n  2. Nếu không tạo thành tam giác, in ra: `Khong phai tam giac`.\n  3. Nếu tạo thành tam giác, phân loại theo thứ tự ưu tiên:\n     * Tam giác đều (a == b && b == c): in `Deu`\n     * Tam giác vuông (thỏa mãn định lý Pytago a^2 + b^2 == c^2 hoặc b^2 + c^2 == a^2 hoặc a^2 + c^2 == b^2): in `Vuong`\n     * Tam giác cân (có ít nhất 2 cạnh bằng nhau): in `Can`\n     * Tam giác thường: in `Thuong`\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Ba số nguyên dương a, b, c (1 <= a, b, c <= 10^4).\n* **Đầu ra (Output):** Chuỗi phân loại tam giác tương ứng.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n3 4 5\n```\n\n**Khung Đầu ra (Output):**\n```text\nVuong\n```\n\n**Giải thích chi tiết:**\n* 3 + 4 > 5, 3 + 5 > 4, 4 + 5 > 3 -> Tạo thành tam giác.\n* 3^2 + 4^2 = 9 + 16 = 25 = 5^2 -> Thỏa mãn Pytago nên là tam giác vuông.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      long long a = 0, b = 0, c = 0;\n      std::cin >> a >> b >> c;\n\n      // 1. Kiểm tra điều kiện tam giác\n      if (a + b <= c || a + c <= b || b + c <= a) {\n          std::cout << \"Khong phai tam giac\\n\";\n          return 0;\n      }\n\n      // 2. Phân loại theo thứ tự ưu tiên\n      if (a == b && b == c) {\n          std::cout << \"Deu\\n\";\n      } else if (a * a + b * b == c * c || a * a + c * c == b * b || b * b + c * c == a * a) {\n          std::cout << \"Vuong\\n\";\n      } else if (a == b || b == c || a == c) {\n          std::cout << \"Can\\n\";\n      } else {\n          std::cout << \"Thuong\\n\";\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "3 4 5",
+    "exampleOutput": "Vuong"
+  },
+  {
+    "title": "Xác định Quý trong Năm (switch gộp case)",
+    "difficulty": "MEDIUM",
+    "problemDescription": "Xác định Quý trong Năm (switch gộp case)\n* **Mục tiêu:** Áp dụng kỹ thuật gộp nhiều case liên tiếp trong `switch-case` (tận dụng Fall-through có chủ đích).\n* **Mô tả:** Nhập vào tháng M trong năm (1 <= M <= 12). Hãy in ra quý tương ứng:\n  * Tháng 1, 2, 3: in `Quy 1`\n  * Tháng 4, 5, 6: in `Quy 2`\n  * Tháng 7, 8, 9: in `Quy 3`\n  * Tháng 10, 11, 12: in `Quy 4`\n  * Nếu tháng không hợp lệ (ngoài khoảng 1-12): in `Loi`\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một số nguyên M.\n* **Đầu ra (Output):** Chuỗi quý tương ứng hoặc `Loi`.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n8\n```\n\n**Khung Đầu ra (Output):**\n```text\nQuy 3\n```\n\n**Giải thích chi tiết:**\n* Tháng 8 thuộc Quý 3 (gồm tháng 7, 8, 9).",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      int m = 0;\n      std::cin >> m;\n\n      switch (m) {\n          case 1:\n          case 2:\n          case 3:\n              std::cout << \"Quy 1\\n\";\n              break;\n          case 4:\n          case 5:\n          case 6:\n              std::cout << \"Quy 2\\n\";\n              break;\n          case 7:\n          case 8:\n          case 9:\n              std::cout << \"Quy 3\\n\";\n              break;\n          case 10:\n          case 11:\n          case 12:\n              std::cout << \"Quy 4\\n\";\n              break;\n          default:\n              std::cout << \"Loi\\n\";\n              break;\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "8",
+    "exampleOutput": "Quy 3"
+  },
+  {
+    "title": "Tính Tiền Điện Bậc Thang Sinh Hoạt",
+    "difficulty": "MEDIUM",
+    "problemDescription": "Tính Tiền Điện Bậc Thang Sinh Hoạt\n* **Mục tiêu:** Rèn luyện tư duy tính toán theo khoảng giá bậc thang bằng các khối lệnh rẽ nhánh không lặp.\n* **Mô tả:** Biểu giá điện sinh hoạt được tính lũy tiến theo các bậc như sau:\n  * Bậc 1: Cho 50 kWh đầu tiên, giá 1,678 đồng/kWh.\n  * Bậc 2: Từ kWh thứ 51 đến 100, giá 1,734 đồng/kWh.\n  * Bậc 3: Từ kWh thứ 101 trở lên, giá 2,014 đồng/kWh.\n  Nhập vào số kWh điện tiêu thụ (số nguyên K >= 0). Hãy tính tổng tiền điện phải trả (đồng).\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một số nguyên K (0 <= K <= 10^6).\n* **Đầu ra (Output):** Một số nguyên là tổng số tiền điện phải trả.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n75\n```\n\n**Khung Đầu ra (Output):**\n```text\n127250\n```\n\n**Giải thích chi tiết:**\n* Tiêu thụ 75 kWh:\n  * 50 kWh đầu: 50 * 1678 = 83,900 đồng.\n  * 25 kWh tiếp theo (ở Bậc 2): 25 * 1734 = 43,350 đồng.\n  * Tổng tiền = 83,900 + 43,350 = 127,250 đồng.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      long long k = 0;\n      std::cin >> k;\n\n      long long tongTien = 0;\n\n      if (k <= 50) {\n          tongTien = k * 1678;\n      } else if (k <= 100) {\n          tongTien = 50 * 1678 + (k - 50) * 1734;\n      } else {\n          tongTien = 50 * 1678 + 50 * 1734 + (k - 100) * 2014;\n      }\n\n      std::cout << tongTien << '\\n';\n      return 0;\n  }\n",
+    "exampleInput": "75",
+    "exampleOutput": "127250"
+  },
+  {
+    "title": "Kiểm tra Điểm thuộc Góc Phần Tư Tọa độ Oxy",
+    "difficulty": "MEDIUM",
+    "problemDescription": "Kiểm tra Điểm thuộc Góc Phần Tư Tọa độ Oxy\n* **Mục tiêu:** Kết hợp dấu của tọa độ x, y để xác định vị trí của một điểm trên mặt phẳng tọa độ Decartes.\n* **Mô tả:** Nhập vào tọa độ (x, y) của điểm M (với x, y là số thực khác 0). Xác định điểm M nằm ở góc phần tư nào:\n  * Góc I: x > 0 và y > 0\n  * Góc II: x < 0 và y > 0\n  * Góc III: x < 0 và y < 0\n  * Góc IV: x > 0 và y < 0\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Hai số thực x và y cách nhau một khoảng trắng.\n* **Đầu ra (Output):** In ra `Goc I`, `Goc II`, `Goc III` hoặc `Goc IV`.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n-4.5 8.2\n```\n\n**Khung Đầu ra (Output):**\n```text\nGoc II\n```\n\n**Giải thích chi tiết:**\n* Điểm có hoành độ x = -4.5 < 0 và tung độ y = 8.2 > 0 thuộc góc phần tư thứ II.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      double x = 0.0, y = 0.0;\n      std::cin >> x >> y;\n\n      if (x > 0 && y > 0) {\n          std::cout << \"Goc I\\n\";\n      } else if (x < 0 && y > 0) {\n          std::cout << \"Goc II\\n\";\n      } else if (x < 0 && y < 0) {\n          std::cout << \"Goc III\\n\";\n      } else if (x > 0 && y < 0) {\n          std::cout << \"Goc IV\\n\";\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "-4.5 8.2",
+    "exampleOutput": "Goc II"
+  },
+  {
+    "title": "Kiểm tra Năm Nhuận (Leap Year)",
+    "difficulty": "MEDIUM",
+    "problemDescription": "Kiểm tra Năm Nhuận (Leap Year)\n* **Mục tiêu:** Nắm vững quy tắc thiên văn lịch Gregory về năm nhuận bằng toán tử logic kết hợp `&&` và `||`.\n* **Mô tả:** Năm Y (số nguyên dương) là năm nhuận nếu:\n  * Năm đó chia hết cho 400, HOẶC\n  * Năm đó chia hết cho 4 nhưng KHÔNG chia hết cho 100.\n  Ngược lại là năm thường.\n  Hãy nhập năm Y và in ra `NAM NHUAN` hoặc `NAM THUONG`.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một số nguyên dương Y (1 <= Y <= 10^5).\n* **Đầu ra (Output):** `NAM NHUAN` hoặc `NAM THUONG`.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n2000\n```\n\n**Khung Đầu ra (Output):**\n```text\nNAM NHUAN\n```\n\n**Giải thích chi tiết:**\n* 2000 chia hết cho 400 nên là năm nhuận thế kỷ.\n* Trong khi đó năm 1900 chia hết cho 100 nhưng không chia hết cho 400 nên là năm thường.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      int y = 0;\n      std::cin >> y;\n\n      if ((y % 400 == 0) || (y % 4 == 0 && y % 100 != 0)) {\n          std::cout << \"NAM NHUAN\\n\";\n      } else {\n          std::cout << \"NAM THUONG\\n\";\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "2000",
+    "exampleOutput": "NAM NHUAN"
+  },
+  {
+    "title": "Tính Số Ngày trong Tháng của Năm Bất Kỳ",
+    "difficulty": "MEDIUM",
+    "problemDescription": "Tính Số Ngày trong Tháng của Năm Bất Kỳ\n* **Mục tiêu:** Kết hợp thuật toán năm nhuận với cấu trúc `switch-case` để xác định chính xác số ngày của một tháng.\n* **Mô tả:** Nhập vào tháng M (1 <= M <= 12) và năm Y (1 <= Y <= 10^5). Hãy in ra số ngày của tháng đó.\n  * Các tháng có 31 ngày: 1, 3, 5, 7, 8, 10, 12.\n  * Các tháng có 30 ngày: 4, 6, 9, 11.\n  * Tháng 2: Nếu là năm nhuận có 29 ngày; nếu năm thường có 28 ngày.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Hai số nguyên M và Y cách nhau bởi dấu cách.\n* **Đầu ra (Output):** Một số nguyên là số ngày của tháng M trong năm Y.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n2 2024\n```\n\n**Khung Đầu ra (Output):**\n```text\n29\n```\n\n**Giải thích chi tiết:**\n* Năm 2024 là năm nhuận (chia hết cho 4 và không chia hết cho 100), do đó tháng 2 có 29 ngày.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      int m = 0, y = 0;\n      std::cin >> m >> y;\n\n      switch (m) {\n          case 1:\n          case 3:\n          case 5:\n          case 7:\n          case 8:\n          case 10:\n          case 12:\n              std::cout << 31 << '\\n';\n              break;\n          case 4:\n          case 6:\n          case 9:\n          case 11:\n              std::cout << 30 << '\\n';\n              break;\n          case 2: {\n              bool laNamNhuan = (y % 400 == 0) || (y % 4 == 0 && y % 100 != 0);\n              std::cout << (laNamNhuan ? 29 : 28) << '\\n';\n              break;\n          }\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "2 2024",
+    "exampleOutput": "29"
+  },
+  {
+    "title": "Giải và Biện luận Phương trình Bậc Nhất ax + b = 0",
+    "difficulty": "MEDIUM",
+    "problemDescription": "Giải và Biện luận Phương trình Bậc Nhất ax + b = 0\n* **Mục tiêu:** Rèn luyện tư duy toán học logic biện luận đầy đủ mọi trường hợp của hệ số a và b.\n* **Mô tả:** Nhập vào hai hệ số thực a và b của phương trình bậc nhất `ax + b = 0`. Biện luận nghiệm:\n  * Nếu a == 0 và b == 0: in `Vo so nghiem`\n  * Nếu a == 0 và b != 0: in `Vo nghiem`\n  * Nếu a != 0: Phương trình có nghiệm duy nhất `x = -b / a`. In kết quả làm tròn đúng 2 chữ số sau dấu phẩy.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Hai số thực a và b.\n* **Đầu ra (Output):** Chuỗi biện luận hoặc giá trị nghiệm duy nhất.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n2 -5\n```\n\n**Khung Đầu ra (Output):**\n```text\n2.50\n```\n\n**Giải thích chi tiết:**\n* 2x - 5 = 0 <=> 2x = 5 <=> x = 2.50.",
+    "solutionCode": "#include <iostream>\n  #include <iomanip>\n\n  int main() {\n      double a = 0.0, b = 0.0;\n      std::cin >> a >> b;\n\n      if (a == 0.0) {\n          if (b == 0.0) {\n              std::cout << \"Vo so nghiem\\n\";\n          } else {\n              std::cout << \"Vo nghiem\\n\";\n          }\n      } else {\n          double x = -b / a;\n          // Tránh in -0.00\n          if (x == -0.0) x = 0.0;\n          std::cout << std::fixed << std::setprecision(2) << x << '\\n';\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "2 -5",
+    "exampleOutput": "2.50"
+  },
+  {
+    "title": "Tính Cước Taxi theo Cự ly di chuyển",
+    "difficulty": "MEDIUM",
+    "problemDescription": "Tính Cước Taxi theo Cự ly di chuyển\n* **Mục tiêu:** Áp dụng cấu trúc rẽ nhánh để tính cước phí dịch vụ theo từng dặm đường thực tế.\n* **Mô tả:** Cước phí đi taxi được tính như sau:\n  * Km đầu tiên (0 < d <= 1): Giá mở cửa là 15,000 đồng.\n  * Từ km thứ 2 đến km thứ 30 (1 < d <= 30): Giá 13,000 đồng/km.\n  * Từ km thứ 31 trở lên (d > 30): Giá 11,000 đồng/km.\n  Nhập vào quãng đường d (km, số thực dương). Hãy in ra tổng tiền cước (lấy phần nguyên).\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một số thực dương d (0 < d <= 1000).\n* **Đầu ra (Output):** Số tiền nguyên (đồng).\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n35\n```\n\n**Khung Đầu ra (Output):**\n```text\n447000\n```\n\n**Giải thích chi tiết:**\n* 1 km đầu: 15,000 đồng.\n* 29 km tiếp theo (từ km 2 đến km 30): 29 * 13,000 = 377,000 đồng.\n* 5 km còn lại (từ km 31 đến km 35): 5 * 11,000 = 55,000 đồng.\n* Tổng tiền = 15,000 + 377,000 + 55,000 = 447,000 đồng.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      double d = 0.0;\n      std::cin >> d;\n\n      double tongTien = 0.0;\n\n      if (d <= 1.0) {\n          tongTien = d * 15000.0;\n      } else if (d <= 30.0) {\n          tongTien = 1.0 * 15000.0 + (d - 1.0) * 13000.0;\n      } else {\n          tongTien = 1.0 * 15000.0 + 29.0 * 13000.0 + (d - 30.0) * 11000.0;\n      }\n\n      long long ketQua = static_cast<long long>(tongTien);\n      std::cout << ketQua << '\\n';\n      return 0;\n  }\n",
+    "exampleInput": "35",
+    "exampleOutput": "447000"
+  },
+  {
+    "title": "Chuyển đổi Ký tự Hoa - Thường (Kỹ thuật mã ASCII)",
+    "difficulty": "MEDIUM",
+    "problemDescription": "Chuyển đổi Ký tự Hoa - Thường (Kỹ thuật mã ASCII)\n* **Mục tiêu:** Thao tác chuyển đổi chữ cái hoa/thường bằng phép dịch chuyển độ lệch `('a' - 'A') = 32` kết hợp `if-else`.\n* **Mô tả:** Nhập vào một ký tự C bất kỳ:\n  * Nếu C là chữ cái in thường: chuyển thành chữ cái in hoa tương ứng.\n  * Nếu C là chữ cái in hoa: chuyển thành chữ cái in thường tương ứng.\n  * Nếu C không phải chữ cái: giữ nguyên ký tự đó.\n  In ký tự kết quả ra màn hình.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một ký tự C.\n* **Đầu ra (Output):** Ký tự sau khi chuyển đổi.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\nm\n```\n\n**Khung Đầu ra (Output):**\n```text\nM\n```\n\n**Giải thích chi tiết:**\n* 'm' là chữ cái in thường, chuyển thành chữ cái in hoa tương ứng là 'M'.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      char c = ' ';\n      std::cin >> c;\n\n      if (c >= 'a' && c <= 'z') {\n          c = static_cast<char>(c - ('a' - 'A'));\n      } else if (c >= 'A' && c <= 'Z') {\n          c = static_cast<char>(c + ('a' - 'A'));\n      }\n\n      std::cout << c << '\\n';\n      return 0;\n  }\n",
+    "exampleInput": "m",
+    "exampleOutput": "M"
+  },
+  {
+    "title": "Tìm Ngày Kế Tiếp trong Lịch (Next Day)",
+    "difficulty": "HARD",
+    "problemDescription": "Tìm Ngày Kế Tiếp trong Lịch (Next Day)\n* **Mục tiêu:** Rèn luyện tư duy xử lý chuyển ngày, chuyển tháng, chuyển năm và năm nhuận bằng chuỗi điều kiện logic chặt chẽ.\n* **Mô tả:** Nhập vào ngày D, tháng M và năm Y (với dữ liệu ngày tháng năm luôn đảm bảo hợp lệ). Hãy tính và in ra ngày, tháng, năm của **ngày kế tiếp** ngay sau đó (D_next M_next Y_next), cách nhau bởi một khoảng trắng.\n* **Chú ý các trường hợp biên:**\n  * Ngày cuối tháng chuyển sang ngày 1 của tháng tiếp theo.\n  * Ngày cuối năm (31/12) chuyển sang ngày 1/1 của năm mới.\n  * Tháng 2 của năm nhuận (29 ngày) và năm thường (28 ngày).\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Ba số nguyên D, M, Y (1 <= D <= 31, 1 <= M <= 12, 1 <= Y <= 10^5).\n* **Đầu ra (Output):** Ba số nguyên D_next M_next Y_next cách nhau bởi dấu cách.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n28 2 2024\n```\n\n**Khung Đầu ra (Output):**\n```text\n29 2 2024\n```\n\n**Giải thích chi tiết:**\n* Năm 2024 là năm nhuận nên tháng 2 có 29 ngày. Sau ngày 28/2 sẽ là ngày 29/2/2024.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      int d = 0, m = 0, y = 0;\n      std::cin >> d >> m >> y;\n\n      // Xác định số ngày tối đa của tháng m\n      int maxNgay = 31;\n      if (m == 4 || m == 6 || m == 9 || m == 11) {\n          maxNgay = 30;\n      } else if (m == 2) {\n          bool laNamNhuan = (y % 400 == 0) || (y % 4 == 0 && y % 100 != 0);\n          maxNgay = laNamNhuan ? 29 : 28;\n      }\n\n      if (d < maxNgay) {\n          d++;\n      } else {\n          d = 1;\n          if (m < 12) {\n              m++;\n          } else {\n              m = 1;\n              y++;\n          }\n      }\n\n      std::cout << d << \" \" << m << \" \" << y << '\\n';\n      return 0;\n  }\n",
+    "exampleInput": "28 2 2024",
+    "exampleOutput": "29 2 2024"
+  },
+  {
+    "title": "Giải và Biện luận Phương trình Bậc Hai ax^2 + bx + c = 0",
+    "difficulty": "HARD",
+    "problemDescription": "Giải và Biện luận Phương trình Bậc Hai ax^2 + bx + c = 0\n* **Mục tiêu:** Xử lý toàn diện các trường hợp suy biến khi a = 0 (phương trình bậc nhất) và biệt thức Delta (`b^2 - 4ac`) khi a != 0.\n* **Mô tả:** Nhập vào 3 hệ số thực a, b, c. Biện luận số nghiệm:\n  * Nếu a == 0: Trở thành `bx + c = 0`:\n    * b == 0, c == 0: in `Vo so nghiem`\n    * b == 0, c != 0: in `Vo nghiem`\n    * b != 0: in 1 nghiệm duy nhất `x = -c / b`\n  * Nếu a != 0: Tính delta = b^2 - 4ac:\n    * delta < 0: in `Vo nghiem`\n    * delta == 0: in 1 nghiệm kép `x = -b / (2*a)`\n    * delta > 0: in 2 nghiệm phân biệt `x1 x2` (với x1 <= x2) cách nhau một khoảng trắng.\n  * Các nghiệm in làm tròn đúng 2 chữ số thập phân.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Ba số thực a, b, c trên cùng một dòng.\n* **Đầu ra (Output):** Chuỗi biện luận hoặc các nghiệm cách nhau bởi dấu cách.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n1 -5 6\n```\n\n**Khung Đầu ra (Output):**\n```text\n2.00 3.00\n```\n\n**Giải thích chi tiết:**\n* Delta = (-5)^2 - 4*1*6 = 25 - 24 = 1 > 0.\n* Căn delta = 1. Nghiệm x1 = (5 - 1)/2 = 2.00, x2 = (5 + 1)/2 = 3.00.",
+    "solutionCode": "#include <iostream>\n  #include <iomanip>\n  #include <cmath>\n\n  int main() {\n      double a = 0.0, b = 0.0, c = 0.0;\n      std::cin >> a >> b >> c;\n\n      std::cout << std::fixed << std::setprecision(2);\n\n      if (a == 0.0) {\n          if (b == 0.0) {\n              if (c == 0.0) std::cout << \"Vo so nghiem\\n\";\n              else std::cout << \"Vo nghiem\\n\";\n          } else {\n              double x = -c / b;\n              if (x == -0.0) x = 0.0;\n              std::cout << x << '\\n';\n          }\n          return 0;\n      }\n\n      double delta = b * b - 4 * a * c;\n\n      if (delta < 0.0) {\n          std::cout << \"Vo nghiem\\n\";\n      } else if (delta == 0.0) {\n          double x = -b / (2 * a);\n          if (x == -0.0) x = 0.0;\n          std::cout << x << '\\n';\n      } else {\n          double canDelta = std::sqrt(delta);\n          double x1 = (-b - canDelta) / (2 * a);\n          double x2 = (-b + canDelta) / (2 * a);\n          if (x1 > x2) {\n              double tmp = x1; x1 = x2; x2 = tmp;\n          }\n          if (x1 == -0.0) x1 = 0.0;\n          if (x2 == -0.0) x2 = 0.0;\n          std::cout << x1 << \" \" << x2 << '\\n';\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "1 -5 6",
+    "exampleOutput": "2.00 3.00"
+  },
+  {
+    "title": "Trò chơi Kéo - Búa - Bao (Oẳn tù tì)",
+    "difficulty": "HARD",
+    "problemDescription": "Trò chơi Kéo - Búa - Bao (Oẳn tù tì)\n* **Mục tiêu:** Rèn luyện kỹ năng kết hợp toán tử logic để xử lý quan hệ vòng tròn (Kéo thắng Bao, Bao thắng Búa, Búa thắng Kéo).\n* **Mô tả:** Hai người chơi cùng ra một trong 3 nước:\n  * `K`: Kéo\n  * `B`: Búa\n  * `G`: Giấy (Bao)\n  Nhập vào 2 ký tự c1 và c2 lần lượt là lựa chọn của Người 1 và Người 2.\n  Hãy in ra:\n  * `Nguoi 1 thang` nếu Người 1 thắng.\n  * `Nguoi 2 thang` nếu Người 2 thắng.\n  * `Hoa` nếu hai người chọn giống nhau.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Hai ký tự c1 và c2 cách nhau bởi dấu cách ('K', 'B', hoặc 'G').\n* **Đầu ra (Output):** Kết quả ván đấu (`Nguoi 1 thang`, `Nguoi 2 thang`, hoặc `Hoa`).\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\nB K\n```\n\n**Khung Đầu ra (Output):**\n```text\nNguoi 1 thang\n```\n\n**Giải thích chi tiết:**\n* Người 1 ra Búa ('B'), Người 2 ra Kéo ('K'). Búa đập vỡ Kéo nên Người 1 thắng.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      char c1 = ' ', c2 = ' ';\n      std::cin >> c1 >> c2;\n\n      if (c1 == c2) {\n          std::cout << \"Hoa\\n\";\n      } else if ((c1 == 'K' && c2 == 'G') ||\n                 (c1 == 'B' && c2 == 'K') ||\n                 (c1 == 'G' && c2 == 'B')) {\n          std::cout << \"Nguoi 1 thang\\n\";\n      } else {\n          std::cout << \"Nguoi 2 thang\\n\";\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "B K",
+    "exampleOutput": "Nguoi 1 thang"
+  },
+  {
+    "title": "Sắp xếp 4 Số Nguyên Tăng Dần không dùng Mảng và Vòng lặp",
+    "difficulty": "HARD",
+    "problemDescription": "Sắp xếp 4 Số Nguyên Tăng Dần không dùng Mảng và Vòng lặp\n* **Mục tiêu:** Làm chủ kỹ thuật hoán vị (swap) giá trị của 2 biến bằng biến tạm thời, sắp xếp 4 phần tử bằng mạng so sánh trực tiếp.\n* **Mô tả:** Nhập vào 4 số nguyên a, b, c, d từ bàn phím. Hãy in ra 4 số này theo thứ tự tăng dần (không giảm) trên cùng một dòng, cách nhau bởi một khoảng trắng.\n* **Ràng buộc:** Tuyệt đối không sử dụng mảng, `std::vector` hay vòng lặp `for`/`while`.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Bốn số nguyên a, b, c, d (-10^9 <= a, b, c, d <= 10^9).\n* **Đầu ra (Output):** Bốn số đã được sắp xếp tăng dần, cách nhau bởi một dấu cách.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n9 -2 5 0\n```\n\n**Khung Đầu ra (Output):**\n```text\n-2 0 5 9\n```\n\n**Giải thích chi tiết:**\n* Sắp xếp từ nhỏ đến lớn: -2 <= 0 <= 5 <= 9.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      long long a = 0, b = 0, c = 0, d = 0;\n      std::cin >> a >> b >> c >> d;\n\n      // Mạng so sánh hoán đổi (Sorting Network cho 4 phần tử)\n      long long t = 0;\n      if (a > b) { t = a; a = b; b = t; }\n      if (c > d) { t = c; c = d; d = t; }\n      if (a > c) { t = a; a = c; c = t; }\n      if (b > d) { t = b; b = d; d = t; }\n      if (b > c) { t = b; b = c; c = t; }\n\n      std::cout << a << \" \" << b << \" \" << c << \" \" << d << '\\n';\n      return 0;\n  }\n",
+    "exampleInput": "9 -2 5 0",
+    "exampleOutput": "-2 0 5 9"
+  },
+  {
+    "title": "Tính Khoảng Cách Thời Gian giữa 2 Thời điểm trong Ngày",
+    "difficulty": "HARD",
+    "problemDescription": "Tính Khoảng Cách Thời Gian giữa 2 Thời điểm trong Ngày\n* **Mục tiêu:** Quy đổi đơn vị thời gian sang số giây để so sánh, sau đó dùng phép chia nguyên và chia dư để khôi phục lại Giờ - Phút - Giây.\n* **Mô tả:** Nhập vào hai thời điểm trong cùng một ngày:\n  * Thời điểm 1: h1, m1, s1 (0 <= h1 <= 23, 0 <= m1, s1 <= 59)\n  * Thời điểm 2: h2, m2, s2 (0 <= h2 <= 23, 0 <= m2, s2 <= 59)\n  Đảm bảo thời điểm 2 luôn diễn ra sau hoặc trùng thời điểm 1 trong ngày.\n  Hãy tính khoảng cách thời gian giữa hai thời điểm và in theo định dạng: `H gio M phut S giay`.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** 6 số nguyên h1 m1 s1 h2 m2 s2 cách nhau bởi khoảng trắng.\n* **Đầu ra (Output):** Chuỗi định dạng khoảng cách thời gian `H gio M phut S giay`.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n9 15 30 11 10 20\n```\n\n**Khung Đầu ra (Output):**\n```text\n1 gio 54 phut 50 giay\n```\n\n**Giải thích chi tiết:**\n* Thời điểm 1: 9 * 3600 + 15 * 60 + 30 = 33,330 giây.\n* Thời điểm 2: 11 * 3600 + 10 * 60 + 20 = 40,220 giây.\n* Chênh lệch = 40,220 - 33,330 = 6,890 giây.\n* 6,890 / 3600 = 1 giờ; phần dư 6,890 % 3600 = 1,690 giây.\n* 1,690 / 60 = 54 phút; phần dư 1,690 % 60 = 50 giây.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      long long h1 = 0, m1 = 0, s1 = 0;\n      long long h2 = 0, m2 = 0, s2 = 0;\n      std::cin >> h1 >> m1 >> s1 >> h2 >> m2 >> s2;\n\n      long long sec1 = h1 * 3600 + m1 * 60 + s1;\n      long long sec2 = h2 * 3600 + m2 * 60 + s2;\n\n      long long diff = sec2 - sec1;\n\n      long long h = diff / 3600;\n      diff %= 3600;\n      long long m = diff / 60;\n      long long s = diff % 60;\n\n      std::cout << h << \" gio \" << m << \" phut \" << s << \" giay\\n\";\n      return 0;\n  }\n",
+    "exampleInput": "9 15 30 11 10 20",
+    "exampleOutput": "1 gio 54 phut 50 giay"
+  },
+  {
+    "title": "Xác định Vị trí Tương đối của 2 Đoạn Thẳng [a, b] và [c, d] trên Trục Số",
+    "difficulty": "HARD",
+    "problemDescription": "Xác định Vị trí Tương đối của 2 Đoạn Thẳng [a, b] và [c, d] trên Trục Số\n* **Mục tiêu:** Áp dụng công thức giao hai đoạn thẳng `[max(a, c), min(b, d)]` để tính độ dài phần giao nhau.\n* **Mô tả:** Cho hai đoạn thẳng trên trục số thực: đoạn 1 là `[a, b]` (a <= b) và đoạn 2 là `[c, d]` (c <= d).\n  * Nếu hai đoạn thẳng giao nhau (có phần chung), in ra độ dài của phần chung đó.\n  * Nếu không giao nhau (rời nhau hoàn toàn), in ra `0`.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Bốn số thực a, b, c, d (a <= b, c <= d).\n* **Đầu ra (Output):** Độ dài phần giao nhau (làm tròn 2 chữ số thập phân).\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n1.5 7.0 4.0 9.5\n```\n\n**Khung Đầu ra (Output):**\n```text\n3.00\n```\n\n**Giải thích chi tiết:**\n* Phần giao nhau của [1.5, 7.0] và [4.0, 9.5] là đoạn [4.0, 7.0].\n* Độ dài = 7.0 - 4.0 = 3.00.",
+    "solutionCode": "#include <iostream>\n  #include <iomanip>\n\n  int main() {\n      double a = 0.0, b = 0.0, c = 0.0, d = 0.0;\n      std::cin >> a >> b >> c >> d;\n\n      double left = (a > c) ? a : c;\n      double right = (b < d) ? b : d;\n\n      std::cout << std::fixed << std::setprecision(2);\n      if (left <= right) {\n          std::cout << (right - left) << '\\n';\n      } else {\n          std::cout << 0.00 << '\\n';\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "1.5 7.0 4.0 9.5",
+    "exampleOutput": "3.00"
+  },
+  {
+    "title": "Xác định Điểm M có Nằm Trong Hình Chữ Nhật",
+    "difficulty": "HARD",
+    "problemDescription": "Xác định Điểm M có Nằm Trong Hình Chữ Nhật\n* **Mục tiêu:** Vận dụng hệ bất phương trình tọa độ để xác định vị trí tương đối giữa một điểm và một hình chữ nhật song song trục tọa độ.\n* **Mô tả:** Cho một hình chữ nhật có các cạnh song song với hai trục tọa độ:\n  * Góc trái-dưới có tọa độ `(x1, y1)`.\n  * Góc phải-trên có tọa độ `(x2, y2)` (đảm bảo x1 < x2 và y1 < y2).\n  Nhập tọa độ điểm M `(x, y)`. Hãy xác định:\n  * Điểm M nằm strictly bên trong hình chữ nhật: in `BEN TRONG`\n  * Điểm M nằm trên một trong các cạnh của hình chữ nhật: in `TREN BIEN`\n  * Điểm M nằm ngoài hình chữ nhật: in `BEN NGOAI`\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** 6 số thực: x1 y1 x2 y2 x y.\n* **Đầu ra (Output):** `BEN TRONG`, `TREN BIEN`, hoặc `BEN NGOAI`.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n0 0 10 10 5 10\n```\n\n**Khung Đầu ra (Output):**\n```text\nTREN BIEN\n```\n\n**Giải thích chi tiết:**\n* Điểm M(5, 10) có hoành độ 0 < 5 < 10 và tung độ y = 10 đúng bằng cạnh trên của hình chữ nhật, nên nằm `TREN BIEN`.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0, x = 0.0, y = 0.0;\n      std::cin >> x1 >> y1 >> x2 >> y2 >> x >> y;\n\n      if (x < x1 || x > x2 || y < y1 || y > y2) {\n          std::cout << \"BEN NGOAI\\n\";\n      } else if (x > x1 && x < x2 && y > y1 && y < y2) {\n          std::cout << \"BEN TRONG\\n\";\n      } else {\n          std::cout << \"TREN BIEN\\n\";\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "0 0 10 10 5 10",
+    "exampleOutput": "TREN BIEN"
+  },
+  {
+    "title": "Đọc Số Có 2 Chữ Số thành Chữ Tiếng Việt",
+    "difficulty": "HARD",
+    "problemDescription": "Đọc Số Có 2 Chữ Số thành Chữ Tiếng Việt\n* **Mục tiêu:** Kết hợp tách chữ số hàng chục, hàng đơn vị và cấu trúc `switch-case` để giải quyết bài toán đọc số với các trường hợp đặc biệt (`mười`, `mười lăm`, `hai mươi mốt`, `ba mươi lăm`).\n* **Mô tả:** Nhập vào một số nguyên N có đúng 2 chữ số (10 <= N <= 99). Hãy in ra cách đọc số đó bằng tiếng Việt không dấu:\n  * Hàng chục: 1 in `Muoi`, 2 in `Hai muoi`, 3 in `Ba muoi`, ..., 9 in `Chin muoi`.\n  * Hàng đơn vị (khi hàng đơn vị != 0):\n    * Đuôi 1: Nếu hàng chục là 1 đọc là `mot` (viết: `Muoi mot`); nếu hàng chục >= 2 đọc là `mot` theo âm điệu tiếng Việt: `Hai muoi mot`.\n    * Đuôi 5: Nếu hàng chục là 1 đọc là `lam` (viết: `Muoi lam`); nếu hàng chục >= 2 đọc là `lam` (viết: `Hai muoi lam`).\n    * Các số khác: `hai`, `ba`, `bon`, `sau`, `bay`, `tam`, `chin`.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một số nguyên N (10 <= N <= 99).\n* **Đầu ra (Output):** Cách đọc tiếng Việt tương ứng.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n35\n```\n\n**Khung Đầu ra (Output):**\n```text\nBa muoi lam\n```\n\n**Giải thích chi tiết:**\n* Số 35 gồm hàng chục là 3 (\"Ba muoi\") và hàng đơn vị là 5 (\"lam\") -> Kết quả: \"Ba muoi lam\".",
+    "solutionCode": "#include <iostream>\n  #include <string>\n\n  int main() {\n      int n = 0;\n      std::cin >> n;\n\n      int chuc = n / 10;\n      int donVi = n % 10;\n\n      std::string sChuc = \"\";\n      switch (chuc) {\n          case 1: sChuc = \"Muoi\"; break;\n          case 2: sChuc = \"Hai muoi\"; break;\n          case 3: sChuc = \"Ba muoi\"; break;\n          case 4: sChuc = \"Bon muoi\"; break;\n          case 5: sChuc = \"Nam muoi\"; break;\n          case 6: sChuc = \"Sau muoi\"; break;\n          case 7: sChuc = \"Bay muoi\"; break;\n          case 8: sChuc = \"Tam muoi\"; break;\n          case 9: sChuc = \"Chin muoi\"; break;\n      }\n\n      if (donVi == 0) {\n          std::cout << sChuc << '\\n';\n          return 0;\n      }\n\n      std::string sDonVi = \"\";\n      switch (donVi) {\n          case 1: sDonVi = (chuc == 1) ? \"mot\" : \"mot\"; break;\n          case 2: sDonVi = \"hai\"; break;\n          case 3: sDonVi = \"ba\"; break;\n          case 4: sDonVi = \"bon\"; break;\n          case 5: sDonVi = \"lam\"; break;\n          case 6: sDonVi = \"sau\"; break;\n          case 7: sDonVi = \"bay\"; break;\n          case 8: sDonVi = \"tam\"; break;\n          case 9: sDonVi = \"chin\"; break;\n      }\n\n      std::cout << sChuc << \" \" << sDonVi << '\\n';\n      return 0;\n  }\n",
+    "exampleInput": "35",
+    "exampleOutput": "Ba muoi lam"
+  },
+  {
+    "title": "Kiểm tra Tam Giác Có Chứa Điểm Gốc Tọa Độ (0, 0)",
+    "difficulty": "HARD",
+    "problemDescription": "Kiểm tra Tam Giác Có Chứa Điểm Gốc Tọa Độ (0, 0)\n* **Mục tiêu:** Áp dụng phương pháp tích có hướng 2D (Cross Product) để kiểm tra điểm nằm trong đa giác lồi mà không dùng vòng lặp.\n* **Mô tả:** Cho 3 điểm không thẳng hàng A(x1, y1), B(x2, y2), C(x3, y3) tạo thành tam giác ABC.\n  Kiểm tra xem gốc tọa độ O(0, 0) có nằm trong tam giác ABC (bao gồm cả trường hợp nằm trên cạnh tam giác) hay không.\n  * Nếu có: in ra `YES`\n  * Nếu không: in ra `NO`\n* **Công thức gợi ý:** Tích có hướng của hai vector OA x OB = x1 * y2 - x2 * y1.\n  Điểm O nằm trong tam giác nếu dấu của cả 3 tích có hướng (OA x OB), (OB x OC), (OC x OA) cùng >= 0 hoặc cùng <= 0.\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** 6 số nguyên: x1 y1 x2 y2 x3 y3 (-10^4 <= xi, yi <= 10^4).\n* **Đầu ra (Output):** `YES` hoặc `NO`.\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n-2 -2 4 -2 0 4\n```\n\n**Khung Đầu ra (Output):**\n```text\nYES\n```\n\n**Giải thích chi tiết:**\n* Tam giác tạo bởi (-2,-2), (4,-2), (0,4) bao quanh điểm O(0,0), nên kết quả là `YES`.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      long long x1 = 0, y1 = 0, x2 = 0, y2 = 0, x3 = 0, y3 = 0;\n      std::cin >> x1 >> y1 >> x2 >> y2 >> x3 >> y3;\n\n      // cp1 = OA x OB = x1 * y2 - x2 * y1\n      long long cp1 = x1 * y2 - x2 * y1;\n      // cp2 = OB x OC = x2 * y3 - x3 * y2\n      long long cp2 = x2 * y3 - x3 * y2;\n      // cp3 = OC x OA = x3 * y1 - x1 * y3\n      long long cp3 = x3 * y1 - x1 * y3;\n\n      bool cungDuong = (cp1 >= 0 && cp2 >= 0 && cp3 >= 0);\n      bool cungAm = (cp1 <= 0 && cp2 <= 0 && cp3 <= 0);\n\n      if (cungDuong || cungAm) {\n          std::cout << \"YES\\n\";\n      } else {\n          std::cout << \"NO\\n\";\n      }\n\n      return 0;\n  }\n",
+    "exampleInput": "-2 -2 4 -2 0 4",
+    "exampleOutput": "YES"
+  },
+  {
+    "title": "Tính Thuế Thu Nhập Cá Nhân Lũy Tiến Từng Phần",
+    "difficulty": "HARD",
+    "problemDescription": "Tính Thuế Thu Nhập Cá Nhân Lũy Tiến Từng Phần\n* **Mục tiêu:** Quản lý dữ liệu lớn `long long` và áp dụng biểu thức tính thuế lũy tiến từng phần thực tế.\n* **Mô tả:** Biểu thuế thu nhập cá nhân lũy tiến đối với thu nhập chịu thuế T (đồng/tháng) được quy định như sau:\n  * Bậc 1: Đến 5 triệu đồng (T <= 5,000,000): Thuế suất 5%.\n  * Bậc 2: Trên 5 triệu đến 10 triệu đồng: Thuế suất 10%.\n  * Bậc 3: Trên 10 triệu đến 18 triệu đồng: Thuế suất 15%.\n  * Bậc 4: Trên 18 triệu đến 32 triệu đồng: Thuế suất 20%.\n  * Bậc 5: Trên 32 triệu đồng: Thuế suất 25%.\n  Nhập vào thu nhập chịu thuế T (T >= 0). Hãy tính chính xác số tiền thuế phải nộp (đồng, làm tròn đến hàng đơn vị).\n\n### Quy cách dữ liệu:\n* **Đầu vào (Input):** Một số nguyên T (0 <= T <= 10^12).\n* **Đầu ra (Output):** Số tiền thuế phải nộp (số nguyên `long long`).\n\n### Ví dụ minh họa:\n**Khung Đầu vào (Input):**\n```text\n15000000\n```\n\n**Khung Đầu ra (Output):**\n```text\n1500000\n```\n\n**Giải thích chi tiết:**\n* Thu nhập chịu thuế: 15,000,000 đồng:\n  * 5,000,000 đầu (Bậc 1): 5,000,000 * 5% = 250,000 đồng.\n  * 5,000,000 tiếp theo (Bậc 2, từ 5tr đến 10tr): 5,000,000 * 10% = 500,000 đồng.\n  * 5,000,000 còn lại (Bậc 3, từ 10tr đến 15tr): 5,000,000 * 15% = 750,000 đồng.\n  * Tổng tiền thuế = 250,000 + 500,000 + 750,000 = 1,500,000 đồng.",
+    "solutionCode": "#include <iostream>\n\n  int main() {\n      long long t = 0;\n      std::cin >> t;\n\n      double thue = 0.0;\n\n      if (t <= 5000000) {\n          thue = t * 0.05;\n      } else if (t <= 10000000) {\n          thue = 5000000 * 0.05 + (t - 5000000) * 0.10;\n      } else if (t <= 18000000) {\n          thue = 5000000 * 0.05 + 5000000 * 0.10 + (t - 10000000) * 0.15;\n      } else if (t <= 32000000) {\n          thue = 5000000 * 0.05 + 5000000 * 0.10 + 8000000 * 0.15 + (t - 18000000) * 0.20;\n      } else {\n          thue = 5000000 * 0.05 + 5000000 * 0.10 + 8000000 * 0.15 + 14000000 * 0.20 + (t - 32000000) * 0.25;\n      }\n\n      long long tienThue = static_cast<long long>(thue + 0.5); // Làm tròn\n      std::cout << tienThue << '\\n';\n      return 0;\n  }\n",
+    "exampleInput": "15000000",
+    "exampleOutput": "1500000"
+  }
+]

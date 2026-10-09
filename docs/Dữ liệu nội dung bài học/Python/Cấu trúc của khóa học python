@@ -60,30 +60,34 @@ LS-02.03	Lệnh if-else và if-elif-else	Xử lý đa luồng kịch bản.	Cú 
 LS-02.04	Toán tử Logic kết hợp	Đánh giá nhiều điều kiện cùng lúc.	and, or, not và Điều kiện lồng (Nested if).	Trung bình	30 phút
 
 
-MODULE 03: CẤU TRÚC LẶP
+MODULE 03: VÒNG LẶP TRONG PYTHON
 1. Thông tin Module
 Thuộc tính	Chi tiết
 Module ID	MOD-03
-Tên Module	Cấu trúc lặp
-Mục tiêu Module	Tự động hóa các tác vụ lặp lại và tối ưu hóa số lượng dòng code.
-Kiến thức chính	Vòng lặp while, hàm range(), vòng lặp for, điều hướng lặp break & continue.
+Tên Module	Vòng lặp trong Python
+Mục tiêu Module	Đi từ hiểu nhu cầu lặp đến tự viết và vận dụng vòng lặp vào bài toán nhỏ.
+Kiến thức chính	Tư duy lặp, for/range(), while, break, continue, if trong vòng lặp và vòng lặp lồng nhau.
 Điều kiện tiên quyết	Hoàn thành MOD-02 (Cấu trúc rẽ nhánh).
-Kỹ năng đạt được	Tạo các chương trình xử lý bài toán có tính chu kỳ, tính tổng dãy số, kiểm tra điều kiện lặp.
+Kỹ năng đạt được	Chọn vòng lặp phù hợp; lọc, đếm, tính tổng, tìm kiếm và xử lý bảng nhỏ.
 Số Chapter đề xuất	01 Chapter
-Tổng số Lesson đề xuất	04 Lessons
-Tổng số Exercise đề xuất	~75 Exercises (Code vòng lặp)
-Thời lượng học	3 Giờ
+Tổng số Lesson đề xuất	08 Lessons
+Tổng số Exercise đề xuất	21 bài ngay sau Lesson, kèm bài luyện thêm
+Thời lượng học	4 Giờ 55 Phút
 
 2. Danh sách Chapter (MOD-03)
 Chapter ID	Tên Chapter	Mục tiêu	Các Lesson thuộc Chapter	Kiến thức trọng tâm	Kỹ năng đạt được
-CH-05	Cấu trúc lặp	Tự động hóa các tác vụ lặp lại.	LS-03.01 đến LS-03.04	Vòng lặp while, for, điều hướng break/continue.	Rút gọn code, giải quyết bài toán chu kỳ/dãy số.
+CH-05	Vòng lặp trong Python	Đi từ nhận ra nhu cầu lặp đến vận dụng trong mini project.	LS-03.01 đến LS-03.08	Tư duy lặp, for/range(), while, điều khiển, if, lồng nhau.	Chọn đúng loại vòng lặp và kiểm soát điểm dừng.
 
 3. Danh sách Lesson (MOD-03)
 Lesson ID	Tên Lesson	Mục tiêu Lesson	Kiến thức chính	Độ khó	Thời lượng
-LS-03.01	Tư duy lặp và Vòng lặp while	Lặp dựa trên điều kiện chưa xác định trước.	Cú pháp while, nhận diện vòng lặp vô tận.	Trung bình	35 phút
-LS-03.02	Dãy số với hàm range()	Tạo một tập hợp số nguyên có quy luật.	Hàm range(start, stop, step).	Cơ bản	25 phút
-LS-03.03	Vòng lặp for	Lặp qua một số lần biết trước.	Cú pháp for ... in range().	Trung bình	35 phút
-LS-03.04	Điều hướng lặp: break & continue	Kiểm soát và can thiệp sâu vào vòng lặp.	Lệnh break, continue.	Trung bình	30 phút
+LS-03.01	Tại sao cần vòng lặp?	Nhận ra công việc lặp trong bài toán thực tế.	Mục tiêu và số lượt lặp.	Dễ	25 phút
+LS-03.02	Tư duy vòng lặp	Mô tả được quy trình của một vòng lặp.	Khởi tạo, điều kiện, thực hiện, cập nhật.	Dễ	30 phút
+LS-03.03	Vòng lặp for và range()	Lặp khi biết trước số lượt.	for, biến lặp và range().	Dễ	35 phút
+LS-03.04	Vòng lặp while và điều kiện dừng	Lặp khi số lượt phụ thuộc điều kiện.	while, biến chạy và tránh lặp vô hạn.	Dễ	35 phút
+LS-03.05	Điều khiển vòng lặp với break và continue	Dừng sớm hoặc bỏ qua một lượt.	break và continue.	Trung bình	30 phút
+LS-03.06	Kết hợp vòng lặp với if	Lọc, đếm, tính tổng và tìm kiếm.	if trong for/while; biến đếm và biến tổng.	Trung bình	40 phút
+LS-03.07	Vòng lặp lồng nhau	Xử lý hàng–cột và bảng nhỏ.	for trong for.	Trung bình	35 phút
+LS-03.08	Luyện tập tổng hợp và mini project	Ghép các mẫu vòng lặp đã học.	Chọn for/while, lọc, đếm, tổng, lồng nhau.	Trung bình	45 phút
 
 
 MODULE 04: XỬ LÝ CHUỖI (STRING)
@@ -251,12 +255,16 @@ PlaintextCourse: Khóa học Lập trình Python Nền tảng (Python Fundamenta
   │         ├── Lesson 02.03: Lệnh if-else và if-elif-else
   │         └── Lesson 02.04: Toán tử Logic kết hợp
   │
-  ├── Module 03: Cấu trúc lặp
-  │    └── Chapter 05: Cấu trúc lặp
-  │         ├── Lesson 03.01: Tư duy lặp và Vòng lặp while
-  │         ├── Lesson 03.02: Dãy số với hàm range()
-  │         ├── Lesson 03.03: Vòng lặp for
-  │         └── Lesson 03.04: Điều hướng lặp: break & continue
+  ├── Module 03: Vòng lặp trong Python
+  │    └── Chapter 05: Vòng lặp trong Python
+  │         ├── Lesson 03.01: Tại sao cần vòng lặp?
+  │         ├── Lesson 03.02: Tư duy vòng lặp
+  │         ├── Lesson 03.03: Vòng lặp for và range()
+  │         ├── Lesson 03.04: Vòng lặp while và điều kiện dừng
+  │         ├── Lesson 03.05: Điều khiển vòng lặp với break và continue
+  │         ├── Lesson 03.06: Kết hợp vòng lặp với if
+  │         ├── Lesson 03.07: Vòng lặp lồng nhau
+  │         └── Lesson 03.08: Luyện tập tổng hợp và mini project
   │
   ├── Module 04: Xử lý Chuỗi (String)
   │    └── Chapter 06: Xử lý Chuỗi (String)

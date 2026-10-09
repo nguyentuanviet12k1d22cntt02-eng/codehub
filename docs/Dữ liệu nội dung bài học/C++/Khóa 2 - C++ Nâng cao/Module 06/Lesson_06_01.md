@@ -42,8 +42,7 @@ Kiểm tra trạng thái k:  (mask >> k) & 1
 // 1. Kiểm tra số chẵn lẻ bằng bit cuối cùng
 int n = 7;
 if (n & 1) {
-    std::cout << n << " la so le
-"; // Bit cuối là 1 -> Số lẻ
+    std::cout << n << " la so le\\n"; // Bit cuối là 1 -> Số lẻ
 }
 
 // 2. Nhân đôi siêu nhanh bằng dịch bit trái

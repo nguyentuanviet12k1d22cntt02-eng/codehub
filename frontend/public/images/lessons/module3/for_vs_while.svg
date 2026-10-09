@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0F19" />
+      <stop offset="100%" stop-color="#111827" />
+    </linearGradient>
+    <linearGradient id="forGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="whileGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+  </defs>
+
+  <style>
+    .title { font-family: system-ui, -apple-system, sans-serif; font-size: 21px; font-weight: 800; fill: #F8FAFC; }
+    .subtitle { font-family: system-ui, -apple-system, sans-serif; font-size: 13px; font-weight: 500; fill: #94A3B8; }
+    .col-title { font-family: system-ui, -apple-system, sans-serif; font-size: 17px; font-weight: 800; }
+    .item-label { font-family: system-ui, -apple-system, sans-serif; font-size: 13px; font-weight: 700; fill: #F1F5F9; }
+    .item-desc { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; font-weight: 400; fill: #94A3B8; }
+    .code-box { font-family: 'Fira Code', monospace; font-size: 12px; font-weight: 600; }
+  </style>
+
+  <rect width="900" height="520" rx="24" fill="url(#bgGrad)" stroke="#1E293B" stroke-width="2" />
+
+  <!-- Header -->
+  <g transform="translate(40, 36)">
+    <text x="0" y="0" class="title">KHI NÀO DÙNG FOR? KHI NÀO DÙNG WHILE?</text>
+    <text x="0" y="24" class="subtitle">Bảng phân loại vàng giúp bạn chọn chính xác cấu trúc lặp tối ưu nhất</text>
+  </g>
+
+  <!-- COLUMN 1: FOR LOOP -->
+  <g transform="translate(40, 85)" filter="url(#shadow)">
+    <rect width="395" height="400" rx="18" fill="url(#forGrad)" stroke="#0284C7" stroke-width="1.8" />
+    
+    <!-- Col Header -->
+    <rect x="0" y="0" width="395" height="56" rx="18" fill="#0369A1" fill-opacity="0.25" />
+    <circle cx="36" cy="28" r="14" fill="#0284C7" />
+    <text x="36" y="33" font-family="system-ui" font-size="14" font-weight="900" fill="#FFFFFF" text-anchor="middle">↻</text>
+    <text x="60" y="34" class="col-title" fill="#38BDF8">VÒNG LẶP FOR</text>
+    <rect x="260" y="16" width="118" height="24" rx="6" fill="#0284C7" fill-opacity="0.3" />
+    <text x="319" y="32" font-family="system-ui" font-size="11" font-weight="700" fill="#7DD3FC" text-anchor="middle">BIẾT TRƯỚC SỐ LẦN</text>
+
+    <!-- Content Items -->
+    <g transform="translate(24, 75)">
+      <circle cx="6" cy="6" r="4" fill="#38BDF8" />
+      <text x="20" y="10" class="item-label">Bản chất kiểm soát:</text>
+      <text x="20" y="28" class="item-desc">Đã biết trước số lần lặp (ví dụ: N lần, 100 vòng).</text>
+
+      <g transform="translate(0, 48)">
+        <circle cx="6" cy="6" r="4" fill="#38BDF8" />
+        <text x="20" y="10" class="item-label">Cập nhật biến đếm:</text>
+        <text x="20" y="28" class="item-desc">Tự động 100% nhờ hàm <tspan fill="#38BDF8">range()</tspan> cấp phát dãy số.</text>
+      </g>
+
+      <g transform="translate(0, 96)">
+        <circle cx="6" cy="6" r="4" fill="#38BDF8" />
+        <text x="20" y="10" class="item-label">Độ an toàn:</text>
+        <text x="20" y="28" class="item-desc">Rất an toàn, hầu như không bao giờ bị vòng lặp vô hạn.</text>
+      </g>
+
+      <!-- Code Snippet -->
+      <g transform="translate(0, 142)">
+        <rect width="347" height="66" rx="8" fill="#060A12" stroke="#1E293B" />
+        <text x="14" y="24" class="code-box" fill="#64748B"># In 5 lần dòng chào mừng</text>
+        <text x="14" y="44" class="code-box" fill="#F8FAFC">
+          <tspan fill="#F472B6">for</tspan> i <tspan fill="#F472B6">in</tspan> <tspan fill="#38BDF8">range</tspan>(<tspan fill="#FBBF24">5</tspan>):
+        </text>
+        <text x="38" y="58" class="code-box" fill="#34D399">print("Xin chào!")</text>
+      </g>
+
+      <!-- Typical Use Cases -->
+      <g transform="translate(0, 224)">
+        <rect width="347" height="48" rx="8" fill="#0C4A6E" fill-opacity="0.3" stroke="#0284C7" stroke-width="0.8" />
+        <text x="14" y="20" font-family="system-ui" font-size="11.5" font-weight="700" fill="#7DD3FC">Ứng dụng tiêu biểu:</text>
+        <text x="14" y="38" class="item-desc" fill="#BAE6FD">Tính tổng dãy số, in bảng cửu chương, duyệt mảng.</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- COLUMN 2: WHILE LOOP -->
+  <g transform="translate(465, 85)" filter="url(#shadow)">
+    <rect width="395" height="400" rx="18" fill="url(#whileGrad)" stroke="#F59E0B" stroke-width="1.8" />
+    
+    <!-- Col Header -->
+    <rect x="0" y="0" width="395" height="56" rx="18" fill="#B45309" fill-opacity="0.25" />
+    <circle cx="36" cy="28" r="14" fill="#F59E0B" />
+    <text x="36" y="33" font-family="system-ui" font-size="14" font-weight="900" fill="#FFFFFF" text-anchor="middle">?</text>
+    <text x="60" y="34" class="col-title" fill="#FBBF24">VÒNG LẶP WHILE</text>
+    <rect x="250" y="16" width="128" height="24" rx="6" fill="#F59E0B" fill-opacity="0.3" />
+    <text x="314" y="32" font-family="system-ui" font-size="11" font-weight="700" fill="#FDE68A" text-anchor="middle">LẶP THEO ĐIỀU KIỆN</text>
+
+    <!-- Content Items -->
+    <g transform="translate(24, 75)">
+      <circle cx="6" cy="6" r="4" fill="#FBBF24" />
+      <text x="20" y="10" class="item-label">Bản chất kiểm soát:</text>
+      <text x="20" y="28" class="item-desc">Chưa biết trước số lần, lặp chừng nào điều kiện còn ĐÚNG.</text>
+
+      <g transform="translate(0, 48)">
+        <circle cx="6" cy="6" r="4" fill="#FBBF24" />
+        <text x="20" y="10" class="item-label">Cập nhật biến đếm:</text>
+        <text x="20" y="28" class="item-desc">Lập trình viên <tspan fill="#F87171" font-weight="700">phải tự cập nhật bằng tay</tspan> trong thân lặp.</text>
+      </g>
+
+      <g transform="translate(0, 96)">
+        <circle cx="6" cy="6" r="4" fill="#FBBF24" />
+        <text x="20" y="10" class="item-label">Độ an toàn:</text>
+        <text x="20" y="28" class="item-desc">Dễ bị vô hạn nếu quên cập nhật biến (phím tắt cứu nguy Ctrl+C).</text>
+      </g>
+
+      <!-- Code Snippet -->
+      <g transform="translate(0, 142)">
+        <rect width="347" height="66" rx="8" fill="#060A12" stroke="#1E293B" />
+        <text x="14" y="20" class="code-box" fill="#64748B"># Lặp đến khi nhập đúng mật khẩu</text>
+        <text x="14" y="38" class="code-box" fill="#F8FAFC">
+          <tspan fill="#F472B6">while</tspan> pin != <tspan fill="#FBBF24">1234</tspan>:
+        </text>
+        <text x="38" y="54" class="code-box" fill="#FBBF24">pin = int(input())</text>
+      </g>
+
+      <!-- Typical Use Cases -->
+      <g transform="translate(0, 224)">
+        <rect width="347" height="48" rx="8" fill="#78350F" fill-opacity="0.3" stroke="#F59E0B" stroke-width="0.8" />
+        <text x="14" y="20" font-family="system-ui" font-size="11.5" font-weight="700" fill="#FDE68A">Ứng dụng tiêu biểu:</text>
+        <text x="14" y="38" class="item-desc" fill="#FEF3C7">Nhập mã PIN ATM, game loop, dừng khi gặp số 0.</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- VS BADGE IN CENTER -->
+  <g transform="translate(425, 270)">
+    <circle cx="25" cy="25" r="22" fill="#0F172A" stroke="#475569" stroke-width="2" />
+    <text x="25" y="31" font-family="system-ui" font-size="13" font-weight="900" fill="#94A3B8" text-anchor="middle">VS</text>
+  </g>
+</svg>

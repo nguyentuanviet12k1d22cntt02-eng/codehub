@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { authService } from '../../../services/authService';
@@ -34,6 +34,8 @@ interface QuestionResult {
 const Quiz: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const roadmapId = searchParams.get('roadmapId');
     const queryClient = useQueryClient();
 
     // 1. Tải thông tin bài học
@@ -59,6 +61,8 @@ const Quiz: React.FC = () => {
     const [score, setScore] = useState<number>(0);
     const [isCompleted, setIsCompleted] = useState<boolean>(false);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const interactionStartedAtRef = React.useRef<number>(Date.now());
+    const interactionSessionIdRef = React.useRef<string>(crypto.randomUUID());
 
     const isLoading = loadingLesson || loadingQuiz;
 
@@ -146,6 +150,11 @@ const Quiz: React.FC = () => {
             // Gửi câu trả lời lên server để chấm bảo mật từ Database
             const res = await authService.submitLessonQuiz(id!, {
                 [currentQuestion.id]: selectedOption
+            }, {
+                sessionId: interactionSessionIdRef.current,
+                openedAt: new Date(interactionStartedAtRef.current).toISOString(),
+                activeTimeSeconds: Math.max(0, Math.floor((Date.now() - interactionStartedAtRef.current) / 1000)),
+                hintCount: 0,
             });
 
             const result = res.results.find((r: QuestionResult) => r.questionId === currentQuestion.id);
@@ -166,6 +175,8 @@ const Quiz: React.FC = () => {
     const handleNextQuestion = () => {
         if (currentIdx < questions.length - 1) {
             setCurrentIdx(prev => prev + 1);
+            interactionStartedAtRef.current = Date.now();
+            interactionSessionIdRef.current = crypto.randomUUID();
             setSelectedOption(null);
             setIsAnswered(false);
             setCurrentResult(null);
@@ -176,6 +187,8 @@ const Quiz: React.FC = () => {
 
     const handleRestartQuiz = () => {
         setCurrentIdx(0);
+        interactionStartedAtRef.current = Date.now();
+        interactionSessionIdRef.current = crypto.randomUUID();
         setSelectedOption(null);
         setIsAnswered(false);
         setCurrentResult(null);
@@ -192,7 +205,9 @@ const Quiz: React.FC = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             queryClient.invalidateQueries();
-            if (lesson.nextLessonId) {
+            if (roadmapId) {
+                navigate(`/roadmap/${roadmapId}`);
+            } else if (lesson.nextLessonId) {
                 navigate(`/lesson/${lesson.nextLessonId}`);
             } else {
                 navigate('/dashboard');
@@ -215,7 +230,7 @@ const Quiz: React.FC = () => {
                     </span>
                     <div className="h-4 w-[1px] bg-border-custom"></div>
                     <button
-                        onClick={() => navigate(`/lesson/${id}`)}
+                        onClick={() => navigate(`/lesson/${id}${roadmapId ? `?roadmapId=${roadmapId}` : ''}`)}
                         className="text-xs text-text-tertiary hover:text-text-primary bg-transparent border-none cursor-pointer flex items-center gap-1 transition-colors"
                     >
                         <span>←</span> <span className="hidden sm:inline">Quay lại lý thuyết:</span> <span className="font-semibold text-text-primary truncate max-w-[200px] sm:max-w-xs">{lesson.title}</span>

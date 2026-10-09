@@ -1,9 +1,11 @@
 import { Response } from 'express';
+import { randomUUID } from 'crypto';
 import { sanitizeLegacy } from '../adaptive/adaptiveEvidence';
 import { prisma } from '../../infrastructure/database/prisma';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
 import { codeExecutionQueue } from '../../infrastructure/queue/queueService';
 import { getEvidenceBasedUserMastery } from '../recommendations/recommendationController';
+import { parseInteractionTelemetry } from '../learning-events/interactionTelemetry';
 
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000';
 
@@ -210,17 +212,54 @@ export const getPathById = async (req: AuthenticatedRequest, res: Response): Pro
 export const submitQuizAnswer = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
         const { quizId, selectedOption } = req.body;
+        const userId = req.user?.id;
+        const telemetry = parseInteractionTelemetry(req.body.telemetry);
+
+        if (!userId) {
+            res.status(401).json({ success: false, error: 'Chưa xác thực người dùng!' });
+            return;
+        }
 
         const quiz = await prisma.personalizedQuiz.findUnique({
-            where: { id: String(quizId) }
+            where: { id: String(quizId) },
+            include: { lesson: { include: { path: { select: { userId: true } } } } }
         });
 
         if (!quiz) {
             res.status(404).json({ success: false, error: 'Câu hỏi không tồn tại!' });
             return;
         }
+        if (quiz.lesson.path.userId !== userId) {
+            res.status(403).json({ success: false, error: 'Không thể nộp câu hỏi thuộc lộ trình của người khác!' });
+            return;
+        }
 
         const isCorrect = quiz.correctOption === selectedOption;
+
+        await prisma.learningInteraction.create({
+            data: {
+                sourceType: 'PERSONALIZED_QUIZ',
+                sourceRecordId: randomUUID(),
+                userId,
+                language: quiz.lesson.targetSkillId.startsWith('PY-') ? 'PYTHON' : null,
+                itemId: quiz.id,
+                primarySkillId: quiz.lesson.targetSkillId,
+                mappingStatus: 'UNVERIFIED',
+                sessionId: telemetry.sessionId,
+                openedAt: telemetry.openedAt,
+                submittedAt: new Date(),
+                activeTimeSeconds: telemetry.activeTimeSeconds,
+                hintCount: telemetry.hintCount,
+                status: isCorrect ? 'PASSED' : 'FAILED',
+                isCorrect,
+                score: isCorrect ? 1 : 0,
+                dataOrigin: 'REAL',
+                payload: {
+                    personalizedLessonId: quiz.lessonId,
+                    selectedOption: String(selectedOption),
+                },
+            },
+        });
 
         res.status(200).json({
             success: true,

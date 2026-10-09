@@ -56,8 +56,7 @@ for (int k = 0; k < 4; ++k) {
 
     // Kiểm tra ô mới có nằm trong biên ma trận không
     if (newR >= 0 && newR < R && newC >= 0 && newC < C) {
-        std::cout << "O lan can hop le: (" << newR << ", " << newC << ")
-";
+        std::cout << "O lan can hop le: (" << newR << ", " << newC << ")\\n";
     }
 }
 ```

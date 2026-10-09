@@ -1,6 +1,7 @@
 import { prisma } from '../src/infrastructure/database/prisma';
-import * as fs from 'fs';
 import * as path from 'path';
+import { readCppLessonMetadata } from './lib/cppLessonMetadata';
+import { getCppCanonicalAssessment } from './lib/cppCanonicalAssessments';
 
 interface TestCaseDef {
     input: string;
@@ -47,6 +48,52 @@ interface LessonSeedItem {
     exercise: ExerciseDef;
     quiz: QuizDef;
 }
+
+interface ModuleProfile {
+    title: string;
+    objective: string;
+    chapterTitle: string;
+    chapterObjective: string;
+}
+
+const moduleProfiles: Record<string, ModuleProfile> = {
+    'CPP2-MOD-01': {
+        title: 'Module 1: Kiểu hợp thành, enum class và bố cục dữ liệu',
+        objective: 'Mô hình hóa bản ghi, enum class, variant và đánh giá layout struct theo ABI thay vì giả định kích thước cố định.',
+        chapterTitle: 'Chương 1: Kiểu hợp thành và layout dữ liệu',
+        chapterObjective: 'Vận dụng struct, enum class, bit-field và std::variant với ngữ nghĩa kiểu an toàn.'
+    },
+    'CPP2-MOD-02': {
+        title: 'Module 2: Container tuyến tính và dữ liệu liên kết',
+        objective: 'Làm chủ vector động, ma trận vector lồng nhau, pair/tuple và đánh đổi của danh sách liên kết.',
+        chapterTitle: 'Chương 2: Dãy động, tuple và danh sách liên kết',
+        chapterObjective: 'Chọn cấu trúc dữ liệu theo cách truy cập, cập nhật và vòng đời dữ liệu.'
+    },
+    'CPP2-MOD-03': {
+        title: 'Module 3: Xử lý văn bản nâng cao trong C++17',
+        objective: 'Tách, quan sát và kiểm tra văn bản bằng stringstream, string_view và std::regex mà không vi phạm vòng đời dữ liệu.',
+        chapterTitle: 'Chương 3: Stream, string_view và regex',
+        chapterObjective: 'Xử lý chuỗi chính xác về ownership, escape sequence và kiểu phép khớp regex.'
+    },
+    'CPP2-MOD-04': {
+        title: 'Module 4: Chia để trị, quay lui và cắt tỉa',
+        objective: 'Thiết kế lời giải đệ quy có trạng thái, hoàn tác đúng và cắt tỉa không loại bỏ nghiệm hợp lệ.',
+        chapterTitle: 'Chương 4: Đệ quy và tìm kiếm không gian trạng thái',
+        chapterObjective: 'Áp dụng divide and conquer, backtracking và branch and bound cho bài toán tổ hợp.'
+    },
+    'CPP2-MOD-05': {
+        title: 'Module 5: Thuật toán STL và container kết hợp',
+        objective: 'Dùng algorithm, map/set và unordered container theo tiền điều kiện, thứ tự và đặc tính độ phức tạp.',
+        chapterTitle: 'Chương 5: Algorithm, map/set và hash table',
+        chapterObjective: 'Chọn thuật toán và container chuẩn theo yêu cầu tìm kiếm, sắp xếp và tra cứu.'
+    },
+    'CPP2-MOD-06': {
+        title: 'Module 6: Bitwise, ngoại lệ và RAII',
+        objective: 'Viết mã quản lý cờ bit, biên lỗi và ownership tài nguyên có kiểm soát.',
+        chapterTitle: 'Chương 6: Mã tin cậy và quản lý tài nguyên',
+        chapterObjective: 'Kết hợp bitmask, exception safety và smart pointer trong chương trình C++ hiện đại.'
+    }
+};
 
 const lessonsToSeed: LessonSeedItem[] = [
     // ========================================================
@@ -1909,8 +1956,8 @@ async function main() {
     const course = await prisma.course.upsert({
         where: { id: cppAdvCourseId },
         update: {
-            title: 'Lập trình C++ Nâng cao & Lập trình Hệ thống (C++ Advanced & Systems)',
-            description: 'Khóa học chuyên sâu về kiến trúc phần cứng, phân vùng bộ nhớ RAM (Stack, Heap, BSS), con trỏ nâng cao, Smart Pointers, file nhị phân, tiền xử lý đa tệp, đệ quy có nhớ, quay lui và tối ưu hóa CPU Cache.',
+            title: 'Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)',
+            description: 'Khóa học nâng cao về kiểu hợp thành, container và thuật toán STL, xử lý văn bản, đệ quy, bitwise, ngoại lệ và RAII theo chuẩn C++17.',
             level: 'ADVANCED' as any,
             status: 'PUBLISHED' as any,
             thumbnailUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
@@ -1918,8 +1965,8 @@ async function main() {
         },
         create: {
             id: cppAdvCourseId,
-            title: 'Lập trình C++ Nâng cao & Lập trình Hệ thống (C++ Advanced & Systems)',
-            description: 'Khóa học chuyên sâu về kiến trúc phần cứng, phân vùng bộ nhớ RAM (Stack, Heap, BSS), con trỏ nâng cao, Smart Pointers, file nhị phân, tiền xử lý đa tệp, đệ quy có nhớ, quay lui và tối ưu hóa CPU Cache.',
+            title: 'Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)',
+            description: 'Khóa học nâng cao về kiểu hợp thành, container và thuật toán STL, xử lý văn bản, đệ quy, bitwise, ngoại lệ và RAII theo chuẩn C++17.',
             level: 'ADVANCED' as any,
             status: 'PUBLISHED' as any,
             thumbnailUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
@@ -1940,8 +1987,12 @@ async function main() {
     let modOrder = 1;
     for (const [moduleId, items] of modulesMap.entries()) {
         const firstItem = items[0];
+        const moduleProfile = moduleProfiles[moduleId];
+        if (!moduleProfile) {
+            throw new Error(`Thiếu cấu hình chương trình chuẩn cho ${moduleId}`);
+        }
         console.log(`\n======================================================`);
-        console.log(`📦 Module ${modOrder}: ${moduleId} - ${firstItem.moduleTitle}`);
+        console.log(`📦 Module ${modOrder}: ${moduleId} - ${moduleProfile.title}`);
         console.log(`======================================================`);
 
         // Tạo hoặc cập nhật Module
@@ -1954,8 +2005,8 @@ async function main() {
                 data: {
                     courseId: course.id,
                     moduleId: moduleId,
-                    title: firstItem.moduleTitle,
-                    objective: firstItem.moduleObjective,
+                    title: moduleProfile.title,
+                    objective: moduleProfile.objective,
                     duration: '10 giờ',
                     orderIndex: modOrder
                 }
@@ -1966,8 +2017,8 @@ async function main() {
                 where: { id: mod.id },
                 data: {
                     courseId: course.id,
-                    title: firstItem.moduleTitle,
-                    objective: firstItem.moduleObjective,
+                    title: moduleProfile.title,
+                    objective: moduleProfile.objective,
                     orderIndex: modOrder
                 }
             });
@@ -1988,8 +2039,8 @@ async function main() {
                 data: {
                     moduleId: mod.id,
                     chapterId: firstItem.chapterId,
-                    title: firstItem.chapterTitle,
-                    objective: firstItem.chapterObjective,
+                    title: moduleProfile.chapterTitle,
+                    objective: moduleProfile.chapterObjective,
                     orderIndex: 1
                 }
             });
@@ -1998,8 +2049,8 @@ async function main() {
             chapter = await prisma.chapter.update({
                 where: { id: chapter.id },
                 data: {
-                    title: firstItem.chapterTitle,
-                    objective: firstItem.chapterObjective
+                    title: moduleProfile.chapterTitle,
+                    objective: moduleProfile.chapterObjective
                 }
             });
             console.log(`  📂 Cập nhật Chapter: ${chapter.title}`);
@@ -2013,14 +2064,9 @@ async function main() {
 
         for (const item of items) {
             const filePath = path.join(docsDir, item.file);
-            let content = '';
-
-            if (fs.existsSync(filePath)) {
-                content = fs.readFileSync(filePath, 'utf-8');
-            } else {
-                console.warn(`  ⚠️ File không tồn tại: ${filePath}. Sử dụng nội dung tóm tắt.`);
-                content = `# ${item.title}\n\n${item.objective}`;
-            }
+            const metadata = readCppLessonMetadata(filePath);
+            const canonicalAssessment = getCppCanonicalAssessment(item.lessonId);
+            const assessment = canonicalAssessment ?? { exercise: item.exercise, quiz: item.quiz };
 
             // Tạo hoặc cập nhật Lesson
             let lesson = await prisma.lesson.findFirst({
@@ -2035,11 +2081,11 @@ async function main() {
                     data: {
                         chapterId: chapter.id,
                         lessonId: item.lessonId,
-                        title: item.title,
-                        objective: item.objective,
-                        content: content,
-                        difficulty: item.difficulty as any,
-                        durationMinutes: item.durationMinutes,
+                        title: metadata.title,
+                        objective: metadata.objective,
+                        content: metadata.content,
+                        difficulty: metadata.difficulty as any,
+                        durationMinutes: metadata.durationMinutes,
                         isFree: true,
                         orderIndex: item.orderIndex
                     }
@@ -2048,11 +2094,11 @@ async function main() {
                 lesson = await prisma.lesson.update({
                     where: { id: lesson.id },
                     data: {
-                        title: item.title,
-                        objective: item.objective,
-                        content: content,
-                        difficulty: item.difficulty as any,
-                        durationMinutes: item.durationMinutes,
+                        title: metadata.title,
+                        objective: metadata.objective,
+                        content: metadata.content,
+                        difficulty: metadata.difficulty as any,
+                        durationMinutes: metadata.durationMinutes,
                         isFree: true,
                         orderIndex: item.orderIndex
                     }
@@ -2069,22 +2115,22 @@ async function main() {
                 exercise = await prisma.codingExercise.create({
                     data: {
                         lessonId: lesson.id,
-                        title: item.exercise.title,
-                        difficulty: item.exercise.difficulty as any,
-                        problemDescription: item.exercise.problemDescription,
-                        starterCode: item.exercise.starterCode,
-                        solutionCode: item.exercise.solutionCode
+                        title: assessment.exercise.title,
+                        difficulty: assessment.exercise.difficulty as any,
+                        problemDescription: assessment.exercise.problemDescription,
+                        starterCode: assessment.exercise.starterCode,
+                        solutionCode: assessment.exercise.solutionCode
                     }
                 });
             } else {
                 exercise = await prisma.codingExercise.update({
                     where: { id: exercise.id },
                     data: {
-                        title: item.exercise.title,
-                        difficulty: item.exercise.difficulty as any,
-                        problemDescription: item.exercise.problemDescription,
-                        starterCode: item.exercise.starterCode,
-                        solutionCode: item.exercise.solutionCode
+                        title: assessment.exercise.title,
+                        difficulty: assessment.exercise.difficulty as any,
+                        problemDescription: assessment.exercise.problemDescription,
+                        starterCode: assessment.exercise.starterCode,
+                        solutionCode: assessment.exercise.solutionCode
                     }
                 });
             }
@@ -2094,7 +2140,7 @@ async function main() {
                 where: { exerciseId: exercise.id }
             });
 
-            for (const tc of item.exercise.testCases) {
+            for (const tc of assessment.exercise.testCases) {
                 await prisma.testCase.create({
                     data: {
                         exerciseId: exercise.id,
@@ -2104,7 +2150,7 @@ async function main() {
                     }
                 });
             }
-            console.log(`     💻 Exercise: "${exercise.title}" (${item.exercise.testCases.length} testcases)`);
+            console.log(`     💻 Exercise: "${exercise.title}" (${assessment.exercise.testCases.length} testcases)`);
 
             // Xóa và nạp lại Quiz Questions
             await prisma.lessonQuizQuestion.deleteMany({
@@ -2114,11 +2160,11 @@ async function main() {
             await prisma.lessonQuizQuestion.create({
                 data: {
                     lessonId: lesson.id,
-                    question: item.quiz.question,
-                    explanation: item.quiz.explanation,
+                    question: assessment.quiz.question,
+                    explanation: assessment.quiz.explanation,
                     orderIndex: 1,
                     options: {
-                        create: item.quiz.options.map(opt => ({
+                        create: assessment.quiz.options.map(opt => ({
                             key: opt.key,
                             text: opt.text,
                             isCorrect: opt.isCorrect

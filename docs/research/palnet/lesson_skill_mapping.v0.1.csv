@@ -1,0 +1,60 @@
+language,lesson_id,lesson_title,primary_skill_id,secondary_skill_ids,prerequisite_lesson_ids,graph_version,mapping_status,release_status,content_validation_status,source
+PYTHON,LS-01.01,Máy tính và Ngôn ngữ lập trình,PY-BASICS-01,,,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-01.02,Môi trường lập trình Python,PY-BASICS-01,,LS-01.01,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-01.03,Chương trình Python đầu tiên,PY-BASICS-01,,LS-01.02,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-01.04,Khái niệm Biến và Cách đặt tên,PY-BASICS-01,,LS-01.03,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-01.05,Các kiểu dữ liệu nguyên thủy,PY-BASICS-01,,LS-01.04,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-01.06,Toán tử số học,PY-BASICS-03,,LS-01.05,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-01.07,Toán tử gán và Cập nhật biến,PY-BASICS-03,,LS-01.06,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-01.08,Hàm xuất dữ liệu (Print),PY-BASICS-01,,LS-01.07,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-01.09,Hàm nhập dữ liệu (Input),PY-BASICS-01,,LS-01.08,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-01.10,Ép kiểu dữ liệu (Type Casting),PY-BASICS-02,,LS-01.09,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-01.MP,Bài tập thực hành tổng hợp Module 1,PY-BASICS-03,,,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-02.01,Biểu thức Logic & Toán tử so sánh,PY-BASICS-03,,LS-01.07,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-02.02,Khái niệm rẽ nhánh và Lệnh if,PY-FLOW-01,,LS-02.01,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-02.03,Lệnh if-else và if-elif-else,PY-FLOW-01,,LS-02.02,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-02.04,Toán tử Logic kết hợp,PY-BASICS-03,,LS-02.03,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-02.MP,Bài tập thực hành tổng hợp Module 2,PY-FLOW-01,,,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-03.01,Lesson 3.1: Tại sao cần vòng lặp?,PY-FLOW-03,,LS-02.04,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-03.02,Lesson 3.2: Tư duy vòng lặp,PY-FLOW-03,,LS-03.01,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-03.03,Lesson 3.3: Vòng lặp for và range(),PY-FLOW-03,,LS-03.02,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-03.04,Lesson 3.4: Vòng lặp while và điều kiện dừng,PY-FLOW-02,,LS-03.03,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-03.05,Lesson 3.5: Điều khiển vòng lặp với break và continue,PY-FLOW-04,,LS-03.04,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-03.06,Lesson 3.6: Kết hợp vòng lặp với if,PY-FLOW-01,,LS-03.05,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-03.07,Lesson 3.7: Vòng lặp lồng nhau,PY-FLOW-03,,LS-03.06,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-03.08,Lesson 3.8: Luyện tập tổng hợp và mini project,PY-FLOW-03,,LS-03.07,2.1,REVIEW_REQUIRED_CONSISTENT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-03.MP_FOR,Luyện thêm với vòng lặp for,PY-FLOW-03,,,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-03.MP_WHILE,Luyện thêm với vòng lặp while,PY-FLOW-02,,,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-04.01,Chuỗi như một Mảng: Indexing,PY-STRING-01,,LS-01.05,2.1,BLOCKED_CONFLICT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-04.02,Cắt chuỗi (Slicing),PY-STRING-01,,LS-03.01,2.1,BLOCKED_CONFLICT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-04.03,Các phương thức chuỗi phổ biến,PY-STRING-02,,LS-03.02,2.1,BLOCKED_CONFLICT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-04.04,Định dạng chuỗi (F-string),PY-STRING-02,,LS-03.03,2.1,BLOCKED_CONFLICT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-04.MP,Bài tập thực hành tổng hợp Module 4,PY-STRING-02,,,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-05.01,Khái niệm List & Khởi tạo,PY-LIST-01,,LS-03.01,2.1,BLOCKED_CONFLICT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-05.02,Cập nhật & Sửa đổi List,PY-LIST-01,,LS-03.05,2.1,BLOCKED_CONFLICT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-05.03,Duyệt mảng bằng Vòng lặp,PY-LIST-02,,LS-03.05|LS-02.07,2.1,BLOCKED_CONFLICT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-05.04,Sắp xếp và Tìm kiếm cơ bản,PY-LIST-02,,LS-03.06,2.1,BLOCKED_CONFLICT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-05.05,Tuple: Danh sách bất biến,PY-TUPLE-01,,LS-03.05,2.1,BLOCKED_CONFLICT,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-05.MP,Bài tập thực hành tổng hợp Module 5,PY-LIST-02,,,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-06.01,Set: Tập hợp toán học,PY-SET-01,,LS-03.05,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-06.02,Dictionary: Cấu trúc Key-Value,PY-DICT-01,,LS-03.05,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-06.03,Thao tác trên Dictionary,PY-DICT-02,,LS-03.11,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-06.MP,Bài tập thực hành tổng hợp Module 6,PY-DICT-02,,,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-07.01,Tư duy đóng gói và Lệnh def,PY-FUNC-01,,LS-01.07,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-07.02,Tham số và Đối số,PY-FUNC-02,,LS-04.01,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-07.03,Trả về kết quả (Return),PY-FUNC-01,,LS-04.02,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-07.04,Phạm vi của Biến (Scope),PY-FUNC-04,,LS-04.03,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-07.05,Nhận diện Ngoại lệ (Exceptions),PY-EXC-01,,LS-01.10,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-07.06,Bắt lỗi với Try-Except,PY-EXC-01,,LS-04.05,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-07.07,Luồng Finally và Ném lỗi chủ động,PY-EXC-03,,LS-04.06,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-07.08,Khái niệm Module và Lệnh Import,PY-MODULE-01,,LS-04.01,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-07.09,Khám phá Standard Library,PY-MODULE-02,,LS-04.08,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-07.MP,Bài tập thực hành tổng hợp Module 7,PY-MODULE-02,,,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-08.01,Cấu trúc bộ nhớ và Hàm open(),PY-IO-01,,LS-04.07,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-08.02,Đọc và Ghi File Text,PY-IO-01,,LS-05.01,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-08.03,Context Manager với từ khóa 'with',PY-IO-01,,LS-05.02,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-08.04,Tư duy Hướng đối tượng (Class vs Object),PY-OOP-01,,LS-05.03,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-08.05,Thuộc tính và Phương thức,PY-OOP-02,,LS-05.04,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-08.06,Phương thức Khởi tạo (__init__),PY-OOP-01,,LS-05.05,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-08.07,Khái quát về Kế thừa (Inheritance),PY-OOP-03,,LS-05.06,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping
+PYTHON,LS-08.MP,Bài tập thực hành tổng hợp Module 8,PY-OOP-03,,,2.1,REVIEW_REQUIRED_TITLE_ONLY,UNKNOWN,UNVERIFIED,seed+legacy_title_mapping

@@ -25,8 +25,7 @@ try {
     // Đoạn code có nguy cơ xảy ra lỗi
 } catch (const std::exception& e) {
     // Bắt và xử lý lỗi an toàn tại đây
-    std::cout << "Loi: " << e.what() << '
-';
+    std::cout << "Loi: " << e.what() << '\n';
 }
 ```
 
@@ -45,8 +44,7 @@ double chiaSo(double a, double b) {
 try {
     double kq = chiaSo(10, 0);
 } catch (const std::runtime_error& e) {
-    std::cout << e.what() << '
-'; // Bắt lỗi an toàn, chương trình không bị sập!
+    std::cout << e.what() << '\n'; // Bắt lỗi an toàn, chương trình không bị sập!
 }
 ```
 

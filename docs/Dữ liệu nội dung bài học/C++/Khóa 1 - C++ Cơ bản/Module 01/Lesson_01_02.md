@@ -46,8 +46,7 @@ Nhập dữ liệu:  std::cin   ===>>  soA          ===>>  soB;
 ### Ví dụ 1: In nhiều giá trị cùng lúc (Stream Chaining)
 ```cpp
 int diem = 10;
-std::cout << "Ket qua: " << diem << " diem" << '
-';
+std::cout << "Ket qua: " << diem << " diem" << '\n';
 // Kết quả hiển thị trên màn hình: Ket qua: 10 diem
 ```
 

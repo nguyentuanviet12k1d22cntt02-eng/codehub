@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "palnet-product-contract/1.0.0",
+  "policyVersion": "palnet-lesson-policy/1.0.0",
+  "mappingVersion": "lesson-skill-mapping/1.0.0",
+  "decisionUnit": "lessonId",
+  "decisionPoint": "ROADMAP_CREATION",
+  "rerankAfterRoadmapCreation": false,
+  "roadmapInvariant": "AT_MOST_ONE_AVAILABLE_OR_IN_PROGRESS_ITEM",
+  "supportedLanguages": ["PYTHON", "JAVASCRIPT", "CPP", "SQL"],
+  "graphVersions": {
+    "PYTHON": "2.1",
+    "JAVASCRIPT": "3.0.0",
+    "CPP": "4.0.0",
+    "SQL": "2.0"
+  },
+  "candidateEligibility": {
+    "allOf": [
+      "candidate.language == state.language",
+      "candidate.goalIds contains state.goalId",
+      "all target skill IDs belong to the selected goal closure",
+      "candidate.lessonId is not completed",
+      "all prerequisiteLessonIds are completed",
+      "all prerequisiteSkillIds have verified satisfying evidence",
+      "releaseStatus == PUBLISHED",
+      "contentValidationStatus == VALIDATED",
+      "mappingStatus == VERIFIED",
+      "policyVersion, mappingVersion and graphVersion match exactly",
+      "a valid same-user same-language same-goal assessment exists",
+      "no roadmap item is already AVAILABLE or IN_PROGRESS"
+    ],
+    "onNoCandidates": "NO_ELIGIBLE_LESSON",
+    "onVersionMismatch": "VERSION_MISMATCH_FALLBACK",
+    "onMultipleOpenItems": "CONTRACT_VIOLATION"
+  },
+  "multiSkillLesson": {
+    "primarySkillIdRequired": true,
+    "secondarySkillIdsAllowed": true,
+    "primarySkillDefinesMainLabel": true,
+    "secondarySkillAloneSatisfiesPrerequisite": false
+  },
+  "recommendationOutputRequiredFields": [
+    "lessonId",
+    "targetSkillIds",
+    "reasonCodes",
+    "evidenceSources",
+    "confidence",
+    "modelVersion",
+    "policyVersion",
+    "graphVersion",
+    "mappingVersion"
+  ],
+  "terminology": {
+    "modelProbability": "predictedCorrectness",
+    "forbiddenAliasWithoutSeparateDefinition": "predictedMastery"
+  }
+}
+

@@ -1,6 +1,7 @@
 import { prisma } from '../src/infrastructure/database/prisma';
-import * as fs from 'fs';
 import * as path from 'path';
+import { readCppLessonMetadata } from './lib/cppLessonMetadata';
+import { getCppCanonicalAssessment } from './lib/cppCanonicalAssessments';
 
 interface TestCaseDef {
     input: string;
@@ -45,6 +46,13 @@ interface LessonSeedItem {
     exercise: ExerciseDef;
     quiz: QuizDef;
 }
+
+const chapterProfiles: Record<string, Pick<LessonSeedItem, 'chapterTitle' | 'chapterObjective'>> = {
+    'CPP-MOD-05': {
+        chapterTitle: 'Chương 5: Mảng 1 Chiều và Thuật toán trên Dãy',
+        chapterObjective: 'Thao tác mảng tĩnh theo chỉ số, duyệt/tìm kiếm/đếm tần suất và phân tích chi phí chèn hoặc xóa phần tử.'
+    }
+};
 
 const lessonsToSeed: LessonSeedItem[] = [
     // ==========================================
@@ -2118,6 +2126,7 @@ async function main() {
 
     for (const [moduleId, items] of modulesMap.entries()) {
         const firstItem = items[0];
+        const chapterProfile = chapterProfiles[moduleId] || firstItem;
         console.log(`\n======================================================`);
         console.log(`📦 Đang xử lý Module: ${moduleId} - ${firstItem.chapterTitle}`);
         console.log(`======================================================`);
@@ -2145,14 +2154,21 @@ async function main() {
                 data: {
                     moduleId: mod.id,
                     chapterId: firstItem.chapterId,
-                    title: firstItem.chapterTitle,
-                    objective: firstItem.chapterObjective,
+                    title: chapterProfile.chapterTitle,
+                    objective: chapterProfile.chapterObjective,
                     orderIndex: 1
                 }
             });
             console.log(`  ➕ Đã tạo mới Chapter: ${chapter.title}`);
         } else {
-            console.log(`  📂 Đã có Chapter: ${chapter.title}`);
+            chapter = await prisma.chapter.update({
+                where: { id: chapter.id },
+                data: {
+                    title: chapterProfile.chapterTitle,
+                    objective: chapterProfile.chapterObjective
+                }
+            });
+            console.log(`  📂 Đã cập nhật Chapter: ${chapter.title}`);
         }
 
         // Thư mục chứa file markdown
@@ -2163,14 +2179,9 @@ async function main() {
 
         for (const item of items) {
             const filePath = path.join(docsDir, item.file);
-            let content = '';
-
-            if (fs.existsSync(filePath)) {
-                content = fs.readFileSync(filePath, 'utf-8');
-            } else {
-                console.warn(`  ⚠️ File không tồn tại: ${filePath}. Sử dụng nội dung tóm tắt.`);
-                content = `# ${item.title}\n\n${item.objective}`;
-            }
+            const metadata = readCppLessonMetadata(filePath);
+            const canonicalAssessment = getCppCanonicalAssessment(item.lessonId);
+            const assessment = canonicalAssessment ?? { exercise: item.exercise, quiz: item.quiz };
 
             // Tạo hoặc cập nhật Lesson
             let lesson = await prisma.lesson.findFirst({
@@ -2185,11 +2196,11 @@ async function main() {
                     data: {
                         chapterId: chapter.id,
                         lessonId: item.lessonId,
-                        title: item.title,
-                        objective: item.objective,
-                        content: content,
-                        difficulty: item.difficulty as any,
-                        durationMinutes: item.durationMinutes,
+                        title: metadata.title,
+                        objective: metadata.objective,
+                        content: metadata.content,
+                        difficulty: metadata.difficulty as any,
+                        durationMinutes: metadata.durationMinutes,
                         isFree: true,
                         orderIndex: item.orderIndex
                     }
@@ -2198,11 +2209,11 @@ async function main() {
                 lesson = await prisma.lesson.update({
                     where: { id: lesson.id },
                     data: {
-                        title: item.title,
-                        objective: item.objective,
-                        content: content,
-                        difficulty: item.difficulty as any,
-                        durationMinutes: item.durationMinutes,
+                        title: metadata.title,
+                        objective: metadata.objective,
+                        content: metadata.content,
+                        difficulty: metadata.difficulty as any,
+                        durationMinutes: metadata.durationMinutes,
                         isFree: true,
                         orderIndex: item.orderIndex
                     }
@@ -2219,22 +2230,22 @@ async function main() {
                 exercise = await prisma.codingExercise.create({
                     data: {
                         lessonId: lesson.id,
-                        title: item.exercise.title,
-                        difficulty: item.exercise.difficulty as any,
-                        problemDescription: item.exercise.problemDescription,
-                        starterCode: item.exercise.starterCode,
-                        solutionCode: item.exercise.solutionCode
+                        title: assessment.exercise.title,
+                        difficulty: assessment.exercise.difficulty as any,
+                        problemDescription: assessment.exercise.problemDescription,
+                        starterCode: assessment.exercise.starterCode,
+                        solutionCode: assessment.exercise.solutionCode
                     }
                 });
             } else {
                 exercise = await prisma.codingExercise.update({
                     where: { id: exercise.id },
                     data: {
-                        title: item.exercise.title,
-                        difficulty: item.exercise.difficulty as any,
-                        problemDescription: item.exercise.problemDescription,
-                        starterCode: item.exercise.starterCode,
-                        solutionCode: item.exercise.solutionCode
+                        title: assessment.exercise.title,
+                        difficulty: assessment.exercise.difficulty as any,
+                        problemDescription: assessment.exercise.problemDescription,
+                        starterCode: assessment.exercise.starterCode,
+                        solutionCode: assessment.exercise.solutionCode
                     }
                 });
             }
@@ -2244,7 +2255,7 @@ async function main() {
                 where: { exerciseId: exercise.id }
             });
 
-            for (const tc of item.exercise.testCases) {
+            for (const tc of assessment.exercise.testCases) {
                 await prisma.testCase.create({
                     data: {
                         exerciseId: exercise.id,
@@ -2254,7 +2265,7 @@ async function main() {
                     }
                 });
             }
-            console.log(`     💻 Exercise: "${exercise.title}" (${item.exercise.testCases.length} testcases)`);
+            console.log(`     💻 Exercise: "${exercise.title}" (${assessment.exercise.testCases.length} testcases)`);
 
             // Xóa và nạp lại Quiz Questions
             await prisma.lessonQuizQuestion.deleteMany({
@@ -2264,11 +2275,11 @@ async function main() {
             await prisma.lessonQuizQuestion.create({
                 data: {
                     lessonId: lesson.id,
-                    question: item.quiz.question,
-                    explanation: item.quiz.explanation,
+                    question: assessment.quiz.question,
+                    explanation: assessment.quiz.explanation,
                     orderIndex: 1,
                     options: {
-                        create: item.quiz.options.map(opt => ({
+                        create: assessment.quiz.options.map(opt => ({
                             key: opt.key,
                             text: opt.text,
                             isCorrect: opt.isCorrect

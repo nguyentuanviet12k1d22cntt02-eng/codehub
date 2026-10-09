@@ -161,6 +161,21 @@ class KnowledgeGraphService:
 
         topic_clean = topic.strip().lower()
 
+        # Resolve the course's compound List lesson before applying generic
+        # matching.  This also canonicalizes an LLM response such as
+        # "slicing list mutable" to the graph-owned concept ID.
+        if lang == "python":
+            is_list_topic = any(marker in topic_clean for marker in ("list", "array", "danh sách", "danh sach", "mảng", "mang"))
+            is_slicing_or_mutable = any(marker in topic_clean for marker in ("slice", "slicing", "mutable", "tham chiếu", "tham chieu", "bản sao", "ban sao"))
+            if is_list_topic and is_slicing_or_mutable and "PY-LIST-02" in self.concept_index.get(lang, {}):
+                return "PY-LIST-02"
+
+        # Generic array is a Python List in the curriculum.  The former
+        # synonym table omitted the literal word "array", leaving a Router
+        # result that could never be resolved by the Planner.
+        if lang == "python" and topic_clean == "array" and "PY-LIST-01" in self.concept_index.get(lang, {}):
+            return "PY-LIST-01"
+
         # Direct match in index
         if topic_clean in self.topic_index.get(lang, {}):
             return self.topic_index[lang][topic_clean]
@@ -176,8 +191,8 @@ class KnowledgeGraphService:
         # Common synonym dictionary
         synonyms = {
             "function": ["func", "hàm", "arrow", "parameter"],
-            "loop": ["for", "while", "vòng lặp", "lặp"],
-            "array": ["list", "mảng", "danh sách"],
+            "loop": ["loop", "for", "while", "vòng lặp", "lặp"],
+            "array": ["array", "list", "mảng", "danh sách"],
             "dict": ["dictionary", "từ điển", "object", "map"],
             "oop": ["class", "hướng đối tượng", "lớp", "constructor", "kế thừa"],
             "pointer": ["con trỏ", "reference", "địa chỉ", "tham chiếu"]

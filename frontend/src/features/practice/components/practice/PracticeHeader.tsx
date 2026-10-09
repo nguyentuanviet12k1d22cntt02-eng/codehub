@@ -4,9 +4,10 @@ import { ThemeToggle } from '../../../../components/ThemeToggle';
 
 interface PracticeHeaderProps {
     lessonTitle: string;
+    roadmapId?: string | null;
 }
 
-export const PracticeHeader: React.FC<PracticeHeaderProps> = ({ lessonTitle }) => {
+export const PracticeHeader: React.FC<PracticeHeaderProps> = ({ lessonTitle, roadmapId }) => {
     const navigate = useNavigate();
 
     return (
@@ -26,6 +27,7 @@ export const PracticeHeader: React.FC<PracticeHeaderProps> = ({ lessonTitle }) =
 
             <div className="flex items-center gap-4">
                 <ThemeToggle />
+                {roadmapId && <Link to={`/roadmap/${roadmapId}`} className="rounded-lg border border-border-custom px-3 py-2 text-xs font-bold text-accent-custom hover:bg-bg-tertiary">Về lộ trình</Link>}
                 <Link
                     to="/dashboard"
                     className="text-xs text-text-secondary hover:text-text-primary no-underline transition-colors px-3 py-1.5 rounded-lg hover:bg-bg-tertiary border border-border-custom"

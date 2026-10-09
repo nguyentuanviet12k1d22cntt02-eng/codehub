@@ -19,16 +19,13 @@ Hai khái niệm then chốt cần phân biệt:
 
 ## 2. Cú pháp & Quy tắc hoạt động
 
-### Cơ chế tự nhân đôi sức chứa (Doubling Capacity):
-Khi `size == capacity` mà bạn thêm 1 phần tử mới:
-1. Vector sẽ cấp phát một vùng nhớ mới to gấp đôi (`capacity × 2`).
-2. Sao chép toàn bộ phần tử cũ sang vùng nhớ mới.
-3. Giải phóng vùng nhớ cũ.
+### Khi capacity không còn đủ:
+Khi `size == capacity` mà bạn thêm phần tử mới, implementation có thể cấp phát vùng nhớ lớn hơn, di chuyển hoặc sao chép phần tử cũ rồi giải phóng vùng cũ. **Tỉ lệ tăng capacity không được chuẩn C++ bảo đảm**; nhân đôi chỉ là ví dụ của một số implementation.
 
 ```text
-Ban đầu: Capacity = 2, Size = 2  [ 10 | 20 ]
+Ví dụ một implementation: Capacity = 2, Size = 2  [ 10 | 20 ]
 push_back(30):
-──► Cấp phát vùng nhớ mới Capacity = 4: [ 10 | 20 | 30 | (trống) ]
+──► Có thể cấp phát vùng mới Capacity = 4: [ 10 | 20 | 30 | (trống) ]
 ```
 
 ## 3. Ví dụ minh họa tinh gọn
@@ -42,10 +39,8 @@ v.reserve(1000); // Đặt trước sức chứa 1000 ô nhớ, tránh việc ph
 v.push_back(10);
 v.push_back(20);
 
-std::cout << "So phan tu: " << v.size() << '
-';       // In ra: 2
-std::cout << "Suc chua: " << v.capacity() << '
-';     // In ra: 1000
+std::cout << "So phan tu: " << v.size() << '\n';       // In ra: 2
+std::cout << "Suc chua: " << v.capacity() << '\n';     // In ra: 1000
 ```
 
 ## 4. Lỗi học sinh hay gặp & Cách phòng tránh

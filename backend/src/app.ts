@@ -12,6 +12,10 @@ import practiceRoutes from './modules/practice/practiceRoutes';
 import recommendationRoutes from './modules/recommendations/recommendationRoutes';
 import adminRoutes from "./modules/admin/adminRoutes";
 import learningPathRoutes from './modules/learning-path/learningPathRoutes';
+import onboardingRoutes from './modules/onboarding/onboardingRoutes';
+import pretestRuntimeRoutes from './modules/onboarding/pretestRuntimeRoutes';
+import learnerProfileRoutes from './modules/onboarding/learnerProfileRoutes';
+import roadmapRuntimeRoutes from './modules/onboarding/roadmapRuntimeRoutes';
 import { aiKeyAdminRouter, aiKeyInternalRouter } from './modules/ai-keys/aiKey.routes';
 import { adaptiveInternalRouter } from './modules/adaptive/adaptiveInternal.routes';
 import { startAdaptiveRetryWorker } from './modules/adaptive/adaptiveRetryWorker';
@@ -34,6 +38,10 @@ app.use(express.json())
 
 // Cài đặt API routes tiêu chuẩn (RESTful standard)
 app.use('/api/auth', authRoutes)
+app.use('/api/onboarding', onboardingRoutes)
+app.use('/api/pretests', pretestRuntimeRoutes)
+app.use('/api/learner-profile', learnerProfileRoutes)
+app.use('/api/roadmaps', roadmapRuntimeRoutes)
 app.use('/api/courses', courseRoutes)
 app.use('/api/exercises', exerciseRoutes)
 app.use('/api/practice', practiceRoutes)

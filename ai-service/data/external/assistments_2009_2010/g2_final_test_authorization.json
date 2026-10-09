@@ -1,0 +1,17 @@
+{
+  "authorization_evidence": "Tôi phê duyệt protocol `palnet-research-protocol/1.0.0` và cho phép chạy final test theo config lock hiện tại.",
+  "authorized_at_utc": "2026-10-05T18:27:31.074585Z",
+  "authorized_run_id": "final-g2-20261005T182731Z",
+  "config_sha256": "087ac5e37f29273cacab1dc4f62d56931a0e464cb5ef88433e44f87356d1df47",
+  "development_summary_sha256": "72a86b72a056ae7bb07d0b7f21ce7b505d87749eaa65fdd9ebcd3abe67d56161",
+  "final_result_path": "data/external/assistments_2009_2010/g2_final_test_result.json",
+  "lock_sha256": "0b55e96424237c675d1ecb9c12348da9b99cc70562eadda0e06b913e7fa97225",
+  "protocol_version": "palnet-research-protocol/1.0.0",
+  "reason": "First and only preregistered held-out final-test evaluation for G2.",
+  "run_record_path": "data/external/assistments_2009_2010/g2_final_test_run_record.json",
+  "schema_version": "kt-final-test-authorization/1.0.0",
+  "signatory_role": "research_owner",
+  "source": "explicit user authorization in the current Codex conversation",
+  "split_manifest_sha256": "67ce644d257c88bf8d55f4fef6f564a87cb657c20716d48a0540822f10634e24",
+  "status": "AUTHORIZED"
+}

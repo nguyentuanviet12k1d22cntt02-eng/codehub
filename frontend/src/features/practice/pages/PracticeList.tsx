@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { ThemeToggle } from '../../../components/ThemeToggle';
-import UserMenuDropdown from '../../../components/UserMenuDropdown';
+import AppNavbar from '../../../components/AppNavbar';
 import { getInitialTheme } from '../../../utils/themeHelper';
 import { API_BASE_URL } from '../../../config/api';
 
@@ -104,38 +103,8 @@ const PracticeList: React.FC = () => {
 
     return (
         <div data-theme={currentTheme} className="bg-bg-primary text-text-primary min-h-screen w-full relative overflow-hidden flex flex-col font-sans select-none transition-colors duration-200">
-            {/* Header */}
-            <header className="flex justify-between items-center px-6 py-4 md:px-10 border-b border-border-custom bg-bg-secondary/80 backdrop-blur-md sticky top-0 z-50 transition-colors duration-200">
-                <div className="flex items-center gap-2">
-                    <span
-                        className="text-2xl font-bold tracking-tight text-text-primary cursor-pointer no-underline"
-                        onClick={() => navigate('/dashboard')}
-                    >
-                        MCODE
-                    </span>
-                    <span className="text-[9px] font-bold bg-accent-bg text-accent-custom px-1.5 py-0.5 rounded border border-accent-border tracking-wider uppercase">
-                        ARENA
-                    </span>
-                </div>
-                <nav className="hidden md:flex gap-8">
-                    <Link to="/dashboard" className="text-text-tertiary hover:text-text-primary no-underline text-[13px] font-semibold tracking-[0.8px] transition-colors duration-200">
-                        Dashboard
-                    </Link>
-                    <Link to="/adaptive-practice" className="text-text-tertiary hover:text-text-primary no-underline text-[13px] font-semibold tracking-[0.8px] transition-colors duration-200">
-                        Rèn luyện thích ứng
-                    </Link>
-                    <Link to="/practice-arena" className="text-accent-custom font-semibold no-underline text-[13px] tracking-[0.8px]">
-                        Đấu trường Luyện tập
-                    </Link>
-                    <Link to="/profile" className="text-text-tertiary hover:text-text-primary no-underline text-[13px] font-semibold tracking-[0.8px] transition-colors duration-200">
-                        Tri thức cá nhân
-                    </Link>
-                </nav>
-                <div className="flex items-center gap-3">
-                    <ThemeToggle />
-                    <UserMenuDropdown />
-                </div>
-            </header>
+            {/* Header đồng bộ */}
+            <AppNavbar />
 
             {/* Main Content Area */}
             <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8 flex flex-col gap-6">

@@ -126,9 +126,9 @@ export const LANGUAGE_CONFIGS: Record<SupportedLanguage, {
     CPP: {
         id: 'CPP',
         name: 'C++',
-        badge: '20 Kỹ năng • 6 Chặng',
-        courseTitle: 'C++ Toàn Diện, STL & Lập Trình Hệ Thống',
-        subtitle: 'Làm chủ Kỹ thuật Hệ thống, Con trỏ, RAII & Tối ưu Cache với C++',
+        badge: '21 Kỹ năng • 5 Tầng năng lực',
+        courseTitle: 'C++17: Nền Tảng, STL & Tư Duy Giải Thuật',
+        subtitle: 'Xây nền cú pháp vững, xử lý dữ liệu chuẩn thư viện và phát triển tư duy giải thuật',
         syntaxLang: 'cpp',
         defaultConcept: 'CPP-SYNTAX-01',
         brandColor: '#0284C7',
@@ -666,7 +666,7 @@ const CONCEPT_CODE_SNIPPETS: Record<string, { lines: { text: string; comment?: s
         ]
     },
 
-    // ----------------- C++ (20 ATOMIC SKILLS) -----------------
+    // ----------------- C++ (21 ATOMIC SKILLS) -----------------
     'CPP-SYNTAX-01': {
         time: '25 phút',
         lines: [
@@ -839,31 +839,32 @@ const CONCEPT_CODE_SNIPPETS: Record<string, { lines: { text: string; comment?: s
         ]
     },
     'CPP-MEM-01': {
-        time: '40 phút',
+        time: '30 phút',
         lines: [
-            { text: '// Mô hình bộ nhớ tiến trình (Process Memory Model)', comment: '' },
+            { text: '// Phạm vi tên, vòng đời và tránh sao chép không cần thiết', comment: '' },
             { text: '#include <iostream>', comment: '' },
             { text: 'using namespace std;', comment: '' },
-            { text: 'int globalVar = 100;', comment: '// Data Segment' },
+            { text: 'void showSize(const string& text) {', comment: '// Không sao chép chuỗi' },
+            { text: '    cout << text.size() << endl;', comment: '' },
+            { text: '}', comment: '' },
             { text: 'int main() {', comment: '' },
-            { text: '    int stackVar = 10;', comment: '// Stack Frame' },
-            { text: '    int* heapVar = new int(20);', comment: '// Heap allocation' },
-            { text: '    cout << "Stack addr: " << &stackVar << ", Heap: " << heapVar << endl;', comment: '' },
-            { text: '    delete heapVar;', comment: '' },
+            { text: '    string message = "CodeHub";', comment: '' },
+            { text: '    showSize(message);', comment: '// message còn sống khi hàm trả về' },
             { text: '    return 0;', comment: '' },
             { text: '}', comment: '' }
         ]
     },
     'CPP-PTR-01': {
-        time: '45 phút',
+        time: '40 phút',
         lines: [
-            { text: '// Con trỏ thô, Số học con trỏ & Giải tham chiếu', comment: '' },
+            { text: '// Con trỏ và node của danh sách liên kết', comment: '' },
             { text: '#include <iostream>', comment: '' },
             { text: 'using namespace std;', comment: '' },
+            { text: 'struct Node { int value; Node* next; };', comment: '' },
             { text: 'int main() {', comment: '' },
-            { text: '    int arr[] = {10, 20, 30};', comment: '' },
-            { text: '    int *ptr = arr;', comment: '// Trỏ tới phần tử đầu' },
-            { text: '    cout << *ptr << " " << *(ptr + 1) << endl;', comment: '// 10 20 (Pointer arithmetic)' },
+            { text: '    Node last{20, nullptr};', comment: '' },
+            { text: '    Node first{10, &last};', comment: '' },
+            { text: '    cout << first.next->value << endl;', comment: '// 20' },
             { text: '    return 0;', comment: '' },
             { text: '}', comment: '' }
         ]
@@ -886,34 +887,36 @@ const CONCEPT_CODE_SNIPPETS: Record<string, { lines: { text: string; comment?: s
         ]
     },
     'CPP-FILE-01': {
-        time: '45 phút',
+        time: '40 phút',
         lines: [
-            { text: '// Đọc ghi tệp nhị phân & Truy cập ngẫu nhiên (Binary File I/O)', comment: '' },
+            { text: '// Tách văn bản với stringstream và view không sở hữu dữ liệu', comment: '' },
             { text: '#include <iostream>', comment: '' },
-            { text: '#include <fstream>', comment: '' },
+            { text: '#include <sstream>', comment: '' },
+            { text: '#include <string_view>', comment: '' },
             { text: 'using namespace std;', comment: '' },
-            { text: 'struct Record { int id; double val; };', comment: '' },
             { text: 'int main() {', comment: '' },
-            { text: '    ofstream out("data.bin", ios::binary);', comment: '' },
-            { text: '    Record r = {1, 99.5};', comment: '' },
-            { text: '    out.write(reinterpret_cast<char*>(&r), sizeof(Record));', comment: '' },
-            { text: '    out.close();', comment: '' },
+            { text: '    istringstream input("Ada 20");', comment: '' },
+            { text: '    string name; int score;', comment: '' },
+            { text: '    input >> name >> score;', comment: '' },
+            { text: '    string_view label = name;', comment: '// name phải còn sống' },
+            { text: '    cout << label << ": " << score << endl;', comment: '' },
             { text: '    return 0;', comment: '' },
             { text: '}', comment: '' }
         ]
     },
     'CPP-BUILD-01': {
-        time: '40 phút',
+        time: '35 phút',
         lines: [
-            { text: '// Tiền xử lý & Dự án đa tệp (Multi-file Build)', comment: '' },
-            { text: '// header.h:', comment: '' },
-            { text: '// #pragma once', comment: '' },
-            { text: '// int add(int a, int b);', comment: '// Nguyên mẫu hàm' },
-            { text: '// main.cpp:', comment: '' },
-            { text: '// #include "header.h"', comment: '' },
-            { text: '// g++ -O2 main.cpp math.cpp -o app', comment: '// Biên dịch liên kết' },
+            { text: '// Thuật toán STL: sort và binary_search trên range đã sắp xếp', comment: '' },
             { text: '#include <iostream>', comment: '' },
-            { text: 'int main() { std::cout << "Multi-file build OK" << std::endl; return 0; }', comment: '' }
+            { text: '#include <algorithm>', comment: '' },
+            { text: '#include <vector>', comment: '' },
+            { text: 'int main() {', comment: '' },
+            { text: '    std::vector<int> scores{7, 2, 9, 4};', comment: '' },
+            { text: '    std::sort(scores.begin(), scores.end());', comment: '// Bắt buộc trước binary_search' },
+            { text: '    std::cout << std::binary_search(scores.begin(), scores.end(), 4) << std::endl;', comment: '' },
+            { text: '    return 0;', comment: '' },
+            { text: '}', comment: '' }
         ]
     },
     'CPP-RECUR-01': {
@@ -966,20 +969,30 @@ const CONCEPT_CODE_SNIPPETS: Record<string, { lines: { text: string; comment?: s
         ]
     },
     'CPP-CACHE-01': {
-        time: '50 phút',
+        time: '40 phút',
         lines: [
-            { text: '// Tối ưu Cache Locality (Spatial & Temporal Locality)', comment: '' },
+            { text: '// Chọn unordered_map khi thứ tự không quan trọng', comment: '' },
             { text: '#include <iostream>', comment: '' },
-            { text: '#include <vector>', comment: '' },
+            { text: '#include <unordered_map>', comment: '' },
             { text: 'using namespace std;', comment: '' },
             { text: 'int main() {', comment: '' },
-            { text: '    const int N = 1000;', comment: '' },
-            { text: '    vector<vector<int>> arr(N, vector<int>(N, 1));', comment: '' },
-            { text: '    long long sum = 0;', comment: '' },
-            { text: '    for (int i = 0; i < N; ++i)', comment: '// Row-major: Cache friendly' },
-            { text: '        for (int j = 0; j < N; ++j)', comment: '' },
-            { text: '            sum += arr[i][j];', comment: '// Tan dung Cache Line 64-byte' },
-            { text: '    cout << "Sum: " << sum << endl;', comment: '' },
+            { text: '    unordered_map<string, int> stock{{"pen", 5}};', comment: '' },
+            { text: '    if (const auto it = stock.find("pen"); it != stock.end())', comment: '' },
+            { text: '        cout << it->second << endl;', comment: '// Trung bình O(1), không có thứ tự duyệt' },
+            { text: '    return 0;', comment: '' },
+            { text: '}', comment: '' }
+        ]
+    },
+    'CPP-BITWISE-01': {
+        time: '30 phút',
+        lines: [
+            { text: '// Bật và kiểm tra cờ với bitmask', comment: '' },
+            { text: '#include <cstdint>', comment: '' },
+            { text: '#include <iostream>', comment: '' },
+            { text: 'int main() {', comment: '' },
+            { text: '    std::uint8_t flags = 0;', comment: '' },
+            { text: '    flags |= (1u << 2);', comment: '// Bật cờ số 2' },
+            { text: '    std::cout << ((flags & (1u << 2)) != 0) << std::endl;', comment: '' },
             { text: '    return 0;', comment: '' },
             { text: '}', comment: '' }
         ]

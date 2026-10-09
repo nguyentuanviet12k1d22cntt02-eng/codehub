@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import AppNavbar from '../../../components/AppNavbar';
 import {
     Home,
     BookOpen,
@@ -349,6 +350,9 @@ const PersonalizedPath: React.FC = () => {
 
     return (
         <div className="h-screen w-screen bg-[#F0F4F9] text-slate-800 font-sans flex flex-col overflow-hidden select-text">
+            {/* Header Navbar đồng bộ */}
+            <AppNavbar />
+
             {/* Top Bar on Mobile */}
             <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between z-20 shrink-0">
                 <div className="flex items-center gap-2.5">
@@ -367,7 +371,7 @@ const PersonalizedPath: React.FC = () => {
             </div>
 
             {/* Main 3-Column Layout Container */}
-            <div className="flex-1 flex overflow-hidden p-3 lg:p-4 gap-4 max-w-[1700px] w-full mx-auto">
+            <div className="flex-1 min-h-0 flex overflow-hidden p-3 lg:p-4 gap-4 max-w-[1700px] w-full mx-auto">
                 {/* 1. LEFT SIDEBAR COLUMN (~240px) */}
                 <aside
                     className={`fixed inset-y-0 left-0 z-30 w-64 bg-white lg:bg-transparent lg:static lg:w-[230px] xl:w-[250px] flex flex-col shrink-0 p-4 lg:p-0 transition-transform duration-300 ease-in-out ${
@@ -399,18 +403,10 @@ const PersonalizedPath: React.FC = () => {
                                 <span>Trang chủ</span>
                             </Link>
 
-                            <Link
-                                to="/personalized-path"
-                                className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-slate-600 hover:bg-white/80 hover:text-slate-900 transition-colors"
-                            >
-                                <BookOpen className="w-4 h-4 text-slate-500" />
-                                <span>Lộ trình học</span>
-                            </Link>
-
                             {/* Active AI Chat Tab */}
                             <div className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100/80 shadow-xs">
                                 <MessageSquare className="w-4 h-4 text-blue-600" />
-                                <span>AI Chat</span>
+                                <span>Luyện tập AI</span>
                             </div>
 
                             <Link
@@ -418,15 +414,7 @@ const PersonalizedPath: React.FC = () => {
                                 className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-slate-600 hover:bg-white/80 hover:text-slate-900 transition-colors"
                             >
                                 <Code2 className="w-4 h-4 text-slate-500" />
-                                <span>Bài tập</span>
-                            </Link>
-
-                            <Link
-                                to="/adaptive-practice"
-                                className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-slate-600 hover:bg-white/80 hover:text-slate-900 transition-colors"
-                            >
-                                <FileText className="w-4 h-4 text-slate-500" />
-                                <span>Tài liệu</span>
+                                <span>Đấu trường</span>
                             </Link>
 
                             <Link
@@ -434,7 +422,7 @@ const PersonalizedPath: React.FC = () => {
                                 className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-slate-600 hover:bg-white/80 hover:text-slate-900 transition-colors"
                             >
                                 <Trophy className="w-4 h-4 text-slate-500" />
-                                <span>Thành tích</span>
+                                <span>Bản đồ tri thức</span>
                             </Link>
                         </nav>
 

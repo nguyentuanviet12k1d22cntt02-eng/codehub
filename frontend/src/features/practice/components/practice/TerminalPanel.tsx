@@ -14,8 +14,12 @@ interface TerminalPanelProps {
     completedExercises: Record<string, boolean>;
     isCompleted: boolean;
     nextLessonId?: string | null;
+    roadmapId?: string | null;
     isRunning: boolean;
     isSubmitting: boolean;
+    adaptiveMode: boolean;
+    adaptiveComplete: boolean;
+    isSelectingNext: boolean;
     onTabChange: (tab: 'console' | 'testcase') => void;
     onCustomInputChange: (val: string) => void;
     onRunCode: () => void;
@@ -36,8 +40,12 @@ export const TerminalPanel: React.FC<TerminalPanelProps> = ({
     completedExercises,
     isCompleted,
     nextLessonId,
+    roadmapId,
     isRunning,
     isSubmitting,
+    adaptiveMode,
+    adaptiveComplete,
+    isSelectingNext,
     onTabChange,
     onCustomInputChange,
     onRunCode,
@@ -229,16 +237,27 @@ export const TerminalPanel: React.FC<TerminalPanelProps> = ({
                     )}
 
                     {/* NÚT QUA BÀI RIÊNG BIỆT KHI ĐÃ HOÀN THÀNH */}
-                    {exercise && completedExercises[exercise.id] && currentExerciseIdx < exercisesCount - 1 && (
+                    {exercise && completedExercises[exercise.id] && !adaptiveComplete && (adaptiveMode || currentExerciseIdx < exercisesCount - 1) && (
                         <button
-                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-[5px] text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
+                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-[5px] text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans disabled:opacity-60 disabled:cursor-not-allowed"
                             onClick={onNextExercise}
+                            disabled={isSelectingNext}
+                            aria-busy={isSelectingNext}
                         >
-                            Bài tập tiếp theo →
+                            {isSelectingNext ? 'Đang chọn bài...' : adaptiveMode ? 'Bài phù hợp tiếp theo →' : 'Bài tập tiếp theo →'}
                         </button>
                     )}
 
-                    {isCompleted && currentExerciseIdx >= exercisesCount - 1 && nextLessonId && (
+                    {!adaptiveMode && isCompleted && currentExerciseIdx >= exercisesCount - 1 && roadmapId && (
+                        <button
+                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-[5px] text-xs font-bold cursor-pointer border-none font-sans"
+                            onClick={() => navigate(`/roadmap/${roadmapId}`)}
+                        >
+                            Xem bài tiếp theo trong lộ trình →
+                        </button>
+                    )}
+
+                    {!adaptiveMode && isCompleted && currentExerciseIdx >= exercisesCount - 1 && !roadmapId && nextLessonId && (
                         <button
                             className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-[5px] text-xs font-bold cursor-pointer active:scale-95 transition-all animate-pulse border-none font-sans"
                             onClick={() => navigate(`/lesson/${nextLessonId}`)}
@@ -247,7 +266,7 @@ export const TerminalPanel: React.FC<TerminalPanelProps> = ({
                         </button>
                     )}
 
-                    {isCompleted && currentExerciseIdx >= exercisesCount - 1 && !nextLessonId && (
+                    {!adaptiveMode && isCompleted && currentExerciseIdx >= exercisesCount - 1 && !roadmapId && !nextLessonId && (
                         <button
                             className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-[5px] text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans"
                             onClick={() => navigate('/dashboard')}

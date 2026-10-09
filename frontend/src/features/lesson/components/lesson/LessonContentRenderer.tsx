@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import { Check, Copy, Info, Lightbulb, Quote, TriangleAlert } from 'lucide-react';
 import { stripQuizSectionFromMarkdown } from '../../../../utils/quizParser';
 import { tokenizeAndHighlight } from '../../../../features/admin/lesson-studio/studio/components/StudioCodeEditor';
 
@@ -57,62 +58,33 @@ const StudentCodeBlockView: React.FC<{ code: string; language: string }> = ({ co
     };
 
     return (
-        <div className="not-prose my-4 rounded-[6px] bg-[#12131a] border border-[#222430] shadow-sm overflow-hidden text-slate-200 text-xs font-mono select-text transition-all">
-            {/* Top Bar matching Studio */}
-            <div className="flex items-center justify-between px-3.5 py-2 bg-[#171822] border-b border-[#222430] select-none">
-                <span className="text-slate-300 text-xs font-semibold uppercase tracking-wider font-mono">
+        <div className="not-prose my-7 rounded-2xl bg-[#0B1020] border border-slate-700/70 shadow-[0_18px_45px_-24px_rgba(15,23,42,0.9)] overflow-hidden text-slate-200 text-xs font-mono select-text transition-all">
+            <div className="flex items-center justify-between px-4 sm:px-5 py-3 bg-[#11182A] border-b border-slate-700/70 select-none">
+                <span className="text-slate-300 text-[11px] font-bold uppercase tracking-[0.16em] font-mono">
                     {language || 'Python'}
                 </span>
-                <div className="flex items-center gap-2.5 text-slate-400">
-                    <button
-                        type="button"
-                        onClick={handleCopy}
-                        className="hover:text-white transition-colors"
-                        title={copied ? 'Đã sao chép!' : 'Sao chép mã'}
-                    >
-                        {copied ? (
-                            <span className="text-emerald-400 font-bold text-[11px]">✓</span>
-                        ) : (
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                            </svg>
-                        )}
-                    </button>
-                    <button
-                        type="button"
-                        className="hover:text-white transition-colors"
-                        title="Toàn màn hình"
-                    >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                        </svg>
-                    </button>
-                    <button
-                        type="button"
-                        className="hover:text-white transition-colors"
-                        title="Tùy chọn"
-                    >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <circle cx="12" cy="5" r="1" fill="currentColor" />
-                            <circle cx="12" cy="12" r="1" fill="currentColor" />
-                            <circle cx="12" cy="19" r="1" fill="currentColor" />
-                        </svg>
-                    </button>
-                </div>
+                <button
+                    type="button"
+                    onClick={handleCopy}
+                    aria-label={copied ? 'Đã sao chép mã' : 'Sao chép mã'}
+                    className="inline-flex min-h-9 items-center gap-2 rounded-lg px-3 text-[11px] font-semibold text-slate-400 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 transition-colors"
+                >
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copied ? 'Đã sao chép' : 'Sao chép'}</span>
+                </button>
             </div>
 
             {/* Code Body with Real Line Numbers & Real-Time Syntax Highlighting */}
-            <div className="flex items-stretch bg-[#12131a] pb-3 pt-2">
+            <div className="flex items-stretch bg-[#0B1020] py-4">
                 {/* Left Gutter: Line Numbers */}
-                <div className="w-8 pl-3.5 select-none text-slate-600 text-[13px] font-mono leading-[22px] flex-shrink-0 text-left">
+                <div className="w-11 pl-4 select-none text-slate-600 text-[13px] font-mono leading-6 flex-shrink-0 text-left">
                     {Array.from({ length: lineCount }).map((_, idx) => (
                         <div key={idx}>{idx + 1}</div>
                     ))}
                 </div>
 
                 {/* Right: Code Area with Syntax Highlighting */}
-                <div className="flex-1 pl-3 pr-4 overflow-x-auto">
+                <div className="flex-1 pl-3 pr-5 overflow-x-auto">
                     <pre
                         dangerouslySetInnerHTML={{ __html: tokenizeAndHighlight(code, language) }}
                         style={{
@@ -122,7 +94,7 @@ const StudentCodeBlockView: React.FC<{ code: string; language: string }> = ({ co
                             border: 'none !important',
                             boxShadow: 'none !important'
                         }}
-                        className="w-full !p-0 !m-0 !bg-transparent !border-0 !shadow-none font-mono text-[13px] leading-[22px] text-slate-100 whitespace-pre overflow-x-auto select-text"
+                        className="w-full !p-0 !m-0 !bg-transparent !border-0 !shadow-none font-mono text-[13px] sm:text-sm leading-6 text-slate-100 whitespace-pre overflow-x-auto select-text"
                     />
                 </div>
             </div>
@@ -159,54 +131,54 @@ export const LessonContentRenderer: React.FC<LessonContentRendererProps> = ({ co
     const cleanedContent = sanitizeMathAndFormatting(stripQuizSectionFromMarkdown(stripFrontmatter(content || '')));
 
     return (
-        <div className="select-text prose max-w-none text-[15px] leading-7">
+        <div className="select-text prose prose-slate dark:prose-invert max-w-none text-[16px] leading-8">
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
                 components={{
-                    h1: ({ ...props }) => <h1 className="text-2xl font-bold text-text-primary mt-10 mb-4 tracking-tight" {...props} />,
-                    h2: ({ ...props }) => <h2 className="text-xl font-bold text-text-primary mt-10 mb-4 pb-2 border-b border-border-custom tracking-tight" {...props} />,
-                    h3: ({ ...props }) => <h3 className="text-base sm:text-lg font-semibold text-text-primary mt-8 mb-3 tracking-tight" {...props} />,
-                    p: ({ ...props }) => <p className="text-[15px] text-text-secondary mb-4 leading-relaxed" {...props} />,
-                    ul: ({ ...props }) => <ul className="list-disc pl-5 mb-5 text-[15px] text-text-secondary flex flex-col gap-1.5" {...props} />,
-                    ol: ({ ...props }) => <ol className="list-decimal pl-5 mb-5 text-[15px] text-text-secondary flex flex-col gap-1.5" {...props} />,
-                    li: ({ ...props }) => <li className="text-[15px] text-text-secondary" {...props} />,
-                    strong: ({ ...props }) => <strong className="font-semibold text-text-primary" {...props} />,
-                    hr: ({ ...props }) => <hr className="my-8 border-border-custom" {...props} />,
+                    h1: ({ ...props }) => <h1 className="text-3xl sm:text-4xl font-black text-slate-950 dark:text-white mt-10 mb-6 tracking-[-0.03em] leading-tight" {...props} />,
+                    h2: ({ ...props }) => <h2 className="text-2xl sm:text-[28px] font-extrabold text-slate-950 dark:text-white mt-12 mb-5 pb-3 border-b border-slate-200 dark:border-white/10 tracking-[-0.025em]" {...props} />,
+                    h3: ({ ...props }) => <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mt-9 mb-3 tracking-tight" {...props} />,
+                    p: ({ ...props }) => <p className="text-[15px] sm:text-base text-slate-700 dark:text-slate-300 mb-5 leading-7 sm:leading-8" {...props} />,
+                    ul: ({ ...props }) => <ul className="list-disc pl-6 mb-6 text-[15px] sm:text-base text-slate-700 dark:text-slate-300 flex flex-col gap-2 marker:text-blue-500" {...props} />,
+                    ol: ({ ...props }) => <ol className="list-decimal pl-6 mb-6 text-[15px] sm:text-base text-slate-700 dark:text-slate-300 flex flex-col gap-2 marker:font-bold marker:text-blue-600" {...props} />,
+                    li: ({ ...props }) => <li className="text-[15px] sm:text-base text-slate-700 dark:text-slate-300 pl-1 leading-7" {...props} />,
+                    strong: ({ ...props }) => <strong className="font-bold text-slate-950 dark:text-white" {...props} />,
+                    hr: ({ ...props }) => <hr className="my-10 border-slate-200 dark:border-white/10" {...props} />,
                     blockquote: ({ children }) => {
                         const textContent = getReactTextContent(children);
                         const isNote = textContent.includes('[!NOTE]');
                         const isWarning = textContent.includes('[!WARNING]') || textContent.includes('[!CAUTION]');
                         const isTip = textContent.includes('[!TIP]') || textContent.includes('[!IMPORTANT]');
 
-                        let icon = '📌';
+                        let AlertIcon = Quote;
                         let typeLabel = 'Ghi chú';
-                        let borderClass = 'border-l-4 border-blue-500 bg-blue-500/5 text-text-secondary';
+                        let borderClass = 'border-blue-200 bg-blue-50/70 text-blue-950 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-100';
 
                         if (isNote) {
-                            icon = 'ℹ️';
+                            AlertIcon = Info;
                             typeLabel = 'Lưu ý';
-                            borderClass = 'border-l-4 border-sky-500 bg-sky-500/5 text-text-secondary';
+                            borderClass = 'border-sky-200 bg-sky-50/70 text-sky-950 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-100';
                         } else if (isWarning) {
-                            icon = '⚠️';
+                            AlertIcon = TriangleAlert;
                             typeLabel = 'Cảnh báo quan trọng';
-                            borderClass = 'border-l-4 border-amber-500 bg-amber-500/5 text-text-secondary';
+                            borderClass = 'border-amber-200 bg-amber-50/80 text-amber-950 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-100';
                         } else if (isTip) {
-                            icon = '💡';
+                            AlertIcon = Lightbulb;
                             typeLabel = 'Mẹo & Thực hành tốt';
-                            borderClass = 'border-l-4 border-emerald-500 bg-emerald-500/5 text-text-secondary';
+                            borderClass = 'border-emerald-200 bg-emerald-50/80 text-emerald-950 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-100';
                         }
 
                         const cleaned = cleanAlertPrefix(children);
 
                         if (isNote || isWarning || isTip) {
                             return (
-                                <div className={`p-4 rounded-r-xl my-6 text-left transition-colors duration-200 ${borderClass}`}>
-                                    <div className="flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider mb-2 text-text-primary">
-                                        <span>{icon}</span>
+                                <div className={`p-5 rounded-2xl border my-7 text-left transition-colors duration-200 ${borderClass}`}>
+                                    <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-[0.12em] mb-2.5">
+                                        <AlertIcon aria-hidden="true" className="w-4 h-4" />
                                         <span>{typeLabel}</span>
                                     </div>
-                                    <div className="text-sm leading-relaxed text-text-secondary">
+                                    <div className="text-sm sm:text-[15px] leading-7">
                                         {cleaned}
                                     </div>
                                 </div>
@@ -214,7 +186,7 @@ export const LessonContentRenderer: React.FC<LessonContentRendererProps> = ({ co
                         }
 
                         return (
-                            <blockquote className="border-l-4 border-border-custom pl-4 py-1.5 my-4 text-text-tertiary italic text-left text-sm">
+                            <blockquote className="border-l-4 border-blue-400 dark:border-blue-500 pl-5 py-2 my-6 text-slate-600 dark:text-slate-400 italic text-left text-sm sm:text-base">
                                 {children}
                             </blockquote>
                         );
@@ -227,7 +199,7 @@ export const LessonContentRenderer: React.FC<LessonContentRendererProps> = ({ co
 
                         if (isInline) {
                             return (
-                                <code className="font-mono text-[13px] bg-bg-tertiary text-text-primary px-1.5 py-0.5 rounded border border-border-custom font-medium" {...props}>
+                                <code className="font-mono text-[13px] bg-slate-100 dark:bg-white/[0.08] text-blue-700 dark:text-cyan-300 px-1.5 py-0.5 rounded-md border border-slate-200 dark:border-white/10 font-semibold" {...props}>
                                     {children}
                                 </code>
                             );
@@ -237,29 +209,45 @@ export const LessonContentRenderer: React.FC<LessonContentRendererProps> = ({ co
                         return <StudentCodeBlockView code={contentStr} language={lang} />;
                     },
                     table: ({ ...props }) => (
-                        <div className="overflow-x-auto w-full border border-border-custom rounded-xl my-6 transition-colors duration-200">
+                        <div className="overflow-x-auto w-full border border-slate-200 dark:border-white/10 rounded-2xl my-7 transition-colors duration-200 shadow-sm">
                             <table className="w-full text-sm border-collapse" {...props} />
                         </div>
                     ),
-                    thead: ({ ...props }) => <thead className="bg-bg-tertiary border-b border-border-custom" {...props} />,
-                    tbody: ({ ...props }) => <tbody className="divide-y divide-border-custom" {...props} />,
-                    tr: ({ ...props }) => <tr className="hover:bg-bg-tertiary/40 transition-colors" {...props} />,
+                    thead: ({ ...props }) => <thead className="bg-slate-100 dark:bg-white/[0.06] border-b border-slate-200 dark:border-white/10" {...props} />,
+                    tbody: ({ ...props }) => <tbody className="divide-y divide-slate-200 dark:divide-white/10" {...props} />,
+                    tr: ({ ...props }) => <tr className="hover:bg-slate-50 dark:hover:bg-white/[0.035] transition-colors" {...props} />,
                     th: ({ style, ...props }: any) => (
                         <th
-                            className="p-3.5 font-semibold text-text-primary border-r border-border-custom last:border-r-0 text-xs tracking-wider uppercase bg-bg-tertiary"
+                            className="p-4 font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-white/10 last:border-r-0 text-xs tracking-wider uppercase bg-slate-100 dark:bg-white/[0.06]"
                             style={style}
                             {...props}
                         />
                     ),
                     td: ({ style, ...props }: any) => (
                         <td
-                            className="p-3.5 text-text-secondary border-r border-border-custom/50 last:border-r-0 text-sm leading-relaxed"
+                            className="p-4 text-slate-700 dark:text-slate-300 border-r border-slate-200/70 dark:border-white/10 last:border-r-0 text-sm leading-relaxed"
                             style={style}
                             {...props}
                         />
                     ),
-                    details: ({ ...props }) => <details className="my-5 p-4 rounded-xl border border-border-custom bg-bg-secondary text-sm transition-all" {...props} />,
-                    summary: ({ ...props }) => <summary className="font-semibold text-text-primary cursor-pointer select-none hover:text-accent-custom transition-colors" {...props} />
+                    details: ({ ...props }) => <details className="my-6 p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-sm transition-all" {...props} />,
+                    summary: ({ ...props }) => <summary className="font-bold text-slate-900 dark:text-white cursor-pointer select-none hover:text-blue-600 dark:hover:text-blue-400 transition-colors" {...props} />,
+                    img: ({ src, alt, ...props }: any) => (
+                        <figure className="my-8 flex flex-col items-center not-prose">
+                            <img
+                                src={src}
+                                alt={alt}
+                                loading="lazy"
+                                className="rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-md max-w-full h-auto object-cover max-h-[480px] transition-transform duration-200 hover:scale-[1.01]"
+                                {...props}
+                            />
+                            {alt && (
+                                <figcaption className="mt-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 text-center font-medium italic">
+                                    📸 {alt}
+                                </figcaption>
+                            )}
+                        </figure>
+                    )
                 }}
             >
                 {cleanedContent}

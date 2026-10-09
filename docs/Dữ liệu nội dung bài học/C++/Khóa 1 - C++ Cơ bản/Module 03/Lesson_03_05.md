@@ -42,8 +42,7 @@ for (int i = 1; i <= 3; ++i) {        // Lặp qua 3 hàng
     for (int j = 1; j <= 4; ++j) {    // Mỗi hàng in 4 dấu sao
         std::cout << "* ";
     }
-    std::cout << '
-';                // Hết mỗi hàng bắt buộc phải xuống dòng
+    std::cout << '\n';                // Hết mỗi hàng bắt buộc phải xuống dòng
 }
 
 // Kết quả in ra màn hình:
@@ -58,8 +57,7 @@ for (int i = 1; i <= 3; ++i) {        // Lặp qua 3 hàng
 > **1. Quên câu lệnh xuống dòng `'
 '` ở cuối vòng lặp ngoài**
 > * *Hậu quả:* Tất cả các phần tử của mọi hàng sẽ bị dính liền trên cùng một dòng ngang, làm mất cấu trúc dạng lưới 2D.
-> * *Cách phòng tránh:* Sau khi vòng lặp trong `j` kết thúc, luôn thêm lệnh `std::cout << '
-';`.
+> * *Cách phòng tránh:* Sau khi vòng lặp trong `j` kết thúc, luôn thêm lệnh `std::cout << '\n';`.
 
 > [!WARNING]
 > **2. Dùng chung tên biến đếm cho cả hai vòng lặp**

@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0F19" />
+      <stop offset="100%" stop-color="#111827" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#EF4444" />
+    </marker>
+    <marker id="arrowAmber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#F59E0B" />
+    </marker>
+    <marker id="arrowSlate" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 1 1 L 7 4 L 1 7 Z" fill="#64748B" />
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <style>
+    .title { font-family: system-ui, -apple-system, sans-serif; font-size: 20px; font-weight: 800; fill: #F8FAFC; }
+    .subtitle { font-family: system-ui, -apple-system, sans-serif; font-size: 13px; font-weight: 500; fill: #94A3B8; }
+    .node-title { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; font-weight: 800; }
+    .node-desc { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; font-weight: 500; fill: #CBD5E1; }
+    .code-txt { font-family: 'Fira Code', monospace; font-size: 13px; font-weight: 700; }
+  </style>
+
+  <rect width="900" height="500" rx="24" fill="url(#bgGrad)" stroke="#1E293B" stroke-width="2" />
+
+  <!-- Header -->
+  <g transform="translate(40, 36)">
+    <text x="0" y="0" class="title">CÔNG TẮC ĐIỀU KHIỂN LUỒNG: BREAK VS CONTINUE</text>
+    <text x="0" y="24" class="subtitle">Sơ đồ trực quan hướng di chuyển của luồng lệnh khi can thiệp vào vòng lặp</text>
+  </g>
+
+  <!-- PANEL 1: BREAK -->
+  <g transform="translate(40, 85)" filter="url(#shadow)">
+    <rect width="395" height="345" rx="16" fill="url(#cardGrad)" stroke="#EF4444" stroke-width="1.8" />
+    
+    <rect x="0" y="0" width="395" height="52" rx="16" fill="#7F1D1D" fill-opacity="0.25" />
+    <text x="24" y="32" class="node-title" fill="#F87171">🛑 LỆNH BREAK (PHANH KHẨN CẤP)</text>
+    <text x="24" y="76" class="node-desc">Dừng hẳn vòng lặp ngay lập tức và thoát ra ngoài.</text>
+
+    <!-- Visual Diagram inside Break -->
+    <g transform="translate(24, 96)">
+      <!-- Step 1: Start Loop -->
+      <rect x="0" y="0" width="200" height="38" rx="8" fill="#0F172A" stroke="#475569" />
+      <text x="14" y="24" class="code-txt" fill="#94A3B8">for so in range(1, 10):</text>
+
+      <!-- Arrow down -->
+      <path d="M 100 38 L 100 66" fill="none" stroke="#64748B" stroke-width="2" marker-end="url(#arrowSlate)" />
+
+      <!-- Step 2: Check condition -->
+      <rect x="0" y="68" width="200" height="42" rx="8" fill="#7F1D1D" fill-opacity="0.3" stroke="#DC2626" />
+      <text x="14" y="94" class="code-txt" fill="#FCA5A5">if so == 5: <tspan fill="#EF4444" font-weight="900">break</tspan></text>
+
+      <!-- Arrow EXIT to bottom right -->
+      <path d="M 200 89 L 260 89 C 280 89, 280 140, 280 150 L 280 160" fill="none" stroke="#EF4444" stroke-width="3" marker-end="url(#arrowRed)" />
+      <rect x="215" y="68" width="58" height="20" rx="4" fill="#EF4444" />
+      <text x="224" y="82" font-family="system-ui" font-size="10.5" font-weight="800" fill="#FFFFFF">BẺ GÃY</text>
+
+      <!-- Step 3: Ignored Code -->
+      <rect x="0" y="132" width="200" height="38" rx="8" fill="#0F172A" stroke="#334155" opacity="0.4" />
+      <text x="14" y="156" class="code-txt" fill="#64748B">print(so) ❌ bị hủy</text>
+
+      <!-- Bottom Exit Target -->
+      <rect x="140" y="170" width="190" height="40" rx="8" fill="#060A12" stroke="#EF4444" stroke-width="1.5" />
+      <text x="150" y="195" class="code-txt" fill="#FCA5A5"># CÂU LỆNH SAU FOR</text>
+    </g>
+  </g>
+
+  <!-- PANEL 2: CONTINUE -->
+  <g transform="translate(465, 85)" filter="url(#shadow)">
+    <rect width="395" height="345" rx="16" fill="url(#cardGrad)" stroke="#F59E0B" stroke-width="1.8" />
+    
+    <rect x="0" y="0" width="395" height="52" rx="16" fill="#78350F" fill-opacity="0.25" />
+    <text x="24" y="32" class="node-title" fill="#FBBF24">⏭️ LỆNH CONTINUE (BỎ QUA LƯỢT)</text>
+    <text x="24" y="76" class="node-desc">Bỏ qua phần còn lại của lượt này, sang lượt mới ngay.</text>
+
+    <!-- Visual Diagram inside Continue -->
+    <g transform="translate(24, 96)">
+      <!-- Step 1: Start Loop -->
+      <rect x="0" y="0" width="200" height="38" rx="8" fill="#0F172A" stroke="#475569" />
+      <text x="14" y="24" class="code-txt" fill="#94A3B8">for so in range(1, 10):</text>
+
+      <!-- Arrow down -->
+      <path d="M 100 38 L 100 66" fill="none" stroke="#64748B" stroke-width="2" marker-end="url(#arrowSlate)" />
+
+      <!-- Step 2: Check condition -->
+      <rect x="0" y="68" width="200" height="42" rx="8" fill="#78350F" fill-opacity="0.3" stroke="#D97706" />
+      <text x="14" y="94" class="code-txt" fill="#FDE68A">if so % 2 == 0: <tspan fill="#FBBF24" font-weight="900">continue</tspan></text>
+
+      <!-- Curved Arrow Skipping Bottom & Jumping Back to Top -->
+      <path d="M 200 89 L 260 89 C 290 89, 290 19, 220 19 L 205 19" 
+            fill="none" stroke="#F59E0B" stroke-width="3" stroke-dasharray="6 3" marker-end="url(#arrowAmber)" />
+      <rect x="220" y="44" width="70" height="20" rx="4" fill="#F59E0B" />
+      <text x="226" y="58" font-family="system-ui" font-size="10.5" font-weight="800" fill="#000000">NHẢY CÓC</text>
+
+      <!-- Step 3: Skipped Code -->
+      <rect x="0" y="132" width="200" height="38" rx="8" fill="#0F172A" stroke="#334155" />
+      <text x="14" y="156" class="code-txt" fill="#94A3B8">print(so) ➔ Bỏ qua</text>
+
+      <!-- Note for Continue -->
+      <rect x="0" y="180" width="347" height="30" rx="6" fill="#060A12" />
+      <text x="14" y="200" font-family="system-ui" font-size="11.5" font-weight="600" fill="#FCD34D">
+        ✅ Playlist vẫn phát, chỉ bỏ qua đúng bài hát này!
+      </text>
+    </g>
+  </g>
+
+  <!-- BOTTOM WARNING -->
+  <g transform="translate(40, 445)">
+    <rect width="820" height="38" rx="10" fill="#1E293B" stroke="#334155" />
+    <text x="20" y="24" font-family="system-ui" font-size="12" font-weight="600" fill="#CBD5E1">
+      💡 <tspan fill="#F87171" font-weight="700">break</tspan> dùng để <tspan fill="#FFFFFF">thoát hẳn</tspan> khi tìm thấy kết quả sớm. <tspan fill="#FBBF24" font-weight="700">continue</tspan> dùng để <tspan fill="#FFFFFF">lọc và bỏ qua</tspan> dữ liệu rác/lỗi.
+    </text>
+  </g>
+</svg>

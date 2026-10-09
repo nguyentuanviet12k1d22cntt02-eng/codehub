@@ -12,21 +12,15 @@ import {
     Code2,
     Flame,
     GraduationCap,
-    LayoutDashboard,
-    Menu,
-    Network,
     Route,
     ShieldCheck,
     Sparkles,
     Target,
-    Trophy,
-    X,
     Zap,
 } from 'lucide-react';
 import { authService } from '../../../services/authService';
 import { CourseCard } from '../../course/components/CourseCard';
-import { ThemeToggle } from '../../../components/ThemeToggle';
-import UserMenuDropdown from '../../../components/UserMenuDropdown';
+import AppNavbar from '../../../components/AppNavbar';
 import { API_BASE_URL } from '../../../config/api';
 
 const decodeToken = (token: string) => {
@@ -84,14 +78,6 @@ const kcNames: Record<string, string> = {
     KC_OOP: 'Lập trình hướng đối tượng',
 };
 
-const navItems = [
-    { to: '/dashboard', label: 'Tổng quan', icon: LayoutDashboard },
-    { to: '/personalized-path', label: 'Lộ trình', icon: Route },
-    { to: '/adaptive-practice', label: 'Luyện tập AI', icon: BrainCircuit },
-    { to: '/practice-arena', label: 'Đấu trường', icon: Trophy },
-    { to: '/profile', label: 'Tri thức', icon: Network },
-];
-
 const difficultyStyles: Record<string, { label: string; className: string }> = {
     EASY: {
         label: 'Cơ bản',
@@ -115,7 +101,6 @@ const formatPercent = (value?: number) => (
 
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [recommendations, setRecommendations] = useState<RecommendationItem[]>([]);
     const [recsLoading, setRecsLoading] = useState(true);
     const [serviceEngine, setServiceEngine] = useState('');
@@ -124,7 +109,6 @@ const Dashboard: React.FC = () => {
     const token = useMemo(() => localStorage.getItem('token'), []);
     const authenticatedUser = useMemo(() => token ? decodeToken(token) : null, [token]);
     const username = authenticatedUser?.username || 'Học viên';
-    const role = authenticatedUser?.role || 'STUDENT';
 
     const { data: courses = [], isLoading } = useQuery<DBLocationCourse[]>({
         queryKey: ['courses'],
@@ -215,85 +199,7 @@ const Dashboard: React.FC = () => {
 
     return (
         <div className="dashboard-shell min-h-screen bg-bg-primary text-text-primary transition-colors duration-200">
-            <header className="sticky top-0 z-50 border-b border-border-custom bg-bg-secondary/85 backdrop-blur-xl">
-                <div className="mx-auto flex h-[72px] w-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
-                    <button
-                        type="button"
-                        onClick={() => navigate('/dashboard')}
-                        className="group flex items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-custom focus-visible:ring-offset-2 focus-visible:ring-offset-bg-secondary"
-                        aria-label="Về trang tổng quan MCODE"
-                    >
-                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-600/20 transition-transform duration-200 group-hover:-rotate-3">
-                            <Code2 className="h-5 w-5" aria-hidden="true" />
-                        </span>
-                        <span className="text-left">
-                            <span className="block text-[17px] font-extrabold leading-none tracking-[-0.03em]">MCODE</span>
-                            <span className="mt-1 block text-[9px] font-bold uppercase tracking-[0.2em] text-text-tertiary">Learning Lab</span>
-                        </span>
-                    </button>
-
-                    <nav className="hidden items-center gap-1 rounded-2xl border border-border-custom bg-bg-primary/60 p-1.5 xl:flex" aria-label="Điều hướng chính">
-                        {navItems.map(({ to, label, icon: Icon }) => (
-                            <Link
-                                key={to}
-                                to={to}
-                                className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-custom ${
-                                    to === '/dashboard'
-                                        ? 'bg-bg-secondary text-accent-custom shadow-sm ring-1 ring-border-custom'
-                                        : 'text-text-tertiary hover:bg-bg-secondary hover:text-text-primary'
-                                }`}
-                            >
-                                <Icon className="h-4 w-4" aria-hidden="true" />
-                                {label}
-                            </Link>
-                        ))}
-                        {role === 'ADMIN' && (
-                            <Link
-                                to="/admin"
-                                className="rounded-xl px-3.5 py-2 text-xs font-bold text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-500/10"
-                            >
-                                Quản trị
-                            </Link>
-                        )}
-                    </nav>
-
-                    <div className="flex items-center gap-2">
-                        <ThemeToggle />
-                        <UserMenuDropdown />
-                        <button
-                            type="button"
-                            onClick={() => setMobileMenuOpen((open) => !open)}
-                            className="flex h-10 w-10 items-center justify-center rounded-xl border border-border-custom bg-bg-secondary text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-custom xl:hidden"
-                            aria-label={mobileMenuOpen ? 'Đóng menu' : 'Mở menu'}
-                            aria-expanded={mobileMenuOpen}
-                        >
-                            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                        </button>
-                    </div>
-                </div>
-
-                {mobileMenuOpen && (
-                    <nav className="border-t border-border-custom bg-bg-secondary px-4 py-3 xl:hidden" aria-label="Điều hướng trên thiết bị di động">
-                        <div className="mx-auto grid max-w-[1440px] grid-cols-2 gap-2 sm:grid-cols-3">
-                            {navItems.map(({ to, label, icon: Icon }) => (
-                                <Link
-                                    key={to}
-                                    to={to}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className={`flex min-h-11 items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-semibold ${
-                                        to === '/dashboard'
-                                            ? 'bg-accent-bg text-accent-custom'
-                                            : 'bg-bg-primary text-text-secondary hover:text-text-primary'
-                                    }`}
-                                >
-                                    <Icon className="h-4 w-4" aria-hidden="true" />
-                                    {label}
-                                </Link>
-                            ))}
-                        </div>
-                    </nav>
-                )}
-            </header>
+            <AppNavbar />
 
             <main className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-col gap-7 px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
                 <section className="grid gap-5 lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,0.7fr)]">
@@ -322,16 +228,16 @@ const Dashboard: React.FC = () => {
                                     onClick={() => navigate('/personalized-path')}
                                     className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-[#2f246b] shadow-lg shadow-black/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-violet-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#17113f] motion-reduce:transform-none"
                                 >
-                                    Xem lộ trình của tôi
+                                    Luyện tập với AI
                                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => navigate('/adaptive-practice')}
+                                    onClick={() => navigate('/practice-arena')}
                                     className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur-md transition-all duration-200 hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                                 >
                                     <Zap className="h-4 w-4" aria-hidden="true" />
-                                    Luyện tập thích ứng
+                                    Đấu trường code
                                 </button>
                             </div>
                         </div>
@@ -511,9 +417,9 @@ const Dashboard: React.FC = () => {
 
                         <div className="mt-5 grid gap-2.5">
                             {[
-                                { to: '/personalized-path', label: 'Lộ trình cá nhân', note: 'Học theo mục tiêu', icon: Route },
-                                { to: '/adaptive-practice', label: 'Luyện tập thích ứng', note: 'Bài tập vừa sức', icon: BrainCircuit },
+                                { to: '/personalized-path', label: 'Luyện tập với AI', note: 'AI Tutor đồng hành cá nhân hóa', icon: BrainCircuit },
                                 { to: '/practice-arena', label: 'Đấu trường code', note: 'Rèn kỹ năng thực chiến', icon: Code2 },
+                                { to: '/profile', label: 'Bản đồ tri thức', note: 'Theo dõi độ thuần thục kỹ năng', icon: Route },
                             ].map(({ to, label, note, icon: Icon }) => (
                                 <Link
                                     key={to}

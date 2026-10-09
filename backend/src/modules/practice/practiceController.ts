@@ -4,6 +4,8 @@ import { codeExecutionQueue } from '../../infrastructure/queue/queueService';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
 import { ProgrammingLanguage, ExerciseDifficulty, SubmissionStatus } from '@prisma/client';
 import { StaticCodeAnalyzer } from '../../infrastructure/analysis/staticCodeAnalyzer';
+import { parseInteractionTelemetry } from '../learning-events/interactionTelemetry';
+import { buildGradingDiagnostics } from '../learning-events/interactionErrorClassifier';
 
 // 1. Lấy danh sách bài tập luyện tập độc lập kèm bộ lọc
 export const getPracticeProblems = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -180,6 +182,7 @@ export const submitPracticeCode = async (req: AuthenticatedRequest, res: Respons
     try {
         const id = req.params.id as string; // ID của PracticeProblem
         const { code } = req.body;
+        const telemetry = parseInteractionTelemetry(req.body.telemetry);
         const language = req.body.language as ProgrammingLanguage;
         const userId = req.user?.id as string;
 
@@ -286,21 +289,52 @@ export const submitPracticeCode = async (req: AuthenticatedRequest, res: Respons
 
         const allTestsPassed = results.every((r: { passed: boolean }) => r.passed);
         const allPassed = allTestsPassed && astResult.isValid;
+        const diagnostics = buildGradingDiagnostics({
+            language,
+            allPassed,
+            astResult,
+            executionResults,
+            testResults: results,
+        });
 
         // Tính toán thời gian chạy thực tế trung bình cho các testcase
         const avgRuntime = problem.testCases.length > 0 ? totalRuntime / problem.testCases.length : 15;
         const normalizedRuntime = Math.max(5, avgRuntime);
 
         // Lưu kết quả nộp bài vào DB
-        const submission = await prisma.practiceSubmission.create({
-            data: {
-                userId,
-                problemId: id,
-                code,
-                language: language as ProgrammingLanguage,
-                status: allPassed ? SubmissionStatus.PASSED : SubmissionStatus.FAILED,
-                runtime: normalizedRuntime
-            }
+        const submission = await prisma.$transaction(async tx => {
+            const created = await tx.practiceSubmission.create({
+                data: {
+                    userId,
+                    problemId: id,
+                    code,
+                    language: language as ProgrammingLanguage,
+                    status: allPassed ? SubmissionStatus.PASSED : SubmissionStatus.FAILED,
+                    runtime: normalizedRuntime
+                }
+            });
+            await tx.learningInteraction.updateMany({
+                where: { sourceType: 'PRACTICE_SUBMISSION', sourceRecordId: created.id },
+                data: {
+                    sessionId: telemetry.sessionId,
+                    openedAt: telemetry.openedAt,
+                    activeTimeSeconds: telemetry.activeTimeSeconds,
+                    hintCount: telemetry.hintCount,
+                    errorType: diagnostics.errorType,
+                    testsPassed: diagnostics.testsPassed,
+                    testsTotal: diagnostics.testsTotal,
+                    payload: {
+                        problemSlug: problem.slug,
+                        runtimeMs: normalizedRuntime,
+                        errorSummary: diagnostics.errorSummary,
+                        testOutcomes: results.map((result: { passed: boolean }, index: number) => ({
+                            caseIndex: index + 1,
+                            passed: result.passed,
+                        })),
+                    },
+                },
+            });
+            return created;
         });
 
         // Tính toán beats percentile

@@ -59,8 +59,7 @@ for (int i = 0; i < 6; ++i) {
 // Bước 2: In kết quả
 for (int x = 0; x < 10; ++x) {
     if (dem[x] > 0) {
-        std::cout << "So " << x << " xuat hien " << dem[x] << " lan
-";
+        std::cout << "So " << x << " xuat hien " << dem[x] << " lan\\n";
     }
 }
 // Kết quả:

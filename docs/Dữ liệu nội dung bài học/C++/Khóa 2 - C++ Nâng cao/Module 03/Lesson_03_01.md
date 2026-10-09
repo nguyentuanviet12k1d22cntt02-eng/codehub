@@ -40,8 +40,7 @@ std::stringstream ss(cau);
 std::string tu;
 // Vòng lặp tự động dừng khi đã hút hết các từ trong chuỗi
 while (ss >> tu) {
-    std::cout << "[" << tu << "]
-";
+    std::cout << "[" << tu << "]\\n";
 }
 // Kết quả in ra từng dòng: [Lap], [trinh], [C++], [that], [thu], [vi]
 ```

@@ -19,6 +19,8 @@ export interface ExecutionOptions {
 
 export interface BatchExecutionOptions extends Omit<ExecutionOptions, 'inputData'> {
     compileTimeoutMs?: number;
+    /** QC/pre-test only: fail closed instead of executing untrusted code locally. */
+    strictIsolation?: boolean;
 }
 
 export interface ICodeRunner {

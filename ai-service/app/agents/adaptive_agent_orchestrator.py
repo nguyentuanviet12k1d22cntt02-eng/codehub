@@ -367,13 +367,25 @@ class KnowledgeRetriever:
                 prereqs.append(p)
         return prereqs
 
-    def get_next_forward_concepts(self, current_concept_id: str, masteries: Dict[str, float]) -> List[Dict[str, Any]]:
+    def get_next_forward_concepts(
+        self,
+        current_concept_id: str,
+        masteries: Dict[str, float],
+        language: str = None,
+    ) -> List[Dict[str, Any]]:
         """
         Tìm các concept kế tiếp trên DAG (Forward Progression) mà current_concept_id là điều kiện tiên quyết,
         và học viên đã đủ điều kiện để mở khóa.
         """
+        resolved_language = language
+        if not resolved_language:
+            resolved_language = (
+                "CPP" if current_concept_id.startswith("CPP-")
+                else "JAVASCRIPT" if current_concept_id.startswith("JS-")
+                else "PYTHON"
+            )
         forward_nodes = []
-        for s in self.skill_graph.get("skills", []):
+        for s in self.get_skill_graph(resolved_language).get("skills", []):
             prereqs = s.get("prerequisites", [])
             if current_concept_id in prereqs:
                 # Kiểm tra xem các prereq khác đã đạt >= 0.50 chưa
@@ -399,34 +411,21 @@ class KnowledgeRetriever:
         # 1. Tra cứu từ khóa chuyên biệt theo từng ngôn ngữ
         if lang in ["CPP", "C++"]:
             cpp_mappings = [
-                # OOP / OPP trong C++ (Bắt cả lỗi gõ nhầm OPP và OOP)
-                (r'\b(opp|oop|hướng đối tượng|class|lớp|đối tượng|kế thừa|đa hình|đóng gói|trừu tượng|virtual|override|constructor|destructor|encapsulation|polymorphism|inheritance)\b', {
-                    "id": "CPP-OOP-01",
-                    "concept_id": "CPP-OOP-01",
-                    "name": "Lập trình Hướng đối tượng (OOP) trong C++",
-                    "concept_name": "Lập trình Hướng đối tượng (OOP) trong C++",
-                    "domain_id": "CPP",
-                    "module_id": "MOD-CPP-RECORDS",
-                    "stage": 3,
-                    "tier": 3,
-                    "associated_errors": ["Object Slicing", "Missing Virtual Destructor", "Segmentation Fault", "Access Violation"],
-                    "difficulty_level": 3,
-                    "prerequisites": ["CPP-STRUCT-01", "CPP-PTR-01"]
-                }),
                 (r'\b(smart pointer|unique_ptr|shared_ptr|weak_ptr|raii)\b', 'CPP-SMARTPTR-01'),
-                (r'\b(pointer|con trỏ|địa chỉ|toán tử trỏ|\*ptr|&var)\b', 'CPP-PTR-01'),
-                (r'\b(bộ nhớ|stack|heap|phân vùng bộ nhớ|new|delete)\b', 'CPP-MEM-01'),
-                (r'\b(struct|cấu trúc|memory layout|padding|alignment)\b', 'CPP-STRUCT-01'),
+                (r'\b(bitwise|bitmask|phép toán bit|dịch bit|\bxor\b|\band\b|\bor\b)\b', 'CPP-BITWISE-01'),
+                (r'\b(unordered_map|unordered_set|std::map|std::set|bảng băm|hash table|container kết hợp)\b', 'CPP-CACHE-01'),
+                (r'\b(std::sort|binary_search|<algorithm>|thuật toán stl|iterator)\b', 'CPP-BUILD-01'),
+                (r'\b(string_view|stringstream|std::regex|regex|biểu thức chính quy|tách từ)\b', 'CPP-FILE-01'),
+                (r'\b(pointer|con trỏ|danh sách liên kết|linked list|forward_list|địa chỉ|toán tử trỏ|\*ptr|&var)\b', 'CPP-PTR-01'),
+                (r'\b(phạm vi|scope|vòng đời|lifetime|shadowing|sao chép)\b', 'CPP-MEM-01'),
+                (r'\b(struct|cấu trúc|memory layout|padding|alignment|std::pair|std::tuple|structured binding)\b', 'CPP-STRUCT-01'),
                 (r'\b(vector|std::vector|mảng động)\b', 'CPP-VECTOR-01'),
                 (r'\b(string|chuỗi|std::string)\b', 'CPP-STRING-01'),
                 (r'\b(ma trận|mảng 2d|2d array|ma trận 2 chiều)\b', 'CPP-MATRIX-01'),
                 (r'\b(mảng|array|mảng tĩnh)\b', 'CPP-ARRAY-01'),
                 (r'\b(đệ quy|recursion|ngăn xếp gọi|call stack)\b', 'CPP-RECUR-01'),
                 (r'\b(quay lui|backtrack|n quân hậu|tổ hợp)\b', 'CPP-BACKTRACK-01'),
-                (r'\b(file|tệp|đọc file|ghi file|binary file|ifstream|ofstream)\b', 'CPP-FILE-01'),
                 (r'\b(ngoại lệ|exception|try|catch|throw|std::exception)\b', 'CPP-EXC-01'),
-                (r'\b(biên dịch|build|header|include|đa tệp|multi-file)\b', 'CPP-BUILD-01'),
-                (r'\b(cache|tối ưu|bộ nhớ đệm|cache locality)\b', 'CPP-CACHE-01'),
                 (r'\b(hàm|function|nạp chồng|overload|tham chiếu|reference)\b', 'CPP-FUNC-01'),
                 (r'\b(vòng lặp|loop|for|while|do while)\b', 'CPP-LOOP-01'),
                 (r'\b(rẽ nhánh|if|else|switch|điều kiện)\b', 'CPP-COND-01'),
@@ -1879,7 +1878,12 @@ Bạn muốn mình tạo một bài tập thực hành thích ứng về `{conce
         updated_map[concept_id] = new_score
         
         # Truy vấn các concept mở khóa tiếp theo trên DAG
-        next_nodes = self.retriever.get_next_forward_concepts(concept_id, updated_map) or []
+        concept_language = (
+            "CPP" if concept_id.startswith("CPP-")
+            else "JAVASCRIPT" if concept_id.startswith("JS-")
+            else "PYTHON"
+        )
+        next_nodes = self.retriever.get_next_forward_concepts(concept_id, updated_map, language=concept_language) or []
         
         agent_traces = [
             {

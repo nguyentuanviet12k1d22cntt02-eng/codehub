@@ -7,6 +7,7 @@ import type { ExerciseMock, SubmissionItem } from './types';
 
 interface ProblemDescriptionPanelProps {
     lessonId: string;
+    adaptiveMode: boolean;
     exercises: any[];
     currentExerciseIdx: number;
     exercise: ExerciseMock | null;
@@ -20,6 +21,7 @@ interface ProblemDescriptionPanelProps {
 
 export const ProblemDescriptionPanel: React.FC<ProblemDescriptionPanelProps> = ({
     lessonId,
+    adaptiveMode,
     exercises,
     currentExerciseIdx,
     exercise,
@@ -80,7 +82,7 @@ export const ProblemDescriptionPanel: React.FC<ProblemDescriptionPanelProps> = (
                 {activeLeftTab === 'desc' && exercise ? (
                     <div className="flex flex-col gap-4">
                         {/* Selector các bài tập con */}
-                        {exercises.length > 1 && (
+                        {!adaptiveMode && exercises.length > 1 && (
                             <div className="flex flex-wrap gap-1.5 p-1 bg-bg-tertiary border border-border-custom rounded-xl select-none mb-1">
                                 {exercises.map((ex, index) => {
                                     const isSelected = index === currentExerciseIdx;
@@ -100,6 +102,12 @@ export const ProblemDescriptionPanel: React.FC<ProblemDescriptionPanelProps> = (
                                         </button>
                                     );
                                 })}
+                            </div>
+                        )}
+
+                        {adaptiveMode && (
+                            <div className="text-xs font-semibold text-accent-custom" aria-label="Bài tập được PAL-Net đề xuất">
+                                Bài tập được đề xuất cho bạn
                             </div>
                         )}
 
@@ -126,8 +134,9 @@ export const ProblemDescriptionPanel: React.FC<ProblemDescriptionPanelProps> = (
                                 remarkPlugins={[remarkGfm]}
                                 rehypePlugins={[rehypeRaw]}
                                 components={{
-                                    h3: ({ node, ...props }) => <h3 className="text-sm font-bold text-text-primary mt-4 mb-2" {...props} />,
-                                    p: ({ node, ...props }) => <p className="text-xs md:text-sm text-text-secondary mb-2.5 leading-relaxed" {...props} />,
+                                    h3: ({ node, ...props }) => <h3 className="text-sm font-bold text-text-primary mt-4 mb-2 flex items-center gap-1.5" {...props} />,
+                                    h4: ({ node, ...props }) => <h4 className="text-xs font-bold text-text-primary mt-3 mb-1" {...props} />,
+                                    blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-accent-custom bg-accent-bg/40 pl-3 py-1.5 my-2.5 rounded-r text-xs text-text-secondary" {...props} />,
                                     ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-3 text-xs md:text-sm text-text-secondary flex flex-col gap-1" {...props} />,
                                     li: ({ node, ...props }) => <li className="mb-0.5" {...props} />,
                                     details: ({ node, ...props }) => <details className="my-3 p-3.5 rounded-xl border border-border-custom bg-bg-tertiary/40 text-xs md:text-sm transition-all" {...props} />,

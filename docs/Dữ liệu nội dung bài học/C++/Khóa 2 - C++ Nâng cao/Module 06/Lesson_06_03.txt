@@ -13,7 +13,7 @@ prerequisites: ["CPP2-01.02"]
 
 Trong C++ cổ điển, khi cấp phát động bằng `new`, lập trình viên bắt buộc phải nhớ gọi `delete`. Nếu quên, bộ nhớ sẽ bị thất lạc vĩnh viễn (**Rò rỉ bộ nhớ - Memory Leak**).
 
-Từ C++11, thư viện `<memory>` mang đến **Con trỏ thông minh (Smart Pointers)** áp dụng triết lý **RAII**: Con trỏ tự động giải phóng vùng nhớ ô RAM ngay khi nó đi ra khỏi phạm vi sử dụng, bạn không bao giờ phải gõ chữ `delete` thủ công nữa!
+Từ C++11, thư viện `<memory>` mang đến **Con trỏ thông minh (Smart Pointers)** áp dụng triết lý **RAII**: tài nguyên được thu dọn khi đối tượng sở hữu cuối cùng bị hủy. Với `unique_ptr`, điều này thường xảy ra khi nó ra khỏi phạm vi; với `shared_ptr`, chỉ xảy ra khi bộ đếm sở hữu về 0. Trong mã C++ hiện đại, ưu tiên cơ chế này thay cho việc tự gọi `delete`.
 
 | Loại con trỏ | Quyền sở hữu ô nhớ | Ứng dụng |
 | :--- | :--- | :--- |
@@ -44,8 +44,7 @@ void lamViec() {
     // Tự động cấp phát ô nhớ cho số nguyên 99
     std::unique_ptr<int> p = std::make_unique<int>(99);
 
-    std::cout << "Gia tri: " << *p << '
-'; // Truy xuất bằng dấu * giống con trỏ thường
+    std::cout << "Gia tri: " << *p << '\n'; // Truy xuất bằng dấu * giống con trỏ thường
 
     // Khi hàm lamViec() kết thúc, vùng nhớ tự động được giải phóng an toàn 100%!
 }
@@ -60,6 +59,6 @@ void lamViec() {
 
 ## 5. Ghi nhớ trọng tâm
 
-- Con trỏ thông minh tự động thu dọn bộ nhớ, giải quyết triệt để nguy cơ Memory Leak.
+- Con trỏ thông minh gắn việc thu dọn tài nguyên với ownership và vòng đời đối tượng, nên giảm mạnh nguy cơ quên giải phóng.
 - Luôn ưu tiên dùng `std::unique_ptr` với `std::make_unique`.
-- Không bao giờ cần dùng `new` và `delete` thủ công trong C++ hiện đại.
+- Ưu tiên `make_unique` hoặc `make_shared`; chỉ dùng quản lý thủ công khi có ràng buộc giao tiếp đặc biệt và ownership được mô tả rõ ràng.

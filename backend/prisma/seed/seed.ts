@@ -215,6 +215,14 @@ async function main() {
                             }
                         });
                     }
+                    if (!dbExercise && Array.isArray(ex.legacyTitles) && ex.legacyTitles.length > 0) {
+                        dbExercise = await prisma.codingExercise.findFirst({
+                            where: {
+                                lessonId: dbLesson.id,
+                                title: { in: ex.legacyTitles }
+                            }
+                        });
+                    }
 
                     const exerciseDataPayload = {
                         title: ex.title,

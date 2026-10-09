@@ -79,6 +79,14 @@ const PracticeWorkspace: React.FC = () => {
     } | null>(null);
     const [allPassed, setAllPassed] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const interactionStartedAtRef = React.useRef<number>(Date.now());
+    const interactionSessionIdRef = React.useRef<string>(crypto.randomUUID());
+
+    useEffect(() => {
+        if (!problem?.id) return;
+        interactionStartedAtRef.current = Date.now();
+        interactionSessionIdRef.current = crypto.randomUUID();
+    }, [problem?.id]);
 
     useEffect(() => {
         const handleThemeChange = () => {
@@ -197,7 +205,16 @@ const PracticeWorkspace: React.FC = () => {
         try {
             const response = await axios.post(
                 `${API_BASE_URL}/api/auth/practice/problems/${problem?.id}/submit`,
-                { code, language: selectedLanguage },
+                {
+                    code,
+                    language: selectedLanguage,
+                    telemetry: {
+                        sessionId: interactionSessionIdRef.current,
+                        openedAt: new Date(interactionStartedAtRef.current).toISOString(),
+                        activeTimeSeconds: Math.max(0, Math.floor((Date.now() - interactionStartedAtRef.current) / 1000)),
+                        hintCount: 0,
+                    },
+                },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 

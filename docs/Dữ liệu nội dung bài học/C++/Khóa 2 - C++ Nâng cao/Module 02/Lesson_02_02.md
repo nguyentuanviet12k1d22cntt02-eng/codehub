@@ -4,7 +4,7 @@ title: "Ma trận Động 2D Linh hoạt với std::vector lồng nhau"
 difficulty: "MEDIUM"
 estimatedDuration: 20
 keywords: ["2d vector", "dynamic matrix", "jagged array"]
-prerequisites: ["CPP2-02.01", "CPP-07.01"]
+prerequisites: ["CPP2-02.01"]
 ---
 
 # Ma trận Động 2D Linh hoạt với std::vector lồng nhau
@@ -42,8 +42,7 @@ for (const auto& row : a) {
     for (int val : row) {
         std::cout << val << ' ';
     }
-    std::cout << '
-';
+    std::cout << '\n';
 }
 ```
 

@@ -4,7 +4,7 @@ title: "Bản chất Kiểu Hợp union và std::variant An toàn trong C++17"
 difficulty: "MEDIUM"
 estimatedDuration: 20
 keywords: ["union", "variant", "type-safe union", "std::holds_alternative"]
-prerequisites: ["CPP2-01.02"]
+prerequisites: ["CPP-01.03"]
 ---
 
 # Bản chất Kiểu Hợp union và std::variant An toàn trong C++17
@@ -12,7 +12,7 @@ prerequisites: ["CPP2-01.02"]
 ## 1. Khái niệm cốt lõi
 
 * **`union` truyền thống:** Cho phép nhiều biến khác nhau **dùng chung duy nhất một vùng nhớ**. Kích thước của `union` chỉ bằng kích thước của trường lớn nhất. Tuy nhiên, `union` cũ không ghi nhớ kiểu dữ liệu nào đang được lưu, rất dễ gây lỗi đọc nhầm ô nhớ.
-* **`std::variant` (C++17):** Là giải pháp hiện đại thay thế `union`, vừa tiết kiệm bộ nhớ vừa ghi nhớ chính xác kiểu dữ liệu hiện tại, tuyệt đối an toàn.
+* **`std::variant` (C++17):** Là union có phân biệt kiểu của thư viện chuẩn: nó lưu alternative đang hoạt động và kiểm tra truy cập. Kích thước thường gồm vùng đủ cho alternative lớn nhất cùng discriminator/padding, nên mục tiêu chính là an toàn kiểu chứ không phải luôn tiết kiệm bộ nhớ.
 
 | Tiêu chí | `union` Cổ điển | `std::variant` (C++17) |
 | :--- | :--- | :--- |
@@ -41,8 +41,7 @@ giaTri = "Mot tram"; // Tự động chuyển sang chứa chuỗi
 
 // Kiểm tra kiểu dữ liệu đang chứa
 if (std::holds_alternative<std::string>(giaTri)) {
-    std::cout << "Dang chua chuoi: " << std::get<std::string>(giaTri) << '
-';
+    std::cout << "Dang chua chuoi: " << std::get<std::string>(giaTri) << '\n';
 }
 ```
 

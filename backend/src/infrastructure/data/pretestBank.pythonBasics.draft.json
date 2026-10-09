@@ -1,0 +1,232 @@
+{
+  "schemaVersion": "learnpython-pretest-bank-draft/1.0.0",
+  "language": "PYTHON",
+  "graphVersion": "2.1",
+  "goalId": "GOAL_PY_BASICS",
+  "source": "AUTHOR_DRAFT",
+  "reviewStatus": "REVIEW_REQUIRED",
+  "servingEligible": false,
+  "items": [
+    {
+      "id": "PT-PYB-001",
+      "questionFamilyId": "PT-PYB-F001",
+      "primarySkillId": "PY-BASICS-01",
+      "questionType": "CONCEPT",
+      "difficulty": 1,
+      "prompt": "Tên biến nào hợp lệ trong Python?",
+      "options": [
+        { "key": "A", "text": "2ten" },
+        { "key": "B", "text": "ten_2" },
+        { "key": "C", "text": "ten-hoc" },
+        { "key": "D", "text": "class" }
+      ],
+      "correctOption": "B",
+      "rationale": "Tên biến không bắt đầu bằng chữ số, không chứa dấu gạch ngang và không trùng từ khóa class.",
+      "sourceRefs": ["PY-BASICS-01", "LS-01.04"]
+    },
+    {
+      "id": "PT-PYB-002",
+      "questionFamilyId": "PT-PYB-F002",
+      "primarySkillId": "PY-BASICS-03",
+      "questionType": "CONCEPT",
+      "difficulty": 1,
+      "prompt": "Với hai số nguyên dương a và b, toán tử nào trả về phần dư của a chia b?",
+      "options": [
+        { "key": "A", "text": "/" },
+        { "key": "B", "text": "//" },
+        { "key": "C", "text": "%" },
+        { "key": "D", "text": "**" }
+      ],
+      "correctOption": "C",
+      "rationale": "Toán tử % trả phần dư; // trả thương nguyên.",
+      "sourceRefs": ["PY-BASICS-03", "LS-01.06"]
+    },
+    {
+      "id": "PT-PYB-003",
+      "questionFamilyId": "PT-PYB-F003",
+      "primarySkillId": "PY-STRING-02",
+      "questionType": "CONCEPT",
+      "difficulty": 1,
+      "prompt": "Phương thức nào loại bỏ khoảng trắng ở cả đầu và cuối chuỗi, nhưng giữ nguyên khoảng trắng ở giữa?",
+      "options": [
+        { "key": "A", "text": "strip()" },
+        { "key": "B", "text": "lower()" },
+        { "key": "C", "text": "split()" },
+        { "key": "D", "text": "replace(' ', '')" }
+      ],
+      "correctOption": "A",
+      "rationale": "strip() chỉ cắt khoảng trắng hai đầu; replace(' ', '') còn xóa cả khoảng trắng giữa chuỗi.",
+      "sourceRefs": ["PY-STRING-02", "docs/Dữ liệu nội dung bài học/Python/modules/module4/string.md"]
+    },
+    {
+      "id": "PT-PYB-004",
+      "questionFamilyId": "PT-PYB-F004",
+      "primarySkillId": "PY-BASICS-02",
+      "questionType": "TRACING",
+      "difficulty": 1,
+      "prompt": "Đoạn mã sau in gì?\n```python\ngia = '7'\nprint(int(gia) + 2)\n```",
+      "options": [
+        { "key": "A", "text": "72" },
+        { "key": "B", "text": "9" },
+        { "key": "C", "text": "7" },
+        { "key": "D", "text": "Lỗi" }
+      ],
+      "correctOption": "B",
+      "traceCode": "gia = '7'\nprint(int(gia) + 2)",
+      "expectedStdout": "9\n",
+      "rationale": "int('7') tạo số nguyên 7; sau đó cộng 2 thành 9.",
+      "sourceRefs": ["PY-BASICS-02", "LS-01.10"]
+    },
+    {
+      "id": "PT-PYB-005",
+      "questionFamilyId": "PT-PYB-F005",
+      "primarySkillId": "PY-STRING-01",
+      "questionType": "TRACING",
+      "difficulty": 1,
+      "prompt": "Đoạn mã sau in gì?\n```python\nprint('Python'[1:4])\n```",
+      "options": [
+        { "key": "A", "text": "Pyt" },
+        { "key": "B", "text": "yth" },
+        { "key": "C", "text": "tho" },
+        { "key": "D", "text": "Python" }
+      ],
+      "correctOption": "B",
+      "traceCode": "print('Python'[1:4])",
+      "expectedStdout": "yth\n",
+      "rationale": "Slice lấy chỉ số 1, 2, 3 và không lấy giới hạn 4.",
+      "sourceRefs": ["PY-STRING-01", "LS-04.02"]
+    },
+    {
+      "id": "PT-PYB-006",
+      "questionFamilyId": "PT-PYB-F006",
+      "primarySkillId": "PY-FLOW-01",
+      "questionType": "TRACING",
+      "difficulty": 2,
+      "prompt": "Đoạn mã sau in gì?\n```python\ndiem = 75\nif diem >= 80:\n    print('gioi')\nelif diem >= 50:\n    print('dat')\nelse:\n    print('chua dat')\n```",
+      "options": [
+        { "key": "A", "text": "gioi" },
+        { "key": "B", "text": "dat" },
+        { "key": "C", "text": "chua dat" },
+        { "key": "D", "text": "Không in gì" }
+      ],
+      "correctOption": "B",
+      "traceCode": "diem = 75\nif diem >= 80:\n    print('gioi')\nelif diem >= 50:\n    print('dat')\nelse:\n    print('chua dat')",
+      "expectedStdout": "dat\n",
+      "rationale": "75 không đạt nhánh đầu, nhưng đạt điều kiện >= 50 ở elif.",
+      "sourceRefs": ["PY-FLOW-01", "LS-02.03"]
+    },
+    {
+      "id": "PT-PYB-007",
+      "questionFamilyId": "PT-PYB-F007",
+      "primarySkillId": "PY-FLOW-02",
+      "questionType": "TRACING",
+      "difficulty": 2,
+      "prompt": "Đoạn mã sau in gì?\n```python\ni = 0\ntong = 0\nwhile i < 3:\n    i += 1\n    tong += i\nprint(tong)\n```",
+      "options": [
+        { "key": "A", "text": "3" },
+        { "key": "B", "text": "4" },
+        { "key": "C", "text": "6" },
+        { "key": "D", "text": "10" }
+      ],
+      "correctOption": "C",
+      "traceCode": "i = 0\ntong = 0\nwhile i < 3:\n    i += 1\n    tong += i\nprint(tong)",
+      "expectedStdout": "6\n",
+      "rationale": "Vòng while tăng i thành 1, 2, 3 rồi dừng; tổng là 6.",
+      "sourceRefs": ["PY-FLOW-02", "LS-03.04"]
+    },
+    {
+      "id": "PT-PYB-008",
+      "questionFamilyId": "PT-PYB-F008",
+      "primarySkillId": "PY-FLOW-01",
+      "questionType": "BUG_HUNTING",
+      "difficulty": 2,
+      "prompt": "Đoạn mã định in 'dat' chỉ khi diem bằng 5 nhưng bị SyntaxError. Sửa dòng điều kiện như thế nào để giữ đúng yêu cầu với mọi giá trị diem?\n```python\ndiem = 5\nif diem = 5:\n    print('dat')\n```",
+      "options": [
+        { "key": "A", "text": "if diem == 5:" },
+        { "key": "B", "text": "if diem => 5:" },
+        { "key": "C", "text": "if diem != 5:" },
+        { "key": "D", "text": "if diem >= 5:" }
+      ],
+      "correctOption": "A",
+      "fixedCode": "diem = 5\nif diem == 5:\n    print('dat')",
+      "expectedStdout": "dat\n",
+      "rationale": "Trong điều kiện, == so sánh giá trị; = là phép gán, không dùng theo cú pháp này.",
+      "sourceRefs": ["PY-FLOW-01", "LS-02.02"]
+    },
+    {
+      "id": "PT-PYB-009",
+      "questionFamilyId": "PT-PYB-F009",
+      "primarySkillId": "PY-FLOW-04",
+      "questionType": "BUG_HUNTING",
+      "difficulty": 2,
+      "prompt": "Chương trình cần in 1, 2, 4, 5 (bỏ qua 3), nhưng đang dừng ở 2. Thay dòng break bằng lệnh nào?\n```python\nfor i in range(1, 6):\n    if i == 3:\n        break\n    print(i)\n```",
+      "options": [
+        { "key": "A", "text": "continue" },
+        { "key": "B", "text": "pass" },
+        { "key": "C", "text": "return" },
+        { "key": "D", "text": "break" }
+      ],
+      "correctOption": "A",
+      "fixedCode": "for i in range(1, 6):\n    if i == 3:\n        continue\n    print(i)",
+      "expectedStdout": "1\n2\n4\n5\n",
+      "rationale": "continue bỏ qua phần còn lại của lượt i=3 rồi tiếp tục vòng lặp; break dừng hẳn.",
+      "sourceRefs": ["PY-FLOW-04", "LS-03.05"]
+    },
+    {
+      "id": "PT-PYB-010",
+      "questionFamilyId": "PT-PYB-F010",
+      "primarySkillId": "PY-BASICS-03",
+      "secondarySkillIds": ["PY-BASICS-02"],
+      "questionType": "PRACTICAL",
+      "difficulty": 1,
+      "prompt": "Đọc hai số nguyên a, b từ hai dòng riêng và in ra tổng a + b trên một dòng.",
+      "starterCode": "a = int(input())\nb = int(input())\n# In tổng tại đây",
+      "referenceSolution": "a = int(input())\nb = int(input())\nprint(a + b)",
+      "knownIncorrectSolution": "a = int(input())\nb = int(input())\nprint(a - b)",
+      "runnerSpec": { "language": "PYTHON", "mode": "STDIN_STDOUT", "timeLimitMs": 1000 },
+      "testCases": [
+        { "input": "5\n3\n", "expectedStdout": "8\n", "isHidden": false },
+        { "input": "-2\n7\n", "expectedStdout": "5\n", "isHidden": true },
+        { "input": "0\n0\n", "expectedStdout": "0\n", "isHidden": true }
+      ],
+      "sourceRefs": ["PY-BASICS-03", "docs/Dữ liệu nội dung bài học/Python/modules/module1/easy.md"]
+    },
+    {
+      "id": "PT-PYB-011",
+      "questionFamilyId": "PT-PYB-F011",
+      "primarySkillId": "PY-FLOW-01",
+      "secondarySkillIds": ["PY-BASICS-03"],
+      "questionType": "PRACTICAL",
+      "difficulty": 2,
+      "prompt": "Đọc một số nguyên n. In CHAN nếu n chẵn, ngược lại in LE. Không thêm ký tự khác.",
+      "starterCode": "n = int(input())\n# In CHAN hoặc LE tại đây",
+      "referenceSolution": "n = int(input())\nif n % 2 == 0:\n    print('CHAN')\nelse:\n    print('LE')",
+      "knownIncorrectSolution": "n = int(input())\nif n % 2 == 1:\n    print('CHAN')\nelse:\n    print('LE')",
+      "runnerSpec": { "language": "PYTHON", "mode": "STDIN_STDOUT", "timeLimitMs": 1000 },
+      "testCases": [
+        { "input": "4\n", "expectedStdout": "CHAN\n", "isHidden": false },
+        { "input": "-3\n", "expectedStdout": "LE\n", "isHidden": true },
+        { "input": "0\n", "expectedStdout": "CHAN\n", "isHidden": true }
+      ],
+      "sourceRefs": ["PY-FLOW-01", "LS-02.02"]
+    },
+    {
+      "id": "PT-PYB-012",
+      "questionFamilyId": "PT-PYB-F012",
+      "primarySkillId": "PY-FLOW-03",
+      "questionType": "PRACTICAL",
+      "difficulty": 2,
+      "prompt": "Đọc số nguyên không âm n. In tổng các số nguyên từ 1 đến n; nếu n=0 thì in 0.",
+      "starterCode": "n = int(input())\ntong = 0\n# Dùng for và range để cộng từ 1 đến n",
+      "referenceSolution": "n = int(input())\ntong = 0\nfor i in range(1, n + 1):\n    tong += i\nprint(tong)",
+      "knownIncorrectSolution": "n = int(input())\ntong = 0\nfor i in range(1, n):\n    tong += i\nprint(tong)",
+      "runnerSpec": { "language": "PYTHON", "mode": "STDIN_STDOUT", "timeLimitMs": 1000 },
+      "testCases": [
+        { "input": "3\n", "expectedStdout": "6\n", "isHidden": false },
+        { "input": "0\n", "expectedStdout": "0\n", "isHidden": true },
+        { "input": "5\n", "expectedStdout": "15\n", "isHidden": true }
+      ],
+      "sourceRefs": ["PY-FLOW-03", "docs/Dữ liệu nội dung bài học/Python/modules/module3/btFor.md"]
+    }
+  ]
+}

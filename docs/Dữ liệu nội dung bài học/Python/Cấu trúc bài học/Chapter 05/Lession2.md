@@ -1,103 +1,155 @@
 ---
-lessonId: "LS-02.06"
-title: "Dãy số với hàm range()"
-difficulty: "BASIC"
-estimatedDuration: 25
-keywords: ["range function", "sequences", "python range", "python basics"]
-prerequisites: ["LS-02.05"]
+lessonId: "LS-03.02"
+title: "Lesson 3.2: Tư duy vòng lặp"
+difficulty: "EASY"
+estimatedDuration: 30
+prerequisites: ["LS-03.01"]
 ---
 
-# 📘 Lesson 02.06: Dãy số với hàm range()
+# Lesson 3.2: Tư duy vòng lặp
 
----
+## Mục tiêu
 
-## 1. Khái niệm & Vấn đề
+* Nắm vững **4 thành phần cốt lõi** (4 trụ cột) cấu thành nên mọi vòng lặp trong lập trình.
+* Đọc và vẽ được **sơ đồ chu trình lặp** (Loop Cycle Diagram) để theo dõi luồng chạy của chương trình.
+* Tự tay lập được **Bảng theo dõi thực thi** (Execution Trace Table) để quan sát sự thay đổi giá trị của biến số qua từng lượt lặp.
+* Hiểu rõ nguyên nhân và biết cách phòng tránh lỗi kinh điển: **Vòng lặp vô hạn** (Infinite Loop).
 
-Khi lập trình, chúng ta rất thường xuyên gặp nhu cầu tạo ra các dãy số có quy luật như:
-* Đếm số lần thực hiện công việc từ `1` đến `10`.
-* Lọc ra toàn bộ các số lẻ trong khoảng từ `1` đến `99`.
-* Thiết lập đồng hồ đếm ngược từ `10` về `1`.
+## Kiến thức chính
 
-Khai báo thủ công từng con số này vừa mất thời gian vừa tốn bộ nhớ. Python cung cấp hàm **`range()`** để giải quyết bài toán này. Nó giúp tự động sinh ra một dãy số nguyên theo quy luật cực kỳ nhanh chóng và tối ưu hiệu năng.
+Mọi vòng lặp trong mọi ngôn ngữ lập trình đều được xây dựng dựa trên chu trình 4 bước bất biến:
 
-| Kỹ thuật | Bản chất hoạt động | Phép ẩn dụ thực tế |
-| :--- | :--- | :--- |
-| **Hàm `range()`** | Hàm sinh ra một chuỗi các số nguyên liên tiếp hoặc cách đều dựa trên các tham số cấu hình. | Giống như **khuôn đúc gạch tự động**: Bạn chỉnh thông số, máy sẽ đúc ra gạch đều tăm tắp mà không cần xếp tay. |
+| Trụ cột | Tên gọi | Nhiệm vụ | Ví dụ đời thực |
+| :--- | :--- | :--- | :--- |
+| **1. Khởi tạo** | Initialization | Thiết lập giá trị ban đầu cho biến kiểm soát (vạch xuất phát). | Vận động viên đứng ở vạch xuất phát: `vong = 1` |
+| **2. Điều kiện** | Condition | Biểu thức Logic kiểm tra xem có được phép chạy tiếp không. | Trọng tài kiểm tra: Đã chạy đủ 5 vòng chưa? (`vong <= 5`) |
+| **3. Hành động** | Loop Body | Các câu lệnh thực sự cần làm trong mỗi lượt lặp. | Chạy hết 1 vòng quanh sân vận động (400 mét) |
+| **4. Cập nhật** | Update | Thay đổi giá trị biến kiểm soát để tiến gần về điểm dừng. | Trọng tài bấm còi tăng số vòng: `vong = vong + 1` |
 
----
+> [!IMPORTANT]
+> **Quy tắc vàng**: Nếu thiếu bước **4. Cập nhật**, biến kiểm soát sẽ giữ nguyên mãi mãi một giá trị ban đầu, điều kiện sẽ luôn luôn ĐÚNG, dẫn đến chương trình rơi vào **vòng lặp vô hạn** và làm treo máy tính!
 
-## 2. Cú pháp & Vận hành
+## Hiểu
 
-Hàm `range()` có 3 cách sử dụng tùy thuộc vào số lượng tham số truyền vào:
+### 1. Ẩn dụ thực tế: Vận động viên chạy 5 vòng sân vận động
+
+Hãy quan sát cách một vận động viên hoàn thành bài tập chạy 5 vòng sân:
+1. **Trước khi chạy (Khởi tạo):** Vận động viên chuẩn bị ở vạch xuất phát, ghi nhớ mình đang ở `vong = 1`.
+2. **Trước mỗi vòng (Kiểm tra điều kiện):** Tự hỏi: *"Số vòng hiện tại (`vong`) có nhỏ hơn hoặc bằng 5 không?"*
+   * Nếu **ĐÚNG** ($\le 5$): Tiếp tục chạy vòng này!
+   * Nếu **SAI** ($> 5$): Đã hoàn thành mục tiêu, dừng lại và nghỉ ngơi!
+3. **Trong khi chạy (Thực hiện hành động):** Vận động viên sải bước chạy hết một vòng 400m quanh sân.
+4. **Vừa cán vạch (Cập nhật biến):** Vận động viên tự nhẩm tăng thêm 1 vòng: `vong = vong + 1`.
+5. **Quay lại bước 2:** Lặp lại quy trình trên cho đến khi hoàn thành đủ 5 vòng.
+
+### 2. Sơ đồ chu trình lặp trực quan (Loop Cycle Diagram)
+
+![Sơ đồ chu trình 4 trụ cột của vòng lặp](/images/lessons/module3/loop_pillars.svg)
+
+```text
+               [1. KHỞI TẠO]
+                (dem = 1)
+                    │
+                    ▼
+         ┌──► [2. KIỂM TRA ĐIỀU KIỆN] ──(SAI: dem > 3)──► [KẾT THÚC VÒNG LẶP]
+         │          (dem <= 3?)
+         │              │
+         │           (ĐÚNG)
+         │              ▼
+         │    [3. THỰC HIỆN HÀNH ĐỘNG]
+         │       (In giá trị dem)
+         │              │
+         │              ▼
+         └─── [4. CẬP NHẬT BIẾN ĐẾM]
+                 (dem = dem + 1)
+```
+
+Nhìn vào sơ đồ trên, bạn sẽ thấy luồng chạy tạo thành một **vòng tròn khép kín** (Loop). Mũi tên từ bước 4 quay ngược lại bước 2. Chương trình chỉ có thể thoát ra khỏi vòng lặp khi điều kiện ở bước 2 chuyển từ **ĐÚNG (True)** sang **SAI (False)**.
+
+## Làm theo
+
+### Ví dụ 1: Theo dõi biến đếm từ 1 đến 3
+
+Dưới đây là một đoạn mã Python thể hiện chính xác chu trình 4 bước trên:
 
 ```python
-# 1 tham số: range(stop) -> Sinh từ 0 đến stop - 1
-print(list(range(3)))  # [0, 1, 2]
+# Bước 1: Khởi tạo vạch xuất phát
+dem = 1
 
-# 2 tham số: range(start, stop) -> Sinh từ start đến stop - 1
-print(list(range(2, 6)))  # [2, 3, 4, 5]
+# Bước 2: Kiểm tra điều kiện lặp
+while dem <= 3:
+    # Bước 3: Thực hiện công việc
+    print("Đang ở lượt đếm:", dem)
 
-# 3 tham số: range(start, stop, step) -> Sinh từ start đến stop - 1 với bước nhảy step
-print(list(range(1, 10, 2)))  # [1, 3, 5, 7, 9]
+    # Bước 4: Cập nhật biến đếm (tiến dần về đích)
+    dem = dem + 1
 
-# Bước nhảy âm: Dùng để đếm ngược
-print(list(range(5, 1, -1)))  # [5, 4, 3, 2]
+print("Vòng lặp đã kết thúc an toàn!")
 ```
 
-**Bảng trace phân tích luồng sinh số của `range(1, 10, 3)`:**
-| Lần chạy | Giá trị hiện tại | Kiểm tra giới hạn (`< stop (10)`) | Kết quả dãy số tích lũy |
-|:---:|:---|:---|:---|
-| 1 | `1` (giá trị `start`) | `1 < 10` ➔ `True`. Nhận số 1. | `[1]` |
-| 2 | `1 + 3 = 4` (cộng thêm `step`) | `4 < 10` ➔ `True`. Nhận số 4. | `[1, 4]` |
-| 3 | `4 + 3 = 7` (cộng thêm `step`) | `7 < 10` ➔ `True`. Nhận số 7. | `[1, 4, 7]` |
-| 4 | `7 + 3 = 10` (cộng thêm `step`)| `10 < 10` ➔ `False`. Dừng lại. | Trả về kết quả: `[1, 4, 7]` |
+### Bảng theo dõi thực thi từng bước (Execution Trace Table)
 
-**Trực quan hóa trên trục số cho `range(2, 8, 2)`:**
-```text
-[2] ───(+2)───► [4] ───(+2)───► [6] ───(+2)───► (8: Bị loại trừ)
-Kết quả thu được: [2, 4, 6]
-```
+Lập bảng theo dõi là "vũ khí tối thượng" giúp lập trình viên nhìn thấu từng mili-giây máy tính suy nghĩ gì:
 
----
-
-## 3. Lỗi thường gặp & Tối ưu
+| Lượt lặp | Giá trị `dem` đầu lượt | Kiểm tra `dem <= 3` | Hành động in ra màn hình | Cập nhật `dem = dem + 1` | Trạng thái sau cập nhật |
+| :---: | :---: | :---: | :--- | :---: | :--- |
+| **Khởi tạo** | — | — | *(Chưa chạy)* | `dem = 1` | `dem = 1` |
+| **Lượt 1** | `1` | `1 <= 3` ➔ **ĐÚNG** | `Đang ở lượt đếm: 1` | `1 + 1` | `dem = 2` |
+| **Lượt 2** | `2` | `2 <= 3` ➔ **ĐÚNG** | `Đang ở lượt đếm: 2` | `2 + 1` | `dem = 3` |
+| **Lượt 3** | `3` | `3 <= 3` ➔ **ĐÚNG** | `Đang ở lượt đếm: 3` | `3 + 1` | `dem = 4` |
+| **Kiểm tra cuối**| `4` | `4 <= 3` ➔ **SAI** | *(Không thực hiện)* | *(Dừng lặp)* | Thoát ra ngoài! |
 
 > [!WARNING]
-> **Các lỗi logic cực kỳ kinh điển khi dùng range():**
-> * **Loại trừ giá trị `stop`**: Dãy số sinh ra bởi `range(start, stop)` chạy đến sát nút chứ **không bao giờ lấy** giá trị `stop` (tức dừng lại ở `stop - 1`). 
->   * *Ví dụ:* Muốn lấy dãy số từ 1 đến 10, viết `range(1, 10)` là sai (chỉ ra từ 1 đến 9). Bạn phải viết là `range(1, 11)`.
-> * **In đối tượng range trực tiếp**: Nếu bạn viết `print(range(5))`, Python sẽ in ra chuỗi đại diện `range(0, 5)` chứ không phải là các con số cụ thể. Để xem các số, hãy chuyển nó thành một danh sách bằng hàm `list(range(5))`.
+> **Điều gì xảy ra nếu quên dòng `dem = dem + 1`?**
+> Biến `dem` sẽ mãi mãi bằng `1`. Máy tính kiểm tra `1 <= 3` luôn luôn ĐÚNG, và sẽ in ra dòng chữ `"Đang ở lượt đếm: 1"` hàng triệu lần không dừng cho tới khi bạn tắt chương trình. Đó chính là **vòng lặp vô hạn**!
+
+### Ví dụ 2: Tư duy tích lũy (Cộng dồn qua từng lượt)
+
+Ngoài việc đếm số, vòng lặp thường dùng để **cộng dồn** hoặc **nhân dồn** (như tính tổng tiền, tính điểm):
+
+```python
+n = 3
+tong = 0  # Biến tích lũy ban đầu
+so = 1    # Biến đếm bắt đầu từ 1
+
+while so <= n:
+    tong = tong + so  # Bỏ thêm giá trị hiện tại vào túi tổng
+    so = so + 1       # Tăng số tiếp theo
+
+print("Tổng từ 1 đến", n, "là:", tong)
+```
+
+* **Lượt 1:** `tong = 0 + 1 = 1`
+* **Lượt 2:** `tong = 1 + 2 = 3`
+* **Lượt 3:** `tong = 3 + 3 = 6`
+* Kết quả cuối cùng in ra: `6`.
+
+## Tự làm
+
+1. **Thử thách lập bảng Trace:** Hãy lập bảng theo dõi thực thi cho bài toán đếm từ 2 đến 6 với bước nhảy 2 (`dem = dem + 2`). Xác định rõ:
+   * Giá trị ban đầu của `dem` là bao nhiêu?
+   * Điều kiện dừng là gì?
+   * Sau bao nhiêu lượt lặp thì vòng lặp kết thúc?
+2. **Thám tử tìm lỗi:** Quan sát đoạn mã sau và chỉ ra lỗi logic:
+   ```python
+   i = 10
+   while i >= 1:
+       print(i)
+       i = i + 1  # Gợi ý: Hãy nhìn kỹ dấu cộng hay trừ!
+   ```
+   *Đoạn mã trên có dừng lại được không? Vì sao?*
+3. **Tư duy tính tích:** Nếu muốn tính tích từ 1 đến $N$ ($1 \times 2 \times 3 \times ... \times N$), biến `tich` ban đầu phải được khởi tạo bằng `1` hay bằng `0`? Tại sao?
+
+## Vận dụng
+
+Mọi thuật toán phức tạp trên thế giới (từ việc tìm kiếm bài viết trên Facebook đến tính toán quỹ đạo tên lửa) đều bắt nguồn từ tư duy 4 bước này:
+* **Hệ thống thanh toán:** Khởi tạo `tong_tien = 0`. Duyệt từng món hàng trong giỏ, cộng giá tiền món hàng vào `tong_tien`, cập nhật sang món hàng tiếp theo.
+* **Đếm ngược thời gian:** Khởi tạo `giay = 60`. Sau mỗi giây giảm `giay = giay - 1`. Khi `giay == 0` thì kích hoạt chuông báo thức reo.
 
 ---
 
-## 4. Thực hành phân bậc
+### 🚀 Bước tiếp theo
 
-### Câu hỏi trắc nghiệm (Warm-up)
-Hàm `range(1, 5)` trong Python sẽ sinh ra dãy số nguyên nào sau đây?
-* [ ] `1, 2, 3, 4, 5`
-* [x] `1, 2, 3, 4`
-* [ ] `0, 1, 2, 3, 4`
-* [ ] `2, 3, 4`
+Bạn đã nắm vững "khung xương" 4 bước của vòng lặp! Nhưng việc phải tự tay khởi tạo biến và viết dòng cập nhật biến đếm thủ công đôi khi hơi phiền phức và dễ quên.
 
-### Thử thách sửa lỗi (Debug)
-Đoạn code sau đây muốn tạo một danh sách các số đếm ngược từ 5 về 1 nhưng lại in ra một danh sách trống `[]`. Hãy tìm lỗi và sửa lại cho đúng:
-```python
-# Sửa lại đoạn code tạo dãy số đếm ngược dưới đây:
-day_so = list(range(5, 1))
-print(day_so)
-```
-
-### Bài tập lập trình (Mini-task)
-Hãy dùng hàm `range()` kết hợp với hàm `list()` để tạo ra và in ra màn hình danh sách các số chia hết cho 5 trong khoảng từ 5 đến 30 (bao gồm cả số 30). Kết quả mong muốn hiển thị là: `[5, 10, 15, 20, 25, 30]`.
-```python
-# Nhập code của bạn ở đây
-```
-
----
-
-## 5. Đúc kết & Đi tiếp
-
-* 📏 Hàm `range(start, stop, step)` dùng để tự động tạo một dãy số nguyên có quy luật cách đều.
-* 🛑 Luôn ghi nhớ quy tắc loại trừ giá trị `stop` (chỉ chạy tới sát nút).
-
-Trong bài học tiếp theo **[LS-02.07: Vòng lặp for]**, chúng ta sẽ thấy sự kết hợp hoàn hảo giữa vòng lặp và dãy số `range()` để điều khiển số lần lặp vô cùng khoa học.
+Hãy cùng đến với **Lesson 3.3: Vòng lặp for và range()** để xem Python cung cấp công cụ tự động hóa thông minh như thế nào nhé!

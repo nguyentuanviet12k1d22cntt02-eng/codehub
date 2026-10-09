@@ -47,8 +47,16 @@ export const authService = {
         return response.data;
     },
 
-    submitLessonQuiz: async (id: string, answers: Record<string, string>) => {
-        const response = await axios.post(`${API_URL}/lesson/${id}/quiz/submit`, { answers });
+    submitLessonQuiz: async (id: string, answers: Record<string, string>, telemetry?: {
+        sessionId: string;
+        openedAt: string;
+        activeTimeSeconds: number;
+        hintCount: number;
+    }) => {
+        const token = localStorage.getItem('token');
+        const response = await axios.post(`${API_URL}/lesson/${id}/quiz/submit`, { answers, telemetry }, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
         return response.data;
     }
 };

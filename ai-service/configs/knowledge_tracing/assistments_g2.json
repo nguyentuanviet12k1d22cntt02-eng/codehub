@@ -1,0 +1,104 @@
+{
+  "schema_version": "kt-benchmark-config/1.0.0",
+  "protocol_version": "palnet-research-protocol/1.0.0",
+  "dataset": "ASSISTments 2009-2010 Skill Builder corrected collapsed",
+  "seed": 20261005,
+  "data_manifest_path": "data/external/assistments_2009_2010/data_manifest.json",
+  "event_path": "data/external/assistments_2009_2010/processed/main_events.csv.gz",
+  "split_manifest_path": "data/external/assistments_2009_2010/g2_split_manifest.json",
+  "artifact_root": "artifacts/knowledge_tracing/assistments_g2",
+  "split": {
+    "final_test_fraction": 0.2,
+    "development_folds": 5,
+    "unit": "user_id"
+  },
+  "selection_budget": {
+    "neural_configurations_per_model": 1,
+    "maximum_epochs": 8,
+    "early_stopping_metric": "validation_log_loss",
+    "early_stopping_patience": 2,
+    "note": "Fixed preregistered configurations; final-test labels are not used for selection."
+  },
+  "models": {
+    "global_rate": {
+      "alpha": 1.0,
+      "beta": 1.0
+    },
+    "skill_rate": {
+      "alpha": 1.0,
+      "beta": 1.0
+    },
+    "bkt": {
+      "learn_grid": [0.05, 0.15, 0.3, 0.5],
+      "guess_grid": [0.1, 0.25],
+      "slip_grid": [0.1, 0.25],
+      "alpha": 1.0,
+      "beta": 1.0
+    },
+    "dkt_lstm": {
+      "embedding_dim": 32,
+      "hidden_dim": 64,
+      "dropout": 0.2,
+      "batch_size": 64,
+      "learning_rate": 0.001,
+      "weight_decay": 0.00001,
+      "max_epochs": 8,
+      "early_stopping_patience": 2,
+      "device": "cpu"
+    },
+    "palnet": {
+      "skill_dim": 32,
+      "history_dim": 32,
+      "hidden_dim": 64,
+      "dropout": 0.2,
+      "batch_size": 512,
+      "learning_rate": 0.001,
+      "weight_decay": 0.00001,
+      "max_epochs": 8,
+      "early_stopping_patience": 2,
+      "device": "cpu",
+      "association_graph_top_k": 8
+    }
+  },
+  "ablations": {
+    "palnet_no_graph": {
+      "base": "palnet",
+      "use_graph": false,
+      "use_history": true
+    },
+    "palnet_no_history": {
+      "base": "palnet",
+      "use_graph": true,
+      "use_history": false
+    }
+  },
+  "features": {
+    "allowed_current_event": ["skill_id"],
+    "history_only": [
+      "target_attempt_count",
+      "target_correct_rate",
+      "target_correct_ema",
+      "total_prior_events",
+      "global_prior_correct_rate",
+      "per_skill_smoothed_mastery"
+    ],
+    "forbidden": [
+      "current_correct",
+      "attempt_count",
+      "hint_count",
+      "response_time",
+      "answer",
+      "simulator_profile"
+    ]
+  },
+  "graph_semantics": "Undirected skill-transition association graph built from train users only; not a prerequisite graph.",
+  "final_test": {
+    "status": "SEALED_NOT_EVALUATED",
+    "evaluation_enabled": false,
+    "unlock_requires": [
+      "research-owner protocol/version sign-off",
+      "locked selected configuration checksum",
+      "one-time run id and recorded reason"
+    ]
+  }
+}

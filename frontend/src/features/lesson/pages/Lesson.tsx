@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { authService } from '../../../services/authService';
@@ -13,6 +13,8 @@ import { LessonFooterActions } from '../components/lesson/LessonFooterActions';
 const Lesson: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const roadmapId = searchParams.get('roadmapId');
     const queryClient = useQueryClient();
 
     // 1. Lấy dữ liệu bài học lý thuyết
@@ -47,7 +49,9 @@ const Lesson: React.FC = () => {
                 }
             );
             queryClient.invalidateQueries();
-            if (lesson.nextLessonId) {
+            if (roadmapId) {
+                navigate(`/roadmap/${roadmapId}`);
+            } else if (lesson.nextLessonId) {
                 navigate(`/lesson/${lesson.nextLessonId}`);
             } else {
                 navigate('/dashboard');
@@ -88,6 +92,7 @@ const Lesson: React.FC = () => {
             {/* 2. Main Reading Content */}
             <main className="flex-1 overflow-y-auto px-4 sm:px-6 py-10 flex justify-center">
                 <div className="w-full max-w-[800px] flex flex-col gap-6 text-left select-text">
+                    {roadmapId && <Link to={`/roadmap/${roadmapId}`} className="w-fit rounded-lg border border-border-custom px-3 py-2 text-sm font-bold text-accent-custom hover:bg-bg-tertiary">← Quay lại lộ trình</Link>}
                     {/* Header meta (Title, Reading time) */}
                     <LessonMeta
                         title={lesson.title}
@@ -108,6 +113,7 @@ const Lesson: React.FC = () => {
                         hasQuiz={hasQuiz}
                         quizCount={quizQuestions.length}
                         hasExercise={hasExercise}
+                        roadmapId={roadmapId}
                         onCompleteWithoutExercise={handleCompleteWithoutExercise}
                     />
                 </div>

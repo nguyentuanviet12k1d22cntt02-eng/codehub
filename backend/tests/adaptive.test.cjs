@@ -1,7 +1,7 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const {equalOutput,staticConstraints,sandboxInput,executionTimeoutMs}=require('../dist/modules/adaptive/adaptiveRunner');
-const {publicReport,publicCase,internalHeaders,verifyInternal,resumeCheckpoint,sanitizeLegacy}=require('../dist/modules/adaptive/adaptiveEvidence');
+const {publicReport,publicCase,internalHeaders,verifyInternal,resumeCheckpoint,sanitizeLegacy,verifiedTargetConcept}=require('../dist/modules/adaptive/adaptiveEvidence');
 const {consumeSse}=require('../dist/modules/adaptive/sse');
 const {isRetryableProviderFailure,providerRetryDelay}=require('../dist/modules/adaptive/adaptive.controller');
 const {calculateMasteryUpdate}=require('../dist/modules/adaptive/masteryPolicy');
@@ -108,6 +108,16 @@ test('retry checkpoint keeps only verified real outputs below the transport limi
  assert.equal(checkpoint.agent_traces.find(r=>r.agent==='ExerciseGeneratorAgent').output,draft);
  assert.equal(checkpoint.agent_traces.some(r=>r.agent==='CriticEvaluatorAgent'),false);
  assert.ok(!JSON.stringify(checkpoint).includes('x'.repeat(100)));
+});
+test('retry reuses the latest planner-verified graph concept',()=>{
+ const report={agent_traces:[
+  {agent:'IntentRouterAgent',status:'SUCCEEDED',output:{topic:'array'}},
+  {agent:'AdaptiveExercisePlanner',status:'SUCCEEDED',output:{target_concept:'PY-LIST-01'}},
+  {agent:'AdaptiveExercisePlanner',status:'FAILED',output:{target_concept:'array'}},
+  {agent:'AdaptiveExercisePlanner',status:'SUCCEEDED',output:{target_concept:'PY-LIST-02'}},
+ ]};
+ assert.equal(verifiedTargetConcept(report),'PY-LIST-02');
+ assert.equal(verifiedTargetConcept({agent_traces:[{agent:'AdaptiveExercisePlanner',status:'SUCCEEDED',output:{target_concept:'array'}}]}),undefined);
 });
 test('SSE parser keeps split Unicode, trailing frame, and propagates server errors',async()=>{
  const bytes=new TextEncoder().encode('data: {"text":"Tiếng Việt"}\n\ndata: {"type":"complete"}');

@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { authService } from '../../../services/authService';
 import { getInitialTheme } from '../../../utils/themeHelper';
 import { API_BASE_URL } from '../../../config/api';
+import { getModulePracticeRecommendation } from '../../lesson/services/modulePracticeRecommendation';
 
 import type { ExerciseMock, TestCaseMock, SubmitStats, SubmissionItem } from '../components/practice/types';
 import { PracticeHeader } from '../components/practice/PracticeHeader';
@@ -17,6 +18,9 @@ const Practice: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [searchParams] = useSearchParams();
     const difficultyFilter = searchParams.get('difficulty');
+    const adaptiveMode = searchParams.get('adaptive') === '1';
+    const requestedExerciseId = searchParams.get('exerciseId');
+    const roadmapId = searchParams.get('roadmapId');
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(getInitialTheme());
@@ -46,6 +50,8 @@ const Practice: React.FC = () => {
     // 3. Quản trị Tiến trình Chạy/Nộp bài
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [isSelectingNext, setIsSelectingNext] = useState<boolean>(false);
+    const [adaptiveComplete, setAdaptiveComplete] = useState<boolean>(false);
     const [consoleOutput, setConsoleOutput] = useState<string>('Bấm "Chạy thử" để xem kết quả đầu ra tại đây...');
     const [testcaseResults, setTestCaseResults] = useState<TestCaseMock[]>([]);
     const [isCompleted, setIsCompleted] = useState<boolean>(false);
@@ -55,6 +61,14 @@ const Practice: React.FC = () => {
     // 4. Quản trị Thống kê Xếp hạng & Lịch sử nộp bài
     const [submitStats, setSubmitStats] = useState<SubmitStats | null>(null);
     const [submissions, setSubmissions] = useState<SubmissionItem[]>([]);
+    const interactionStartedAtRef = React.useRef<number>(Date.now());
+    const interactionSessionIdRef = React.useRef<string>(crypto.randomUUID());
+
+    useEffect(() => {
+        if (!exercise?.id) return;
+        interactionStartedAtRef.current = Date.now();
+        interactionSessionIdRef.current = crypto.randomUUID();
+    }, [exercise?.id]);
 
     // Tải dữ liệu bài học từ API
     useEffect(() => {
@@ -68,6 +82,7 @@ const Practice: React.FC = () => {
             setSubmitStats(null);
             setSubmissions([]);
             setCompletedExercises({});
+            setAdaptiveComplete(false);
 
             try {
                 const data = await authService.getLessonDetail(id);
@@ -77,7 +92,7 @@ const Practice: React.FC = () => {
                     let exList = [...data.codingExercises];
 
                     // Lọc theo độ khó nếu có query param ?difficulty=EASY/MEDIUM/HARD
-                    if (difficultyFilter) {
+                    if (difficultyFilter && !adaptiveMode) {
                         exList = exList.filter((ex: any) => (ex.difficulty || '').toUpperCase() === difficultyFilter.toUpperCase());
                     }
 
@@ -92,8 +107,31 @@ const Practice: React.FC = () => {
                     });
 
                     if (exList.length > 0) {
+                        let initialIndex = 0;
+                        if (adaptiveMode) {
+                            const suggestion = await getModulePracticeRecommendation(id);
+                            if (suggestion.mode === 'COMPLETE') {
+                                setAdaptiveComplete(true);
+                                setExercises([]);
+                                setExercise(null);
+                                return;
+                            }
+                            if (suggestion.mode !== 'PALNET_SYNTHETIC_LOCAL_PILOT') {
+                                setError('Chưa thể tải bài tập PAL-Net được đề xuất. Hãy kiểm tra AI service rồi thử lại.');
+                                return;
+                            }
+                            initialIndex = exList.findIndex(ex => ex.id === suggestion.exerciseId);
+                            if (initialIndex < 0) {
+                                setError('Bài tập PAL-Net đề xuất không còn trong bài học này. Hãy tải lại trang.');
+                                return;
+                            }
+                            const nextParams = new URLSearchParams(window.location.search);
+                            nextParams.delete('difficulty');
+                            nextParams.set('exerciseId', suggestion.exerciseId);
+                            window.history.replaceState(window.history.state, '', `${window.location.pathname}?${nextParams.toString()}`);
+                        }
                         setExercises(exList);
-                        setCurrentExerciseIdx(0);
+                        setCurrentExerciseIdx(initialIndex);
 
                         const initialCodes: Record<string, string> = {};
                         exList.forEach((ex: any) => {
@@ -101,7 +139,7 @@ const Practice: React.FC = () => {
                         });
                         setUserCodes(initialCodes);
 
-                        const firstEx = exList[0];
+                        const firstEx = exList[initialIndex];
                         setExercise({
                             id: firstEx.id,
                             title: firstEx.title,
@@ -123,7 +161,7 @@ const Practice: React.FC = () => {
                         if (token) {
                             const compStatus: Record<string, boolean> = {};
                             await Promise.all(
-                                exList.map(async (ex: any) => {
+                                (adaptiveMode ? [firstEx] : exList).map(async (ex: any) => {
                                     try {
                                         const resSub = await axios.get(`${API_BASE_URL}/api/auth/exercises/${ex.id}/submissions`, {
                                             headers: { Authorization: `Bearer ${token}` }
@@ -137,12 +175,13 @@ const Practice: React.FC = () => {
                             );
                             setCompletedExercises(compStatus);
 
-                            const allExPassed = exList.every((ex: any) => compStatus[ex.id]);
+                            const allExPassed = !adaptiveMode && exList.every((ex: any) => compStatus[ex.id]);
                             if (allExPassed) {
                                 setIsCompleted(true);
                             }
                         }
                     } else {
+                        if (adaptiveMode) setError('Bài học này chưa có bài tập để PAL-Net đề xuất.');
                         setExercises([]);
                         setCurrentExerciseIdx(0);
                         setExercise(null);
@@ -150,6 +189,7 @@ const Practice: React.FC = () => {
                         setCustomInput('');
                     }
                 } else {
+                    if (adaptiveMode) setError('Bài học này chưa có bài tập để PAL-Net đề xuất.');
                     setExercises([]);
                     setCurrentExerciseIdx(0);
                     setExercise(null);
@@ -167,7 +207,7 @@ const Practice: React.FC = () => {
         };
 
         fetchLessonData();
-    }, [id, difficultyFilter]);
+    }, [id, difficultyFilter, adaptiveMode, requestedExerciseId]);
 
     const selectExercise = (idx: number) => {
         if (idx < 0 || idx >= exercises.length) return;
@@ -209,6 +249,43 @@ const Practice: React.FC = () => {
         setCode(newVal);
         if (exercise) {
             setUserCodes(prev => ({ ...prev, [exercise.id]: newVal }));
+        }
+    };
+
+    const handleNextExercise = async () => {
+        if (!adaptiveMode || !id) {
+            selectExercise(currentExerciseIdx + 1);
+            return;
+        }
+        setIsSelectingNext(true);
+        try {
+            const suggestion = await getModulePracticeRecommendation(id);
+            if (suggestion.mode === 'COMPLETE') {
+                setAdaptiveComplete(true);
+                return;
+            }
+            if (suggestion.mode !== 'PALNET_SYNTHETIC_LOCAL_PILOT') {
+                setConsoleOutput('Chưa thể chọn bài tiếp theo bằng PAL-Net trên local lúc này. Hãy kiểm tra AI service rồi thử lại.');
+                return;
+            }
+            if (suggestion.exerciseId === exercise?.id) {
+                setConsoleOutput('PAL-Net chưa trả về bài mới. Hãy thử lại sau.');
+                return;
+            }
+            const nextIndex = exercises.findIndex((item) => item.id === suggestion.exerciseId);
+            if (nextIndex < 0) {
+                setConsoleOutput('Bài được gợi ý không còn trong danh sách hiện tại. Hãy tải lại trang.');
+                return;
+            }
+            selectExercise(nextIndex);
+            const nextParams = new URLSearchParams(searchParams);
+            nextParams.delete('difficulty');
+            nextParams.set('exerciseId', suggestion.exerciseId);
+            window.history.replaceState(window.history.state, '', `${window.location.pathname}?${nextParams.toString()}`);
+        } catch {
+            setConsoleOutput('Không thể tải bài gợi ý lúc này. Hãy thử lại sau.');
+        } finally {
+            setIsSelectingNext(false);
         }
     };
 
@@ -277,7 +354,15 @@ const Practice: React.FC = () => {
             const token = localStorage.getItem('token');
             const response = await axios.post(
                 `${API_BASE_URL}/api/auth/exercises/${exercise.id}/submit`,
-                { code },
+                {
+                    code,
+                    telemetry: {
+                        sessionId: interactionSessionIdRef.current,
+                        openedAt: new Date(interactionStartedAtRef.current).toISOString(),
+                        activeTimeSeconds: Math.max(0, Math.floor((Date.now() - interactionStartedAtRef.current) / 1000)),
+                        hintCount: 0,
+                    },
+                },
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 }
@@ -296,12 +381,12 @@ const Practice: React.FC = () => {
 
                     setSubmitStats({ runtimeMs, runtimeBeats, distribution });
 
-                    const allPassedLesson = exercises.every(ex => updatedCompleted[ex.id]);
+                    const allPassedLesson = !adaptiveMode && exercises.every(ex => updatedCompleted[ex.id]);
                     if (allPassedLesson) {
                         setIsCompleted(true);
                         setConsoleOutput(`🎉 Tuyệt vời! Bạn đã vượt qua tất cả các bài tập trong bài học này.\nTrạng thái bài học: HOÀN THÀNH`);
                     } else {
-                        setConsoleOutput(`🎉 Tuyệt vời! Bạn đã vượt qua tất cả ${results.length}/${results.length} testcases của bài tập này.\nHãy tiếp tục hoàn thành các bài tập còn lại!`);
+                        setConsoleOutput(`🎉 Tuyệt vời! Bạn đã vượt qua tất cả ${results.length}/${results.length} testcases của bài tập này.\n${adaptiveMode ? 'Bấm “Bài phù hợp tiếp theo” để nhận đề mới.' : 'Hãy tiếp tục hoàn thành các bài tập còn lại!'}`);
                     }
 
                     if (activeLeftTab === 'submissions') {
@@ -309,7 +394,7 @@ const Practice: React.FC = () => {
                     }
                 } else {
                     setSubmitStats(null);
-                    const updatedCompleted = { ...completedExercises, [exercise.id]: false };
+                    const updatedCompleted = { ...completedExercises, [exercise.id]: adaptiveMode && completedExercises[exercise.id] ? true : false };
                     setCompletedExercises(updatedCompleted);
                     setIsCompleted(false);
                     if (failureType === 'COMPILE_ERROR') {
@@ -327,7 +412,7 @@ const Practice: React.FC = () => {
                 }
             } else {
                 setSubmitStats(null);
-                const updatedCompleted = { ...completedExercises, [exercise.id]: false };
+                const updatedCompleted = { ...completedExercises, [exercise.id]: adaptiveMode && completedExercises[exercise.id] ? true : false };
                 setCompletedExercises(updatedCompleted);
                 setIsCompleted(false);
                 setConsoleOutput(`❌ Lỗi biên dịch/thực thi:\n${response.data.output || 'Không xác định'}`);
@@ -364,6 +449,14 @@ const Practice: React.FC = () => {
             <div className="bg-bg-primary text-text-primary min-h-screen flex items-center justify-center font-sans">
                 <div className="text-center flex flex-col gap-4">
                     <span className="text-sm text-rose-400">{error || 'Không tìm thấy thông tin bài học.'}</span>
+                    {adaptiveMode && error && (
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="bg-accent-custom text-white px-4 py-2 rounded-lg text-xs font-semibold"
+                        >
+                            Thử lại
+                        </button>
+                    )}
                     <button
                         onClick={() => navigate('/dashboard')}
                         className="bg-bg-tertiary hover:bg-bg-tertiary/80 text-text-primary px-4 py-2 rounded-lg text-xs font-semibold border border-border-custom"
@@ -375,6 +468,26 @@ const Practice: React.FC = () => {
         );
     }
 
+    if (adaptiveMode && adaptiveComplete) {
+        return (
+            <div className="bg-bg-primary text-text-primary min-h-screen flex flex-col font-sans">
+                <PracticeHeader lessonTitle={lesson.title} roadmapId={roadmapId} />
+                <main className="flex-1 flex items-center justify-center p-6">
+                    <div className="max-w-md w-full rounded-xl border border-border-custom bg-bg-secondary p-8 text-center flex flex-col gap-4">
+                        <h1 className="text-xl font-bold">Đã hoàn thành các bài trong phạm vi PAL-Net</h1>
+                        <p className="text-sm text-text-secondary">Hiện không còn bài tập đủ điều kiện chưa hoàn thành để hệ thống đề xuất trong module này.</p>
+                        <button
+                            onClick={() => navigate(roadmapId ? `/roadmap/${roadmapId}` : '/dashboard')}
+                            className="bg-accent-custom text-white rounded-lg px-4 py-2 text-sm font-semibold"
+                        >
+                            {roadmapId ? 'Quay lại lộ trình' : 'Quay lại Dashboard'}
+                        </button>
+                    </div>
+                </main>
+            </div>
+        );
+    }
+
     const isCpp = lesson?.lessonId?.startsWith('CPP-') || /#include\s*<|std::/i.test(code);
     const isSql = !isCpp && (lesson?.lessonId?.startsWith('SQL-') || /SELECT|FROM/i.test(code));
     const isJs = !isCpp && !isSql && (lesson?.lessonId?.startsWith('JS-') || /console\.log|function\s*\(|let\s+|const\s+/i.test(code));
@@ -382,7 +495,7 @@ const Practice: React.FC = () => {
     return (
         <div className="bg-bg-primary text-text-primary min-h-screen flex flex-col font-sans select-none overflow-hidden h-screen transition-colors duration-200">
             {/* 1. Header Component */}
-            <PracticeHeader lessonTitle={lesson.title} />
+            <PracticeHeader lessonTitle={lesson.title} roadmapId={roadmapId} />
 
             {/* 2. Split Panels Container */}
             <main className="flex-1 overflow-hidden p-2">
@@ -391,6 +504,7 @@ const Practice: React.FC = () => {
                     <Panel defaultSize={35} minSize={25}>
                         <ProblemDescriptionPanel
                             lessonId={id || ''}
+                            adaptiveMode={adaptiveMode}
                             exercises={exercises}
                             currentExerciseIdx={currentExerciseIdx}
                             exercise={exercise}
@@ -440,13 +554,17 @@ const Practice: React.FC = () => {
                                     completedExercises={completedExercises}
                                     isCompleted={isCompleted}
                                     nextLessonId={lesson?.nextLessonId}
+                                    roadmapId={roadmapId}
                                     isRunning={isRunning}
                                     isSubmitting={isSubmitting}
+                                    adaptiveMode={adaptiveMode}
+                                    adaptiveComplete={adaptiveComplete}
+                                    isSelectingNext={isSelectingNext}
                                     onTabChange={setActiveTerminalTab}
                                     onCustomInputChange={setCustomInput}
                                     onRunCode={handleRunCode}
                                     onSubmitCode={handleSubmitCode}
-                                    onNextExercise={() => selectExercise(currentExerciseIdx + 1)}
+                                    onNextExercise={handleNextExercise}
                                     onCompleteWithoutExercise={handleCompleteWithoutExercise}
                                 />
                             </Panel>

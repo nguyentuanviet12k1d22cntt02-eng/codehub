@@ -35,3 +35,12 @@ DEVOPS_PLAN.md
 # Graphify Knowledge Graph artifacts
 graphify-out/
 
+# External research datasets and generated normalized rows
+ai-service/data/external/assistments_2009_2010/raw/*
+ai-service/data/external/assistments_2009_2010/processed/*
+!ai-service/data/external/assistments_2009_2010/raw/.gitkeep
+!ai-service/data/external/assistments_2009_2010/processed/.gitkeep
+
+# Generated Knowledge Tracing checkpoints, logs, and predictions
+ai-service/artifacts/knowledge_tracing/
+

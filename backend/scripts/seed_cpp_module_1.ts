@@ -1,6 +1,6 @@
 import { prisma } from '../src/infrastructure/database/prisma';
-import * as fs from 'fs';
 import * as path from 'path';
+import { readCppLessonMetadata } from './lib/cppLessonMetadata';
 
 async function main() {
     console.log('🚀 Bắt đầu triển khai trọn bộ 5 bài học của Module 1 (CPP-MOD-01)...');
@@ -420,13 +420,7 @@ int main() {
     // 5. Lặp qua từng bài học để nạp vào DB
     for (const item of lessonsData) {
         const filePath = path.join(docsDir, item.file);
-        let content = '';
-        if (fs.existsSync(filePath)) {
-            content = fs.readFileSync(filePath, 'utf-8');
-        } else {
-            console.warn(`⚠️ Không tìm thấy ${item.file}, dùng fallback content`);
-            content = `# ${item.title}`;
-        }
+        const metadata = readCppLessonMetadata(filePath);
 
         // Tạo hoặc update Lesson
         let lesson = await prisma.lesson.findFirst({
@@ -441,11 +435,11 @@ int main() {
                 data: {
                     chapterId: chapter1.id,
                     lessonId: item.lessonId,
-                    title: item.title,
-                    objective: item.objective,
-                    content,
-                    difficulty: item.difficulty as any,
-                    durationMinutes: item.durationMinutes,
+                    title: metadata.title,
+                    objective: metadata.objective,
+                    content: metadata.content,
+                    difficulty: metadata.difficulty as any,
+                    durationMinutes: metadata.durationMinutes,
                     isFree: true,
                     orderIndex: item.orderIndex
                 }
@@ -454,11 +448,11 @@ int main() {
             lesson = await prisma.lesson.update({
                 where: { id: lesson.id },
                 data: {
-                    title: item.title,
-                    objective: item.objective,
-                    content,
-                    difficulty: item.difficulty as any,
-                    durationMinutes: item.durationMinutes,
+                    title: metadata.title,
+                    objective: metadata.objective,
+                    content: metadata.content,
+                    difficulty: metadata.difficulty as any,
+                    durationMinutes: metadata.durationMinutes,
                     isFree: true,
                     orderIndex: item.orderIndex
                 }

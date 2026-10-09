@@ -1,5 +1,5 @@
 import { consumeSse } from './sse';
-import { internalHeaders, resumeCheckpoint } from './adaptiveEvidence';
+import { internalHeaders, resumeCheckpoint, verifiedTargetConcept } from './adaptiveEvidence';
 import { claimRetry, deferRun, dueRetries, finishRun, saveStage } from './adaptiveRepository';
 import { isRetryableProviderFailure, providerRetryDelay, upstreamPipelineTimeoutMs } from './adaptive.controller';
 
@@ -11,7 +11,10 @@ async function retryRun(row:any) {
     const priorRecords=Array.isArray(row.report?.agent_traces)?row.report.agent_traces:[];
     const sequenceOffset=priorRecords.reduce((highest:number,record:any)=>Math.max(highest,Number(record.sequence)||0),0);
     const checkpoint=resumeCheckpoint(row.report);
-    const body=JSON.stringify({...row.request,resume_report:checkpoint,run_attempt:Number(row.retry_count||0)+1,sequence_offset:sequenceOffset});
+    const targetConceptId=row.request?.target_concept_id || verifiedTargetConcept(row.report);
+    const body=JSON.stringify({...row.request,
+        ...(targetConceptId?{target_concept_id:targetConceptId}:{}),
+        resume_report:checkpoint,run_attempt:Number(row.retry_count||0)+1,sequence_offset:sequenceOffset});
     const controller=new AbortController();
     const timer=setTimeout(()=>controller.abort(),upstreamPipelineTimeoutMs);
     let report:any;

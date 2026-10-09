@@ -1,0 +1,22 @@
+{
+  "status": "PRETEST_RUNTIME_E2E_PASSED",
+  "startedAt": "2026-10-06T11:01:25.125Z",
+  "finishedAt": "2026-10-06T11:01:42.942Z",
+  "draftSha256": "9048eb9f86553977e47f5f99760c73e85c0d8c7122b002cc4de3c0629f1aba68",
+  "bankManifestSha256": "cec49bd63d24b3f0bcd62f754cd507566504642f153561779245fa9de6030b31",
+  "runtimeServiceSha256": "260d24f4a699c758fe9e00484852f7c72198b65af6f988b76d1f8889279d7a91",
+  "verificationScriptSha256": "e085e320b7a769f82a4e18596c91e446781702ceac78ee06115a37fd5be80cad",
+  "pretestPageSha256": "8146ad870ac82ffef8e867f9b182da72dcdfbb16d507527202c871d95c725694",
+  "resultPageSha256": "52fee788896bee145a81ce1f6e8646f05e6e198a9caf5d7dac74b84fb8112a4f",
+  "attemptQuestions": 12,
+  "objectivelyAndRunnerGraded": 12,
+  "skillProfiles": 9,
+  "score": 16.5,
+  "maxScore": 16.5,
+  "idempotentReplay": true,
+  "crossUserAccessBlocked": true,
+  "publicSecretsBlocked": true,
+  "dockerPracticalQuestions": 3,
+  "database": "configured PostgreSQL/Supabase",
+  "cleanup": "SYNTHETIC_USERS_DELETED"
+}

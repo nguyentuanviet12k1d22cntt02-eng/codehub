@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "learnpython-pretest-bank/1.0.0",
+  "items": [],
+  "sources": [
+    {
+      "language": "PYTHON",
+      "goalId": "GOAL_PY_BASICS",
+      "graphVersion": "2.1",
+      "bankVersion": "python-basics/1.0.0",
+      "contentFile": "pretestBank.pythonBasics.draft.json",
+      "contentSha256": "9048eb9f86553977e47f5f99760c73e85c0d8c7122b002cc4de3c0629f1aba68",
+      "approvedItemIds": [
+        "PT-PYB-001",
+        "PT-PYB-002",
+        "PT-PYB-003",
+        "PT-PYB-004",
+        "PT-PYB-005",
+        "PT-PYB-006",
+        "PT-PYB-007",
+        "PT-PYB-008",
+        "PT-PYB-009",
+        "PT-PYB-010",
+        "PT-PYB-011",
+        "PT-PYB-012"
+      ],
+      "source": "CURATED_VALIDATED",
+      "reviewStatus": "APPROVED",
+      "reviewers": [
+        "AI:INDEPENDENT-PYTHON-REVIEW-2026-10-06",
+        "AI:OPENAI-CODEX-TECHNICAL-REVIEW-2026-10-06"
+      ],
+      "validationReportSha256": "87ff389a320fafae38081c9229934168441118d68b324d42e04273f7254378de",
+      "runnerValidationSha256": "ff8c5a2b50da1f24c114e80f9b05312645b485fad6aaeff2e0f6c99dd932f8f4"
+    }
+  ]
+}

@@ -1,0 +1,192 @@
+{
+  "schema_version": "assistments-data-manifest/1.0.0",
+  "dataset": "ASSISTments 2009-2010 Skill Builder corrected collapsed",
+  "generated_at_utc": "2026-10-05T17:47:13.224014Z",
+  "source": {
+    "official_page_url": "https://sites.google.com/site/assistmentsdata/home/2009-2010-assistment-data/skill-builder-data-2009-2010",
+    "official_file_url": "https://drive.google.com/file/d/1NNXHFRxcArrU0ZJSb9BIL56vmUt5FhlE/view?usp=sharing",
+    "file_name": "skill_builder_data_corrected_collapsed.csv",
+    "retrieved_at": "2026-10-06",
+    "size_bytes": 64412812,
+    "sha256": "162ef8d2d28bcbfea6591a282994062bd8d5eaa00636544292a0d268dca6e5da",
+    "encoding": "cp1252",
+    "source_columns": [
+      "",
+      "order_id",
+      "assignment_id",
+      "user_id",
+      "assistment_id",
+      "problem_id",
+      "original",
+      "correct",
+      "attempt_count",
+      "ms_first_response",
+      "tutor_mode",
+      "answer_type",
+      "sequence_id",
+      "student_class_id",
+      "position",
+      "type",
+      "base_sequence_id",
+      "skill_id",
+      "skill_name",
+      "teacher_id",
+      "school_id",
+      "hint_count",
+      "hint_total",
+      "overlap_time",
+      "template_id",
+      "answer_id",
+      "answer_text",
+      "first_action",
+      "bottom_hint",
+      "opportunity",
+      "opportunity_original"
+    ]
+  },
+  "usage_conditions": {
+    "official_instruction": "Publications using the dataset must include the precise official dataset page URL and cite the ASSISTments reference listed there.",
+    "license_status": "No explicit license was displayed on the official dataset page at retrieval; raw data is not committed or redistributed by this repo.",
+    "redistribution_policy": "raw-and-normalized-event-files-gitignored"
+  },
+  "normalization": {
+    "policy_version": "assistments-2009-2010-normalization/1.0.0",
+    "script": "ai-service/scripts/normalize_assistments_2009_2010.py",
+    "required_source_columns": [
+      "user_id",
+      "order_id",
+      "problem_id",
+      "original",
+      "correct",
+      "skill_id"
+    ],
+    "output_columns": [
+      "event_id",
+      "user_id",
+      "order_id",
+      "problem_id",
+      "skill_id",
+      "correct",
+      "sequence_index",
+      "is_scored_event"
+    ],
+    "multiskill_output_columns": [
+      "event_id",
+      "user_id",
+      "order_id",
+      "problem_id",
+      "skill_ids",
+      "skill_count",
+      "correct",
+      "sequence_index",
+      "is_scored_event"
+    ],
+    "model_feature_columns": [
+      "problem_id",
+      "skill_id",
+      "sequence_index"
+    ],
+    "label_column": "correct",
+    "excluded_from_model_features": [
+      "correct",
+      "attempt_count",
+      "ms_first_response",
+      "hint_count",
+      "hint_total",
+      "overlap_time",
+      "answer_id",
+      "answer_text",
+      "first_action",
+      "bottom_hint",
+      "opportunity",
+      "opportunity_original"
+    ],
+    "grouping_columns": [
+      "user_id"
+    ],
+    "ordering_only_columns": [
+      "order_id",
+      "event_id"
+    ],
+    "filters_in_order": [
+      "valid user_id/order_id/problem_id",
+      "binary correct",
+      "original == 1",
+      "exactly one numeric skill_id",
+      "first row by order_id/problem_id/event_id per user_id/problem_id",
+      "at least two remaining events per learner"
+    ],
+    "within_learner_order": [
+      "order_id",
+      "problem_id",
+      "event_id"
+    ],
+    "sequence_index_base": 0,
+    "scoring_policy": "sequence_index > 0",
+    "no_current_answer_in_features": true
+  },
+  "artifacts": {
+    "main_events": {
+      "path": "processed/main_events.csv.gz",
+      "format": "csv.gz",
+      "size_bytes": 6586945,
+      "sha256": "d612d7464795bf7fa43c84ed19cb5f8855aadb636added5eb0d9192a2fc6026e"
+    },
+    "multiskill_events": {
+      "path": "processed/multiskill_events.csv.gz",
+      "format": "csv.gz",
+      "skill_ids_encoding": "JSON array in one event row",
+      "size_bytes": 8204330,
+      "sha256": "38a7e57a9b731b6d7a0583c1f0c16b9a405abf5cbec393b851ec0e5c72aeb692"
+    },
+    "normalization_report": {
+      "path": "normalization_report.json"
+    }
+  },
+  "counts": {
+    "source_rows": 346860,
+    "rows_invalid_identifiers": 0,
+    "rows_invalid_correct": 0,
+    "rows_non_original_or_invalid_original": 71402,
+    "rows_missing_or_invalid_skill": 16059,
+    "rows_multi_skill": 44974,
+    "rows_single_skill_candidates": 214425,
+    "rows_duplicate_student_problem": 2962,
+    "learners_after_deduplication": 4003,
+    "learners_removed_short_sequence": 158,
+    "rows_removed_short_sequence": 158,
+    "order_id_tie_groups": 0,
+    "rows_in_order_id_ties": 0,
+    "multiskill_rows_candidates": 259399,
+    "multiskill_rows_duplicate_student_problem": 3864,
+    "multiskill_learners_after_deduplication": 4163,
+    "multiskill_learners_removed_short_sequence": 141,
+    "multiskill_rows_removed_short_sequence": 141,
+    "main_sequence_min": 2,
+    "main_sequence_median": 19,
+    "main_sequence_p90_nearest_rank": 138,
+    "main_sequence_max": 707,
+    "multiskill_sequence_min": 2,
+    "multiskill_sequence_median": 20.0,
+    "multiskill_sequence_p90_nearest_rank": 153,
+    "multiskill_sequence_max": 913,
+    "main_history_events": 211305,
+    "main_scored_events": 207460,
+    "main_learners": 3845,
+    "main_skills": 101,
+    "main_problems": 13108,
+    "main_label_0": 72330,
+    "main_label_1": 138975,
+    "main_scored_label_0": 70683,
+    "main_scored_label_1": 136777,
+    "multiskill_history_events": 255394,
+    "multiskill_scored_events": 251372,
+    "multiskill_learners": 4022,
+    "multiskill_unique_skills": 123,
+    "multiskill_events_with_multiple_skills": 44052,
+    "multiskill_label_0": 87511,
+    "multiskill_label_1": 167883,
+    "multiskill_scored_label_0": 85737,
+    "multiskill_scored_label_1": 165635
+  }
+}

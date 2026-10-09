@@ -15,13 +15,15 @@ prerequisites: ["CPP-01.02"]
 * **Hằng số (`const`):** Ô nhớ có giá trị cố định, một khi đã khởi tạo thì không được phép thay đổi.
 * **Kiểu dữ liệu (Data Type):** Quy định kích thước bộ nhớ cần cấp phát và loại giá trị được phép chứa trong ô nhớ (số nguyên, số thực, ký tự...).
 
-| Kiểu dữ liệu | Kích thước | Phạm vi giá trị | Ứng dụng tiêu biểu |
+| Kiểu dữ liệu | Kích thước thường gặp trên máy 64-bit | Phạm vi giá trị thường gặp | Ứng dụng tiêu biểu |
 | :--- | :---: | :--- | :--- |
-| **`int`** | 4 byte | Khoảng -2 tỷ đến +2 tỷ | Đếm số lượng, chỉ số vòng lặp. |
-| **`long long`** | 8 byte | Khoảng -9 × 10¹⁸ đến +9 × 10¹⁸ | Bài toán số lớn, tính giai thừa, lũy thừa. |
-| **`double`** | 8 byte | Số thực dấu phẩy động (độ chính xác ~15 chữ số) | Điểm số, tiền tệ, số đo thực tế. |
-| **`char`** | 1 byte | 1 ký tự ASCII đặt trong dấu nháy đơn `'A'` | Ký tự chữ cái, phím gõ. |
-| **`bool`** | 1 byte | Chỉ nhận `true` (1) hoặc `false` (0) | Trạng thái cờ hiệu, điều kiện logic. |
+| **`int`** | thường 4 byte | thường khoảng -2 tỷ đến +2 tỷ | Đếm số lượng, chỉ số vòng lặp. |
+| **`long long`** | ít nhất 8 byte | ít nhất khoảng -9 × 10¹⁸ đến +9 × 10¹⁸ | Bài toán số lớn, tính giai thừa, lũy thừa. |
+| **`double`** | thường 8 byte | thường có khoảng 15 chữ số chính xác | Số đo thực tế; tiền tệ cần kiểu/chiến lược phù hợp miền bài toán. |
+| **`char`** | 1 byte C++ | một đơn vị mã; không đồng nghĩa luôn là một ký tự Unicode | Ký tự byte và dữ liệu văn bản mức thấp. |
+| **`bool`** | phụ thuộc implementation | chỉ nhận `true` hoặc `false` | Trạng thái cờ hiệu, điều kiện logic. |
+
+> Kích thước thực tế của nhiều kiểu phụ thuộc compiler và nền tảng. Khi kích thước là yêu cầu của bài toán, hãy kiểm tra bằng `sizeof`, `std::numeric_limits` hoặc dùng kiểu có độ rộng xác định trong `<cstdint>` như `std::int32_t` khi kiểu đó tồn tại.
 
 ## 2. Cú pháp & Quy tắc hoạt động
 
@@ -34,10 +36,10 @@ const kiểu_dữ_liệu TÊN_HẰNG_SỐ = giá_trị_cố_định;
 ### Minh họa ô nhớ trong RAM:
 ```text
 Khai báo: int tuoi = 18;
-Trong RAM: [ Ô nhớ 4 byte tên "tuoi" ] ──► Lưu giá trị: 18
+Trong RAM: [ Ô nhớ có kích thước do implementation quyết định ] ──► Lưu giá trị: 18
 
 Khai báo: const double PI = 3.14;
-Trong RAM: [ Ô nhớ 8 byte tên "PI" ]   ──► Khóa cố định: 3.14 (Read-only)
+Trong RAM: [ Đối tượng double ]   ──► Không thể gán lại qua tên PI sau khi khởi tạo
 ```
 
 ## 3. Ví dụ minh họa tinh gọn

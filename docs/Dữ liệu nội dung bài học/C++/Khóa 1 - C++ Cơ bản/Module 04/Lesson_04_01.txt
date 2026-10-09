@@ -4,7 +4,7 @@ title: "Cấu trúc Hàm (Function), Tham số và Giá trị trả về"
 difficulty: "EASY"
 estimatedDuration: 20
 keywords: ["function", "parameters", "return type", "modular programming"]
-prerequisites: ["CPP-03.01"]
+prerequisites: ["CPP-01.03"]
 ---
 
 # Cấu trúc Hàm (Function), Tham số và Giá trị trả về
@@ -61,8 +61,7 @@ int ketQua = tinhTong(5, 7); // ketQua nhận giá trị 12
 ### Ví dụ 2: Hàm kiểu `void` (chỉ thực hiện hành động, không trả về giá trị)
 ```cpp
 void inLoiChao(std::string ten) {
-    std::cout << "Xin chao ban: " << ten << '
-';
+    std::cout << "Xin chao ban: " << ten << '\n';
 }
 
 // Cách gọi hàm:

@@ -14,6 +14,8 @@ import app.pipeline.llm_client as llm_client_module
 from app.agents.intent_router_agent import IntentRouterAgent, ROUTER_SYSTEM_PROMPT
 from app.agents.adaptive_exercise_planner import AdaptiveExercisePlanner
 from app.agents.critic_evaluator_agent import CriticEvaluatorAgent
+from app.agents.explanation_tutor_agent import MAX_EXPLANATION_INPUT_CHARS, compact_explanation_request
+from app.agents.prerequisite_advisor_agent import PrerequisiteAdvisorAgent
 from app.contracts.routing import RoutingDecision
 from app.pipeline.llm_client import PipelineError, PipelineLLMClient, classify_provider_error, fair_attempt_timeout, parse_provider_json, retry_after_seconds, stage_budget_seconds
 from app.llm.key_pool_manager import AIKeyPoolManager
@@ -78,7 +80,7 @@ class PipelineTests(unittest.TestCase):
         route = IntentRouterAgent().route("Hãy tạo nội dung Def trong Python cho tôi")
         self.assertEqual(route.intent, "EXPLAIN_CONCEPT")
         self.assertEqual(route.language, "python")
-        self.assertEqual(route.topic, "def")
+        self.assertEqual(route.topic, "PY-FUNC-01")
 
     def test_explicit_learning_request_routes_without_an_llm_call(self):
         class FailingClient:
@@ -88,7 +90,84 @@ class PipelineTests(unittest.TestCase):
         route = IntentRouterAgent(FailingClient()).route("Tôi muốn học vòng lặp while trong python")
         self.assertEqual(route.intent, "EXPLAIN_CONCEPT")
         self.assertEqual(route.language, "python")
-        self.assertEqual(route.topic, "while")
+        self.assertEqual(route.topic, "PY-FLOW-02")
+
+    def test_cpp_vector_is_not_collapsed_into_static_array(self):
+        route = IntentRouterAgent().route("Hãy tạo cho tôi nội dung bài tập về vector trong C++ đi")
+        self.assertEqual(route.intent, "REQUEST_ADAPTIVE_EXERCISE")
+        self.assertEqual(route.language, "cpp")
+        self.assertEqual(route.topic, "CPP-VECTOR-01")
+        spec = AdaptiveExercisePlanner().plan_exercise(route, "u")
+        self.assertEqual(spec.target_concept, "CPP-VECTOR-01")
+        self.assertIn("vector", spec.required_constructs)
+
+    def test_python_list_slicing_and_mutable_request_targets_published_list_concept(self):
+        route = IntentRouterAgent().route(
+            "Hãy tạo cho tôi bài tập về Slicing trên List & Tính Mutable trong Python"
+        )
+        self.assertEqual(route.intent, "REQUEST_ADAPTIVE_EXERCISE")
+        self.assertEqual(route.language, "python")
+        self.assertEqual(route.topic, "PY-LIST-02")
+
+        spec = AdaptiveExercisePlanner().plan_exercise(route, "u")
+        self.assertEqual(spec.target_concept, "PY-LIST-02")
+        self.assertEqual(spec.concept_title, "Slicing trên List & Tính Mutable (Tham chiếu vs Bản sao)")
+
+    def test_python_list_readiness_uses_unified_personal_knowledge_evidence(self):
+        route = IntentRouterAgent().route(
+            "Hãy tạo cho tôi bài tập về Slicing trên List & Tính Mutable trong Python"
+        )
+        context = {"states": {
+            "PY-LIST-01": {"mastery": .7684, "confidence": .6558, "attempts": 4},
+            "PY-LIST-02": {"mastery": .98, "confidence": .99, "attempts": 46},
+        }}
+        advisor = PrerequisiteAdvisorAgent(AdaptiveLearningOrchestrator(Client, Sandbox).kg)
+        readiness = advisor.assess("python", route.topic, context)
+
+        self.assertTrue(readiness["ready"])
+        self.assertEqual(readiness["readiness_percent"], 98)
+        self.assertEqual(readiness["prerequisite_gaps"], [])
+
+    def test_router_canonicalizes_generic_array_to_the_list_concept_id(self):
+        route = IntentRouterAgent().route("Tạo bài Python về array")
+        self.assertEqual(route.topic, "PY-LIST-01")
+
+        spec = AdaptiveExercisePlanner().plan_exercise(route, "u")
+        self.assertEqual(spec.target_concept, "PY-LIST-01")
+
+    def test_planner_rejects_an_unmapped_label_instead_of_querying_it(self):
+        route = RoutingDecision(
+            intent="REQUEST_ADAPTIVE_EXERCISE", language="python", topic="array", user_text="Tạo bài Python về array"
+        )
+        with self.assertRaisesRegex(ValueError, "mã concept"):
+            AdaptiveExercisePlanner().plan_exercise(route, "u")
+
+    def test_short_confirmation_restores_pending_vector_target(self):
+        pending={"type":"PREREQUISITE_OVERRIDE","target_concept_id":"CPP-VECTOR-01",
+            "target_concept_name":"std::vector và dữ liệu hai chiều động","language":"cpp"}
+        route=IntentRouterAgent().route("Tiếp tục",{"language":"cpp","pending_confirmation":pending})
+        self.assertEqual(route.intent,"REQUEST_ADAPTIVE_EXERCISE")
+        self.assertEqual(route.topic,"CPP-VECTOR-01")
+        self.assertEqual(route.language,"cpp")
+
+    def test_vector_readiness_uses_full_prerequisite_chain(self):
+        orchestrator=AdaptiveLearningOrchestrator(Client,Sandbox)
+        advisor=PrerequisiteAdvisorAgent(orchestrator.kg)
+        chain=advisor.assess("cpp","CPP-VECTOR-01",{"states":{}})["prerequisite_statuses"]
+        states={item["concept_id"]:{"attempts":3,"mastery":.7,"confidence":.5} for item in chain}
+        assessment=advisor.assess("cpp","CPP-VECTOR-01",{"states":states})
+        self.assertTrue(assessment["ready"])
+        self.assertEqual(assessment["readiness_percent"],70)
+        self.assertEqual(assessment["prerequisite_gaps"],[])
+
+    def test_ready_direct_prerequisite_is_sufficient_even_without_legacy_ancestor_records(self):
+        orchestrator=AdaptiveLearningOrchestrator(Client,Sandbox)
+        advisor=PrerequisiteAdvisorAgent(orchestrator.kg)
+        assessment=advisor.assess("cpp","CPP-VECTOR-01",{"states":{
+            "CPP-ARRAY-01":{"attempts":3,"mastery":.72,"confidence":.55},
+        }})
+        self.assertTrue(assessment["ready"])
+        self.assertEqual(assessment["readiness_percent"],72)
 
     def test_routing_contract_requires_all_agent_owned_fields(self):
         with self.assertRaises(ValidationError):
@@ -189,6 +268,38 @@ class PipelineTests(unittest.TestCase):
         with llm_client_module._provider_lock:
             llm_client_module._provider_blocked_until.pop("GEMINI", None)
 
+    def test_oversized_request_skips_sibling_keys_and_preserves_fallback_budget(self):
+        pool = AIKeyPoolManager()
+        pool._provider_pools["GROQ"] = ["groq-key-a", "groq-key-b"]
+        pool._provider_pools["OPENROUTER"] = ["openrouter-key-a"]
+        pool._last_fetch_time = time.time()
+        sent_keys = []
+        responses = [
+            FakeProviderResponse(413),
+            FakeProviderResponse(200, {"id": "fallback-response", "model": "meta-llama/llama-3.3-70b-instruct",
+                "usage": {"total_tokens": 20}, "choices": [{"message": {"content": '{"reply":"ok"}'}}]}),
+        ]
+
+        def post(url, *args, **kwargs):
+            sent_keys.append(kwargs["headers"].get("Authorization"))
+            return responses.pop(0)
+
+        with llm_client_module._provider_lock:
+            llm_client_module._provider_blocked_until.pop("GROQ", None)
+            llm_client_module._provider_blocked_until.pop("OPENROUTER", None)
+        client = PipelineLLMClient(timeout_seconds=30)
+        model = lambda provider, *args: "llama-3.3-70b-versatile" if provider == "GROQ" else "meta-llama/llama-3.3-70b-instruct"
+        with patch.dict(os.environ, {"ADAPTIVE_PROVIDER": ""}, clear=False), \
+             patch.object(llm_client_module, "key_pool", pool), \
+             patch.object(client, "_model", side_effect=model), \
+             patch.object(llm_client_module.requests, "post", side_effect=post):
+            result = client.json("ExplanationTutorAgent", "theory", {"context": "large"})
+
+        self.assertEqual(result, {"reply": "ok"})
+        self.assertEqual(sent_keys, ["Bearer groq-key-a", "Bearer openrouter-key-a"])
+        self.assertEqual([call.get("http_status") for call in client.calls], [413, 200])
+        self.assertEqual(client._failed_keys("GROQ"), [])
+
     def test_failed_key_is_not_retried_later_in_the_same_pipeline_run(self):
         pool = AIKeyPoolManager()
         pool._provider_pools["GEMINI"] = ["gemini-key-a", "gemini-key-b"]
@@ -253,8 +364,62 @@ class PipelineTests(unittest.TestCase):
 
     def test_stage_budget_is_shared_by_keys_and_reserves_provider_time(self):
         self.assertEqual(stage_budget_seconds("CriticEvaluatorAgent"), 110)
+        self.assertEqual(stage_budget_seconds("ExplanationTutorAgent"), 90)
         self.assertLessEqual(fair_attempt_timeout("CriticEvaluatorAgent", 110, 11, 3), 9)
         self.assertEqual(fair_attempt_timeout("CriticEvaluatorAgent", 110, 2, 3, preferred=True), 28)
+
+    def test_large_gemini_pool_yields_to_groq_after_stage_attempt_limit(self):
+        pool = AIKeyPoolManager()
+        pool._provider_pools["GEMINI"] = [f"gemini-key-{index}" for index in range(5)]
+        pool._provider_pools["GROQ"] = ["groq-key-a"]
+        pool._last_fetch_time = time.time()
+        sent_keys = []
+        responses = [
+            FakeProviderResponse(503), FakeProviderResponse(503), FakeProviderResponse(503),
+            FakeProviderResponse(200, {"id": "groq-response", "model": "llama-3.3-70b-versatile",
+                "usage": {"total_tokens": 9}, "choices": [{"message": {"content":
+                '{"intent":"EXPLAIN_CONCEPT","language":"python","topic":"PY-LIST-02"}'}}]}),
+        ]
+
+        def post(url, *args, **kwargs):
+            headers = kwargs["headers"]
+            sent_keys.append(headers.get("x-goog-api-key") or headers.get("Authorization"))
+            return responses.pop(0)
+
+        with llm_client_module._provider_lock:
+            llm_client_module._provider_blocked_until.pop("GEMINI", None)
+            llm_client_module._provider_blocked_until.pop("GROQ", None)
+        client = PipelineLLMClient(timeout_seconds=30)
+        model = lambda provider, *args: "gemini-3.8-flash" if provider == "GEMINI" else "llama-3.3-70b-versatile"
+        with patch.dict(os.environ, {"ADAPTIVE_PROVIDER": ""}, clear=False), \
+             patch.object(llm_client_module, "key_pool", pool), \
+             patch.object(client, "_model", side_effect=model), \
+             patch.object(llm_client_module.requests, "post", side_effect=post):
+            result = client.json("ExerciseGeneratorAgent", "generator", {"request": "list slicing"})
+
+        self.assertEqual(result["topic"], "PY-LIST-02")
+        self.assertEqual(len(sent_keys), 4)
+        self.assertEqual(len(set(sent_keys[:3])), 3)
+        self.assertTrue(all(key.startswith("gemini-key-") for key in sent_keys[:3]))
+        self.assertEqual(sent_keys[-1], "Bearer groq-key-a")
+        self.assertTrue(any(call.get("error_code") == "PROVIDER_ATTEMPT_LIMIT_REACHED" for call in client.calls))
+
+    def test_theory_repair_prompt_is_bounded_but_keeps_contract_and_source_ids(self):
+        source_ids = [f"source-{index}" for index in range(3)]
+        context = {
+            "specification": {"target_concept": "CPP-VECTOR-01", "user_request": "x" * 8000,
+                "required_constructs": ["vector"], "forbidden_constructs": ["array"]},
+            "concept": {"description": "c" * 8000},
+            "sources": [{"id": source_id, "sha256": "hash", "excerpt": "s" * 9000} for source_id in source_ids],
+            "exercise": {**copy.deepcopy(DRAFT), "problem_statement": "p" * 9000, "reference_solution": "r" * 9000},
+            "previous_theory": "t" * 12000,
+        }
+        request = compact_explanation_request("CPP-VECTOR-01", "Vector", "cpp", "q" * 4000, context,
+            {**REVIEW, "feedback": "f" * 6000, "evidence": ["e" * 3000] * 10})
+
+        self.assertLessEqual(len(json.dumps(request, ensure_ascii=False)), MAX_EXPLANATION_INPUT_CHARS)
+        self.assertEqual([source["id"] for source in request["context"]["sources"]], source_ids)
+        self.assertEqual(request["context"]["specification"]["target_concept"], "CPP-VECTOR-01")
 
     def test_groq_model_policy_ignores_reasoning_configuration_and_cache(self):
         client = PipelineLLMClient(timeout_seconds=30)
@@ -440,6 +605,48 @@ class PipelineTests(unittest.TestCase):
         spec=AdaptiveExercisePlanner().plan_exercise(IntentRouterAgent().route("Tạo bài Python"),"u")
         self.assertFalse(CriticEvaluatorAgent(client).evaluate_content("theory",DRAFT,spec)["is_approved"])
 
+    def test_compatibility_only_rejection_repairs_theory_not_verified_exercise(self):
+        client=Client()
+        client.json=lambda *args: {**REVIEW, "is_approved":False, "compatibility_approved":False,
+            "feedback_target":"BOTH", "feedback":"Lý thuyết chưa gắn rõ với yêu cầu của bài tập đã kiểm thử."}
+        spec=AdaptiveExercisePlanner().plan_exercise(IntentRouterAgent().route("Tạo bài Python"),"u")
+        review=CriticEvaluatorAgent(client).evaluate_content("theory",DRAFT,spec)
+        self.assertFalse(review["is_approved"])
+        self.assertEqual(review["feedback_target"],"THEORY")
+
+    def test_theory_only_repair_reuses_sandbox_verified_exercise(self):
+        class RepairsTheory(Client):
+            def __init__(self):
+                super().__init__()
+                self.critic_calls=0
+            def json(self,stage,system,data):
+                if stage=="CriticEvaluatorAgent":
+                    self.calls.append(dict(stage=stage,provider="TEST_DOUBLE",status="SUCCEEDED"))
+                    self.critic_calls+=1
+                    if self.critic_calls==1:
+                        return {**REVIEW, "is_approved":False, "compatibility_approved":False,
+                            "feedback_target":"BOTH", "feedback":"Cần đồng bộ phần áp dụng với bài tập đã kiểm thử."}
+                    return copy.deepcopy(REVIEW)
+                return super().json(stage,system,data)
+        class CountingSandbox(Sandbox):
+            calls=0
+            @staticmethod
+            def validate(draft,spec,timeout=40):
+                CountingSandbox.calls+=1
+                return Sandbox.validate(draft,spec,timeout)
+
+        client=RepairsTheory()
+        result=AdaptiveLearningOrchestrator(lambda:client,CountingSandbox).process_turn(
+            "u",[{"sender":"USER","content":"Tạo bài Python"}])
+
+        self.assertEqual(result["status"],"SUCCEEDED")
+        self.assertEqual(client.exercise_calls,1)
+        self.assertEqual(CountingSandbox.calls,1)
+        self.assertEqual([call["stage"] for call in client.calls],[
+            "ExerciseGeneratorAgent","ExplanationTutorAgent","CriticEvaluatorAgent",
+            "ExplanationTutorAgent","CriticEvaluatorAgent",
+        ])
+
     def test_success_has_stage_evidence(self):
         events=[]
         result=AdaptiveLearningOrchestrator(Client,Sandbox).process_turn("u",[{"sender":"USER","content":"Tạo bài Python"}],event_callback=events.append)
@@ -448,6 +655,56 @@ class PipelineTests(unittest.TestCase):
         self.assertTrue(all(r.get("ended_at") and r.get("input_hash") for r in result["agent_traces"]))
         self.assertEqual(result["agent_traces"][-1]["agent"],"PublicationGate")
         self.assertEqual(result["exercise"]["artifact_hash"],digest({k:v for k,v in result["exercise"].items() if k!="artifact_hash"}))
+
+    def test_explicit_vector_request_waits_for_prerequisite_confirmation(self):
+        result=AdaptiveLearningOrchestrator(Client,Sandbox).process_turn(
+            "u",[{"sender":"USER","content":"Tạo bài tập vector trong C++"}],learner_context={"states":{},"language":"cpp"})
+
+        self.assertEqual(result["status"],"AWAITING_CONFIRMATION")
+        self.assertIsNone(result["exercise"])
+        self.assertEqual(result["pending_confirmation"]["target_concept_id"],"CPP-VECTOR-01")
+        self.assertEqual(result["readiness"]["recommended_path"][-1],"CPP-VECTOR-01")
+        self.assertIn("CPP-ARRAY-01",result["readiness"]["prerequisite_gaps"])
+        self.assertEqual([record["agent"] for record in result["agent_traces"]],[
+            "IntentRouterAgent","PrerequisiteAdvisorAgent",
+        ])
+
+    def test_confirmed_vector_request_keeps_target_and_adapts_to_readiness(self):
+        vector_draft=copy.deepcopy(DRAFT)
+        vector_draft.update(
+            title="Tính tổng phần tử trong vector",
+            problem_statement=("Đọc số nguyên n và n phần tử, lưu toàn bộ dữ liệu bằng std::vector<int>, "
+                "sau đó tính tổng và in kết quả. Bài tập bắt buộc sử dụng vector thay cho mảng tĩnh."),
+            quick_theory="std::vector quản lý dãy động; push_back thêm phần tử và range-for giúp duyệt an toàn.",
+            starter_code="#include <iostream>\n#include <vector>\nint main() { /* TODO */ return 0; }",
+            reference_solution=("#include <iostream>\n#include <vector>\nusing namespace std;\n"
+                "int main(){int n,x,sum=0;cin>>n;vector<int> values;while(n--){cin>>x;values.push_back(x);}"
+                "for(int value:values)sum+=value;cout<<sum;return 0;}"),
+            test_cases=[dict(input=f"{count}\n"+" ".join(str(value) for value in values)+"\n",
+                expected_output=str(sum(values)),is_hidden=index>=2,category="boundary" if index in (1,3) else "normal",
+                explanation="Kiểm tra tổng các phần tử vector.")
+                for index,(count,values) in enumerate([(3,[1,2,3]),(1,[0]),(2,[-2,5]),(4,[1,1,1,1])])],
+        )
+        class VectorClient(Client):
+            def json(self,stage,system,data):
+                if stage=="ExerciseGeneratorAgent":
+                    self.calls.append(dict(stage=stage,provider="TEST_DOUBLE",status="SUCCEEDED"))
+                    self.exercise_calls+=1
+                    return copy.deepcopy(vector_draft)
+                return super().json(stage,system,data)
+
+        pending={"type":"PREREQUISITE_OVERRIDE","target_concept_id":"CPP-VECTOR-01",
+            "target_concept_name":"std::vector và dữ liệu hai chiều động","language":"cpp"}
+        client=VectorClient()
+        result=AdaptiveLearningOrchestrator(lambda:client,Sandbox).process_turn(
+            "u",[{"sender":"USER","content":"Vẫn tạo bài vector cho tôi"}],
+            learner_context={"states":{},"language":"cpp","pending_confirmation":pending})
+
+        self.assertEqual(result["status"],"SUCCEEDED")
+        self.assertEqual(result["exercise"]["concept_id"],"CPP-VECTOR-01")
+        self.assertEqual(result["exercise"]["difficulty"],"EASY")
+        self.assertTrue(result["exercise"]["spec_snapshot"]["learner_evidence"]["forced_prerequisite_override"])
+        self.assertIn("vector",result["exercise"]["spec_snapshot"]["required_constructs"])
 
     def test_verified_checkpoint_retries_only_critic(self):
         original=AdaptiveLearningOrchestrator(Client,Sandbox).process_turn("u",[{"sender":"USER","content":"Tạo bài Python"}],trace_id="trace_checkpoint")
@@ -483,6 +740,35 @@ class PipelineTests(unittest.TestCase):
             sequence_offset=max(record["sequence"] for record in checkpoint["agent_traces"]))
         self.assertEqual(resumed["status"],"SUCCEEDED")
         self.assertEqual([call["stage"] for call in client.calls],["ExplanationTutorAgent","CriticEvaluatorAgent"])
+        self.assertFalse(any(record["agent"]=="ExerciseGeneratorAgent" for record in resumed["agent_traces"]))
+
+    def test_resume_repairs_theory_against_verified_exercise(self):
+        original=AdaptiveLearningOrchestrator(Client,Sandbox).process_turn(
+            "u",[{"sender":"USER","content":"Tạo bài Python"}],trace_id="trace_resume_theory_repair")
+        class ResumeRepairClient(Client):
+            def __init__(self):
+                super().__init__()
+                self.critic_calls=0
+            def json(self,stage,system,data):
+                if stage=="CriticEvaluatorAgent":
+                    self.calls.append(dict(stage=stage,provider="TEST_DOUBLE",status="SUCCEEDED"))
+                    self.critic_calls+=1
+                    if self.critic_calls==1:
+                        return {**REVIEW, "is_approved":False, "compatibility_approved":False,
+                            "feedback_target":"BOTH", "feedback":"Lý thuyết cũ chưa đồng bộ với candidate hiện tại."}
+                    return copy.deepcopy(REVIEW)
+                return super().json(stage,system,data)
+
+        client=ResumeRepairClient()
+        resumed=AdaptiveLearningOrchestrator(lambda:client,Sandbox).process_turn(
+            "u",[{"sender":"USER","content":"Tạo bài Python"}],trace_id="trace_resume_theory_repair",
+            resume_report=original,run_attempt=2,
+            sequence_offset=max(record["sequence"] for record in original["agent_traces"]))
+
+        self.assertEqual(resumed["status"],"SUCCEEDED")
+        self.assertEqual([call["stage"] for call in client.calls],[
+            "CriticEvaluatorAgent","ExplanationTutorAgent","CriticEvaluatorAgent",
+        ])
         self.assertFalse(any(record["agent"]=="ExerciseGeneratorAgent" for record in resumed["agent_traces"]))
 
     def test_failed_sandbox_never_publishes(self):

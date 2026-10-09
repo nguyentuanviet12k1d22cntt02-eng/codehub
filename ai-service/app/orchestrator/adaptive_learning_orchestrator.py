@@ -5,6 +5,7 @@ from app.agents.adaptive_exercise_planner import AdaptiveExercisePlanner
 from app.agents.exercise_generator_agent import ExerciseGeneratorAgent
 from app.agents.critic_evaluator_agent import CriticEvaluatorAgent
 from app.agents.explanation_tutor_agent import ExplanationTutorAgent
+from app.agents.prerequisite_advisor_agent import PrerequisiteAdvisorAgent
 from app.services.knowledge_graph_service import KnowledgeGraphService
 from app.pipeline.grounding import GroundingService
 from app.pipeline.llm_client import PipelineLLMClient, PipelineError
@@ -43,7 +44,8 @@ class AdaptiveLearningOrchestrator:
                 resumed = self._resume_verified_candidate(resume_report, trace_id, evidence, client, intent, result, user_text)
                 if resumed is not None:
                     return resumed
-            routing = evidence.step("IntentRouterAgent", "RULES_OR_LLM", {"request": user_text, "language": language, "last_concept_id": context.get("last_concept_id")},
+            routing = evidence.step("IntentRouterAgent", "RULES_OR_LLM", {"request": user_text, "language": language,
+                "last_concept_id": context.get("last_concept_id"), "pending_confirmation": context.get("pending_confirmation")},
                 lambda: IntentRouterAgent(client).route(user_text, {**context, "language": language or context.get("language", "python")}, trace_id))
             intent = routing.intent
             if intent in ("GENERAL_CHAT", "EXPLAIN_CONCEPT", "ASK_KNOWLEDGE", "CHECK_WEAKNESS"):
@@ -72,8 +74,57 @@ class AdaptiveLearningOrchestrator:
                     lambda: ExplanationTutorAgent(client).explain(spec.target_concept, spec.concept_title, spec.language, user_text, {"specification": spec.model_dump(), **grounding}))
                 return result("SUCCEEDED", theory["reply"])
 
-            spec = evidence.step("AdaptiveExercisePlanner", "RULE_POLICY", {"routing": routing.model_dump(), "learner_context": context},
-                lambda: AdaptiveExercisePlanner(self.kg).plan_exercise(routing, user_id, target_concept_id, context))
+            planner_context = context
+            if intent == "REQUEST_ADAPTIVE_EXERCISE":
+                requested_concept = target_concept_id or self.kg.resolve_concept_by_topic(routing.language, routing.topic)
+                if requested_concept:
+                    advisor = PrerequisiteAdvisorAgent(self.kg)
+                    readiness = evidence.step("PrerequisiteAdvisorAgent", "KNOWLEDGE_GRAPH_AND_LEARNER_STATE",
+                        {"language": routing.language, "target_concept_id": requested_concept,
+                         "learner_state_count": len(context.get("states", {}))},
+                        lambda: advisor.assess(routing.language, requested_concept, context))
+                    pending = context.get("pending_confirmation")
+                    force_override = (
+                        advisor.is_override_confirmation(user_text, pending)
+                        and isinstance(pending, dict)
+                        and pending.get("target_concept_id") == requested_concept
+                    )
+                    if not readiness["ready"] and not force_override:
+                        lines = [
+                            f"Bạn đang muốn học **{readiness['target_concept_name']}** (`{requested_concept}`).",
+                            f"Mức sẵn sàng theo bằng chứng hiện có: **{readiness['readiness_percent']}%** "
+                            f"(độ phủ bằng chứng {round(readiness['evidence_coverage'] * 100)}%).",
+                            "",
+                            "Các kiến thức tiên quyết cần ưu tiên:",
+                        ]
+                        for item in readiness["prerequisite_statuses"]:
+                            measure = (f"mastery {item['mastery']:.0%}, confidence {item['confidence']:.0%}"
+                                       if item["attempts"] else "chưa có kết quả làm bài đã kiểm chứng")
+                            marker = "✓" if item["ready"] else "•"
+                            lines.append(f"- {marker} **{item['concept_name']}** (`{item['concept_id']}`): {measure}.")
+                        recommended_id = readiness.get("recommended_concept_id")
+                        recommended_name = readiness.get("recommended_concept_name")
+                        lines.extend(["", f"Đề xuất ưu tiên: **{recommended_name}** (`{recommended_id}`).",
+                            "Bạn có thể học phần nền tảng trước, hoặc xác nhận vẫn tiếp tục để mình tạo bài đúng chủ đề yêu cầu ở mức EASY và tăng scaffold."])
+                        pending_confirmation = {
+                            "type": "PREREQUISITE_OVERRIDE",
+                            "target_concept_id": requested_concept,
+                            "target_concept_name": readiness["target_concept_name"],
+                            "language": routing.language,
+                            "readiness_score": readiness["readiness_score"],
+                            "recommended_concept_id": recommended_id,
+                        }
+                        return result("AWAITING_CONFIRMATION", "\n".join(lines),
+                            readiness=readiness, pending_confirmation=pending_confirmation,
+                            suggested_options=[
+                                f"Tạo bài {recommended_id} trước",
+                                f"Vẫn tạo bài {readiness['target_concept_name']} cho tôi",
+                            ])
+                    planner_context = {**context, "readiness_assessment": readiness,
+                                       "force_prerequisite_override": force_override}
+
+            spec = evidence.step("AdaptiveExercisePlanner", "RULE_POLICY", {"routing": routing.model_dump(), "learner_context": planner_context},
+                lambda: AdaptiveExercisePlanner(self.kg).plan_exercise(routing, user_id, target_concept_id, planner_context))
             grounding = evidence.step("KnowledgeRetrievalService", "LOCAL_GRAPH_AND_FILES", {"language": spec.language, "concept_id": spec.target_concept},
                 lambda: GroundingService().retrieve(spec, self.kg))
             spec.source_refs = [{"id": s["id"], "sha256": s["sha256"]} for s in grounding["sources"]]
@@ -85,37 +136,39 @@ class AdaptiveLearningOrchestrator:
                 client.remaining()
                 def make_theory():
                     return evidence.step("ExplanationTutorAgent", "LLM",
-                        {"specification": spec.model_dump(), "grounding": grounding, "feedback": feedback, "previous_theory": theory},
+                        {"specification": spec.model_dump(), "grounding": grounding, "exercise": draft,
+                         "feedback": feedback, "previous_theory": theory},
                         lambda: explainer.explain(spec.target_concept, spec.concept_title, spec.language, user_text,
-                            {"specification": spec.model_dump(), **grounding, "previous_theory": theory}, feedback), attempt)
+                            {"specification": spec.model_dump(), **grounding, "exercise": draft,
+                             "previous_theory": theory}, feedback), attempt)
                 def make_exercise():
                     return evidence.step("ExerciseGeneratorAgent", "LLM",
                         {"specification": spec.model_dump(), "feedback": feedback, "previous_draft": draft},
                         lambda: generator.generate(spec, feedback, draft), attempt)
-                if repair_target in ("BOTH", "EXERCISE"):
+                candidate_changed = draft is None or repair_target in ("BOTH", "EXERCISE")
+                if candidate_changed:
                     draft = make_exercise()
-
-                def schema_check():
-                    passed, errors = SchemaValidator.validate(draft, spec)
-                    return {"passed": passed, "errors": errors, "schema_version": "4.0"}
-                schema = evidence.step("SchemaValidator", "PYDANTIC_AND_RULES", {"draft": draft, "specification": spec.model_dump()}, schema_check, attempt)
-                if not schema["passed"]:
-                    feedback, repair_target = schema, "EXERCISE"
-                    continue
-                def syntax_check():
-                    passed, errors = AstConstraintValidator.validate(draft, spec)
-                    return {"passed": passed, "errors": errors, "scope": "python_ast_or_language_tokens"}
-                syntax = evidence.step("ConstraintValidator", "STATIC_ANALYSIS", {"reference_solution": draft["reference_solution"], "specification": spec.model_dump()}, syntax_check, attempt)
-                if not syntax["passed"]:
-                    feedback, repair_target = syntax, "EXERCISE"
-                    continue
-                def run_tests():
-                    passed, errors, tests = self.sandbox.validate(draft, spec, min(90, client.remaining()))
-                    return {"passed": passed, "errors": errors, "test_results": tests, "harness_version": "adaptive_harness_v4"}
-                validation = evidence.step("SandboxValidator", "DOCKER_EXECUTION", {"draft": draft, "specification": spec.model_dump()}, run_tests, attempt)
-                if not validation["passed"]:
-                    feedback, repair_target = validation, "EXERCISE"
-                    continue
+                    def schema_check():
+                        passed, errors = SchemaValidator.validate(draft, spec)
+                        return {"passed": passed, "errors": errors, "schema_version": "4.0"}
+                    schema = evidence.step("SchemaValidator", "PYDANTIC_AND_RULES", {"draft": draft, "specification": spec.model_dump()}, schema_check, attempt)
+                    if not schema["passed"]:
+                        feedback, repair_target = schema, "EXERCISE"
+                        continue
+                    def syntax_check():
+                        passed, errors = AstConstraintValidator.validate(draft, spec)
+                        return {"passed": passed, "errors": errors, "scope": "python_ast_or_language_tokens"}
+                    syntax = evidence.step("ConstraintValidator", "STATIC_ANALYSIS", {"reference_solution": draft["reference_solution"], "specification": spec.model_dump()}, syntax_check, attempt)
+                    if not syntax["passed"]:
+                        feedback, repair_target = syntax, "EXERCISE"
+                        continue
+                    def run_tests():
+                        passed, errors, tests = self.sandbox.validate(draft, spec, min(90, client.remaining()))
+                        return {"passed": passed, "errors": errors, "test_results": tests, "harness_version": "adaptive_harness_v4"}
+                    validation = evidence.step("SandboxValidator", "DOCKER_EXECUTION", {"draft": draft, "specification": spec.model_dump()}, run_tests, attempt)
+                    if not validation["passed"]:
+                        feedback, repair_target = validation, "EXERCISE"
+                        continue
                 # Generate/revise theory only after the candidate source has
                 # passed the deterministic checks. This prevents simultaneous
                 # high-token calls from exhausting the same provider key.
@@ -188,7 +241,31 @@ class AdaptiveLearningOrchestrator:
                         {"specification": spec.model_dump(), **grounding}), 1)
             review = evidence.step("CriticEvaluatorAgent", "LLM", {"theory": theory, "draft": draft, "specification": spec.model_dump(), "resumed": True},
                 lambda: CriticEvaluatorAgent(client).evaluate_content(theory["reply"], draft, spec), 1)
+            # A checkpoint can contain a verified exercise paired with an
+            # earlier theory version (for example when a repair call timed
+            # out). Repair that smaller artifact in place instead of failing
+            # every durable retry on the same compatibility finding.
+            for repair_attempt in range(2, 4):
+                if review["is_approved"] or review["feedback_target"] != "THEORY" or not isinstance(grounding, dict):
+                    break
+                previous_theory = theory
+                theory = evidence.step("ExplanationTutorAgent", "LLM",
+                    {"specification": spec.model_dump(), "grounding": grounding, "exercise": draft,
+                     "feedback": review, "previous_theory": previous_theory, "resumed": True},
+                    lambda: ExplanationTutorAgent(client).explain(
+                        spec.target_concept, spec.concept_title, spec.language, user_text,
+                        {"specification": spec.model_dump(), **grounding, "exercise": draft,
+                         "previous_theory": previous_theory}, review), repair_attempt)
+                review = evidence.step("CriticEvaluatorAgent", "LLM",
+                    {"theory": theory, "draft": draft, "specification": spec.model_dump(), "resumed": True},
+                    lambda: CriticEvaluatorAgent(client).evaluate_content(theory["reply"], draft, spec), repair_attempt)
             if not review["is_approved"]:
+                if review["feedback_target"] in ("EXERCISE", "BOTH"):
+                    # The verified checkpoint itself needs replacement. Let
+                    # the normal bounded workflow create and validate a fresh
+                    # candidate in this same run instead of persisting a dead
+                    # checkpoint across retries.
+                    return None
                 return result("FAILED", "Pipeline dừng tại bước chưa đạt. Bạn có thể xem dẫn chứng và lỗi cụ thể bên dưới.",
                     error={"code": "CRITIC_REJECTED_AFTER_RESUME", "message": review.get("feedback", "Critic chưa duyệt candidate đã lưu.")})
             artifact = self._verified_artifact(draft, spec, theory, trace_id)

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { authService } from '../../../services/authService';
-import { ThemeToggle } from '../../../components/ThemeToggle';
-import UserMenuDropdown from '../../../components/UserMenuDropdown';
+import AppNavbar from '../../../components/AppNavbar';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../config/api';
+import { getModulePracticeRecommendation, type ModulePracticeRecommendation } from '../services/modulePracticeRecommendation';
 
 interface DBLesson {
     id: string;
@@ -20,6 +20,7 @@ const ModulePracticeSelect: React.FC = () => {
     const [lesson, setLesson] = useState<DBLesson | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
+    const [recommendation, setRecommendation] = useState<ModulePracticeRecommendation | null>(null);
     const [completionStatus, setCompletionStatus] = useState<{
         easy: { total: number; completed: number };
         medium: { total: number; completed: number };
@@ -35,11 +36,24 @@ const ModulePracticeSelect: React.FC = () => {
             if (!lessonId) return;
             setLoading(true);
             setError('');
+            setRecommendation(null);
+            setCompletionStatus({
+                easy: { total: 0, completed: 0 },
+                medium: { total: 0, completed: 0 },
+                hard: { total: 0, completed: 0 },
+            });
             try {
                 const data = await authService.getLessonDetail(lessonId);
                 setLesson(data);
+                const suggestion = await getModulePracticeRecommendation(lessonId)
+                    .catch((): ModulePracticeRecommendation => ({ mode: 'MANUAL', reason: 'LOCAL_MODEL_UNAVAILABLE' }));
+                const validSuggestion: ModulePracticeRecommendation = suggestion.mode === 'PALNET_SYNTHETIC_LOCAL_PILOT' &&
+                    !data.codingExercises?.some((ex: any) => ex.id === suggestion.exerciseId)
+                    ? { mode: 'MANUAL', reason: 'EXERCISE_NOT_IN_LESSON' } : suggestion;
+                setRecommendation(validSuggestion);
 
-                if (data.codingExercises && data.codingExercises.length > 0) {
+                if (validSuggestion.mode === 'MANUAL' && validSuggestion.reason !== 'NO_VERIFIED_EXERCISES' &&
+                    data.codingExercises && data.codingExercises.length > 0) {
                     const easyExs = data.codingExercises.filter((ex: any) => ex.difficulty === 'EASY');
                     const mediumExs = data.codingExercises.filter((ex: any) => ex.difficulty === 'MEDIUM');
                     const hardExs = data.codingExercises.filter((ex: any) => ex.difficulty === 'HARD');
@@ -89,8 +103,8 @@ const ModulePracticeSelect: React.FC = () => {
     if (loading) {
         return (
             <div className="bg-bg-primary text-text-primary min-h-screen flex items-center justify-center font-sans">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-10 h-10 border-4 border-accent-custom border-t-transparent rounded-full animate-spin"></div>
+                <div className="flex flex-col items-center gap-4" role="status" aria-live="polite">
+                    <div className="w-10 h-10 border-4 border-accent-custom border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
                     <span className="text-xs text-text-tertiary">Đang tải thông tin các bài tập...</span>
                 </div>
             </div>
@@ -112,44 +126,10 @@ const ModulePracticeSelect: React.FC = () => {
             </div>
         );
     }
-
-    const isJsModule = lesson?.lessonId?.startsWith('JS-');
-    const isCppModule = lesson?.lessonId?.startsWith('CPP-');
-
     return (
         <div className="bg-bg-primary text-text-primary min-h-screen font-sans transition-colors duration-200">
-            {/* Header navbar */}
-            <header className="flex justify-between items-center px-6 py-4 md:px-10 border-border-custom bg-bg-secondary sticky top-0 z-50 transition-colors duration-200">
-                <div className="flex items-center gap-3">
-                    <span
-                        className="text-2xl font-extrabold tracking-tight text-text-primary cursor-pointer hover:opacity-85 no-underline"
-                        onClick={() => navigate('/dashboard')}
-                    >
-                        MCODE
-                    </span>
-                    <span className="text-[9px] font-bold bg-accent-bg text-accent-custom px-1.5 py-0.5 rounded border border-accent-border tracking-wider uppercase">
-                        {isJsModule ? 'JAVASCRIPT' : isCppModule ? 'C++' : 'PYTHON'}
-                    </span>
-                </div>
-                <nav className="hidden md:flex gap-8">
-                    <Link to="/dashboard" className="text-text-tertiary hover:text-text-primary no-underline text-[13px] font-semibold tracking-[0.8px] transition-colors">
-                        Dashboard
-                    </Link>
-                    <Link to="/adaptive-practice" className="text-text-tertiary hover:text-text-primary no-underline text-[13px] font-semibold tracking-[0.8px] transition-colors">
-                        Rèn luyện thích ứng
-                    </Link>
-                    <Link to="/practice-arena" className="text-text-tertiary hover:text-text-primary no-underline text-[13px] font-semibold tracking-[0.8px] transition-colors">
-                        Đấu trường Luyện tập
-                    </Link>
-                    <Link to="/profile" className="text-text-tertiary hover:text-text-primary no-underline text-[13px] font-semibold tracking-[0.8px] transition-colors">
-                        Tri thức cá nhân
-                    </Link>
-                </nav>
-                <div className="flex items-center gap-3">
-                    <ThemeToggle />
-                    <UserMenuDropdown />
-                </div>
-            </header>
+            {/* Header navbar đồng bộ */}
+            <AppNavbar />
 
             {/* Breadcrumb điều hướng */}
             <div className="flex items-center flex-wrap gap-2 px-6 py-4 md:px-10 text-xs text-text-tertiary border-b border-border-custom bg-bg-secondary/40">
@@ -171,12 +151,52 @@ const ModulePracticeSelect: React.FC = () => {
                         {lesson.title}
                     </h1>
                     <p className="text-text-secondary text-sm md:text-base max-w-[800px] leading-relaxed m-0">
-                        Hệ thống bài tập ôn tập được thiết kế đầy đủ và bài bản để đo lường mức độ tiếp thu các khái niệm của {moduleId ? moduleId.replace('MOD-', 'Module ') : 'Module'}. Lọc theo độ khó để bắt đầu làm bài và tích luỹ điểm học tập.
+                        {recommendation?.mode === 'PALNET_SYNTHETIC_LOCAL_PILOT'
+                            ? 'PAL-Net chọn một bài luyện tập từ lịch sử làm bài của bạn. Mức độ khó vẫn mô tả độ khó của từng bài.'
+                            : 'Chọn bài luyện tập của module. Gợi ý PAL-Net hiện chỉ khả dụng cho các bài Python đã được kiểm chứng trong thử nghiệm local.'}
                     </p>
                 </section>
 
+                {recommendation?.mode === 'PALNET_SYNTHETIC_LOCAL_PILOT' && (
+                    <section className="rounded-2xl border border-accent-border bg-accent-bg/40 p-6 md:p-8 text-left flex flex-col md:flex-row md:items-center gap-6" aria-label="Bài tập được gợi ý">
+                        <div className="flex-1">
+                            <span className="text-[11px] font-extrabold uppercase tracking-wider text-accent-custom">Bài phù hợp tiếp theo · Thử nghiệm local</span>
+                            <h2 className="text-xl md:text-2xl font-black text-text-primary mt-2 mb-2">{recommendation.title}</h2>
+                            <p className="text-sm text-text-secondary m-0">
+                                Mức {recommendation.difficulty === 'EASY' ? 'Dễ' : recommendation.difficulty === 'MEDIUM' ? 'Khá' : 'Khó'} · PAL-Net dùng các lần làm bài trước để đề xuất mức luyện tập.
+                            </p>
+                            <p className="text-xs text-text-tertiary mt-3 mb-0">Kết quả này dùng checkpoint mô phỏng để thử giao diện local.</p>
+                        </div>
+                        <button
+                            onClick={() => navigate(`/practice/${lessonId}?adaptive=1&exerciseId=${encodeURIComponent(recommendation.exerciseId)}`)}
+                            className="bg-accent-custom hover:bg-accent-hover text-white dark:text-[#030303] px-6 py-3 rounded-xl font-bold text-sm border-none cursor-pointer shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-custom"
+                        >
+                            Làm bài được gợi ý →
+                        </button>
+                    </section>
+                )}
+
+                {recommendation?.mode === 'COMPLETE' && (
+                    <p className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-5 text-sm text-emerald-400 m-0" role="status">
+                        Bạn đã hoàn thành các bài tập được kiểm chứng của module này.
+                    </p>
+                )}
+
+                {recommendation?.mode === 'MANUAL' && recommendation.reason === 'NO_VERIFIED_EXERCISES' && (
+                    <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-5 text-sm text-amber-400 m-0" role="status">
+                        Bộ bài tổng hợp này cần được cập nhật testcase trước khi PAL-Net có thể đề xuất bài trên local.
+                    </p>
+                )}
+
+                {recommendation?.mode === 'MANUAL' && recommendation.reason === 'LOCAL_MODEL_UNAVAILABLE' && (
+                    <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-5 text-sm text-amber-400 m-0" role="status">
+                        PAL-Net local chưa sẵn sàng. Bạn vẫn có thể chọn bài theo mức độ khó bên dưới.
+                    </p>
+                )}
+
                 {/* Difficulty Tiers section */}
-                <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {recommendation?.mode === 'MANUAL' && recommendation.reason !== 'NO_VERIFIED_EXERCISES' &&
+                    <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {/* DỄ */}
                     <div className="bg-bg-secondary border border-border-custom rounded-2xl p-6 flex flex-col justify-between transition-all duration-200 hover:border-emerald-500/30 group shadow-sm text-left">
                         <div className="flex flex-col gap-5">
@@ -293,7 +313,7 @@ const ModulePracticeSelect: React.FC = () => {
                             Bắt đầu giải bài →
                         </button>
                     </div>
-                </section>
+                </section>}
 
                 {/* Back button */}
                 <div className="border-t border-border-custom pt-8 flex">

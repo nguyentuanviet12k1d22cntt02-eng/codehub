@@ -8,6 +8,7 @@ export interface TestCaseData {
 
 export interface ExerciseData {
   title: string;
+  legacyTitles?: string[];
   difficulty: ExerciseDifficulty;
   problemDescription: string;
   starterCode: string;
@@ -302,9 +303,9 @@ export const exercisesData: Record<string, ExerciseData[]> = {
     {
       title: 'Chào hỏi người dùng',
       difficulty: ExerciseDifficulty.EASY,
-      problemDescription: 'Viết chương trình nhận tên của người dùng từ bàn phím bằng hàm `input()`. In ra màn hình câu chào có dạng `"Xin chào, [tên]!"`.',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'name = input()\nprint(f"Xin chào, {name}!")',
+      problemDescription: 'Viết chương trình nhận tên của người dùng từ bàn phím bằng hàm `input()` (không truyền chuỗi gợi ý bên trong để phù hợp chấm tự động). In ra màn hình câu chào có dạng `"Xin chào, [tên]!"` bằng phép nối chuỗi (dấu +).',
+      starterCode: 'name = input()\n# In câu chào bằng phép nối chuỗi (dấu +) ở đây\n',
+      solutionCode: 'name = input()\nprint("Xin chào, " + name + "!")',
       testCases: [
         {
           input: 'Nam\n',
@@ -2707,311 +2708,539 @@ export const exercisesData: Record<string, ExerciseData[]> = {
     }
   ],
   'LS-03.MP_FOR': [
-    {
-      title: 'Đếm số lượng số chẵn và lẻ từ 1 đến n',
-      difficulty: ExerciseDifficulty.EASY,
-      problemDescription: '### **Bài tập 1: Đếm số lượng số chẵn và lẻ từ 1 đến n**\n\n- **Mô tả**:\nNhập một số nguyên dương n và đếm số lượng số chẵn và số lẻ từ 1 đến n.\n- **Input**:\nMột số nguyên dương n (ví dụ: 10).\n- **Output**:\nSố lượng số chẵn và số lẻ từ 1 đến n (ví dụ: "Số chẵn: 5, Số lẻ: 5").',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint(":\\n")',
-      testCases: [
-        { input: ':\n', expectedOutput: ':\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Tính tổng các số chẵn',
-      difficulty: ExerciseDifficulty.EASY,
-      problemDescription: '### **Bài 2: Tính tổng các số chẵn**\n\n- **Mô tả**: Nhập một số nguyên dương `n` và tính tổng các số chẵn từ 1 đến `n`.\n- **Input**: Một số nguyên dương `n` (ví dụ: 10).\n- **Output**: Tổng các số chẵn từ 1 đến `n` (ví dụ: 30, vì 2 + 4 + 6 + 8 + 10 = 30).\n- **Gợi ý**: Dùng vòng lặp `for` từ 1 đến `n`, dùng `if` để kiểm tra số chẵn (`số % 2 == 0`), rồi cộng vào biến tổng.',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint(": Tổng các số chẵn từ 1 đến n (ví dụ: 30, vì 2 + 4 + 6 + 8 + 10 = 30).\\n")',
-      testCases: [
-        { input: ': Một số nguyên dương n (ví dụ: 10).\n', expectedOutput: ': Tổng các số chẵn từ 1 đến n (ví dụ: 30, vì 2 + 4 + 6 + 8 + 10 = 30).\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Tìm số lớn nhất trong danh sách',
-      difficulty: ExerciseDifficulty.EASY,
-      problemDescription: '### **Bài 3: Tìm số lớn nhất trong danh sách**\n\n- **Mô tả**: Nhập số lượng phần tử và danh sách các số nguyên, sau đó tìm số lớn nhất.\n- **Input**: Số lượng phần tử `n`, rồi `n` số nguyên (ví dụ: 5, rồi 3 1 4 1 5).\n- **Output**: Số lớn nhất (ví dụ: 5).\n- **Gợi ý**: Khởi tạo biến `max_value` bằng số đầu tiên, dùng vòng lặp `for` để so sánh từng số với `max_value`, nếu lớn hơn thì cập nhật lại `max_value`.',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint(": Số lớn nhất (ví dụ: 5).\\n")',
-      testCases: [
-        { input: ': Số lượng phần tử n, rồi n số nguyên (ví dụ: 5, rồi 3 1 4 1 5).\n', expectedOutput: ': Số lớn nhất (ví dụ: 5).\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'In bảng cửu chương',
-      difficulty: ExerciseDifficulty.MEDIUM,
-      problemDescription: '### **Bài 4: In bảng cửu chương**\n\n- **Mô tả**: Nhập một số nguyên dương `n` và in bảng cửu chương từ 1 đến `n`.\n- **Input**: Một số nguyên dương `n` (ví dụ: 3).\n- **Output**: Bảng cửu chương từ 1 đến `n` (ví dụ:\n    \n    ```\n    1x1 = 1\n    1x2 = 2\n    1x3 = 3\n    ...\n    1x10 = 10\n    ....\n    \n    2x1 =2\n    ..\n    2x10 = 20\n    \n    ```\n    \n- **Gợi ý**: Dùng hai vòng lặp `for` lồng nhau: vòng ngoài từ 1 đến `n` (hàng), vòng trong từ 1 đến `n` (cột), in ra phép nhân.',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint(": Bảng cửu chương từ 1 đến n (ví dụ:\\n")',
-      testCases: [
-        { input: ': Một số nguyên dương n (ví dụ: 3).\n', expectedOutput: ': Bảng cửu chương từ 1 đến n (ví dụ:\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Kiểm tra chuỗi palindrome',
-      difficulty: ExerciseDifficulty.MEDIUM,
-      problemDescription: '### **Bài 5: Kiểm tra chuỗi palindrome**\n\n- **Mô tả**: Nhập một chuỗi và kiểm tra xem nó có phải chuỗi palindrome không (chuỗi đọc xuôi ngược đều giống nhau).\n- **Input**: Một chuỗi `s` (ví dụ: "radar").\n- **Output**: "YES" nếu là palindrome, "NO" nếu không phải (ví dụ: "YES").\n- **Gợi ý**: Dùng vòng lặp `for` để so sánh ký tự từ đầu và cuối chuỗi, nếu có cặp nào khác nhau thì in "NO", ngược lại in "YES".',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint(": \\"YES\\" nếu là palindrome, \\"NO\\" nếu không phải (ví dụ: \\"YES\\").\\n")',
-      testCases: [
-        { input: ': Một chuỗi s (ví dụ: "radar").\n', expectedOutput: ': "YES" nếu là palindrome, "NO" nếu không phải (ví dụ: "YES").\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Tính giai thừa',
-      difficulty: ExerciseDifficulty.EASY,
-      problemDescription: '### **Bài 6: Tính giai thừa**\n\n- **Mô tả**: Nhập một số nguyên dương `n` và tính giai thừa của nó (giai thừa là tích các số từ 1 đến `n`).\n- **Input**: Một số nguyên dương `n` (ví dụ: 5).\n- **Output**: Giai thừa của `n` (ví dụ: 120, vì 1 * 2 * 3 * 4 * 5 = 120).\n- **Gợi ý**: Dùng vòng lặp `for` từ 1 đến `n`, nhân từng số vào biến kết quả.',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint(": Giai thừa của n (ví dụ: 120, vì 1  2  3  4  5 = 120).\\n")',
-      testCases: [
-        { input: ': Một số nguyên dương n (ví dụ: 5).\n', expectedOutput: ': Giai thừa của n (ví dụ: 120, vì 1  2  3  4  5 = 120).\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Đảo ngược danh sách',
-      difficulty: ExerciseDifficulty.EASY,
-      problemDescription: '### **Bài 7: Đảo ngược danh sách**\n\n- **Mô tả**: Nhập số lượng phần tử và danh sách các số nguyên, sau đó in danh sách theo thứ tự đảo ngược.\n- **Input**: Số lượng phần tử `n`, rồi `n` số nguyên (ví dụ: 4, rồi 1 2 3 4).\n- **Output**: Danh sách đảo ngược (ví dụ: 4 3 2 1).\n- **Gợi ý**: Lưu danh sách vào một biến, dùng vòng lặp `for` từ chỉ số cuối về đầu để in ra từng phần tử.',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint(": Danh sách đảo ngược (ví dụ: 4 3 2 1).\\n")',
-      testCases: [
-        { input: ': Số lượng phần tử n, rồi n số nguyên (ví dụ: 4, rồi 1 2 3 4).\n', expectedOutput: ': Danh sách đảo ngược (ví dụ: 4 3 2 1).\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Tìm số Fibonacci thứ n',
-      difficulty: ExerciseDifficulty.MEDIUM,
-      problemDescription: '### **Bài 8: Tìm số Fibonacci thứ n**\n\n- **Mô tả**: Nhập một số nguyên dương `n` và tính số Fibonacci thứ `n` (dãy Fibonacci: 0, 1, 1, 2, 3, 5, 8, ...).\n- **Input**: Một số nguyên dương `n` (ví dụ: 6).\n- **Output**: Số Fibonacci thứ `n` (ví dụ: 5, vì dãy là 0 1 1 2 3 5).\n- **Gợi ý**: Dùng vòng lặp `for`, khởi tạo hai số đầu (0 và 1), sau đó tính số tiếp theo bằng tổng hai số trước.',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint(": Số Fibonacci thứ n (ví dụ: 5, vì dãy là 0 1 1 2 3 5).\\n")',
-      testCases: [
-        { input: ': Một số nguyên dương n (ví dụ: 6).\n', expectedOutput: ': Số Fibonacci thứ n (ví dụ: 5, vì dãy là 0 1 1 2 3 5).\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Kiểm tra số hoàn hảo',
-      difficulty: ExerciseDifficulty.MEDIUM,
-      problemDescription: '### **Bài 9: Kiểm tra số hoàn hảo**\n\n- **Mô tả**: Nhập một số nguyên dương `n` và kiểm tra xem nó có phải số hoàn hảo không (số hoàn hảo là số bằng tổng các ước của nó trừ chính nó).\n- **Input**: Một số nguyên dương `n` (ví dụ: 6).\n- **Output**: "YES" nếu là số hoàn hảo, "NO" nếu không phải (ví dụ: "YES", vì 1 + 2 + 3 = 6).\n- **Gợi ý**: Dùng vòng lặp `for` từ 1 đến `n-1`, kiểm tra ước bằng `%`, tính tổng các ước và so sánh với `n`.',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint(": \\"YES\\" nếu là số hoàn hảo, \\"NO\\" nếu không phải (ví dụ: \\"YES\\", vì 1 + 2 + 3 = 6).\\n")',
-      testCases: [
-        { input: ': Một số nguyên dương n (ví dụ: 6).\n', expectedOutput: ': "YES" nếu là số hoàn hảo, "NO" nếu không phải (ví dụ: "YES", vì 1 + 2 + 3 = 6).\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Tính tổng các số đảo ngược',
-      difficulty: ExerciseDifficulty.MEDIUM,
-      problemDescription: '### BÀi 10: Tính tổng các số đảo ngược\n\nNhập số n sao cho n > 1 và n < 100 \n\nin ra các số có tận cùng là 3,5,7, 9 và là số nguyên tố trong khoảng từ 1 đến n \n\nví dụ n=13 \n\nIn ra: 3,5,7,13\n\nn=17 \n\nIn ra: \n\n3,5,7,13,17\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'n = int(input())\nres = []\nfor x in range(2, n + 1):\n    if x % 10 in [3, 5, 7, 9]:\n        is_prime = True\n        for i in range(2, int(x**0.5) + 1):\n            if x % i == 0:\n                is_prime = False\n                break\n        if is_prime:\n            res.append(str(x))\nprint(",".join(res))\n',
-      testCases: [
-        { input: '13\n', expectedOutput: '3,5,7,13\n', isHidden: false },
-        { input: '17\n', expectedOutput: '3,5,7,13,17\n', isHidden: false },
-        { input: '30\n', expectedOutput: '3,5,7,13,17,19,23,29\n', isHidden: true }
-      ]
-    },
-    {
-      title: 'Tìm ước chung lớn nhất (GCD)',
-      difficulty: ExerciseDifficulty.HARD,
-      problemDescription: '### **Bài 11: Tìm ước chung lớn nhất (GCD)**\n\n- **Mô tả**: Nhập hai số nguyên dương `a` và `b`, tìm ước chung lớn nhất của chúng.\n- **Input**: Hai số nguyên dương `a`, `b` (ví dụ: 12 và 18).\n- **Output**: Ước chung lớn nhất (ví dụ: 6).\n- **Gợi ý**:\n    - Dùng thuật toán Euclid:\n        - Trong khi `b != 0`, thay thế `a = b` và `b = a % b`.\n        - Khi `b == 0`, `a` là GCD.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint(": Ước chung lớn nhất (ví dụ: 6).\\n")',
-      testCases: [
-        { input: ': Hai số nguyên dương a, b (ví dụ: 12 và 18).\n', expectedOutput: ': Ước chung lớn nhất (ví dụ: 6).\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Đếm ký tự nguyên âm trong chuỗi',
-      difficulty: ExerciseDifficulty.MEDIUM,
-      problemDescription: '### **Bài 12: Đếm ký tự nguyên âm trong chuỗi**\n\n- **Mô tả**: Nhập một chuỗi và đếm số lượng ký tự nguyên âm (`a, e, i, o, u`, không phân biệt hoa/thường).\n- **Input**: Một chuỗi `s` (ví dụ: "Hello World").\n- **Output**: Số lượng nguyên âm (ví dụ: 3).\n- **Gợi ý**:\n    - Chuyển chuỗi về chữ thường (`s.lower()`), sau đó dùng vòng lặp `for` để kiểm tra từng ký tự.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint(": Số lượng nguyên âm (ví dụ: 3).\\n")',
-      testCases: [
-        { input: ': Một chuỗi s (ví dụ: "Hello World").\n', expectedOutput: ': Số lượng nguyên âm (ví dụ: 3).\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Tính tổng dãy số nhập từ người dùng',
-      difficulty: ExerciseDifficulty.MEDIUM,
-      problemDescription: '### Bài 13: Tính tổng dãy số nhập từ người dùng\n\n- **Mô tả**: Nhập các số nguyên từ người dùng cho đến khi nhập `1`, sau đó tính tổng các số đã nhập.\n- **Input**: Dãy số nguyên (ví dụ: 5, 3, -1).\n- **Output**: Tổng các số (ví dụ: 8).\n- **Gợi ý**:\n    - Dùng vòng lặp `while True` để nhập liên tục, dùng `if` để kiểm tra nếu nhập `1` thì dừng.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint(": Tổng các số (ví dụ: 8).\\n")',
-      testCases: [
-        { input: ': Dãy số nguyên (ví dụ: 5, 3, -1).\n', expectedOutput: ': Tổng các số (ví dụ: 8).\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'In bảng số nguyên từ 1 đến n²',
-      difficulty: ExerciseDifficulty.HARD,
-      problemDescription: '### **Bài 14: In bảng số nguyên từ 1 đến n²**\n\n- **Mô tả**: Nhập một số nguyên dương `n`, in ra bảng số nguyên từ `1` đến `n²` theo dạng ma trận `n x n`.\n- **Input**: Một số nguyên dương `n` (ví dụ: 3).\n- **Output**:\n    \n    ```\n    1 2 3\n    4 5 6\n    7 8 9\n    \n    ```\n    \n- **Gợi ý**:\n    - Dùng hai vòng lặp `for`: vòng ngoài quản lý hàng, vòng trong quản lý cột.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint(":\\n")',
-      testCases: [
-        { input: ': Một số nguyên dương n (ví dụ: 3).\n', expectedOutput: ':\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Tính tổng các chữ số của một số',
-      difficulty: ExerciseDifficulty.HARD,
-      problemDescription: '### **Bài 15: Tính tổng các chữ số của một số**\n\n- **Mô tả**: Nhập một số nguyên dương `n`, tính tổng các chữ số của `n`.\n- **Input**: Một số nguyên dương `n` (ví dụ: 123).\n- **Output**: Tổng các chữ số (ví dụ: 6).\n- **Gợi ý**:\n    - Dùng vòng lặp `while` hoặc `for` kết hợp với phép chia `%` và `//`.',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint(": Tổng các chữ số (ví dụ: 6).\\n")',
-      testCases: [
-        { input: ': Một số nguyên dương n (ví dụ: 123).\n', expectedOutput: ': Tổng các chữ số (ví dụ: 6).\n', isHidden: false }
-      ]
-    }
-  ],
+  {
+    "title": "In lời chào N lần",
+    "legacyTitles": [
+      "Đảo ngược danh sách"
+    ],
+    "difficulty": ExerciseDifficulty.EASY,
+    "problemDescription": "Nhập `n`. In `Xin chào Python` đúng `n` lần.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\nfor _ in range(n):\n    print(\"Xin chào Python\")",
+    "testCases": [
+      {
+        "input": "2\n",
+        "expectedOutput": "Xin chào Python\nXin chào Python\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "In các số từ 1 đến N",
+    "legacyTitles": [
+      "Đếm ký tự nguyên âm trong chuỗi"
+    ],
+    "difficulty": ExerciseDifficulty.EASY,
+    "problemDescription": "Nhập `n`. In từ 1 đến `n`, mỗi số trên một dòng.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\nfor i in range(1,n+1):\n    print(i)",
+    "testCases": [
+      {
+        "input": "3\n",
+        "expectedOutput": "1\n2\n3\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "In các số chẵn đến N",
+    "legacyTitles": [
+      "Đếm số lượng số chẵn và lẻ từ 1 đến n"
+    ],
+    "difficulty": ExerciseDifficulty.EASY,
+    "problemDescription": "Nhập `n`. In các số chẵn từ 2 đến `n`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\nfor i in range(2,n+1,2):\n    print(i)",
+    "testCases": [
+      {
+        "input": "6\n",
+        "expectedOutput": "2\n4\n6\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Đếm ngược bằng for",
+    "legacyTitles": [
+      "In bảng cửu chương"
+    ],
+    "difficulty": ExerciseDifficulty.EASY,
+    "problemDescription": "Nhập `n`. In từ `n` về 1.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\nfor i in range(n,0,-1):\n    print(i)",
+    "testCases": [
+      {
+        "input": "3\n",
+        "expectedOutput": "3\n2\n1\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Tính tổng từ 1 đến N",
+    "legacyTitles": [
+      "In bảng số nguyên từ 1 đến n²"
+    ],
+    "difficulty": ExerciseDifficulty.EASY,
+    "problemDescription": "Nhập `n`. In tổng từ 1 đến `n`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\ntong=0\nfor i in range(1,n+1):\n    tong+=i\nprint(tong)",
+    "testCases": [
+      {
+        "input": "5\n",
+        "expectedOutput": "15\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Tính tổng các số chẵn",
+    "legacyTitles": [
+      "Kiểm tra chuỗi palindrome"
+    ],
+    "difficulty": ExerciseDifficulty.EASY,
+    "problemDescription": "Nhập `n`. In tổng số chẵn từ 1 đến `n`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\ntong=0\nfor i in range(2,n+1,2):\n    tong+=i\nprint(tong)",
+    "testCases": [
+      {
+        "input": "10\n",
+        "expectedOutput": "30\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Đếm số chia hết cho 3",
+    "legacyTitles": [
+      "Kiểm tra số hoàn hảo"
+    ],
+    "difficulty": ExerciseDifficulty.EASY,
+    "problemDescription": "Nhập `n`. Đếm số từ 1 đến `n` chia hết cho 3.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\ndem=0\nfor i in range(1,n+1):\n    if i%3==0:\n        dem+=1\nprint(dem)",
+    "testCases": [
+      {
+        "input": "10\n",
+        "expectedOutput": "3\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Tính tích từ 1 đến N",
+    "legacyTitles": [
+      "Tìm số Fibonacci thứ n"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập `n >= 0`. In tích từ 1 đến `n`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\ntich=1\nfor i in range(1,n+1):\n    tich*=i\nprint(tich)",
+    "testCases": [
+      {
+        "input": "5\n",
+        "expectedOutput": "120\n",
+        "isHidden": false
+      },
+      {
+        "input": "0\n",
+        "expectedOutput": "1\n",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "title": "In bảng nhân của một số",
+    "legacyTitles": [
+      "Tìm số lớn nhất trong danh sách"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập `n`. In bảng nhân của `n` từ 1 đến 10 theo mẫu `n x i = ket_qua`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\nfor i in range(1,11):\n    print(f\"{n} x {i} = {n*i}\")",
+    "testCases": [
+      {
+        "input": "2\n",
+        "expectedOutput": "2 x 1 = 2\n2 x 2 = 4\n2 x 3 = 6\n2 x 4 = 8\n2 x 5 = 10\n2 x 6 = 12\n2 x 7 = 14\n2 x 8 = 16\n2 x 9 = 18\n2 x 10 = 20\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Tổng số chia hết cho 3 hoặc 5",
+    "legacyTitles": [
+      "Tìm ước chung lớn nhất (GCD)"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập `n`. Tính tổng số từ 1 đến `n` chia hết cho 3 hoặc 5.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\ntong=0\nfor i in range(1,n+1):\n    if i%3==0 or i%5==0:\n        tong+=i\nprint(tong)",
+    "testCases": [
+      {
+        "input": "10\n",
+        "expectedOutput": "33\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Đếm số chẵn dương trong đoạn",
+    "legacyTitles": [
+      "Tính giai thừa"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập `a`, `b` với `a <= b`. Đếm số chẵn dương trong `[a,b]`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "a=int(input())\nb=int(input())\ndem=0\nfor i in range(a,b+1):\n    if i>0 and i%2==0:\n        dem+=1\nprint(dem)",
+    "testCases": [
+      {
+        "input": "-2\n6\n",
+        "expectedOutput": "3\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Tìm số chia hết cho 7 đầu tiên",
+    "legacyTitles": [
+      "Tính tổng các chữ số của một số"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập `a`, `b`. In số đầu tiên chia hết cho 7 hoặc `KHONG CO`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "a=int(input())\nb=int(input())\ntim=False\nfor i in range(a,b+1):\n    if i%7==0:\n        print(i)\n        tim=True\n        break\nif not tim:\n    print(\"KHONG CO\")",
+    "testCases": [
+      {
+        "input": "8\n20\n",
+        "expectedOutput": "14\n",
+        "isHidden": false
+      },
+      {
+        "input": "1\n5\n",
+        "expectedOutput": "KHONG CO\n",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "title": "Đếm số lẻ trong đoạn",
+    "legacyTitles": [
+      "Tính tổng các số chẵn"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập `a`, `b`. Đếm số lẻ trong đoạn `[a,b]`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "a=int(input())\nb=int(input())\ndem=0\nfor i in range(a,b+1):\n    if i%2!=0:\n        dem+=1\nprint(dem)",
+    "testCases": [
+      {
+        "input": "2\n8\n",
+        "expectedOutput": "3\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "In bình phương từ 1 đến N",
+    "legacyTitles": [
+      "Tính tổng các số đảo ngược"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập `n`. Với mỗi số từ 1 đến `n`, in bình phương của số đó.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\nfor i in range(1,n+1):\n    print(i*i)",
+    "testCases": [
+      {
+        "input": "4\n",
+        "expectedOutput": "1\n4\n9\n16\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Tính tổng trong đoạn A đến B",
+    "legacyTitles": [
+      "Tính tổng dãy số nhập từ người dùng"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập `a`, `b` với `a <= b`. Tính tổng mọi số trong đoạn `[a,b]`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "a=int(input())\nb=int(input())\ntong=0\nfor i in range(a,b+1):\n    tong+=i\nprint(tong)",
+    "testCases": [
+      {
+        "input": "3\n6\n",
+        "expectedOutput": "18\n",
+        "isHidden": false
+      }
+    ]
+  }
+],
   'LS-03.MP_WHILE': [
-    {
-      title: 'Đếm ngược đơn giản',
-      difficulty: ExerciseDifficulty.EASY,
-      problemDescription: '### **Bài 1: Đếm ngược đơn giản**\n\n- **Mô tả:** Nhập một số nguyên dương `n`. Sử dụng vòng lặp `while` để đếm ngược từ `n` về 1 và in ra từng số.\n- **Input:**\n    - Một số nguyên dương `n` (ví dụ: `5`).\n- **Output:**\n    - Các số được in trên từng dòng, đếm ngược từ `n` về 1.\n- **Ví dụ:**\n    \n    `# Input:\n    # 5\n    # Output:\n    # 5\n    # 4\n    # 3\n    # 2\n    # 1`\n    \n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- Các số được in trên từng dòng, đếm ngược từ n về 1.\\n")',
-      testCases: [
-        { input: '- Một số nguyên dương n (ví dụ: 5).\n', expectedOutput: '- Các số được in trên từng dòng, đếm ngược từ n về 1.\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Tính tổng các số từ 1 đến N',
-      difficulty: ExerciseDifficulty.EASY,
-      problemDescription: '### **Bài 2: Tính tổng các số từ 1 đến N**\n\n- **Mô tả:** Nhập một số nguyên dương `N`. Sử dụng vòng lặp `while` để tính và in ra tổng các số nguyên từ 1 đến `N`.\n- **Input:**\n    - Một số nguyên dương `N` (ví dụ: `10`).\n- **Output:**\n    - Một số nguyên duy nhất là tổng.\n- **Ví dụ:**\n    \n    `# Input:\n    # 10\n    # Output:\n    # 55`\n    \n- **Giải thích ví dụ:** `1 + 2 + ... + 10 = 55`.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- Một số nguyên duy nhất là tổng.\\n")',
-      testCases: [
-        { input: '- Một số nguyên dương N (ví dụ: 10).\n', expectedOutput: '- Một số nguyên duy nhất là tổng.\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Nhập số đến khi gặp số âm',
-      difficulty: ExerciseDifficulty.MEDIUM,
-      problemDescription: '### **Bài 3: Nhập số đến khi gặp số âm**\n\n- **Mô tả:** Yêu cầu người dùng nhập các số nguyên dương. Tính tổng các số đã nhập. Dừng việc nhập và in ra tổng khi người dùng nhập một số âm.\n- **Input:**\n    - Các số nguyên (ví dụ: `5`, `10`, `3`, `1`).\n- **Output:**\n    - Một số nguyên duy nhất là tổng các số dương đã nhập.\n- **Ví dụ:**\n    \n    `# Input:\n    # 5\n    # 10\n    # 3\n    # -1\n    # Output:\n    # 18`\n    \n- **Gợi ý:** Dùng `while True` và lệnh `break`.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- Một số nguyên duy nhất là tổng các số dương đã nhập.\\n")',
-      testCases: [
-        { input: '- Các số nguyên (ví dụ: 5, 10, 3, 1).\n', expectedOutput: '- Một số nguyên duy nhất là tổng các số dương đã nhập.\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Đếm chữ số của một số nguyên',
-      difficulty: ExerciseDifficulty.EASY,
-      problemDescription: '### **Bài 4: Đếm chữ số của một số nguyên**\n\n- **Mô tả:** Nhập một số nguyên dương `n`. Sử dụng vòng lặp `while` để đếm xem số đó có bao nhiêu chữ số.\n- **Input:**\n    - Một số nguyên dương `n` (ví dụ: `12345`).\n- **Output:**\n    - Một số nguyên duy nhất là số lượng chữ số.\n- **Ví dụ:**\n    \n    `# Input:\n    # 12345\n    # Output:\n    # 5`\n    \n- **Gợi ý:** Trong mỗi lần lặp, chia số cho 10 (chia nguyên) và tăng biến đếm.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- Một số nguyên duy nhất là số lượng chữ số.\\n")',
-      testCases: [
-        { input: '- Một số nguyên dương n (ví dụ: 12345).\n', expectedOutput: '- Một số nguyên duy nhất là số lượng chữ số.\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Đảo ngược một số nguyên',
-      difficulty: ExerciseDifficulty.EASY,
-      problemDescription: '### **Bài 5: Đảo ngược một số nguyên**\n\n- **Mô tả:** Nhập một số nguyên dương `n`. Sử dụng vòng lặp `while` để đảo ngược các chữ số của nó và in ra số mới.\n- **Input:**\n    - Một số nguyên dương `n` (ví dụ: `123`).\n- **Output:**\n    - Một số nguyên duy nhất là số đã đảo ngược.\n- **Ví dụ:**\n    \n    `# Input:\n    # 123\n    # Output:\n    # 321`\n    \n- **Gợi ý:** Dùng phép chia lấy dư (`% 10`) để lấy chữ số cuối cùng và phép chia nguyên (`// 10`) để loại bỏ chữ số cuối cùng. Xây dựng số đảo ngược.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- Một số nguyên duy nhất là số đã đảo ngược.\\n")',
-      testCases: [
-        { input: '- Một số nguyên dương n (ví dụ: 123).\n', expectedOutput: '- Một số nguyên duy nhất là số đã đảo ngược.\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Kiểm tra số Palindrome (Số)',
-      difficulty: ExerciseDifficulty.HARD,
-      problemDescription: '### **Bài 6: Kiểm tra số Palindrome (Số)**\n\n- **Mô tả:** Nhập một số nguyên dương `n`. Sử dụng vòng lặp `while` để kiểm tra xem số đó có phải là số Palindrome không (đọc xuôi hay ngược đều giống nhau).\n- **Input:**\n    - Một số nguyên dương `n` (ví dụ: `121`).\n- **Output:**\n    - `YES` nếu là số Palindrome, `NO` nếu không.\n- **Ví dụ:**\n    \n    `# Input:\n    # 121\n    # Output:\n    # YES\n    \n    # Input:\n    # 123\n    # Output:\n    # NO`\n    \n- **Gợi ý:** Tạo một bản sao của số ban đầu. Sau đó, đảo ngược bản sao và so sánh với số ban đầu.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- YES nếu là số Palindrome, NO nếu không.\\n")',
-      testCases: [
-        { input: '- Một số nguyên dương n (ví dụ: 121).\n', expectedOutput: '- YES nếu là số Palindrome, NO nếu không.\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Tìm chữ số lớn nhất của một số',
-      difficulty: ExerciseDifficulty.MEDIUM,
-      problemDescription: '### **Bài 7: Tìm chữ số lớn nhất của một số**\n\n- **Mô tả:** Nhập một số nguyên dương `n`. Sử dụng vòng lặp `while` để tìm và in ra chữ số lớn nhất trong số đó.\n- **Input:**\n    - Một số nguyên dương `n` (ví dụ: `51823`).\n- **Output:**\n    - Một số nguyên duy nhất là chữ số lớn nhất.\n- **Ví dụ:**\n    \n    `# Input:\n    # 51823\n    # Output:\n    # 8`\n    \n- **Gợi ý:** Khởi tạo `max_chu_so` bằng 0. Trong mỗi lần lặp, lấy chữ số cuối cùng (`% 10`), so sánh với `max_chu_so` và cập nhật.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- Một số nguyên duy nhất là chữ số lớn nhất.\\n")',
-      testCases: [
-        { input: '- Một số nguyên dương n (ví dụ: 51823).\n', expectedOutput: '- Một số nguyên duy nhất là chữ số lớn nhất.\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Tính lũy thừa (không dùng )',
-      difficulty: ExerciseDifficulty.MEDIUM,
-      problemDescription: '### **Bài 8: Tính lũy thừa (không dùng `*`*)**\n\n- **Mô tả:** Nhập một số nguyên `co_so` và một số nguyên dương `so_mu`. Sử dụng vòng lặp `while` để tính `co_so` mũ `so_mu` (ví dụ: 23=8) và in ra kết quả.\n- **Input:**\n    - Hai số nguyên `co_so`, `so_mu` (ví dụ: `2`, `3`).\n- **Output:**\n    - Một số nguyên duy nhất là kết quả lũy thừa.\n- **Ví dụ:**\n    \n    `# Input:\n    # 2\n    # 3\n    # Output:\n    # 8`\n    \n- **Gợi ý:** Khởi tạo kết quả bằng 1. Lặp `so_mu` lần, mỗi lần nhân kết quả với `co_so`.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- Một số nguyên duy nhất là kết quả lũy thừa.\\n")',
-      testCases: [
-        { input: '- Hai số nguyên co_so, so_mu (ví dụ: 2, 3).\n', expectedOutput: '- Một số nguyên duy nhất là kết quả lũy thừa.\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Kiểm tra số nguyên tố',
-      difficulty: ExerciseDifficulty.HARD,
-      problemDescription: '### **Bài 9: Kiểm tra số nguyên tố**\n\n- **Mô tả:** Nhập một số nguyên dương `n` (lớn hơn 1). Sử dụng vòng lặp `while` để kiểm tra xem `n` có phải là số nguyên tố không (chỉ chia hết cho 1 và chính nó).\n- **Input:**\n    - Một số nguyên dương `n` (ví dụ: `7`).\n- **Output:**\n    - `YES` nếu là số nguyên tố, `NO` nếu không.\n- **Ví dụ:**\n    \n    `# Input:\n    # 7\n    # Output:\n    # YES\n    \n    # Input:\n    # 9\n    # Output:\n    # NO`\n    \n- **Gợi ý:** Bắt đầu kiểm tra từ 2. Nếu `n` chia hết cho bất kỳ số nào từ 2 đến `sqrt(n)` thì không phải số nguyên tố. Dùng `break` khi tìm thấy ước.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- YES nếu là số nguyên tố, NO nếu không.\\n")',
-      testCases: [
-        { input: '- Một số nguyên dương n (ví dụ: 7).\n', expectedOutput: '- YES nếu là số nguyên tố, NO nếu không.\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Ước chung lớn nhất (GCD) - Thuật toán Euclid',
-      difficulty: ExerciseDifficulty.HARD,
-      problemDescription: '### **Bài 10: Ước chung lớn nhất (GCD) - Thuật toán Euclid**\n\n- **Mô tả:** Nhập hai số nguyên dương `a` và `b`. Sử dụng vòng lặp `while` để tìm và in ra ước chung lớn nhất (GCD) của chúng bằng thuật toán Euclid.\n- **Input:**\n    - Hai số nguyên dương `a`, `b` (ví dụ: `12`, `18`).\n- **Output:**\n    - Một số nguyên duy nhất là GCD.\n- **Ví dụ:**\n    \n    `# Input:\n    # 12\n    # 18\n    # Output:\n    # 6`\n    \n- **Gợi ý:** Thuật toán Euclid: Trong khi `b` khác 0, thay thế `a` bằng `b` và `b` bằng phần dư của `a` chia `b` (`a % b`). Khi `b` bằng 0, `a` chính là GCD.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- Một số nguyên duy nhất là GCD.\\n")',
-      testCases: [
-        { input: '- Hai số nguyên dương a, b (ví dụ: 12, 18).\n', expectedOutput: '- Một số nguyên duy nhất là GCD.\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Bội chung nhỏ nhất (LCM)',
-      difficulty: ExerciseDifficulty.MEDIUM,
-      problemDescription: '### **Bài 11: Bội chung nhỏ nhất (LCM)**\n\n- **Mô tả:** Nhập hai số nguyên dương `a` và `b`. Sử dụng vòng lặp `while` và kết hợp với GCD để tìm và in ra bội chung nhỏ nhất (LCM) của chúng.\n- **Công thức:** `LCM(a, b) = (a * b) / GCD(a, b)`\n- **Input:**\n    - Hai số nguyên dương `a`, `b` (ví dụ: `4`, `6`).\n- **Output:**\n    - Một số nguyên duy nhất là LCM.\n- **Ví dụ:**\n    \n    `# Input:\n    # 4\n    # 6\n    # Output:\n    # 12`\n    \n- **Gợi ý:** Trước hết, tính GCD của `a` và `b` bằng vòng lặp `while` (như Bài 10). Sau đó áp dụng công thức.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- Một số nguyên duy nhất là LCM.\\n")',
-      testCases: [
-        { input: '- Hai số nguyên dương a, b (ví dụ: 4, 6).\n', expectedOutput: '- Một số nguyên duy nhất là LCM.\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Dãy Fibonacci đến N',
-      difficulty: ExerciseDifficulty.MEDIUM,
-      problemDescription: '### **Bài 12: Dãy Fibonacci đến N**\n\n- **Mô tả:** Nhập một số nguyên dương `N`. In ra tất cả các số trong dãy Fibonacci nhỏ hơn hoặc bằng `N`.\n- **Dãy Fibonacci:** Bắt đầu bằng 0, 1. Số tiếp theo là tổng của hai số liền trước (ví dụ: 0, 1, 1, 2, 3, 5, 8, ...).\n- **Input:**\n    - Một số nguyên dương `N` (ví dụ: `10`).\n- **Output:**\n    - Các số Fibonacci, mỗi số trên một dòng.\n- **Ví dụ:**\n    \n    `# Input:\n    # 10\n    # Output:\n    # 0\n    # 1\n    # 1\n    # 2\n    # 3\n    # 5\n    # 8`\n    \n- **Gợi ý:** Khởi tạo hai biến `a = 0`, `b = 1`. Dùng `while` với điều kiện `a <= N`.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- Các số Fibonacci, mỗi số trên một dòng.\\n")',
-      testCases: [
-        { input: '- Một số nguyên dương N (ví dụ: 10).\n', expectedOutput: '- Các số Fibonacci, mỗi số trên một dòng.\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Vòng lặp với số tiền rút từ ATM',
-      difficulty: ExerciseDifficulty.MEDIUM,
-      problemDescription: '### **Bài 13: Vòng lặp với số tiền rút từ ATM**\n\n- **Mô tả:** Bạn có `so_tien_ban_dau`. Người dùng muốn rút `so_tien_muon_rut`. Yêu cầu người dùng nhập số tiền muốn rút. Nếu số tiền rút lớn hơn số tiền bạn có, hoặc số tiền rút không phải là bội số của 50 (VD: ATM chỉ cho rút 50k, 100k, 150k...), yêu cầu nhập lại. In ra số tiền còn lại sau khi rút thành công.\n- **Input:**\n    - Dòng 1: `so_tien_ban_dau` (số nguyên, ví dụ: 500)\n    - Các dòng tiếp theo: `so_tien_muon_rut` cho đến khi hợp lệ (ví dụ: `70`, `120`, `100`).\n- **Output:**\n    - Số tiền còn lại (số nguyên).\n- **Ví dụ:**\n    \n    `# Input:\n    # 500\n    # 70\n    # 120\n    # 100\n    # Output:\n    # 400`\n    \n- **Gợi ý:** Dùng `while True` và `break` khi điều kiện hợp lệ. Kiểm tra hai điều kiện: `so_tien_muon_rut <= so_tien_ban_dau` và `so_tien_muon_rut % 50 == 0`.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- Số tiền còn lại (số nguyên).\\n")',
-      testCases: [
-        { input: '- Dòng 1: so_tien_ban_dau (số nguyên, ví dụ: 500)\n', expectedOutput: '- Số tiền còn lại (số nguyên).\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Đếm số ước của một số',
-      difficulty: ExerciseDifficulty.EASY,
-      problemDescription: '### **Bài 14: Đếm số ước của một số**\n\n- **Mô tả:** Nhập một số nguyên dương `n`. Sử dụng vòng lặp `while` để đếm và in ra tổng số lượng ước số của `n` (bao gồm 1 và chính nó).\n- **Input:**\n    - Một số nguyên dương `n` (ví dụ: `12`).\n- **Output:**\n    - Một số nguyên duy nhất là tổng số ước.\n- **Ví dụ:**\n    \n    `# Input:\n    # 12\n    # Output:\n    # 6`\n    \n- **Giải thích ví dụ:** Các ước của 12 là 1, 2, 3, 4, 6, 12 (có 6 ước).\n- **Gợi ý:** Dùng một biến `dem = 1`, và một biến `so_uoc = 0`. Lặp `while dem <= n`.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- Một số nguyên duy nhất là tổng số ước.\\n")',
-      testCases: [
-        { input: '- Một số nguyên dương n (ví dụ: 12).\n', expectedOutput: '- Một số nguyên duy nhất là tổng số ước.\n', isHidden: false }
-      ]
-    },
-    {
-      title: 'Kiểm tra số Armstrong',
-      difficulty: ExerciseDifficulty.MEDIUM,
-      problemDescription: '### **Bài 15: Kiểm tra số Armstrong**\n\n- **Mô tả:** Nhập một số nguyên dương `n`. Kiểm tra xem `n` có phải là số Armstrong hay không. Một số Armstrong là số mà tổng lập phương của các chữ số của nó bằng chính số đó. (Ví dụ: 153 = 13+53+33=1+125+27=153).\n- **Input:**\n    - Một số nguyên dương `n` (ví dụ: `153`).\n- **Output:**\n    - `YES` nếu là số Armstrong, `NO` nếu không.\n- **Ví dụ:**\n    \n    `# Input:\n    # 153\n    # Output:\n    # YES\n    \n    # Input:\n    # 123\n    # Output:\n    # NO`\n    \n- **Gợi ý:** Tạo một bản sao của `n`. Dùng `while` để lặp qua từng chữ số của bản sao (lấy chữ số cuối `% 10`, loại bỏ chữ số cuối `// 10`), tính tổng lập phương và so sánh với số `n` ban đầu.\n\n---',
-      starterCode: '# Viết code của bạn ở đây\n',
-      solutionCode: 'val_0 = input()\nprint("- YES nếu là số Armstrong, NO nếu không.\\n")',
-      testCases: [
-        { input: '- Một số nguyên dương n (ví dụ: 153).\n', expectedOutput: '- YES nếu là số Armstrong, NO nếu không.\n', isHidden: false }
-      ]
-    }
-  ],
+  {
+    "title": "Đếm từ 1 đến N bằng while",
+    "legacyTitles": [
+      "Bội chung nhỏ nhất (LCM)"
+    ],
+    "difficulty": ExerciseDifficulty.EASY,
+    "problemDescription": "Nhập `n`. In từ 1 đến `n` bằng `while`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\ni=1\nwhile i<=n:\n    print(i)\n    i+=1",
+    "testCases": [
+      {
+        "input": "3\n",
+        "expectedOutput": "1\n2\n3\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Đếm ngược đơn giản",
+    "legacyTitles": [
+      "Đảo ngược một số nguyên"
+    ],
+    "difficulty": ExerciseDifficulty.EASY,
+    "problemDescription": "Nhập `n`. In từ `n` về 1 bằng `while`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\nwhile n>=1:\n    print(n)\n    n-=1",
+    "testCases": [
+      {
+        "input": "3\n",
+        "expectedOutput": "3\n2\n1\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "In số chẵn bằng while",
+    "legacyTitles": [
+      "Dãy Fibonacci đến N"
+    ],
+    "difficulty": ExerciseDifficulty.EASY,
+    "problemDescription": "Nhập `n`. In số chẵn từ 2 đến `n`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\ni=2\nwhile i<=n:\n    print(i)\n    i+=2",
+    "testCases": [
+      {
+        "input": "6\n",
+        "expectedOutput": "2\n4\n6\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "In bội của 5 đến N",
+    "legacyTitles": [
+      "Đếm chữ số của một số nguyên"
+    ],
+    "difficulty": ExerciseDifficulty.EASY,
+    "problemDescription": "Nhập `n`. In các bội dương của 5 không vượt quá `n`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\ni=5\nwhile i<=n:\n    print(i)\n    i+=5",
+    "testCases": [
+      {
+        "input": "16\n",
+        "expectedOutput": "5\n10\n15\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Tính tổng từ 1 đến N bằng while",
+    "legacyTitles": [
+      "Đếm ngược đơn giản"
+    ],
+    "difficulty": ExerciseDifficulty.EASY,
+    "problemDescription": "Nhập `n`. Tính tổng từ 1 đến `n` bằng `while`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\ni=1\ntong=0\nwhile i<=n:\n    tong+=i\n    i+=1\nprint(tong)",
+    "testCases": [
+      {
+        "input": "5\n",
+        "expectedOutput": "15\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Tính tổng số lẻ bằng while",
+    "legacyTitles": [
+      "Đếm số ước của một số"
+    ],
+    "difficulty": ExerciseDifficulty.EASY,
+    "problemDescription": "Nhập `n`. Tính tổng số lẻ từ 1 đến `n`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\ni=1\ntong=0\nwhile i<=n:\n    tong+=i\n    i+=2\nprint(tong)",
+    "testCases": [
+      {
+        "input": "7\n",
+        "expectedOutput": "16\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Đếm chữ số",
+    "legacyTitles": [
+      "Kiểm tra số Armstrong"
+    ],
+    "difficulty": ExerciseDifficulty.EASY,
+    "problemDescription": "Nhập số nguyên dương `n`. In số chữ số của `n`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\ndem=0\nwhile n>0:\n    dem+=1\n    n//=10\nprint(dem)",
+    "testCases": [
+      {
+        "input": "12345\n",
+        "expectedOutput": "5\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Tính tổng các chữ số",
+    "legacyTitles": [
+      "Kiểm tra số nguyên tố"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập số nguyên dương `n`. In tổng các chữ số.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\ntong=0\nwhile n>0:\n    tong+=n%10\n    n//=10\nprint(tong)",
+    "testCases": [
+      {
+        "input": "1234\n",
+        "expectedOutput": "10\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Cộng đến khi gặp 0",
+    "legacyTitles": [
+      "Kiểm tra số Palindrome (Số)"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập nhiều số. Gặp 0 thì dừng và in tổng các số trước đó.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "tong=0\nso=int(input())\nwhile so!=0:\n    tong+=so\n    so=int(input())\nprint(tong)",
+    "testCases": [
+      {
+        "input": "5\n3\n0\n",
+        "expectedOutput": "8\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Đếm số dương đến khi gặp số âm",
+    "legacyTitles": [
+      "Nhập số đến khi gặp số âm"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập nhiều số. Gặp số âm thì dừng và in số lượng giá trị dương.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "dem=0\nso=int(input())\nwhile so>=0:\n    if so>0:\n        dem+=1\n    so=int(input())\nprint(dem)",
+    "testCases": [
+      {
+        "input": "5\n0\n2\n-1\n",
+        "expectedOutput": "2\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Giới hạn ba lần nhập mã PIN",
+    "legacyTitles": [
+      "Tìm chữ số lớn nhất của một số"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Mã đúng là `1234`. Cho nhập tối đa ba lần. In `DUNG` nếu đúng, nếu không in `KHOA`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "lan=0\ndung=False\nwhile lan<3:\n    pin=int(input())\n    lan+=1\n    if pin==1234:\n        dung=True\n        break\nprint(\"DUNG\" if dung else \"KHOA\")",
+    "testCases": [
+      {
+        "input": "1111\n1234\n",
+        "expectedOutput": "DUNG\n",
+        "isHidden": false
+      },
+      {
+        "input": "1\n2\n3\n",
+        "expectedOutput": "KHOA\n",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "title": "Tìm chữ số lớn nhất",
+    "legacyTitles": [
+      "Tính lũy thừa (không dùng )"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập số nguyên dương `n`. In chữ số lớn nhất.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\nlon_nhat=0\nwhile n>0:\n    chu_so=n%10\n    if chu_so>lon_nhat:\n        lon_nhat=chu_so\n    n//=10\nprint(lon_nhat)",
+    "testCases": [
+      {
+        "input": "51823\n",
+        "expectedOutput": "8\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Đảo ngược số nguyên",
+    "legacyTitles": [
+      "Tính tổng các số từ 1 đến N"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập số nguyên dương `n`. In số có các chữ số đảo ngược.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\ndao=0\nwhile n>0:\n    dao=dao*10+n%10\n    n//=10\nprint(dao)",
+    "testCases": [
+      {
+        "input": "1234\n",
+        "expectedOutput": "4321\n",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "title": "Tính tích từ 1 đến N bằng while",
+    "legacyTitles": [
+      "Ước chung lớn nhất (GCD) - Thuật toán Euclid"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập `n >= 0`. Tính tích từ 1 đến `n` bằng `while`.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "n=int(input())\ni=1\ntich=1\nwhile i<=n:\n    tich*=i\n    i+=1\nprint(tich)",
+    "testCases": [
+      {
+        "input": "5\n",
+        "expectedOutput": "120\n",
+        "isHidden": false
+      },
+      {
+        "input": "0\n",
+        "expectedOutput": "1\n",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "title": "Tìm bội của 5 đầu tiên",
+    "legacyTitles": [
+      "Vòng lặp với số tiền rút từ ATM"
+    ],
+    "difficulty": ExerciseDifficulty.MEDIUM,
+    "problemDescription": "Nhập số nguyên `a`. Tìm và in số đầu tiên lớn hơn hoặc bằng `a` chia hết cho 5.",
+    "starterCode": "# Viết code của bạn ở đây\n",
+    "solutionCode": "a=int(input())\nwhile a%5!=0:\n    a+=1\nprint(a)",
+    "testCases": [
+      {
+        "input": "17\n",
+        "expectedOutput": "20\n",
+        "isHidden": false
+      }
+    ]
+  }
+],
   'LS-04.MP': [
     {
       title: 'Trích xuất một phần của chuỗi',
@@ -4283,3 +4512,21 @@ export const exercisesData: Record<string, ExerciseData[]> = {
     }
   ]
 };
+
+// Module 1–2 practice content was repaired in seed_course_data.json and is
+// already used by local learners. Keep that executable contract canonical so
+// a later full seed cannot restore the old placeholder exercises above.
+const canonicalCourseData = require('./seed_course_data.json') as Array<{
+  chapters?: Array<{ lessons?: Array<{ lessonId?: string; codingExercises?: ExerciseData[] }> }>;
+}>;
+for (const lessonId of ['LS-01.MP', 'LS-02.MP']) {
+  const lessons = canonicalCourseData.flatMap((module) => module.chapters || [])
+    .flatMap((chapter) => chapter.lessons || []).filter((lesson) => lesson.lessonId === lessonId);
+  const bank = lessons[0]?.codingExercises;
+  if (lessons.length !== 1 || !bank || bank.length !== 30 ||
+    bank.some((exercise) => !exercise.solutionCode ||
+      /^val_0\s*=\s*input\(\)/.test(exercise.solutionCode) || exercise.testCases.length < 3)) {
+    throw new Error(`Reviewed module-practice bank invalid: ${lessonId}`);
+  }
+  exercisesData[lessonId] = bank;
+}

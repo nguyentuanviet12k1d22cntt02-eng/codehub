@@ -1,1215 +1,204 @@
 {
-  "version": "3.0.0",
+  "version": "4.0.0",
   "domain": {
     "id": "CPP",
-    "name": "Lập trình C++ Toàn diện, STL & Lập trình Hệ thống (C++17/20)",
-    "description": "Đồ thị tri thức chuẩn hóa 20 kỹ năng nguyên tử (Atomic Skills) với 24 liên kết tiên quyết (DAG), hỗ trợ chẩn đoán đa kỹ năng và định tuyến học tập thích ứng."
+    "name": "C++17: Nền tảng, STL và tư duy giải thuật",
+    "description": "Đồ thị năng lực C++ gồm 21 kỹ năng có thể đánh giá độc lập. Mỗi cạnh chỉ biểu thị một điều kiện tiên quyết thực sự; thứ tự bài học được lưu riêng trong giáo trình."
   },
   "tiers": [
-    {
-      "tier": 1,
-      "name": "Root & Fundamental",
-      "description": "Cấu trúc chương trình, I/O chuẩn cin/cout, kiểu nguyên thủy và ép kiểu static_cast."
-    },
-    {
-      "tier": 2,
-      "name": "Core Programming",
-      "description": "Điều kiện rẽ nhánh, vòng lặp, hàm, mảng tĩnh, std::vector và std::string."
-    },
-    {
-      "tier": 3,
-      "name": "Composition & Data Records",
-      "description": "Ma trận 2D, struct, memory layout, enum class, bit-fields và std::variant."
-    },
-    {
-      "tier": 4,
-      "name": "Memory, Pointers & Recursion",
-      "description": "Mô hình bộ nhớ tiến trình, con trỏ thô, con trỏ thông minh RAII, đệ quy và quay lui."
-    },
-    {
-      "tier": 5,
-      "name": "Engineering & Systems",
-      "description": "Binary File I/O, tiền xử lý đa tệp, ngoại lệ hệ thống và tối ưu bộ nhớ đệm Cache Locality."
-    }
+    { "tier": 1, "name": "Nền tảng ngôn ngữ", "description": "Cấu trúc chương trình, I/O, kiểu dữ liệu và biểu thức." },
+    { "tier": 2, "name": "Điều khiển và hàm", "description": "Rẽ nhánh, lặp, hàm, phạm vi và vòng đời." },
+    { "tier": 3, "name": "Dữ liệu tuần tự", "description": "Mảng, vector, chuỗi và ma trận." },
+    { "tier": 4, "name": "Kiểu hợp thành và thư viện chuẩn", "description": "struct, enum/variant, danh sách liên kết, xử lý văn bản và container STL." },
+    { "tier": 5, "name": "Giải thuật và mã tin cậy", "description": "Đệ quy, quay lui, bitwise, ngoại lệ và RAII." }
   ],
   "modules": [
-    {
-      "id": "MOD-CPP-SYNTAX",
-      "name": "Nhập môn & Cú pháp I/O",
-      "order": 1
-    },
-    {
-      "id": "MOD-CPP-CONTROL",
-      "name": "Cấu trúc Điều khiển & Hàm",
-      "order": 2
-    },
-    {
-      "id": "MOD-CPP-STL",
-      "name": "Cấu trúc Tuyến tính & Chuỗi STL",
-      "order": 3
-    },
-    {
-      "id": "MOD-CPP-RECORDS",
-      "name": "Bản ghi Tự định nghĩa & Ma trận",
-      "order": 4
-    },
-    {
-      "id": "MOD-CPP-MEM",
-      "name": "Bộ nhớ Tiến trình & Con trỏ",
-      "order": 5
-    },
-    {
-      "id": "MOD-CPP-ALGO",
-      "name": "Giải thuật Đệ quy & Quay lui",
-      "order": 6
-    },
-    {
-      "id": "MOD-CPP-SYS",
-      "name": "Lập trình Hệ thống & Hiệu năng",
-      "order": 7
-    }
+    { "id": "MOD-CPP-SYNTAX", "name": "Nền tảng: cú pháp, I/O và kiểu", "order": 1 },
+    { "id": "MOD-CPP-CONTROL", "name": "Điều khiển luồng và hàm", "order": 2 },
+    { "id": "MOD-CPP-DATA", "name": "Dãy, chuỗi và ma trận", "order": 3 },
+    { "id": "MOD-CPP-RECORDS", "name": "Kiểu hợp thành và cấu trúc liên kết", "order": 4 },
+    { "id": "MOD-CPP-STL", "name": "Thư viện chuẩn và xử lý văn bản", "order": 5 },
+    { "id": "MOD-CPP-ALGO", "name": "Đệ quy và tìm kiếm trạng thái", "order": 6 },
+    { "id": "MOD-CPP-ROBUST", "name": "Tính đúng đắn và quản lý tài nguyên", "order": 7 }
   ],
   "topics": [
-    {
-      "id": "TOPIC-CPP-IO",
-      "name": "Cú pháp & I/O",
-      "module_id": "MOD-CPP-SYNTAX"
-    },
-    {
-      "id": "TOPIC-CPP-TYPES",
-      "name": "Kiểu Dữ liệu & Cast",
-      "module_id": "MOD-CPP-SYNTAX"
-    },
-    {
-      "id": "TOPIC-CPP-COND",
-      "name": "Rẽ nhánh Điều kiện",
-      "module_id": "MOD-CPP-CONTROL"
-    },
-    {
-      "id": "TOPIC-CPP-LOOP",
-      "name": "Vòng lặp Loops",
-      "module_id": "MOD-CPP-CONTROL"
-    },
-    {
-      "id": "TOPIC-CPP-FUNC",
-      "name": "Hàm & Tham chiếu",
-      "module_id": "MOD-CPP-CONTROL"
-    },
-    {
-      "id": "TOPIC-CPP-ARRAY",
-      "name": "Mảng Tĩnh",
-      "module_id": "MOD-CPP-STL"
-    },
-    {
-      "id": "TOPIC-CPP-VECTOR",
-      "name": "std::vector STL",
-      "module_id": "MOD-CPP-STL"
-    },
-    {
-      "id": "TOPIC-CPP-STR",
-      "name": "Chuỗi std::string",
-      "module_id": "MOD-CPP-STL"
-    },
-    {
-      "id": "TOPIC-CPP-MATRIX",
-      "name": "Ma trận 2D",
-      "module_id": "MOD-CPP-RECORDS"
-    },
-    {
-      "id": "TOPIC-CPP-STRUCT",
-      "name": "Cấu trúc struct",
-      "module_id": "MOD-CPP-RECORDS"
-    },
-    {
-      "id": "TOPIC-CPP-ENUMVAR",
-      "name": "Enum & Variant",
-      "module_id": "MOD-CPP-RECORDS"
-    },
-    {
-      "id": "TOPIC-CPP-MEMMODEL",
-      "name": "Mô hình Bộ nhớ",
-      "module_id": "MOD-CPP-MEM"
-    },
-    {
-      "id": "TOPIC-CPP-PTR",
-      "name": "Con trỏ Pointer",
-      "module_id": "MOD-CPP-MEM"
-    },
-    {
-      "id": "TOPIC-CPP-SMARTPTR",
-      "name": "Smart Pointers & RAII",
-      "module_id": "MOD-CPP-MEM"
-    },
-    {
-      "id": "TOPIC-CPP-RECUR",
-      "name": "Đệ quy Call Stack",
-      "module_id": "MOD-CPP-ALGO"
-    },
-    {
-      "id": "TOPIC-CPP-BACKTRACK",
-      "name": "Quay lui Backtrack",
-      "module_id": "MOD-CPP-ALGO"
-    },
-    {
-      "id": "TOPIC-CPP-FILE",
-      "name": "Binary File I/O",
-      "module_id": "MOD-CPP-SYS"
-    },
-    {
-      "id": "TOPIC-CPP-BUILD",
-      "name": "Biên dịch Đa tệp",
-      "module_id": "MOD-CPP-SYS"
-    },
-    {
-      "id": "TOPIC-CPP-EXC",
-      "name": "Ngoại lệ Exception",
-      "module_id": "MOD-CPP-SYS"
-    },
-    {
-      "id": "TOPIC-CPP-CACHE",
-      "name": "Tối ưu Cache Locality",
-      "module_id": "MOD-CPP-SYS"
-    }
+    { "id": "TOPIC-CPP-IO", "name": "Cấu trúc chương trình và I/O", "module_id": "MOD-CPP-SYNTAX" },
+    { "id": "TOPIC-CPP-TYPES", "name": "Kiểu, hằng và ép kiểu", "module_id": "MOD-CPP-SYNTAX" },
+    { "id": "TOPIC-CPP-COND", "name": "Rẽ nhánh", "module_id": "MOD-CPP-CONTROL" },
+    { "id": "TOPIC-CPP-LOOP", "name": "Vòng lặp", "module_id": "MOD-CPP-CONTROL" },
+    { "id": "TOPIC-CPP-FUNC", "name": "Hàm và tham chiếu", "module_id": "MOD-CPP-CONTROL" },
+    { "id": "TOPIC-CPP-LIFETIME", "name": "Phạm vi và vòng đời", "module_id": "MOD-CPP-CONTROL" },
+    { "id": "TOPIC-CPP-ARRAY", "name": "Mảng tĩnh", "module_id": "MOD-CPP-DATA" },
+    { "id": "TOPIC-CPP-VECTOR", "name": "std::vector", "module_id": "MOD-CPP-DATA" },
+    { "id": "TOPIC-CPP-STRING", "name": "std::string", "module_id": "MOD-CPP-DATA" },
+    { "id": "TOPIC-CPP-MATRIX", "name": "Ma trận", "module_id": "MOD-CPP-DATA" },
+    { "id": "TOPIC-CPP-STRUCT", "name": "struct và layout", "module_id": "MOD-CPP-RECORDS" },
+    { "id": "TOPIC-CPP-ENUMVAR", "name": "enum class và variant", "module_id": "MOD-CPP-RECORDS" },
+    { "id": "TOPIC-CPP-PTR", "name": "Con trỏ và danh sách liên kết", "module_id": "MOD-CPP-RECORDS" },
+    { "id": "TOPIC-CPP-TEXT", "name": "Xử lý văn bản nâng cao", "module_id": "MOD-CPP-STL" },
+    { "id": "TOPIC-CPP-ALGORITHM", "name": "Thuật toán STL", "module_id": "MOD-CPP-STL" },
+    { "id": "TOPIC-CPP-CONTAINERS", "name": "Container kết hợp và hash", "module_id": "MOD-CPP-STL" },
+    { "id": "TOPIC-CPP-RECUR", "name": "Đệ quy", "module_id": "MOD-CPP-ALGO" },
+    { "id": "TOPIC-CPP-BACKTRACK", "name": "Quay lui", "module_id": "MOD-CPP-ALGO" },
+    { "id": "TOPIC-CPP-BITWISE", "name": "Bitwise và bitmask", "module_id": "MOD-CPP-ROBUST" },
+    { "id": "TOPIC-CPP-EXC", "name": "Ngoại lệ", "module_id": "MOD-CPP-ROBUST" },
+    { "id": "TOPIC-CPP-RAII", "name": "RAII và smart pointer", "module_id": "MOD-CPP-ROBUST" }
   ],
   "skills": [
     {
-      "id": "CPP-SYNTAX-01",
-      "concept_id": "CPP-SYNTAX-01",
-      "name": "Cấu trúc Chương trình & I/O Chuẩn (cout/cin)",
-      "concept_name": "Cấu trúc Chương trình & I/O Chuẩn (cout/cin)",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-SYNTAX",
-      "topic_id": "TOPIC-CPP-IO",
-      "stage": 0,
-      "tier": 1,
-      "scope": "main, cout/cin, namespace, compile basics",
-      "prerequisites": [],
-      "learning_objectives": [
-        "Nắm vững 4 giai đoạn biên dịch C++ (Preprocessor, Compiler, Assembler, Linker)",
-        "Làm chủ luồng nhập xuất std::cin và std::cout qua namespace std",
-        "Khắc phục trạng thái lỗi luồng nhập (cin.fail, cin.clear, cin.ignore)"
-      ],
-      "associated_errors": [
-        "Compilation Error",
-        "input-state issues"
-      ],
-      "difficulty_level": 1,
-      "bloom_level": "Remember",
-      "estimated_time_minutes": 25,
-      "practice_count": 4
+      "id": "CPP-SYNTAX-01", "concept_id": "CPP-SYNTAX-01", "name": "Cấu trúc chương trình, biên dịch cơ bản và I/O", "concept_name": "Cấu trúc chương trình, biên dịch cơ bản và I/O", "domain_id": "CPP", "module_id": "MOD-CPP-SYNTAX", "topic_id": "TOPIC-CPP-IO", "stage": 0, "tier": 1,
+      "scope": "main, include, compile basics, std::cin, std::cout", "prerequisites": [], "learning_objectives": ["Đọc được cấu trúc một chương trình C++17 tối thiểu", "Dùng std::cin và std::cout để nhập xuất có kiểm soát", "Phân biệt lỗi biên dịch với lỗi khi chạy"], "associated_errors": ["Compilation Error", "input-state issues"], "difficulty_level": 1, "bloom_level": "Remember", "estimated_time_minutes": 30, "practice_count": 2, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-TYPE-01",
-      "concept_id": "CPP-TYPE-01",
-      "name": "Kiểu Dữ liệu Nguyên thủy & Ép kiểu static_cast",
-      "concept_name": "Kiểu Dữ liệu Nguyên thủy & Ép kiểu static_cast",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-SYNTAX",
-      "topic_id": "TOPIC-CPP-TYPES",
-      "stage": 0,
-      "tier": 1,
-      "scope": "int, long long, double, char, bool, const, constexpr, static_cast",
-      "prerequisites": [
-        "CPP-SYNTAX-01"
-      ],
-      "learning_objectives": [
-        "Hiểu kích thước và phạm vi các kiểu nguyên thủy: int, long long, double, char, bool",
-        "Phòng chống lỗi tràn số nguyên (Integer Overflow) và Narrowing Conversion",
-        "Thực hiện ép kiểu an toàn với static_cast<T> và khai báo hằng số constexpr"
-      ],
-      "associated_errors": [
-        "Overflow",
-        "narrowing",
-        "bad cast"
-      ],
-      "difficulty_level": 1,
-      "bloom_level": "Understand",
-      "estimated_time_minutes": 30,
-      "practice_count": 4
+      "id": "CPP-TYPE-01", "concept_id": "CPP-TYPE-01", "name": "Kiểu dữ liệu, hằng số, toán tử và ép kiểu", "concept_name": "Kiểu dữ liệu, hằng số, toán tử và ép kiểu", "domain_id": "CPP", "module_id": "MOD-CPP-SYNTAX", "topic_id": "TOPIC-CPP-TYPES", "stage": 0, "tier": 1,
+      "scope": "variables, const, arithmetic operators, integer division, static_cast, overflow", "prerequisites": ["CPP-SYNTAX-01"], "learning_objectives": ["Chọn kiểu dữ liệu theo miền giá trị thay vì giả định kích thước cố định", "Dùng const và khởi tạo để giảm lỗi trạng thái", "Ép kiểu tường minh và nhận diện nguy cơ tràn số"], "associated_errors": ["Overflow", "narrowing", "integer division"], "difficulty_level": 1, "bloom_level": "Understand", "estimated_time_minutes": 35, "practice_count": 3, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-COND-01",
-      "concept_id": "CPP-COND-01",
-      "name": "Cấu trúc Rẽ nhánh & Logic Đoản mạch (Conditions & Logic)",
-      "concept_name": "Cấu trúc Rẽ nhánh & Logic Đoản mạch (Conditions & Logic)",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-CONTROL",
-      "topic_id": "TOPIC-CPP-COND",
-      "stage": 1,
-      "tier": 2,
-      "scope": "comparison, && || !, if/switch/ternary, short-circuit",
-      "prerequisites": [
-        "CPP-TYPE-01"
-      ],
-      "learning_objectives": [
-        "Xây dựng biểu thức logic với các toán tử so sánh và toán tử logic (&&, ||, !)",
-        "Làm chủ cấu trúc rẽ nhánh if-else bậc thang và switch-case",
-        "Vận dụng cơ chế đoản mạch (Short-circuit evaluation) để bảo vệ điều kiện biên"
-      ],
-      "associated_errors": [
-        "Logic Error",
-        "fallthrough"
-      ],
-      "difficulty_level": 1,
-      "bloom_level": "Apply",
-      "estimated_time_minutes": 30,
-      "practice_count": 5
+      "id": "CPP-COND-01", "concept_id": "CPP-COND-01", "name": "Rẽ nhánh và biểu thức logic", "concept_name": "Rẽ nhánh và biểu thức logic", "domain_id": "CPP", "module_id": "MOD-CPP-CONTROL", "topic_id": "TOPIC-CPP-COND", "stage": 1, "tier": 2,
+      "scope": "if/else, switch, ternary, short-circuit, early return", "prerequisites": ["CPP-TYPE-01"], "learning_objectives": ["Viết điều kiện có thứ tự và điều kiện biên rõ ràng", "Dùng short-circuit để bảo vệ truy cập", "Chọn if, switch hoặc ternary theo mục đích"], "associated_errors": ["Logic Error", "fallthrough", "dangling else"], "difficulty_level": 1, "bloom_level": "Apply", "estimated_time_minutes": 35, "practice_count": 4, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-LOOP-01",
-      "concept_id": "CPP-LOOP-01",
-      "name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
-      "concept_name": "Vòng lặp & Kỹ thuật Điều khiển Lặp (Loops & Control)",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-CONTROL",
-      "topic_id": "TOPIC-CPP-LOOP",
-      "stage": 1,
-      "tier": 2,
-      "scope": "for, while, do-while, break/continue, nested loops",
-      "prerequisites": [
-        "CPP-COND-01"
-      ],
-      "learning_objectives": [
-        "Làm chủ vòng lặp for, while và do-while với điều kiện dừng chính xác",
-        "Tối ưu hóa các thuật toán lặp và phòng chống lặp vô hạn (Infinite Loop)",
-        "Kiểm soát luồng lặp lồng nhau với break và continue"
-      ],
-      "associated_errors": [
-        "Infinite Loop",
-        "TLE"
-      ],
-      "difficulty_level": 2,
-      "bloom_level": "Apply",
-      "estimated_time_minutes": 35,
-      "practice_count": 5
+      "id": "CPP-LOOP-01", "concept_id": "CPP-LOOP-01", "name": "Vòng lặp và kiểm soát luồng lặp", "concept_name": "Vòng lặp và kiểm soát luồng lặp", "domain_id": "CPP", "module_id": "MOD-CPP-CONTROL", "topic_id": "TOPIC-CPP-LOOP", "stage": 1, "tier": 2,
+      "scope": "for, while, do-while, break, continue, nested loops", "prerequisites": ["CPP-COND-01"], "learning_objectives": ["Chọn cấu trúc lặp phù hợp với điều kiện dừng", "Kiểm soát break và continue không làm sai bất biến vòng lặp", "Nhận diện lặp vô hạn và lỗi biên"], "associated_errors": ["Infinite Loop", "off-by-one", "TLE"], "difficulty_level": 2, "bloom_level": "Apply", "estimated_time_minutes": 40, "practice_count": 5, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-FUNC-01",
-      "concept_id": "CPP-FUNC-01",
-      "name": "Hàm, Truyền Tham chiếu & Nạp chồng (Functions & Overloading)",
-      "concept_name": "Hàm, Truyền Tham chiếu & Nạp chồng (Functions & Overloading)",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-CONTROL",
-      "topic_id": "TOPIC-CPP-FUNC",
-      "stage": 1,
-      "tier": 2,
-      "scope": "prototype, return type, value/ref/const ref, overload",
-      "prerequisites": [
-        "CPP-TYPE-01"
-      ],
-      "learning_objectives": [
-        "Khai báo nguyên mẫu hàm (Forward Declaration) và định nghĩa hàm",
-        "Phân biệt rạch ròi Pass-by-value, Pass-by-reference (&) và const reference (const &)",
-        "Áp dụng nạp chồng hàm (Function Overloading) và thiết lập tham số mặc định"
-      ],
-      "associated_errors": [
-        "Linker Error",
-        "side effects"
-      ],
-      "difficulty_level": 2,
-      "bloom_level": "Apply",
-      "estimated_time_minutes": 35,
-      "practice_count": 5
+      "id": "CPP-FUNC-01", "concept_id": "CPP-FUNC-01", "name": "Hàm, tham số, tham chiếu và nạp chồng", "concept_name": "Hàm, tham số, tham chiếu và nạp chồng", "domain_id": "CPP", "module_id": "MOD-CPP-CONTROL", "topic_id": "TOPIC-CPP-FUNC", "stage": 1, "tier": 2,
+      "scope": "function declaration, return, pass by value, reference, const reference, overloading", "prerequisites": ["CPP-TYPE-01"], "learning_objectives": ["Phân rã bài toán thành hàm có đầu vào và đầu ra rõ", "Chọn truyền giá trị, tham chiếu hoặc const tham chiếu theo ngữ cảnh", "Tránh nạp chồng mơ hồ và thiếu return"], "associated_errors": ["Linker Error", "side effects", "missing return"], "difficulty_level": 2, "bloom_level": "Apply", "estimated_time_minutes": 45, "practice_count": 4, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-ARRAY-01",
-      "concept_id": "CPP-ARRAY-01",
-      "name": "Mảng Tĩnh Bộ nhớ Liền kề (Static Arrays)",
-      "concept_name": "Mảng Tĩnh Bộ nhớ Liền kề (Static Arrays)",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-STL",
-      "topic_id": "TOPIC-CPP-ARRAY",
-      "stage": 2,
-      "tier": 2,
-      "scope": "contiguous memory, indexing, O(1), bounds, decay to pointer",
-      "prerequisites": [
-        "CPP-FUNC-01"
-      ],
-      "learning_objectives": [
-        "Hiểu cấu trúc mảng tĩnh trên Stack với vùng nhớ liền kề liên tục",
-        "Truy xuất phần tử theo chỉ mục 0-indexed với chi phí thời gian O(1)",
-        "Phát hiện và ngăn ngừa lỗi truy cập ngoài biên (Out-of-bounds UB)"
-      ],
-      "associated_errors": [
-        "Out-of-bounds",
-        "UB"
-      ],
-      "difficulty_level": 2,
-      "bloom_level": "Apply",
-      "estimated_time_minutes": 30,
-      "practice_count": 4
+      "id": "CPP-MEM-01", "concept_id": "CPP-MEM-01", "name": "Phạm vi, vòng đời và chi phí sao chép", "concept_name": "Phạm vi, vòng đời và chi phí sao chép", "domain_id": "CPP", "module_id": "MOD-CPP-CONTROL", "topic_id": "TOPIC-CPP-LIFETIME", "stage": 2, "tier": 2,
+      "scope": "scope, lifetime, shadowing, const reference, object copies", "prerequisites": ["CPP-FUNC-01"], "learning_objectives": ["Phân biệt phạm vi tên với vòng đời đối tượng", "Phát hiện shadowing và tham chiếu vượt vòng đời", "Đánh giá khi nào sao chép là hợp lý"], "associated_errors": ["dangling reference", "shadowing", "unnecessary copy"], "difficulty_level": 2, "bloom_level": "Analyze", "estimated_time_minutes": 30, "practice_count": 1, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-VECTOR-01",
-      "concept_id": "CPP-VECTOR-01",
-      "name": "Mảng Động std::vector & Dãy Tuần tự STL",
-      "concept_name": "Mảng Động std::vector & Dãy Tuần tự STL",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-STL",
-      "topic_id": "TOPIC-CPP-VECTOR",
-      "stage": 2,
-      "tier": 2,
-      "scope": "push_back, size, capacity, range-for, reserve, shrink_to_fit",
-      "prerequisites": [
-        "CPP-ARRAY-01"
-      ],
-      "learning_objectives": [
-        "Sử dụng std::vector để quản lý mảng tự co giãn kích thước trên Heap",
-        "Hiểu sự khác nhau giữa size (số phần tử) và capacity (dung lượng cấp phát)",
-        "Duyệt mảng hiện đại với Range-based for loop và phương thức an toàn .at()"
-      ],
-      "associated_errors": [
-        "Out-of-range",
-        "invalid assumptions"
-      ],
-      "difficulty_level": 2,
-      "bloom_level": "Apply",
-      "estimated_time_minutes": 35,
-      "practice_count": 5
+      "id": "CPP-ARRAY-01", "concept_id": "CPP-ARRAY-01", "name": "Mảng tĩnh và thuật toán trên dãy", "concept_name": "Mảng tĩnh và thuật toán trên dãy", "domain_id": "CPP", "module_id": "MOD-CPP-DATA", "topic_id": "TOPIC-CPP-ARRAY", "stage": 2, "tier": 3,
+      "scope": "fixed arrays, indexing, traversal, search, frequency arrays, insertion and deletion", "prerequisites": ["CPP-LOOP-01"], "learning_objectives": ["Duyệt dãy với chỉ số và kiểm soát biên", "Xây dựng tìm kiếm tuyến tính, min/max và mảng tần suất", "Phân tích chi phí dịch phần tử khi chèn hoặc xóa"], "associated_errors": ["Out-of-bounds", "off-by-one", "Undefined Behavior"], "difficulty_level": 2, "bloom_level": "Apply", "estimated_time_minutes": 45, "practice_count": 4, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-STRING-01",
-      "concept_id": "CPP-STRING-01",
-      "name": "Xử lý Chuỗi Ký tự std::string & Luồng Text",
-      "concept_name": "Xử lý Chuỗi Ký tự std::string & Luồng Text",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-STL",
-      "topic_id": "TOPIC-CPP-STR",
-      "stage": 2,
-      "tier": 2,
-      "scope": "getline, ignore, substr, find, replace, stringstream",
-      "prerequisites": [
-        "CPP-TYPE-01"
-      ],
-      "learning_objectives": [
-        "Nhập chuỗi có khoảng trắng chuẩn xác bằng std::getline() và cin.ignore()",
-        "Tìm kiếm và trích xuất chuỗi con với find(), substr() và npos",
-        "Phân tách và định dạng dữ liệu linh hoạt với std::stringstream"
-      ],
-      "associated_errors": [
-        "out_of_range",
-        "input-state errors"
-      ],
-      "difficulty_level": 2,
-      "bloom_level": "Apply",
-      "estimated_time_minutes": 30,
-      "practice_count": 4
+      "id": "CPP-VECTOR-01", "concept_id": "CPP-VECTOR-01", "name": "std::vector và dữ liệu hai chiều động", "concept_name": "std::vector và dữ liệu hai chiều động", "domain_id": "CPP", "module_id": "MOD-CPP-DATA", "topic_id": "TOPIC-CPP-VECTOR", "stage": 3, "tier": 3,
+      "scope": "vector, size, capacity, reserve, resize, range-for, nested vector", "prerequisites": ["CPP-ARRAY-01"], "learning_objectives": ["Phân biệt size với capacity", "Dùng push_back, resize và reserve đúng ngữ nghĩa", "Mô hình hóa dữ liệu hai chiều bằng vector lồng nhau"], "associated_errors": ["Out-of-range", "invalidated references", "reserve-versus-resize"], "difficulty_level": 3, "bloom_level": "Apply", "estimated_time_minutes": 40, "practice_count": 2, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-MATRIX-01",
-      "concept_id": "CPP-MATRIX-01",
-      "name": "Mảng 2 Chiều, Ma trận & Vector Lồng nhau",
-      "concept_name": "Mảng 2 Chiều, Ma trận & Vector Lồng nhau",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-RECORDS",
-      "topic_id": "TOPIC-CPP-MATRIX",
-      "stage": 2,
-      "tier": 3,
-      "scope": "row-major, nested loops, diagonal/transpose, vector 2D",
-      "prerequisites": [
-        "CPP-ARRAY-01",
-        "CPP-VECTOR-01"
-      ],
-      "learning_objectives": [
-        "Khởi tạo ma trận bằng mảng 2 chiều tĩnh và vector lồng nhau vector<vector<T>>",
-        "Duyệt ma trận theo thứ tự ưu tiên hàng (Row-major order) tối ưu cache",
-        "Triển khai các phép toán ma trận: chuyển vị, nhân ma trận, đường chéo chính/phụ"
-      ],
-      "associated_errors": [
-        "SIGSEGV",
-        "index errors"
-      ],
-      "difficulty_level": 3,
-      "bloom_level": "Analyze",
-      "estimated_time_minutes": 40,
-      "practice_count": 5
+      "id": "CPP-STRING-01", "concept_id": "CPP-STRING-01", "name": "std::string và nhập xuất văn bản", "concept_name": "std::string và nhập xuất văn bản", "domain_id": "CPP", "module_id": "MOD-CPP-DATA", "topic_id": "TOPIC-CPP-STRING", "stage": 2, "tier": 3,
+      "scope": "string, getline, ignore, find, substr, replace, cctype", "prerequisites": ["CPP-SYNTAX-01"], "learning_objectives": ["Chọn std::string hoặc C-string phù hợp", "Kết hợp cin với getline không mất dữ liệu", "Biến đổi và tìm kiếm văn bản an toàn"], "associated_errors": ["input-state issues", "std::out_of_range", "character classification UB"], "difficulty_level": 2, "bloom_level": "Apply", "estimated_time_minutes": 40, "practice_count": 3, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-STRUCT-01",
-      "concept_id": "CPP-STRUCT-01",
-      "name": "Cấu trúc struct & Căn chỉnh Bộ nhớ (Memory Layout)",
-      "concept_name": "Cấu trúc struct & Căn chỉnh Bộ nhớ (Memory Layout)",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-RECORDS",
-      "topic_id": "TOPIC-CPP-STRUCT",
-      "stage": 3,
-      "tier": 3,
-      "scope": "struct, fields, memory layout, POD record, padding, alignment",
-      "prerequisites": [
-        "CPP-TYPE-01"
-      ],
-      "learning_objectives": [
-        "Định nghĩa kiểu dữ liệu bản ghi tổng hợp bằng từ khóa struct",
-        "Hiểu quy tắc căn chỉnh bộ nhớ của vi xử lý (Memory Alignment) và phần đệm (Padding)",
-        "Sắp xếp thứ tự các trường dữ liệu để tối thiểu hóa dung lượng bộ nhớ lãng phí"
-      ],
-      "associated_errors": [
-        "Undefined Behavior",
-        "memory overhead"
-      ],
-      "difficulty_level": 3,
-      "bloom_level": "Analyze",
-      "estimated_time_minutes": 35,
-      "practice_count": 4
+      "id": "CPP-MATRIX-01", "concept_id": "CPP-MATRIX-01", "name": "Ma trận và duyệt không gian hai chiều", "concept_name": "Ma trận và duyệt không gian hai chiều", "domain_id": "CPP", "module_id": "MOD-CPP-DATA", "topic_id": "TOPIC-CPP-MATRIX", "stage": 3, "tier": 3,
+      "scope": "2D arrays, row-major, nested loops, diagonals, transpose, grid neighbors", "prerequisites": ["CPP-ARRAY-01", "CPP-LOOP-01"], "learning_objectives": ["Duyệt bảng dữ liệu hàng-cột đúng thứ tự", "Tính toán đường chéo và chuyển vị", "Kiểm soát biên khi duyệt ô lân cận"], "associated_errors": ["index errors", "SIGSEGV", "row-column confusion"], "difficulty_level": 3, "bloom_level": "Analyze", "estimated_time_minutes": 45, "practice_count": 3, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-ENUMVAR-01",
-      "concept_id": "CPP-ENUMVAR-01",
-      "name": "Kiểu Liệt kê Scoped Enums, Bit-fields & std::variant",
-      "concept_name": "Kiểu Liệt kê Scoped Enums, Bit-fields & std::variant",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-RECORDS",
-      "topic_id": "TOPIC-CPP-ENUMVAR",
-      "stage": 3,
-      "tier": 3,
-      "scope": "scoped enums, bit-fields, union, std::variant",
-      "prerequisites": [
-        "CPP-STRUCT-01"
-      ],
-      "learning_objectives": [
-        "Sử dụng enum class để tránh ô nhiễm phạm vi tên và ép kiểu không an toàn",
-        "Tối ưu dung lượng cấp độ bit với kỹ thuật Bit-fields trong struct",
-        "Áp dụng union và kiểu dữ liệu an toàn std::variant (C++17)"
-      ],
-      "associated_errors": [
-        "invalid state assumptions"
-      ],
-      "difficulty_level": 3,
-      "bloom_level": "Analyze",
-      "estimated_time_minutes": 35,
-      "practice_count": 4
+      "id": "CPP-STRUCT-01", "concept_id": "CPP-STRUCT-01", "name": "struct, kiểu hợp thành và bố cục dữ liệu", "concept_name": "struct, kiểu hợp thành và bố cục dữ liệu", "domain_id": "CPP", "module_id": "MOD-CPP-RECORDS", "topic_id": "TOPIC-CPP-STRUCT", "stage": 3, "tier": 4,
+      "scope": "struct, fields, padding, alignment, pair, tuple, structured bindings", "prerequisites": ["CPP-TYPE-01"], "learning_objectives": ["Mô hình hóa một bản ghi có nhiều trường", "Hiểu layout là phụ thuộc ABI và nền tảng", "Dùng pair, tuple và structured binding cho dữ liệu nhỏ"], "associated_errors": ["padding assumptions", "wrong field order", "binding mismatch"], "difficulty_level": 3, "bloom_level": "Analyze", "estimated_time_minutes": 40, "practice_count": 2, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-MEM-01",
-      "concept_id": "CPP-MEM-01",
-      "name": "Mô hình Bộ nhớ Tiến trình (Process Memory Model)",
-      "concept_name": "Mô hình Bộ nhớ Tiến trình (Process Memory Model)",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-MEM",
-      "topic_id": "TOPIC-CPP-MEMMODEL",
-      "stage": 3,
-      "tier": 4,
-      "scope": "Stack, Heap, Data, Code Segment, alignment basics, object lifetime",
-      "prerequisites": [
-        "CPP-TYPE-01"
-      ],
-      "learning_objectives": [
-        "Phân tích 4 phân vùng bộ nhớ của tiến trình: Stack, Heap, Data Segment, Code/Text",
-        "Hiểu cơ chế cấp phát tự động trên Stack vs cấp phát thủ công trên Heap",
-        "Nắm vững vòng đời của biến cục bộ, biến tĩnh (static) và dữ liệu động"
-      ],
-      "associated_errors": [
-        "invalid lifetime assumptions"
-      ],
-      "difficulty_level": 3,
-      "bloom_level": "Analyze",
-      "estimated_time_minutes": 40,
-      "practice_count": 4
+      "id": "CPP-ENUMVAR-01", "concept_id": "CPP-ENUMVAR-01", "name": "enum class, bit-field và std::variant", "concept_name": "enum class, bit-field và std::variant", "domain_id": "CPP", "module_id": "MOD-CPP-RECORDS", "topic_id": "TOPIC-CPP-ENUMVAR", "stage": 3, "tier": 4,
+      "scope": "enum class, underlying type, bit-fields, union, variant, visit", "prerequisites": ["CPP-TYPE-01"], "learning_objectives": ["Dùng enum class để bảo toàn phạm vi và kiểu", "Hiểu bit-field và kích thước object phụ thuộc implementation", "Đọc variant an toàn bằng kiểm tra alternative hoặc visit"], "associated_errors": ["bad_variant_access", "invalid enum conversion", "bit-field layout assumptions"], "difficulty_level": 3, "bloom_level": "Analyze", "estimated_time_minutes": 35, "practice_count": 2, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-PTR-01",
-      "concept_id": "CPP-PTR-01",
-      "name": "Con trỏ Thô, Số học Con trỏ & Cấp phát Động",
-      "concept_name": "Con trỏ Thô, Số học Con trỏ & Cấp phát Động",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-MEM",
-      "topic_id": "TOPIC-CPP-PTR",
-      "stage": 4,
-      "tier": 4,
-      "scope": "address, dereference, pointer arithmetic, pointer-to-pointer, new/delete",
-      "prerequisites": [
-        "CPP-FUNC-01",
-        "CPP-MEM-01"
-      ],
-      "learning_objectives": [
-        "Làm chủ toán tử địa chỉ (&) và toán tử giải tham chiếu (*)",
-        "Vận dụng số học con trỏ (Pointer Arithmetic) để duyệt mảng và bộ nhớ",
-        "Cấp phát bộ nhớ động với new/delete và triệt tiêu con trỏ lơ lửng (Dangling Pointer)"
-      ],
-      "associated_errors": [
-        "SIGSEGV",
-        "dangling pointer"
-      ],
-      "difficulty_level": 4,
-      "bloom_level": "Analyze",
-      "estimated_time_minutes": 45,
-      "practice_count": 5
+      "id": "CPP-PTR-01", "concept_id": "CPP-PTR-01", "name": "Con trỏ và cấu trúc liên kết", "concept_name": "Con trỏ và cấu trúc liên kết", "domain_id": "CPP", "module_id": "MOD-CPP-RECORDS", "topic_id": "TOPIC-CPP-PTR", "stage": 4, "tier": 4,
+      "scope": "addresses, dereference, Node*, linked list, std::forward_list", "prerequisites": ["CPP-STRUCT-01"], "learning_objectives": ["Đọc được liên kết giữa các node qua con trỏ", "So sánh đánh đổi truy cập với chèn/xóa đầu danh sách", "Nhận diện null và vòng đời node"], "associated_errors": ["null dereference", "dangling pointer", "lost node"], "difficulty_level": 4, "bloom_level": "Analyze", "estimated_time_minutes": 40, "practice_count": 1, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-SMARTPTR-01",
-      "concept_id": "CPP-SMARTPTR-01",
-      "name": "Con trỏ Thông minh & Nguyên lý Quản lý Tài nguyên RAII",
-      "concept_name": "Con trỏ Thông minh & Nguyên lý Quản lý Tài nguyên RAII",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-MEM",
-      "topic_id": "TOPIC-CPP-SMARTPTR",
-      "stage": 4,
-      "tier": 4,
-      "scope": "unique_ptr, shared_ptr, weak_ptr, ownership, make_unique, make_shared",
-      "prerequisites": [
-        "CPP-PTR-01"
-      ],
-      "learning_objectives": [
-        "Áp dụng nguyên lý RAII (Resource Acquisition Is Initialization) tự động giải phóng bộ nhớ",
-        "Sở hữu độc quyền với std::unique_ptr và chuyển quyền sở hữu qua std::move()",
-        "Sở hữu chia sẻ với std::shared_ptr và phòng tránh chu trình tham chiếu với std::weak_ptr"
-      ],
-      "associated_errors": [
-        "double ownership",
-        "lifetime bugs"
-      ],
-      "difficulty_level": 4,
-      "bloom_level": "Analyze",
-      "estimated_time_minutes": 45,
-      "practice_count": 5
+      "id": "CPP-FILE-01", "concept_id": "CPP-FILE-01", "name": "Xử lý văn bản nâng cao: stream, view và regex", "concept_name": "Xử lý văn bản nâng cao: stream, view và regex", "domain_id": "CPP", "module_id": "MOD-CPP-STL", "topic_id": "TOPIC-CPP-TEXT", "stage": 4, "tier": 4,
+      "scope": "stringstream, string_view, regular expressions", "prerequisites": ["CPP-STRING-01"], "learning_objectives": ["Tách và định dạng dữ liệu qua stream", "Dùng string_view mà không kéo dài vòng đời dữ liệu", "Phân biệt regex_match với regex_search"], "associated_errors": ["dangling string_view", "regex escaping", "wrong match API"], "difficulty_level": 3, "bloom_level": "Analyze", "estimated_time_minutes": 40, "practice_count": 3, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-FILE-01",
-      "concept_id": "CPP-FILE-01",
-      "name": "Đọc Ghi Tệp Nhị phân & Truy cập Ngẫu nhiên (Binary File I/O)",
-      "concept_name": "Đọc Ghi Tệp Nhị phân & Truy cập Ngẫu nhiên (Binary File I/O)",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-SYS",
-      "topic_id": "TOPIC-CPP-FILE",
-      "stage": 5,
-      "tier": 5,
-      "scope": "read/write, binary mode, seekg/seekp, records/index, fstream",
-      "prerequisites": [
-        "CPP-STRUCT-01",
-        "CPP-PTR-01"
-      ],
-      "learning_objectives": [
-        "Mở luồng tệp tin ở chế độ nhị phân (std::ios::binary) với ifstream/ofstream",
-        "Tuần tự hóa và giải tuần tự hóa struct trực tiếp với read() và write()",
-        "Điều hướng con trỏ tệp tin ngẫu nhiên với seekg() và seekp()"
-      ],
-      "associated_errors": [
-        "IO failure",
-        "corrupted record"
-      ],
-      "difficulty_level": 4,
-      "bloom_level": "Analyze",
-      "estimated_time_minutes": 45,
-      "practice_count": 5
+      "id": "CPP-BUILD-01", "concept_id": "CPP-BUILD-01", "name": "Thuật toán STL và iterator", "concept_name": "Thuật toán STL và iterator", "domain_id": "CPP", "module_id": "MOD-CPP-STL", "topic_id": "TOPIC-CPP-ALGORITHM", "stage": 4, "tier": 4,
+      "scope": "algorithm, sort, binary_search, iterator ranges, comparator", "prerequisites": ["CPP-VECTOR-01"], "learning_objectives": ["Dùng sort và binary_search với điều kiện đầu vào hợp lệ", "Truyền đúng cặp iterator xác định một range", "Phân biệt tìm kiếm tuyến tính và nhị phân"], "associated_errors": ["unsorted binary search", "invalid iterator range", "wrong comparator"], "difficulty_level": 3, "bloom_level": "Apply", "estimated_time_minutes": 35, "practice_count": 1, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-BUILD-01",
-      "concept_id": "CPP-BUILD-01",
-      "name": "Tiền xử lý & Dự án Đa tệp (Preprocessor & Multi-file Build)",
-      "concept_name": "Tiền xử lý & Dự án Đa tệp (Preprocessor & Multi-file Build)",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-SYS",
-      "topic_id": "TOPIC-CPP-BUILD",
-      "stage": 5,
-      "tier": 5,
-      "scope": "define/ifdef, header/source split, extern, linker, Makefile, pragma once",
-      "prerequisites": [
-        "CPP-SYNTAX-01",
-        "CPP-FUNC-01"
-      ],
-      "learning_objectives": [
-        "Sử dụng chỉ thị tiền xử lý an toàn: #pragma once, #ifdef, #ifndef",
-        "Tách biệt rõ ràng tệp giao diện Interface (.h/.hpp) và Triển khai Implementation (.cpp)",
-        "Tự động hóa biên dịch đa tệp bằng công cụ Makefile và cờ tối ưu (-O2, -Wall)"
-      ],
-      "associated_errors": [
-        "Linker Error",
-        "macro bugs"
-      ],
-      "difficulty_level": 3,
-      "bloom_level": "Analyze",
-      "estimated_time_minutes": 40,
-      "practice_count": 4
+      "id": "CPP-CACHE-01", "concept_id": "CPP-CACHE-01", "name": "Container kết hợp có thứ tự và bảng băm", "concept_name": "Container kết hợp có thứ tự và bảng băm", "domain_id": "CPP", "module_id": "MOD-CPP-STL", "topic_id": "TOPIC-CPP-CONTAINERS", "stage": 4, "tier": 4,
+      "scope": "set, map, unordered_set, unordered_map, ordering, hashing, complexity", "prerequisites": ["CPP-TYPE-01"], "learning_objectives": ["Chọn map/set khi cần thứ tự và unordered container khi cần tốc độ trung bình", "Không giả định thứ tự duyệt của unordered container", "Đánh giá cả trường hợp trung bình và xấu nhất của hash table"], "associated_errors": ["wrong complexity assumption", "unexpected iteration order", "missing key"], "difficulty_level": 3, "bloom_level": "Analyze", "estimated_time_minutes": 40, "practice_count": 2, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-RECUR-01",
-      "concept_id": "CPP-RECUR-01",
-      "name": "Giải thuật Đệ quy & Khung Ngăn xếp (Call Stack)",
-      "concept_name": "Giải thuật Đệ quy & Khung Ngăn xếp (Call Stack)",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-ALGO",
-      "topic_id": "TOPIC-CPP-RECUR",
-      "stage": 4,
-      "tier": 4,
-      "scope": "base case, stack frames, memoization, recursion tree",
-      "prerequisites": [
-        "CPP-FUNC-01"
-      ],
-      "learning_objectives": [
-        "Xác định điểm dừng (Base Case) và bước đệ quy (Recursive Step) chính xác",
-        "Phân tích khung ngăn xếp Call Stack và ngăn ngừa tràn ngăn xếp (Stack Overflow)",
-        "Tối ưu thời gian chạy bằng kỹ thuật đệ quy có nhớ (Memoization)"
-      ],
-      "associated_errors": [
-        "Stack Overflow",
-        "TLE"
-      ],
-      "difficulty_level": 4,
-      "bloom_level": "Analyze",
-      "estimated_time_minutes": 45,
-      "practice_count": 5
+      "id": "CPP-RECUR-01", "concept_id": "CPP-RECUR-01", "name": "Đệ quy, base case và chia để trị", "concept_name": "Đệ quy, base case và chia để trị", "domain_id": "CPP", "module_id": "MOD-CPP-ALGO", "topic_id": "TOPIC-CPP-RECUR", "stage": 4, "tier": 5,
+      "scope": "recursion, base case, recursive step, call stack, divide and conquer", "prerequisites": ["CPP-FUNC-01"], "learning_objectives": ["Viết base case có thể đạt tới", "Theo dõi sự thu nhỏ của bài toán qua call stack", "Áp dụng chia để trị cho bài toán phù hợp"], "associated_errors": ["Stack Overflow", "missing base case", "non-progressing recursion"], "difficulty_level": 4, "bloom_level": "Analyze", "estimated_time_minutes": 40, "practice_count": 2, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-BACKTRACK-01",
-      "concept_id": "CPP-BACKTRACK-01",
-      "name": "Kỹ thuật Quay lui & Tìm kiếm Không gian Trạng thái (Backtracking)",
-      "concept_name": "Kỹ thuật Quay lui & Tìm kiếm Không gian Trạng thái (Backtracking)",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-ALGO",
-      "topic_id": "TOPIC-CPP-BACKTRACK",
-      "stage": 4,
-      "tier": 4,
-      "scope": "state space DFS, undo, pruning, N-Queens, permutation/subset generation",
-      "prerequisites": [
-        "CPP-RECUR-01"
-      ],
-      "learning_objectives": [
-        "Xây dựng khung giải thuật quay lui chuẩn: Chọn -> Đệ quy -> Hoàn tác (Undo)",
-        "Cắt tỉa nhánh cận (Branch and Bound Pruning) để loại bỏ không gian vô nghiệm",
-        "Giải quyết các bài toán kinh điển: Sinh chuỗi nhị phân, hoán vị, N-Queens"
-      ],
-      "associated_errors": [
-        "TLE",
-        "state contamination"
-      ],
-      "difficulty_level": 4,
-      "bloom_level": "Create",
-      "estimated_time_minutes": 50,
-      "practice_count": 5
+      "id": "CPP-BACKTRACK-01", "concept_id": "CPP-BACKTRACK-01", "name": "Quay lui và cắt tỉa không gian trạng thái", "concept_name": "Quay lui và cắt tỉa không gian trạng thái", "domain_id": "CPP", "module_id": "MOD-CPP-ALGO", "topic_id": "TOPIC-CPP-BACKTRACK", "stage": 5, "tier": 5,
+      "scope": "backtracking, permutation, state rollback, pruning, N-Queens", "prerequisites": ["CPP-RECUR-01", "CPP-VECTOR-01"], "learning_objectives": ["Mô hình hóa lựa chọn, trạng thái và hoàn tác", "Sinh nghiệm không lặp", "Cắt tỉa nhánh mà không loại nhầm nghiệm"], "associated_errors": ["state not restored", "duplicate results", "exponential blowup"], "difficulty_level": 4, "bloom_level": "Create", "estimated_time_minutes": 45, "practice_count": 2, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-EXC-01",
-      "concept_id": "CPP-EXC-01",
-      "name": "Quản lý Ngoại lệ Hệ thống & Tiêu chuẩn noexcept",
-      "concept_name": "Quản lý Ngoại lệ Hệ thống & Tiêu chuẩn noexcept",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-SYS",
-      "topic_id": "TOPIC-CPP-EXC",
-      "stage": 5,
-      "tier": 5,
-      "scope": "try/catch/throw, std::exception, runtime_error, noexcept",
-      "prerequisites": [
-        "CPP-FUNC-01"
-      ],
-      "learning_objectives": [
-        "Bắt ngoại lệ chuẩn hệ thống với try, catch (std::exception &e)",
-        "Chủ động ném ngoại lệ với std::runtime_error và std::invalid_argument",
-        "Đảm bảo an toàn ngoại lệ (Exception Safety Guarantees) và đặc tả noexcept"
-      ],
-      "associated_errors": [
-        "Uncaught Exception"
-      ],
-      "difficulty_level": 4,
-      "bloom_level": "Evaluate",
-      "estimated_time_minutes": 40,
-      "practice_count": 4
+      "id": "CPP-BITWISE-01", "concept_id": "CPP-BITWISE-01", "name": "Phép toán bit và bitmask", "concept_name": "Phép toán bit và bitmask", "domain_id": "CPP", "module_id": "MOD-CPP-ROBUST", "topic_id": "TOPIC-CPP-BITWISE", "stage": 4, "tier": 5,
+      "scope": "bitwise AND OR XOR NOT, shifts, masks, flags", "prerequisites": ["CPP-TYPE-01"], "learning_objectives": ["Đọc bitmask theo từng bit có ý nghĩa", "Tạo, bật, tắt và kiểm tra cờ", "Tránh dịch bit với toán hạng hoặc số bit không hợp lệ"], "associated_errors": ["wrong precedence", "signed shift assumptions", "invalid shift count"], "difficulty_level": 3, "bloom_level": "Apply", "estimated_time_minutes": 30, "practice_count": 1, "content_status": "PUBLISHED"
     },
     {
-      "id": "CPP-CACHE-01",
-      "concept_id": "CPP-CACHE-01",
-      "name": "Tối ưu hóa Hiệu năng & Thân thiện Bộ nhớ đệm (Cache Locality)",
-      "concept_name": "Tối ưu hóa Hiệu năng & Thân thiện Bộ nhớ đệm (Cache Locality)",
-      "domain_id": "CPP",
-      "module_id": "MOD-CPP-SYS",
-      "topic_id": "TOPIC-CPP-CACHE",
-      "stage": 5,
-      "tier": 5,
-      "scope": "spatial/temporal locality, vector-friendly access, cache lines, memory latency",
-      "prerequisites": [
-        "CPP-MEM-01",
-        "CPP-VECTOR-01"
-      ],
-      "learning_objectives": [
-        "Hiểu nguyên lý phân cấp bộ nhớ máy tính: L1/L2/L3 Cache, RAM và độ trễ",
-        "Tận dụng Spatial Locality qua truy xuất mảng liên tục thay vì con trỏ nhảy cóc",
-        "Viết mã nguồn Cache-Friendly Code tăng tốc độ xử lý chương trình gấp nhiều lần"
-      ],
-      "associated_errors": [
-        "Cache Miss Penalty",
-        "performance regression"
-      ],
-      "difficulty_level": 4,
-      "bloom_level": "Evaluate",
-      "estimated_time_minutes": 50,
-      "practice_count": 4
+      "id": "CPP-EXC-01", "concept_id": "CPP-EXC-01", "name": "Ngoại lệ và biên lỗi có kiểm soát", "concept_name": "Ngoại lệ và biên lỗi có kiểm soát", "domain_id": "CPP", "module_id": "MOD-CPP-ROBUST", "topic_id": "TOPIC-CPP-EXC", "stage": 4, "tier": 5,
+      "scope": "try, catch, throw, std::exception, exception safety", "prerequisites": ["CPP-FUNC-01"], "learning_objectives": ["Ném ngoại lệ khi không thể giữ hậu điều kiện", "Bắt theo const reference và giữ ngữ cảnh lỗi", "Phân biệt lỗi ngoại lệ với điều kiện có thể xử lý tại chỗ"], "associated_errors": ["uncaught exception", "catch by value", "swallowed exception"], "difficulty_level": 3, "bloom_level": "Analyze", "estimated_time_minutes": 35, "practice_count": 1, "content_status": "PUBLISHED"
+    },
+    {
+      "id": "CPP-SMARTPTR-01", "concept_id": "CPP-SMARTPTR-01", "name": "RAII và con trỏ thông minh", "concept_name": "RAII và con trỏ thông minh", "domain_id": "CPP", "module_id": "MOD-CPP-ROBUST", "topic_id": "TOPIC-CPP-RAII", "stage": 5, "tier": 5,
+      "scope": "RAII, unique_ptr, shared_ptr, weak_ptr, make_unique, ownership", "prerequisites": ["CPP-PTR-01", "CPP-MEM-01"], "learning_objectives": ["Mô tả ownership thay vì chỉ mô tả địa chỉ", "Ưu tiên unique_ptr và make_unique", "Nhận diện shared ownership và chu trình tham chiếu"], "associated_errors": ["memory leak", "double ownership", "reference cycle"], "difficulty_level": 4, "bloom_level": "Analyze", "estimated_time_minutes": 40, "practice_count": 1, "content_status": "PUBLISHED"
     }
   ],
   "edges": [
-    {
-      "source": "CPP-SYNTAX-01",
-      "target": "CPP-TYPE-01",
-      "relation": "prerequisite",
-      "reason": "Variables and expressions require the core program/data model."
-    },
-    {
-      "source": "CPP-TYPE-01",
-      "target": "CPP-COND-01",
-      "relation": "prerequisite",
-      "reason": "Conditions operate on typed expressions."
-    },
-    {
-      "source": "CPP-COND-01",
-      "target": "CPP-LOOP-01",
-      "relation": "prerequisite",
-      "reason": "Loop termination/control uses conditions."
-    },
-    {
-      "source": "CPP-TYPE-01",
-      "target": "CPP-FUNC-01",
-      "relation": "prerequisite",
-      "reason": "Function signatures depend on types/returns."
-    },
-    {
-      "source": "CPP-FUNC-01",
-      "target": "CPP-ARRAY-01",
-      "relation": "prerequisite",
-      "reason": "Reusable array algorithms are naturally expressed as functions."
-    },
-    {
-      "source": "CPP-ARRAY-01",
-      "target": "CPP-VECTOR-01",
-      "relation": "prerequisite",
-      "reason": "vector extends sequence manipulation beyond fixed arrays."
-    },
-    {
-      "source": "CPP-ARRAY-01",
-      "target": "CPP-MATRIX-01",
-      "relation": "prerequisite",
-      "reason": "2D arrays generalize indexed sequences."
-    },
-    {
-      "source": "CPP-VECTOR-01",
-      "target": "CPP-MATRIX-01",
-      "relation": "prerequisite",
-      "reason": "2D dynamic matrices use vector<vector<T>>."
-    },
-    {
-      "source": "CPP-TYPE-01",
-      "target": "CPP-STRING-01",
-      "relation": "prerequisite",
-      "reason": "std::string is a typed standard-library value."
-    },
-    {
-      "source": "CPP-TYPE-01",
-      "target": "CPP-STRUCT-01",
-      "relation": "prerequisite",
-      "reason": "struct combines typed fields."
-    },
-    {
-      "source": "CPP-STRUCT-01",
-      "target": "CPP-ENUMVAR-01",
-      "relation": "prerequisite",
-      "reason": "variant/record-state design builds on user-defined data."
-    },
-    {
-      "source": "CPP-FUNC-01",
-      "target": "CPP-PTR-01",
-      "relation": "prerequisite",
-      "reason": "references/pointers are used in parameter passing and address manipulation."
-    },
-    {
-      "source": "CPP-TYPE-01",
-      "target": "CPP-MEM-01",
-      "relation": "prerequisite",
-      "reason": "object size/lifetime depends on the process memory model."
-    },
-    {
-      "source": "CPP-MEM-01",
-      "target": "CPP-PTR-01",
-      "relation": "prerequisite",
-      "reason": "pointer arithmetic and dereference require address/lifetime knowledge."
-    },
-    {
-      "source": "CPP-PTR-01",
-      "target": "CPP-SMARTPTR-01",
-      "relation": "prerequisite",
-      "reason": "smart pointers formalize ownership/lifetime on top of pointer concepts."
-    },
-    {
-      "source": "CPP-STRUCT-01",
-      "target": "CPP-FILE-01",
-      "relation": "prerequisite",
-      "reason": "binary records commonly serialize user-defined record layouts."
-    },
-    {
-      "source": "CPP-PTR-01",
-      "target": "CPP-FILE-01",
-      "relation": "prerequisite",
-      "reason": "random/binary I/O often uses buffers and memory addresses."
-    },
-    {
-      "source": "CPP-SYNTAX-01",
-      "target": "CPP-BUILD-01",
-      "relation": "prerequisite",
-      "reason": "multi-file builds depend on program translation/compilation structure."
-    },
-    {
-      "source": "CPP-FUNC-01",
-      "target": "CPP-BUILD-01",
-      "relation": "prerequisite",
-      "reason": "headers, prototypes and link boundaries depend on functions/symbols."
-    },
-    {
-      "source": "CPP-FUNC-01",
-      "target": "CPP-RECUR-01",
-      "relation": "prerequisite",
-      "reason": "recursion is function self-call plus a base case."
-    },
-    {
-      "source": "CPP-RECUR-01",
-      "target": "CPP-BACKTRACK-01",
-      "relation": "prerequisite",
-      "reason": "backtracking is recursive state search with undo/pruning."
-    },
-    {
-      "source": "CPP-FUNC-01",
-      "target": "CPP-EXC-01",
-      "relation": "prerequisite",
-      "reason": "exceptions are propagated through function calls."
-    },
-    {
-      "source": "CPP-MEM-01",
-      "target": "CPP-CACHE-01",
-      "relation": "prerequisite",
-      "reason": "cache behavior is about memory access patterns."
-    },
-    {
-      "source": "CPP-VECTOR-01",
-      "target": "CPP-CACHE-01",
-      "relation": "prerequisite",
-      "reason": "contiguous vector access is a core cache-locality example."
-    }
+    { "source": "CPP-SYNTAX-01", "target": "CPP-TYPE-01", "relation": "prerequisite", "reason": "Biến và biểu thức chỉ có ý nghĩa trong một chương trình có thể biên dịch và nhập xuất được." },
+    { "source": "CPP-TYPE-01", "target": "CPP-COND-01", "relation": "prerequisite", "reason": "Điều kiện được tạo từ biểu thức có kiểu." },
+    { "source": "CPP-COND-01", "target": "CPP-LOOP-01", "relation": "prerequisite", "reason": "Điều kiện dừng và điều khiển vòng lặp cần logic đúng." },
+    { "source": "CPP-TYPE-01", "target": "CPP-FUNC-01", "relation": "prerequisite", "reason": "Chữ ký hàm, tham số và giá trị trả về phụ thuộc vào kiểu." },
+    { "source": "CPP-FUNC-01", "target": "CPP-MEM-01", "relation": "prerequisite", "reason": "Phạm vi và vòng đời được quan sát rõ nhất qua lời gọi hàm và tham số." },
+    { "source": "CPP-LOOP-01", "target": "CPP-ARRAY-01", "relation": "prerequisite", "reason": "Thuật toán trên dãy cần duyệt chỉ mục và điều kiện biên." },
+    { "source": "CPP-ARRAY-01", "target": "CPP-VECTOR-01", "relation": "prerequisite", "reason": "vector mở rộng tư duy dãy liên tiếp từ mảng tĩnh." },
+    { "source": "CPP-SYNTAX-01", "target": "CPP-STRING-01", "relation": "prerequisite", "reason": "Chuỗi gắn trực tiếp với nhập xuất dòng và trạng thái stream." },
+    { "source": "CPP-ARRAY-01", "target": "CPP-MATRIX-01", "relation": "prerequisite", "reason": "Ma trận mở rộng chỉ mục một chiều thành hàng-cột." },
+    { "source": "CPP-LOOP-01", "target": "CPP-MATRIX-01", "relation": "prerequisite", "reason": "Duyệt ma trận cần vòng lặp lồng nhau và kiểm soát biên." },
+    { "source": "CPP-TYPE-01", "target": "CPP-STRUCT-01", "relation": "prerequisite", "reason": "struct tổ hợp các trường đã có kiểu rõ ràng." },
+    { "source": "CPP-TYPE-01", "target": "CPP-ENUMVAR-01", "relation": "prerequisite", "reason": "enum class, bit-field và variant đều yêu cầu hiểu kiểu và chuyển đổi." },
+    { "source": "CPP-STRUCT-01", "target": "CPP-PTR-01", "relation": "prerequisite", "reason": "Node của danh sách liên kết là một bản ghi có liên kết con trỏ." },
+    { "source": "CPP-STRING-01", "target": "CPP-FILE-01", "relation": "prerequisite", "reason": "stringstream, string_view và regex thao tác trên văn bản sẵn có." },
+    { "source": "CPP-VECTOR-01", "target": "CPP-BUILD-01", "relation": "prerequisite", "reason": "Các ví dụ sort và binary_search cần một range tuần tự cụ thể." },
+    { "source": "CPP-TYPE-01", "target": "CPP-CACHE-01", "relation": "prerequisite", "reason": "Khóa, giá trị, comparator và hash đều dựa trên ngữ nghĩa kiểu dữ liệu." },
+    { "source": "CPP-FUNC-01", "target": "CPP-RECUR-01", "relation": "prerequisite", "reason": "Đệ quy là hàm tự gọi với điểm dừng và bước thu nhỏ." },
+    { "source": "CPP-RECUR-01", "target": "CPP-BACKTRACK-01", "relation": "prerequisite", "reason": "Quay lui là đệ quy có lựa chọn, trạng thái và hoàn tác." },
+    { "source": "CPP-VECTOR-01", "target": "CPP-BACKTRACK-01", "relation": "prerequisite", "reason": "Nhiều bài quay lui cần giữ trạng thái thay đổi được và kết quả theo dãy." },
+    { "source": "CPP-TYPE-01", "target": "CPP-BITWISE-01", "relation": "prerequisite", "reason": "Bitwise cần hiểu kiểu số nguyên, dấu và phép chuyển đổi." },
+    { "source": "CPP-FUNC-01", "target": "CPP-EXC-01", "relation": "prerequisite", "reason": "Ngoại lệ lan truyền qua biên hàm và được xử lý tại điểm gọi." },
+    { "source": "CPP-PTR-01", "target": "CPP-SMARTPTR-01", "relation": "prerequisite", "reason": "RAII diễn đạt ownership cho tài nguyên được truy cập qua con trỏ." },
+    { "source": "CPP-MEM-01", "target": "CPP-SMARTPTR-01", "relation": "prerequisite", "reason": "RAII dựa trên vòng đời xác định của đối tượng và scope." }
   ],
   "lesson_mappings": {
-    "CPP-01.01": "CPP-SYNTAX-01",
-    "CPP-01.02": "CPP-SYNTAX-01",
-    "CPP-01.03": "CPP-TYPE-01",
-    "CPP-01.04": "CPP-TYPE-01",
-    "CPP-01.05": "CPP-TYPE-01",
-    "CPP-02.01": "CPP-COND-01",
-    "CPP-02.02": "CPP-COND-01",
-    "CPP-02.03": "CPP-COND-01",
-    "CPP-02.04": "CPP-COND-01",
-    "CPP-03.01": "CPP-LOOP-01",
-    "CPP-03.02": "CPP-LOOP-01",
-    "CPP-03.03": "CPP-LOOP-01",
-    "CPP-03.04": "CPP-LOOP-01",
-    "CPP-04.01": "CPP-FUNC-01",
-    "CPP-04.02": "CPP-FUNC-01",
-    "CPP-04.03": "CPP-FUNC-01",
-    "CPP-04.04": "CPP-FUNC-01",
-    "CPP-05.01": "CPP-ARRAY-01",
-    "CPP-05.02": "CPP-ARRAY-01",
-    "CPP-05.03": "CPP-VECTOR-01",
-    "CPP-05.04": "CPP-VECTOR-01",
-    "CPP-06.01": "CPP-STRING-01",
-    "CPP-06.02": "CPP-STRING-01",
-    "CPP-06.03": "CPP-STRING-01",
-    "CPP-06.04": "CPP-STRING-01",
-    "CPP-07.01": "CPP-MATRIX-01",
-    "CPP-07.02": "CPP-MATRIX-01",
-    "CPP-07.03": "CPP-MATRIX-01",
-    "CPP-07.04": "CPP-MATRIX-01",
-    "CPP2-01.01": "CPP-ENUMVAR-01",
-    "CPP2-01.02": "CPP-STRUCT-01",
-    "CPP2-01.03": "CPP-STRUCT-01",
-    "CPP2-02.01": "CPP-MEM-01",
-    "CPP2-02.02": "CPP-PTR-01",
-    "CPP2-02.03": "CPP-SMARTPTR-01",
-    "CPP2-03.01": "CPP-FILE-01",
-    "CPP2-03.02": "CPP-FILE-01",
-    "CPP2-03.03": "CPP-FILE-01",
-    "CPP2-04.01": "CPP-BUILD-01",
-    "CPP2-04.02": "CPP-BUILD-01",
-    "CPP2-04.03": "CPP-BUILD-01",
-    "CPP2-05.01": "CPP-RECUR-01",
-    "CPP2-05.02": "CPP-BACKTRACK-01",
-    "CPP2-05.03": "CPP-BACKTRACK-01",
-    "CPP2-06.01": "CPP-EXC-01",
-    "CPP2-06.02": "CPP-CACHE-01",
-    "CPP2-06.03": "CPP-CACHE-01"
+    "CPP-01.01": "CPP-SYNTAX-01", "CPP-01.02": "CPP-SYNTAX-01", "CPP-01.03": "CPP-TYPE-01", "CPP-01.04": "CPP-TYPE-01", "CPP-01.05": "CPP-TYPE-01",
+    "CPP-02.01": "CPP-COND-01", "CPP-02.02": "CPP-COND-01", "CPP-02.03": "CPP-COND-01", "CPP-02.04": "CPP-COND-01",
+    "CPP-03.01": "CPP-LOOP-01", "CPP-03.02": "CPP-LOOP-01", "CPP-03.03": "CPP-LOOP-01", "CPP-03.04": "CPP-LOOP-01", "CPP-03.05": "CPP-LOOP-01",
+    "CPP-04.01": "CPP-FUNC-01", "CPP-04.02": "CPP-FUNC-01", "CPP-04.03": "CPP-FUNC-01", "CPP-04.04": "CPP-MEM-01", "CPP-04.05": "CPP-RECUR-01",
+    "CPP-05.01": "CPP-ARRAY-01", "CPP-05.02": "CPP-ARRAY-01", "CPP-05.03": "CPP-ARRAY-01", "CPP-05.04": "CPP-ARRAY-01",
+    "CPP-06.01": "CPP-STRING-01", "CPP-06.02": "CPP-STRING-01", "CPP-06.03": "CPP-STRING-01",
+    "CPP-07.01": "CPP-MATRIX-01", "CPP-07.02": "CPP-MATRIX-01", "CPP-07.03": "CPP-MATRIX-01",
+    "CPP2-01.01": "CPP-ENUMVAR-01", "CPP2-01.02": "CPP-STRUCT-01", "CPP2-01.03": "CPP-ENUMVAR-01",
+    "CPP2-02.01": "CPP-VECTOR-01", "CPP2-02.02": "CPP-VECTOR-01", "CPP2-02.03": "CPP-STRUCT-01", "CPP2-02.04": "CPP-PTR-01",
+    "CPP2-03.01": "CPP-FILE-01", "CPP2-03.02": "CPP-FILE-01", "CPP2-03.03": "CPP-FILE-01",
+    "CPP2-04.01": "CPP-RECUR-01", "CPP2-04.02": "CPP-BACKTRACK-01", "CPP2-04.03": "CPP-BACKTRACK-01",
+    "CPP2-05.01": "CPP-BUILD-01", "CPP2-05.02": "CPP-CACHE-01", "CPP2-05.03": "CPP-CACHE-01",
+    "CPP2-06.01": "CPP-BITWISE-01", "CPP2-06.02": "CPP-EXC-01", "CPP2-06.03": "CPP-SMARTPTR-01"
   },
   "detailed_lesson_mappings": {
-    "CPP-01.01": {
-      "primary": "CPP-SYNTAX-01",
-      "supporting": []
-    },
-    "CPP-01.02": {
-      "primary": "CPP-SYNTAX-01",
-      "supporting": [
-        "CPP-TYPE-01"
-      ]
-    },
-    "CPP-01.03": {
-      "primary": "CPP-TYPE-01",
-      "supporting": [
-        "CPP-SYNTAX-01"
-      ]
-    },
-    "CPP-01.04": {
-      "primary": "CPP-TYPE-01",
-      "supporting": []
-    },
-    "CPP-01.05": {
-      "primary": "CPP-TYPE-01",
-      "supporting": [
-        "CPP-SYNTAX-01"
-      ]
-    },
-    "CPP-02.01": {
-      "primary": "CPP-COND-01",
-      "supporting": [
-        "CPP-TYPE-01"
-      ]
-    },
-    "CPP-02.02": {
-      "primary": "CPP-COND-01",
-      "supporting": []
-    },
-    "CPP-02.03": {
-      "primary": "CPP-COND-01",
-      "supporting": []
-    },
-    "CPP-02.04": {
-      "primary": "CPP-COND-01",
-      "supporting": [
-        "CPP-TYPE-01"
-      ]
-    },
-    "CPP-03.01": {
-      "primary": "CPP-LOOP-01",
-      "supporting": [
-        "CPP-COND-01"
-      ]
-    },
-    "CPP-03.02": {
-      "primary": "CPP-LOOP-01",
-      "supporting": [
-        "CPP-COND-01"
-      ]
-    },
-    "CPP-03.03": {
-      "primary": "CPP-LOOP-01",
-      "supporting": []
-    },
-    "CPP-03.04": {
-      "primary": "CPP-LOOP-01",
-      "supporting": [
-        "CPP-COND-01"
-      ]
-    },
-    "CPP-04.01": {
-      "primary": "CPP-FUNC-01",
-      "supporting": [
-        "CPP-TYPE-01"
-      ]
-    },
-    "CPP-04.02": {
-      "primary": "CPP-FUNC-01",
-      "supporting": [
-        "CPP-TYPE-01"
-      ]
-    },
-    "CPP-04.03": {
-      "primary": "CPP-FUNC-01",
-      "supporting": [
-        "CPP-MEM-01"
-      ]
-    },
-    "CPP-04.04": {
-      "primary": "CPP-FUNC-01",
-      "supporting": []
-    },
-    "CPP-05.01": {
-      "primary": "CPP-ARRAY-01",
-      "supporting": [
-        "CPP-LOOP-01"
-      ]
-    },
-    "CPP-05.02": {
-      "primary": "CPP-ARRAY-01",
-      "supporting": [
-        "CPP-FUNC-01"
-      ]
-    },
-    "CPP-05.03": {
-      "primary": "CPP-VECTOR-01",
-      "supporting": [
-        "CPP-ARRAY-01"
-      ]
-    },
-    "CPP-05.04": {
-      "primary": "CPP-VECTOR-01",
-      "supporting": [
-        "CPP-FUNC-01"
-      ]
-    },
-    "CPP-06.01": {
-      "primary": "CPP-STRING-01",
-      "supporting": [
-        "CPP-SYNTAX-01"
-      ]
-    },
-    "CPP-06.02": {
-      "primary": "CPP-STRING-01",
-      "supporting": [
-        "CPP-LOOP-01"
-      ]
-    },
-    "CPP-06.03": {
-      "primary": "CPP-STRING-01",
-      "supporting": [
-        "CPP-FUNC-01"
-      ]
-    },
-    "CPP-06.04": {
-      "primary": "CPP-STRING-01",
-      "supporting": [
-        "CPP-VECTOR-01"
-      ]
-    },
-    "CPP-07.01": {
-      "primary": "CPP-MATRIX-01",
-      "supporting": [
-        "CPP-ARRAY-01",
-        "CPP-LOOP-01"
-      ]
-    },
-    "CPP-07.02": {
-      "primary": "CPP-MATRIX-01",
-      "supporting": [
-        "CPP-ARRAY-01"
-      ]
-    },
-    "CPP-07.03": {
-      "primary": "CPP-MATRIX-01",
-      "supporting": [
-        "CPP-VECTOR-01"
-      ]
-    },
-    "CPP-07.04": {
-      "primary": "CPP-MATRIX-01",
-      "supporting": [
-        "CPP-VECTOR-01",
-        "CPP-FUNC-01"
-      ]
-    },
-    "CPP2-01.01": {
-      "primary": "CPP-ENUMVAR-01",
-      "supporting": [
-        "CPP-TYPE-01"
-      ]
-    },
-    "CPP2-01.02": {
-      "primary": "CPP-STRUCT-01",
-      "supporting": [
-        "CPP-TYPE-01"
-      ]
-    },
-    "CPP2-01.03": {
-      "primary": "CPP-STRUCT-01",
-      "supporting": [
-        "CPP-MEM-01"
-      ]
-    },
-    "CPP2-02.01": {
-      "primary": "CPP-MEM-01",
-      "supporting": [
-        "CPP-TYPE-01"
-      ]
-    },
-    "CPP2-02.02": {
-      "primary": "CPP-PTR-01",
-      "supporting": [
-        "CPP-MEM-01",
-        "CPP-FUNC-01"
-      ]
-    },
-    "CPP2-02.03": {
-      "primary": "CPP-SMARTPTR-01",
-      "supporting": [
-        "CPP-PTR-01",
-        "CPP-MEM-01"
-      ]
-    },
-    "CPP2-03.01": {
-      "primary": "CPP-FILE-01",
-      "supporting": [
-        "CPP-STRUCT-01"
-      ]
-    },
-    "CPP2-03.02": {
-      "primary": "CPP-FILE-01",
-      "supporting": [
-        "CPP-PTR-01"
-      ]
-    },
-    "CPP2-03.03": {
-      "primary": "CPP-FILE-01",
-      "supporting": [
-        "CPP-STRUCT-01",
-        "CPP-PTR-01"
-      ]
-    },
-    "CPP2-04.01": {
-      "primary": "CPP-BUILD-01",
-      "supporting": [
-        "CPP-SYNTAX-01"
-      ]
-    },
-    "CPP2-04.02": {
-      "primary": "CPP-BUILD-01",
-      "supporting": [
-        "CPP-FUNC-01"
-      ]
-    },
-    "CPP2-04.03": {
-      "primary": "CPP-BUILD-01",
-      "supporting": [
-        "CPP-SYNTAX-01"
-      ]
-    },
-    "CPP2-05.01": {
-      "primary": "CPP-RECUR-01",
-      "supporting": [
-        "CPP-FUNC-01",
-        "CPP-MEM-01"
-      ]
-    },
-    "CPP2-05.02": {
-      "primary": "CPP-BACKTRACK-01",
-      "supporting": [
-        "CPP-RECUR-01",
-        "CPP-VECTOR-01"
-      ]
-    },
-    "CPP2-05.03": {
-      "primary": "CPP-BACKTRACK-01",
-      "supporting": [
-        "CPP-RECUR-01",
-        "CPP-MATRIX-01"
-      ]
-    },
-    "CPP2-06.01": {
-      "primary": "CPP-EXC-01",
-      "supporting": [
-        "CPP-FUNC-01"
-      ]
-    },
-    "CPP2-06.02": {
-      "primary": "CPP-CACHE-01",
-      "supporting": [
-        "CPP-MEM-01",
-        "CPP-VECTOR-01"
-      ]
-    },
-    "CPP2-06.03": {
-      "primary": "CPP-CACHE-01",
-      "supporting": [
-        "CPP-FILE-01",
-        "CPP-SMARTPTR-01"
-      ]
-    }
+    "CPP-01.01": { "primary": "CPP-SYNTAX-01", "supporting": [] }, "CPP-01.02": { "primary": "CPP-SYNTAX-01", "supporting": ["CPP-TYPE-01"] }, "CPP-01.03": { "primary": "CPP-TYPE-01", "supporting": ["CPP-SYNTAX-01"] }, "CPP-01.04": { "primary": "CPP-TYPE-01", "supporting": [] }, "CPP-01.05": { "primary": "CPP-TYPE-01", "supporting": [] },
+    "CPP-02.01": { "primary": "CPP-COND-01", "supporting": ["CPP-TYPE-01"] }, "CPP-02.02": { "primary": "CPP-COND-01", "supporting": ["CPP-TYPE-01"] }, "CPP-02.03": { "primary": "CPP-COND-01", "supporting": [] }, "CPP-02.04": { "primary": "CPP-COND-01", "supporting": ["CPP-TYPE-01"] },
+    "CPP-03.01": { "primary": "CPP-LOOP-01", "supporting": ["CPP-COND-01"] }, "CPP-03.02": { "primary": "CPP-LOOP-01", "supporting": ["CPP-COND-01"] }, "CPP-03.03": { "primary": "CPP-LOOP-01", "supporting": ["CPP-COND-01"] }, "CPP-03.04": { "primary": "CPP-LOOP-01", "supporting": ["CPP-COND-01"] }, "CPP-03.05": { "primary": "CPP-LOOP-01", "supporting": ["CPP-COND-01"] },
+    "CPP-04.01": { "primary": "CPP-FUNC-01", "supporting": ["CPP-TYPE-01"] }, "CPP-04.02": { "primary": "CPP-FUNC-01", "supporting": [] }, "CPP-04.03": { "primary": "CPP-FUNC-01", "supporting": ["CPP-MEM-01"] }, "CPP-04.04": { "primary": "CPP-MEM-01", "supporting": ["CPP-FUNC-01"] }, "CPP-04.05": { "primary": "CPP-RECUR-01", "supporting": ["CPP-FUNC-01"] },
+    "CPP-05.01": { "primary": "CPP-ARRAY-01", "supporting": ["CPP-LOOP-01"] }, "CPP-05.02": { "primary": "CPP-ARRAY-01", "supporting": ["CPP-LOOP-01"] }, "CPP-05.03": { "primary": "CPP-ARRAY-01", "supporting": ["CPP-LOOP-01"] }, "CPP-05.04": { "primary": "CPP-ARRAY-01", "supporting": ["CPP-LOOP-01"] },
+    "CPP-06.01": { "primary": "CPP-STRING-01", "supporting": ["CPP-SYNTAX-01"] }, "CPP-06.02": { "primary": "CPP-STRING-01", "supporting": ["CPP-SYNTAX-01"] }, "CPP-06.03": { "primary": "CPP-STRING-01", "supporting": ["CPP-LOOP-01"] },
+    "CPP-07.01": { "primary": "CPP-MATRIX-01", "supporting": ["CPP-ARRAY-01", "CPP-LOOP-01"] }, "CPP-07.02": { "primary": "CPP-MATRIX-01", "supporting": ["CPP-ARRAY-01", "CPP-LOOP-01"] }, "CPP-07.03": { "primary": "CPP-MATRIX-01", "supporting": ["CPP-ARRAY-01", "CPP-LOOP-01"] },
+    "CPP2-01.01": { "primary": "CPP-ENUMVAR-01", "supporting": ["CPP-TYPE-01"] }, "CPP2-01.02": { "primary": "CPP-STRUCT-01", "supporting": ["CPP-TYPE-01"] }, "CPP2-01.03": { "primary": "CPP-ENUMVAR-01", "supporting": ["CPP-TYPE-01"] },
+    "CPP2-02.01": { "primary": "CPP-VECTOR-01", "supporting": ["CPP-ARRAY-01"] }, "CPP2-02.02": { "primary": "CPP-VECTOR-01", "supporting": ["CPP-MATRIX-01"] }, "CPP2-02.03": { "primary": "CPP-STRUCT-01", "supporting": ["CPP-FUNC-01"] }, "CPP2-02.04": { "primary": "CPP-PTR-01", "supporting": ["CPP-STRUCT-01"] },
+    "CPP2-03.01": { "primary": "CPP-FILE-01", "supporting": ["CPP-STRING-01"] }, "CPP2-03.02": { "primary": "CPP-FILE-01", "supporting": ["CPP-STRING-01", "CPP-MEM-01"] }, "CPP2-03.03": { "primary": "CPP-FILE-01", "supporting": ["CPP-STRING-01"] },
+    "CPP2-04.01": { "primary": "CPP-RECUR-01", "supporting": ["CPP-FUNC-01"] }, "CPP2-04.02": { "primary": "CPP-BACKTRACK-01", "supporting": ["CPP-RECUR-01", "CPP-VECTOR-01"] }, "CPP2-04.03": { "primary": "CPP-BACKTRACK-01", "supporting": ["CPP-RECUR-01", "CPP-MATRIX-01"] },
+    "CPP2-05.01": { "primary": "CPP-BUILD-01", "supporting": ["CPP-VECTOR-01"] }, "CPP2-05.02": { "primary": "CPP-CACHE-01", "supporting": ["CPP-TYPE-01"] }, "CPP2-05.03": { "primary": "CPP-CACHE-01", "supporting": ["CPP-TYPE-01"] },
+    "CPP2-06.01": { "primary": "CPP-BITWISE-01", "supporting": ["CPP-TYPE-01"] }, "CPP2-06.02": { "primary": "CPP-EXC-01", "supporting": ["CPP-FUNC-01"] }, "CPP2-06.03": { "primary": "CPP-SMARTPTR-01", "supporting": ["CPP-PTR-01", "CPP-MEM-01"] }
+  },
+  "multi_skill_lesson_mappings": {
+    "CPP-01.01": ["CPP-SYNTAX-01"], "CPP-01.02": ["CPP-SYNTAX-01", "CPP-TYPE-01"], "CPP-01.03": ["CPP-TYPE-01"], "CPP-01.04": ["CPP-TYPE-01"], "CPP-01.05": ["CPP-TYPE-01"],
+    "CPP-02.01": ["CPP-COND-01"], "CPP-02.02": ["CPP-COND-01"], "CPP-02.03": ["CPP-COND-01"], "CPP-02.04": ["CPP-COND-01"],
+    "CPP-03.01": ["CPP-LOOP-01"], "CPP-03.02": ["CPP-LOOP-01"], "CPP-03.03": ["CPP-LOOP-01"], "CPP-03.04": ["CPP-LOOP-01"], "CPP-03.05": ["CPP-LOOP-01"],
+    "CPP-04.01": ["CPP-FUNC-01"], "CPP-04.02": ["CPP-FUNC-01"], "CPP-04.03": ["CPP-FUNC-01"], "CPP-04.04": ["CPP-MEM-01"], "CPP-04.05": ["CPP-RECUR-01"],
+    "CPP-05.01": ["CPP-ARRAY-01"], "CPP-05.02": ["CPP-ARRAY-01"], "CPP-05.03": ["CPP-ARRAY-01"], "CPP-05.04": ["CPP-ARRAY-01"],
+    "CPP-06.01": ["CPP-STRING-01"], "CPP-06.02": ["CPP-STRING-01"], "CPP-06.03": ["CPP-STRING-01"],
+    "CPP-07.01": ["CPP-MATRIX-01"], "CPP-07.02": ["CPP-MATRIX-01"], "CPP-07.03": ["CPP-MATRIX-01"],
+    "CPP2-01.01": ["CPP-ENUMVAR-01"], "CPP2-01.02": ["CPP-STRUCT-01"], "CPP2-01.03": ["CPP-ENUMVAR-01"],
+    "CPP2-02.01": ["CPP-VECTOR-01"], "CPP2-02.02": ["CPP-VECTOR-01", "CPP-MATRIX-01"], "CPP2-02.03": ["CPP-STRUCT-01"], "CPP2-02.04": ["CPP-PTR-01"],
+    "CPP2-03.01": ["CPP-FILE-01"], "CPP2-03.02": ["CPP-FILE-01"], "CPP2-03.03": ["CPP-FILE-01"],
+    "CPP2-04.01": ["CPP-RECUR-01"], "CPP2-04.02": ["CPP-BACKTRACK-01"], "CPP2-04.03": ["CPP-BACKTRACK-01"],
+    "CPP2-05.01": ["CPP-BUILD-01"], "CPP2-05.02": ["CPP-CACHE-01"], "CPP2-05.03": ["CPP-CACHE-01"],
+    "CPP2-06.01": ["CPP-BITWISE-01"], "CPP2-06.02": ["CPP-EXC-01"], "CPP2-06.03": ["CPP-SMARTPTR-01"]
   },
   "practice_problem_mappings": {}
 }

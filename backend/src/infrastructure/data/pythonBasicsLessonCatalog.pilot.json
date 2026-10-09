@@ -1,0 +1,41 @@
+{
+  "catalogVersion": "python-basics-lessons/1.0.0-pilot",
+  "mappingVersion": "lesson-skill-mapping/1.0.0-py-basics-pilot",
+  "policyVersion": "palnet-lesson-policy/1.0.0",
+  "language": "PYTHON",
+  "goalId": "GOAL_PY_BASICS",
+  "graphVersion": "2.1",
+  "courseTitle": "Lập trình Python cơ bản cho người mới bắt đầu",
+  "review": {
+    "reviewer": "AI:OPENAI-CODEX-CONTENT-MAPPING-2026-10-06",
+    "basis": "Published DB catalog, stable lesson ID, title, content hash, in-content prerequisites and Python skill graph; approved for a narrow technical pilot, not human pedagogical sign-off."
+  },
+  "lessons": [
+    { "lessonId": "LS-01.01", "title": "Máy tính và Ngôn ngữ lập trình", "primarySkillId": "PY-BASICS-01", "prerequisiteLessonIds": [], "contentSha256": "6b366146b92818df6ca6f9f942bdebbe146b9a28ae9bb3a847c79a75ce5a1359" },
+    { "lessonId": "LS-01.02", "title": "Môi trường lập trình Python", "primarySkillId": "PY-BASICS-01", "prerequisiteLessonIds": ["LS-01.01"], "contentSha256": "047093ced63b441aa5e14cd751447dbb783e811f6cb183edcf9fff5be5ff652b" },
+    { "lessonId": "LS-01.03", "title": "Chương trình Python đầu tiên", "primarySkillId": "PY-BASICS-01", "prerequisiteLessonIds": ["LS-01.02"], "contentSha256": "52f376f0f472495935ff4959a8d9c5b0b996bee2863191f61a6f8cfe54f823b4" },
+    { "lessonId": "LS-01.04", "title": "Khái niệm Biến và Cách đặt tên", "primarySkillId": "PY-BASICS-01", "prerequisiteLessonIds": ["LS-01.03"], "contentSha256": "0ba6a4b8addb8514f18b3e596db805cc06c90bb9ef939987ff713ee06b33b300" },
+    { "lessonId": "LS-01.05", "title": "Các kiểu dữ liệu nguyên thủy", "primarySkillId": "PY-BASICS-01", "prerequisiteLessonIds": ["LS-01.04"], "contentSha256": "bea22bc1a5c4d811bab4118212a6e0b5c26a5b59df5a914745ff52b4c40e41b6" },
+    { "lessonId": "LS-01.06", "title": "Toán tử số học", "primarySkillId": "PY-BASICS-03", "prerequisiteLessonIds": ["LS-01.05"], "contentSha256": "ded694951432e6158742f7095eb578d5a797553b5901edb85eeaa1801cfce539" },
+    { "lessonId": "LS-01.07", "title": "Toán tử gán và Cập nhật biến", "primarySkillId": "PY-BASICS-03", "prerequisiteLessonIds": ["LS-01.06"], "contentSha256": "6f9a40f079075f94bd8726113be203a3e303c0e8d3b7146a9ee75e91cdc30594" },
+    { "lessonId": "LS-01.08", "title": "Hàm xuất dữ liệu (Print)", "primarySkillId": "PY-BASICS-01", "prerequisiteLessonIds": ["LS-01.07"], "contentSha256": "d50abb77d6631729b3ca945228d10ec7670dd1047c5bff4e76c2f460d0713d90" },
+    { "lessonId": "LS-01.09", "title": "Hàm nhập dữ liệu (Input)", "primarySkillId": "PY-BASICS-01", "prerequisiteLessonIds": ["LS-01.08"], "contentSha256": "0535ee8aeb42f601a2e42ee69efa8d58e4ca0f8d63f8e5a8973e48c75be06d50" },
+    { "lessonId": "LS-01.10", "title": "Ép kiểu dữ liệu (Type Casting)", "primarySkillId": "PY-BASICS-02", "prerequisiteLessonIds": ["LS-01.09"], "contentSha256": "9159b27fa0a12a9c8921882872172bc18d8f858dd66068b0e48ab549dc910634" },
+    { "lessonId": "LS-02.01", "title": "Biểu thức Logic & Toán tử so sánh", "primarySkillId": "PY-BASICS-03", "prerequisiteLessonIds": ["LS-01.07"], "contentSha256": "7ad173e282d849074f35d4919233e8efd7fa20a72ac99c0bea0a7301d524c238" },
+    { "lessonId": "LS-02.02", "title": "Khái niệm rẽ nhánh và Lệnh if", "primarySkillId": "PY-FLOW-01", "prerequisiteLessonIds": ["LS-02.01"], "contentSha256": "7c85db43b147d80c3d247b181254250fb2c5be15390dac6676aacf6ba1ed68b6" },
+    { "lessonId": "LS-02.03", "title": "Lệnh if-else và if-elif-else", "primarySkillId": "PY-FLOW-01", "prerequisiteLessonIds": ["LS-02.02"], "contentSha256": "c57f20825f37723bda9a9df349488c158f2acda1bd729cf9975b77392dde847e" },
+    { "lessonId": "LS-02.04", "title": "Toán tử Logic kết hợp", "primarySkillId": "PY-BASICS-03", "prerequisiteLessonIds": ["LS-02.03"], "contentSha256": "a11b9ba9df250670e5b0080515381eef0791c8b618953c6df99fc94a646e2f56" },
+    { "lessonId": "LS-03.01", "title": "Lesson 3.1: Tại sao cần vòng lặp?", "primarySkillId": "PY-FLOW-03", "prerequisiteLessonIds": ["LS-02.04", "LS-04.02"], "contentSha256": "13ba9b1c34da5b058c9ad9c7a9c03851980a6ec8dfb63e153cbbee26b78a453a" },
+    { "lessonId": "LS-03.02", "title": "Lesson 3.2: Tư duy vòng lặp", "primarySkillId": "PY-FLOW-03", "prerequisiteLessonIds": ["LS-03.01"], "contentSha256": "90f7882e5841045a5a33465fa17ab01c693ec2a85de7ac3b1c20abe53af98ad5" },
+    { "lessonId": "LS-03.03", "title": "Lesson 3.3: Vòng lặp for và range()", "primarySkillId": "PY-FLOW-03", "prerequisiteLessonIds": ["LS-03.02"], "contentSha256": "a8ab69ca10f41603ca488b6ee9348265d0e9da204f73bbee988f952094a80392" },
+    { "lessonId": "LS-03.04", "title": "Lesson 3.4: Vòng lặp while và điều kiện dừng", "primarySkillId": "PY-FLOW-02", "prerequisiteLessonIds": ["LS-03.03"], "contentSha256": "70d867407dde6031e1fafc341cae4299eeeafd996fa24745e59177bd8ab4f871" },
+    { "lessonId": "LS-03.05", "title": "Lesson 3.5: Điều khiển vòng lặp với break và continue", "primarySkillId": "PY-FLOW-04", "prerequisiteLessonIds": ["LS-03.04"], "contentSha256": "a81b5fb03119602224e092560e11847358c86f60435a4ef6ff535e36adaa58c7" },
+    { "lessonId": "LS-03.06", "title": "Lesson 3.6: Kết hợp vòng lặp với if", "primarySkillId": "PY-FLOW-01", "prerequisiteLessonIds": ["LS-03.05"], "contentSha256": "c19c7822e275da3b4809675108aed44a300574529b6453ad58b947a465796aaa" },
+    { "lessonId": "LS-03.07", "title": "Lesson 3.7: Vòng lặp lồng nhau", "primarySkillId": "PY-FLOW-03", "prerequisiteLessonIds": ["LS-03.06"], "contentSha256": "2f0eff70d1566bfa2f537c43b67495732e30773c1738debece7dd66ef6b44725" },
+    { "lessonId": "LS-03.08", "title": "Lesson 3.8: Luyện tập tổng hợp và mini project", "primarySkillId": "PY-FLOW-03", "prerequisiteLessonIds": ["LS-03.07"], "contentSha256": "f75a53fff08b7b5b93362b34a4842311e2b0d268fcea38ee8fd1423f4f3733b5" },
+    { "lessonId": "LS-04.01", "title": "Chuỗi như một Mảng: Indexing", "primarySkillId": "PY-STRING-01", "prerequisiteLessonIds": ["LS-01.07"], "contentSha256": "c842f042ea305794b5777336f49d0f496b94f088d58497bfbcd280a48765d1f3" },
+    { "lessonId": "LS-04.02", "title": "Cắt chuỗi (Slicing)", "primarySkillId": "PY-STRING-01", "prerequisiteLessonIds": ["LS-04.01"], "contentSha256": "f50a737d3f231a8792ec2e822b6ac1cc87e9e251e077063f2af99232e7ccc8c4" },
+    { "lessonId": "LS-04.03", "title": "Các phương thức chuỗi phổ biến", "primarySkillId": "PY-STRING-02", "prerequisiteLessonIds": ["LS-04.02"], "contentSha256": "3258a0d652e136086fd0a19a704fae0a016863f080bd21215b6aaa8b2a9e6cda" },
+    { "lessonId": "LS-04.04", "title": "Định dạng chuỗi (F-string)", "primarySkillId": "PY-STRING-02", "prerequisiteLessonIds": ["LS-04.03"], "contentSha256": "9f3a64bb1bf81a05619a11b8d0b374c4bac3288d6ec65b1a9319165705de70be" }
+  ]
+}

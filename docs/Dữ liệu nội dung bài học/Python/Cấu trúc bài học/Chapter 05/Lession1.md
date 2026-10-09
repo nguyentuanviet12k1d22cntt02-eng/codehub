@@ -1,105 +1,115 @@
 ---
-lessonId: "LS-02.05"
-title: "Tư duy lặp và Vòng lặp while"
-difficulty: "MEDIUM"
-estimatedDuration: 35
-keywords: ["looping", "while loop", "infinite loop", "iteration", "python basics"]
+lessonId: "LS-03.01"
+title: "Lesson 3.1: Tại sao cần vòng lặp?"
+difficulty: "EASY"
+estimatedDuration: 25
 prerequisites: ["LS-02.04"]
 ---
 
-# 📘 Lesson 02.05: Tư duy lặp và Vòng lặp while
+# Lesson 3.1: Tại sao cần vòng lặp?
 
----
+## Mục tiêu
 
-## 1. Khái niệm & Vấn đề
+* Nhận diện được các tình huống có thao tác lặp đi lặp lại trong đời sống và trong bài toán lập trình.
+* Hiểu rõ những bất cập (tốn thời gian, dễ nhầm lẫn, khó bảo trì) khi phải sao chép cùng một câu lệnh nhiều lần.
+* Trực quan hóa sự khác biệt giữa "sao chép thủ công" và "tự động hóa bằng vòng lặp".
+* Biết cách mô tả một công việc cần lặp bằng ngôn ngữ tự nhiên trước khi bắt tay vào viết code.
+*(Lưu ý: Chưa cần học cú pháp vòng lặp ở bài học này).*
 
-Máy tính có khả năng tuyệt vời trong việc thực hiện các tác vụ lặp đi lặp lại hàng triệu lần mà không biết mệt mỏi. Nếu không có vòng lặp, để viết chương trình in ra dòng chữ "Hello" 100 lần, ta sẽ phải sao chép câu lệnh `print` 100 lần. Vòng lặp ra đời để giải quyết sự lặp lề và thủ công đó.
+## Kiến thức chính
 
-**Vòng lặp `while`** trong Python được sử dụng để thực thi liên tục một khối mã nguồn chừng nào một điều kiện logic đi kèm còn Đúng (`True`). Số lần lặp của `while` thường không cố định trước mà phụ thuộc vào việc khi nào điều kiện chuyển sang Sai (`False`).
+* **Thao tác lặp**: Là hành động thực hiện một công việc tương tự nhau nhiều lần liên tiếp để đạt được mục tiêu.
+* **Vấn đề của việc sao chép code thủ công (Copy - Paste)**:
+  * Khiến chương trình dài dòng, rối mắt và khó quản lý.
+  * Tốn công sức và rất dễ gõ nhầm khi số lần lặp tăng lên.
+  * Rất khó sửa đổi: khi cần thay đổi nội dung, ta phải chỉnh sửa ở hàng chục, hàng trăm vị trí khác nhau.
+* **Tại sao cần vòng lặp?**: Máy tính có thế mạnh xử lý hàng triệu phép tính mỗi giây mà không bao giờ mệt mỏi hay nhầm lẫn. Vòng lặp là cơ chế giúp lập trình viên chỉ cần ra lệnh một lần duy nhất, máy tính sẽ tự động lặp lại công việc đó theo ý muốn.
 
-```mermaid
-flowchart TD
-    A[Bắt đầu] --> B{Điều kiện: Đúng hay Sai?}
-    B -- True (Đúng) --> C[Chạy khối mã bên trong while]
-    C --> B
-    B -- False (Sai) --> D[Thoát vòng lặp và đi tiếp]
+## Hiểu
+
+Hãy tưởng tượng bạn bị phạt chép phạt câu: *"Em hứa sẽ làm bài tập về nhà đầy đủ"* 100 lần vào vở:
+* Chép **1 lần**: Rất nhanh và dễ dàng.
+* Chép **5 lần**: Bắt đầu thấy mỏi tay và nhàm chán.
+* Chép **100 lần**: Cực kỳ ngán ngẩm, rất dễ viết thiếu chữ hoặc đếm nhầm số dòng! Trong đời thực, chúng ta ước có một chiếc máy in hoặc máy photocopy in một loạt cho xong.
+
+Trong lập trình cũng hoàn toàn tương tự. Nếu bạn cần in ra lời chào cho 1.000 người dùng, hoặc tính điểm trung bình cho 50 học sinh, bạn sẽ không muốn phải ngồi gõ 1.000 hay 50 dòng lệnh giống hệt nhau. Đó chính là lý do vì sao chúng ta cần đến **vòng lặp**.
+
+### Trực quan hóa: Hai cách tiếp cận giải quyết bài toán
+
+```text
+CÁCH 1: SAO CHÉP THỦ CÔNG (Copy - Paste) ❌
+┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+│  print(...)  │──►│  print(...)  │──►│  print(...)  │ ... x1.000 lần (Ác mộng!)
+└──────────────┘   └──────────────┘   └──────────────┘
+  * Tốn công sức gõ phím
+  * Dễ đếm nhầm số lần
+  * Sửa 1 chữ là phải sửa 1.000 chỗ
+
+CÁCH 2: TƯ DUY VÒNG LẶP (Lập trình thông minh) ✅
+┌────────────────────────────────────────────────────────┐
+│  1. Mô tả công việc DUY NHẤT 1 lần: print(...)         │
+└───────────────────────────┬────────────────────────────┘
+                            │
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│  2. Ra lệnh cho máy tính: "Hãy lặp lại việc này 1000x!"│
+└────────────────────────────────────────────────────────┘
+  * Code ngắn gọn, thanh lịch
+  * Độ chính xác 100%
+  * Sửa nội dung chỉ mất đúng 3 giây tại 1 vị trí duy nhất
 ```
 
-| Thuật ngữ | Định nghĩa thực tế | Phép ẩn dụ |
-| :--- | :--- | :--- |
-| **Vòng lặp (Loop)** | Cấu trúc điều khiển luồng lặp lại mã nguồn dựa trên điều kiện cho trước. | Giống như việc **uống nước bằng thìa**: Bạn múc nước uống liên tục *chừng nào* cốc nước chưa cạn sạch. |
-| **Vòng lặp vô tận (Infinite Loop)** | Lỗi chương trình chạy mãi mãi không bao giờ dừng do điều kiện lặp luôn luôn Đúng. | Giống như đi vào một **vòng xoay bùng binh không lối thoát**. |
+> [!NOTE]
+> **Bản chất của lập trình**: Máy tính sinh ra là để làm những công việc lặp đi lặp lại với tốc độ siêu nhanh thay cho con người. Đừng bao giờ làm thủ công những gì máy tính có thể tự động hóa!
 
----
+## Làm theo
 
-## 2. Cú pháp & Vận hành
-
-Cú pháp của câu lệnh `while` yêu cầu dấu hai chấm `:` và khối lệnh con thụt lề 4 dấu cách tương tự lệnh `if`.
+Hãy quan sát đoạn code Python dưới đây khi cần in lời chào mừng 3 học viên mới:
 
 ```python
-count = 1
-while count <= 3:
-    print("Đếm số:", count)
-    count += 1
-print("Xong!")
+print("Chào mừng bạn đến với khóa học Python!")
+print("Chào mừng bạn đến với khóa học Python!")
+print("Chào mừng bạn đến với khóa học Python!")
 ```
 
-**Bảng theo dõi thực thi (Execution Trace Table):**
-| Dòng mã | Lệnh được chạy | Trạng thái biến | Hành động của máy tính (Đầu ra màn hình) |
-|:---:|:---|:---|:---|
-| 1 | `count = 1` | `count: 1` | Khởi tạo biến đếm ban đầu. |
-| 2 | `while count <= 3:` | `count: 1` | Kiểm tra điều kiện `1 <= 3` ➔ `True`. Chấp nhận lặp. |
-| 3 | `print("Đếm số:", count)`| `count: 1` | In ra màn hình: `Đếm số: 1`. |
-| 4 | `count += 1` | `count: 2` | Tăng biến `count` lên 1 đơn vị. Quay lại đầu vòng lặp. |
-| 2 | `while count <= 3:` | `count: 2` | Kiểm tra điều kiện `2 <= 3` ➔ `True`. Tiếp tục lặp. |
-| 3 | `print(...)` | `count: 2` | In ra màn hình: `Đếm số: 2`. |
-| 4 | `count += 1` | `count: 3` | Tăng biến `count` lên 1 đơn vị. Quay lại đầu vòng lặp. |
-| 2 | `while count <= 3:` | `count: 3` | Kiểm tra điều kiện `3 <= 3` ➔ `True`. Tiếp tục lặp. |
-| 3 | `print(...)` | `count: 3` | In ra màn hình: `Đếm số: 3`. |
-| 4 | `count += 1` | `count: 4` | Tăng biến `count` lên 1 đơn vị. Quay lại đầu vòng lặp. |
-| 2 | `while count <= 3:` | `count: 4` | Kiểm tra điều kiện `4 <= 3` ➔ `False`. Thoát vòng lặp. |
-| 5 | `print("Xong!")` | | Chạy lệnh ngoài vòng lặp. In ra màn hình: `Xong!`. |
+Chạy thử chương trình, máy tính sẽ in ra 3 dòng chính xác. Bây giờ, bạn hãy dừng lại và tự suy ngẫm 2 câu hỏi sau:
 
----
-
-## 3. Lỗi thường gặp & Tối ưu
+1. **Nếu lớp học có 100 học viên:** Bạn có sẵn sàng nhấn Copy - Paste và đếm đủ 100 dòng `print()` như vậy không? Nếu là 10.000 học viên thì sao?
+2. **Nếu muốn đổi câu chào thành:** *"Chào mừng bạn đến với VibeCode!"*
+   * Bạn sẽ phải làm gì? Phải tìm và sửa lại từng chữ ở toàn bộ 100 dòng lệnh đó.
+   * Chỉ cần sơ suất sửa sót 1 dòng, chương trình sẽ in ra thông báo không đồng nhất.
 
 > [!WARNING]
-> **Lỗi treo máy kinh điển (Vòng lặp vô tận):**
-> * Nếu bạn quên viết câu lệnh cập nhật biến đếm (như quên dòng `count += 1`), giá trị của `count` sẽ mãi mãi là `1`. Khi đó, điều kiện `count <= 3` luôn Đúng và chương trình sẽ chạy liên tục không ngừng, tiêu tốn CPU và làm treo máy.
-> * *Cách khắc phục:* Nhấn tổ hợp phím **`Ctrl + C`** trên cửa sổ Terminal để buộc dừng chương trình ngay lập tức.
+> **Bẫy "Copy - Paste"**: Trong lập trình chuyên nghiệp, nếu bạn thấy mình bấm `Ctrl + C` và `Ctrl + V` một câu lệnh quá 3 lần, đó là dấu hiệu rõ ràng cho thấy bạn đang viết code chưa tốt và **bắt buộc cần dùng vòng lặp**.
+
+## Tự làm
+
+Hãy dành 1–2 phút tự suy nghĩ và trả lời nhanh các câu hỏi sau để củng cố tư duy:
+
+1. **Tìm thao tác lặp quanh bạn:** Kể tên 3 công việc quen thuộc hàng ngày của bạn có tính chất lặp đi lặp lại (ví dụ: rửa từng chiếc bát trong bồn, tưới từng chậu cây trên ban công, điểm danh từng bạn trong lớp,...).
+2. **Mô tả hành động lặp:** Nếu cần đếm số tiền tiết kiệm trong heo đất (gồm nhiều tờ tiền), bạn sẽ mô tả quy trình lặp lại bằng lời như thế nào để một đứa trẻ cũng có thể hiểu và làm theo?
+3. **Tự đặt câu hỏi:** Khi viết code mà thấy mình chuẩn bị sao chép một câu lệnh 10 lần, câu hỏi đầu tiên bạn nên tự hỏi bản thân là gì?
+
+## Vận dụng
+
+**Tình huống thực tế:** Viết phần mềm quản lý điểm thi cho một lớp có **45 sinh viên**:
+* Mỗi sinh viên đều cần thực hiện chung các bước:
+  1. Nhập điểm của sinh viên vào hệ thống.
+  2. Cộng điểm vừa nhập vào tổng điểm cả lớp.
+
+* **Nếu không có vòng lặp:**
+  Bạn sẽ phải tạo 45 biến riêng lẻ (`diem_1`, `diem_2`, ..., `diem_45`) và viết đi viết lại đoạn code nhập điểm 45 lần. Khi chuyển sang lớp khác có 60 sinh viên, bạn buộc phải viết lại mã nguồn từ đầu.
+
+* **Khi áp dụng tư duy vòng lặp:**
+  Bạn chỉ cần viết quy trình cho **1 sinh viên duy nhất**, sau đó yêu cầu máy tính:
+  > *"Hãy lặp lại công việc trên 45 lần!"*
+
+Dù sĩ số lớp là 45, 450 hay 4.500 sinh viên, đoạn code của bạn vẫn chỉ ngắn gọn bấy nhiêu dòng mà không cần viết thêm bất kỳ câu lệnh trùng lặp nào.
 
 ---
 
-## 4. Thực hành phân bậc
+### 🚀 Bước tiếp theo
 
-### Câu hỏi trắc nghiệm (Warm-up)
-Để dừng một chương trình Python đang bị rơi vào vòng lặp vô tận trên Terminal, phím tắt nào được sử dụng?
-* [ ] `Ctrl + Z`
-* [ ] `Ctrl + Alt + Delete`
-* [x] `Ctrl + C`
-* [ ] `Ctrl + Shift + Esc`
+Python đã chuẩn bị sẵn những cơ chế cực kỳ mạnh mẽ để giúp bạn ra lệnh lặp lại cho máy tính chỉ bằng vài dòng lệnh ngắn gọn.
 
-### Thử thách sửa lỗi (Debug)
-Đoạn code sau đây muốn in ra các số chẵn từ 2 đến 6. Tuy nhiên nó đang bị lỗi logic gây treo máy. Hãy tìm lỗi và sửa lại:
-```python
-# Sửa lại đoạn code treo máy dưới đây:
-i = 2
-while i <= 6:
-    print(i)
-```
-
-### Bài tập lập trình (Mini-task)
-Hãy khởi tạo biến `so_du = 3`. Hãy viết một vòng lặp `while` kiểm tra điều kiện `so_du > 0`. Bên trong vòng lặp, hãy in ra màn hình dòng chữ `"Đang hoạt động"` và giảm `so_du` đi 1 đơn vị sau mỗi lần lặp.
-```python
-# Nhập code của bạn ở đây
-```
-
----
-
-## 5. Đúc kết & Đi tiếp
-
-* 🔁 Vòng lặp `while` lặp lại đoạn code chừng nào điều kiện đi kèm của nó còn là `True`.
-* 📈 Đảm bảo luôn cập nhật biến điều kiện trong thân vòng lặp để tránh lỗi vòng lặp vô tận.
-
-Trong bài học tiếp theo **[LS-02.06: Dãy số với hàm range()]**, chúng ta sẽ nghiên cứu công cụ tạo ra các dãy số tự động, chuẩn bị cho việc học vòng lặp `for` tối ưu hơn.
+Hãy cùng bước sang **Lesson 3.2: Tư duy vòng lặp** để khám phá bí quyết 4 bước giúp giải mã và điều khiển mọi vòng lặp trong lập trình!
