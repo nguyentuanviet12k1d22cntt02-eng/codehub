@@ -72,9 +72,9 @@ export default function UserMenuDropdown({ className = '' }: UserMenuDropdownPro
                     <span className="text-xs font-bold text-text-primary truncate max-w-[130px]">
                         {username}
                     </span>
-                    {isAdmin && (
+                    {canAccessManagement && (
                         <span className="text-[9px] font-extrabold text-accent-custom uppercase tracking-wider">
-                            Quản trị viên
+                            {user?.role === 'TEACHER' ? 'Giảng viên' : 'Quản trị viên'}
                         </span>
                     )}
                 </div>
