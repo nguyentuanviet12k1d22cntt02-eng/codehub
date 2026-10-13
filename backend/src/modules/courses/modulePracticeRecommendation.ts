@@ -147,14 +147,17 @@ export async function getModulePracticeRecommendation(req: AuthenticatedRequest,
                 : [];
         });
 
-        const aiUrl = new URL(process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000');
+        const defaultAiUrl = process.env.NODE_ENV === 'production'
+            ? 'https://codehub-ai.onrender.com'
+            : 'http://127.0.0.1:8000';
+        const aiUrl = new URL(process.env.AI_SERVICE_URL || defaultAiUrl);
         let scores: Score[];
         try {
             const response = await fetch(new URL('/local-pilot/module-practice/score', aiUrl), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ history, candidates: open.map(({ id, skill_id, level }) => ({ id, skill_id, difficulty: level })) }),
-                signal: AbortSignal.timeout(5000),
+                signal: AbortSignal.timeout(12000),
             });
             if (!response.ok) throw new Error(`PAL-Net HTTP ${response.status}`);
             const payload = await response.json() as { engine?: string; dataset_sha256?: string; scores?: Score[] };
@@ -162,7 +165,8 @@ export async function getModulePracticeRecommendation(req: AuthenticatedRequest,
                 payload.dataset_sha256 !== PILOT_DATASET_SHA256 ||
                 !Array.isArray(payload.scores)) throw new Error('PAL-Net response invalid');
             scores = payload.scores;
-        } catch {
+        } catch (err: any) {
+            console.error(`[modulePracticeRecommendation] Failed to fetch PAL-Net scores from ${aiUrl.origin}:`, err?.message || err);
             res.status(200).json({ mode: 'MANUAL', reason: 'LOCAL_MODEL_UNAVAILABLE' });
             return;
         }

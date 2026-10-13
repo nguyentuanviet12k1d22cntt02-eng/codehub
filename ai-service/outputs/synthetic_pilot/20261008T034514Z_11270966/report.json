@@ -1,0 +1,127 @@
+{
+  "purpose": "synthetic pilot technical feasibility only; not learner efficacy",
+  "dataset_type": "SYNTHETIC",
+  "interpretation_limit": "Ten simulated learners; test metrics are descriptive, not evidence of real-world model benefit",
+  "serving_eligible": false,
+  "dataset_sha256": "11270966a595c9557f961d35029422b874762d483f6618dbf808f63551135260",
+  "graph_sha256": "885c31f95faa2427e29eca95439d1782f89e717e26ee61f99a5cffea7adbf247",
+  "seed": 20261008,
+  "max_epochs": 8,
+  "split_user_ids": {
+    "train": [
+      "syn_average_02",
+      "syn_average_03",
+      "syn_erratic_01",
+      "syn_fast_01",
+      "syn_struggle_01",
+      "syn_struggle_03"
+    ],
+    "validation": [
+      "syn_average_01",
+      "syn_struggle_02"
+    ],
+    "test": [
+      "syn_average_04",
+      "syn_fast_02"
+    ]
+  },
+  "scored_policy": "t>=2 for all models; held-out learner history is observed only before each predicted step",
+  "model_features": {
+    "DKT": "shifted prior skill/outcome tokens + current target skill",
+    "PAL-Net": [
+      "log_prior_target_exposures",
+      "prior_target_accuracy",
+      "log_prior_total_exposures",
+      "prior_global_accuracy",
+      "target_difficulty_over_3",
+      "causal_prereq_mastery_proxy"
+    ]
+  },
+  "baseline_train_rate": 0.5199999809265137,
+  "validation": {
+    "baseline": {
+      "events": 85,
+      "label_0": 43,
+      "label_1": 42,
+      "auc_roc": 0.5,
+      "accuracy_at_0_5": 0.49411764705882355,
+      "rmse": 0.5006348900449449,
+      "f1": 0.6614173228346457,
+      "f1_threshold": 0.5,
+      "log_loss": 0.6944186587225046,
+      "brier": 0.250635293130314,
+      "ece_equal_count_10": 0.21694117714377012
+    },
+    "DKT": {
+      "events": 85,
+      "label_0": 43,
+      "label_1": 42,
+      "auc_roc": 0.7187153931339978,
+      "accuracy_at_0_5": 0.611764705882353,
+      "rmse": 0.4757045894307367,
+      "f1": 0.56,
+      "f1_threshold": 0.5,
+      "log_loss": 0.6437573694063183,
+      "brier": 0.22629485640546576,
+      "ece_equal_count_10": 0.16384895005646877
+    },
+    "PAL-Net": {
+      "events": 85,
+      "label_0": 43,
+      "label_1": 42,
+      "auc_roc": 0.6633444075304541,
+      "accuracy_at_0_5": 0.5529411764705883,
+      "rmse": 0.4904494530550225,
+      "f1": 0.6346153846153846,
+      "f1_threshold": 0.5,
+      "log_loss": 0.6739457396269463,
+      "brier": 0.24054066600197072,
+      "ece_equal_count_10": 0.18128786051974577
+    }
+  },
+  "test": {
+    "baseline": {
+      "events": 68,
+      "label_0": 30,
+      "label_1": 38,
+      "auc_roc": 0.5,
+      "accuracy_at_0_5": 0.5588235294117647,
+      "rmse": 0.4980432313610234,
+      "f1": 0.7169811320754716,
+      "f1_threshold": 0.5,
+      "log_loss": 0.6892394296411486,
+      "brier": 0.2480470603045299,
+      "ece_equal_count_10": 0.290588238660027
+    },
+    "DKT": {
+      "events": 68,
+      "label_0": 30,
+      "label_1": 38,
+      "auc_roc": 0.5052631578947369,
+      "accuracy_at_0_5": 0.45588235294117646,
+      "rmse": 0.5087512846554945,
+      "f1": 0.4307692307692308,
+      "f1_threshold": 0.5,
+      "log_loss": 0.7113715537179172,
+      "brier": 0.2588278696386159,
+      "ece_equal_count_10": 0.19075017597745444
+    },
+    "PAL-Net": {
+      "events": 68,
+      "label_0": 30,
+      "label_1": 38,
+      "auc_roc": 0.5942982456140351,
+      "accuracy_at_0_5": 0.5441176470588235,
+      "rmse": 0.4940804724731799,
+      "f1": 0.6352941176470588,
+      "f1_threshold": 0.5,
+      "log_loss": 0.6812485152578769,
+      "brier": 0.24411551327932066,
+      "ece_equal_count_10": 0.13734794583390741
+    }
+  },
+  "selected_epoch": {
+    "DKT": 8,
+    "PAL-Net": 8
+  }
+}
