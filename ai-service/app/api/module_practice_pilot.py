@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import os
@@ -23,6 +24,18 @@ from app.knowledge_tracing.pilot import (
 router = APIRouter(prefix="/local-pilot/module-practice", tags=["local-pilot"])
 SERVICE_ROOT = Path(__file__).resolve().parents[2]
 RUN_ROOT = SERVICE_ROOT / "outputs" / "synthetic_pilot" / "20261008T065624Z_40969384"
+
+
+def _matches_expected_hash(path: Path, expected: str) -> bool:
+    if not path.exists():
+        return False
+    raw = path.read_bytes()
+    candidates = {
+        hashlib.sha256(raw).hexdigest(),
+        hashlib.sha256(raw.replace(b"\r\n", b"\n")).hexdigest(),
+        hashlib.sha256(raw.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")).hexdigest(),
+    }
+    return expected in candidates
 
 
 @dataclass(frozen=True)
@@ -56,8 +69,8 @@ def load_local_pilot():
             or checkpoint.get("dataset_sha256") != report.get("dataset_sha256")
             or checkpoint.get("skill_ids") != PILOT_SKILLS
             or checkpoint.get("feature_names") != PAL_FEATURE_NAMES
-            or sha256_file(SERVICE_ROOT / "data" / "synthetic_pilot_learners.csv") != report.get("dataset_sha256")
-            or sha256_file(SERVICE_ROOT / "data" / "skill_graph.json") != report.get("graph_sha256")):
+            or not _matches_expected_hash(SERVICE_ROOT / "data" / "synthetic_pilot_learners.csv", str(report.get("dataset_sha256")))
+            or not _matches_expected_hash(SERVICE_ROOT / "data" / "skill_graph.json", str(report.get("graph_sha256")))):
         raise ValueError("Pilot artifact, dataset, or curriculum graph mismatch")
     adjacency, prerequisites = load_fixed_graph(SERVICE_ROOT / "data" / "skill_graph.json")
     model = PilotPALNet(len(PILOT_SKILLS))
