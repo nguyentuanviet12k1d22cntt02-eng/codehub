@@ -410,25 +410,60 @@ export const createUser = async (req: Request, res: Response) => {
     try {
         const { username, email, password, role, gender } = req.body;
 
+        if (!username || !username.trim() || !email || !email.trim() || !password) {
+            return res.status(400).json({ message: 'Vui lòng cung cấp đầy đủ tên đăng nhập, email và mật khẩu khởi tạo.' });
+        }
+
+        const cleanUsername = username.trim();
+        const cleanEmail = email.trim();
+
         const existingUser = await prisma.user.findFirst({
             where: {
-                OR: [{ username }, { email }]
+                OR: [
+                    { username: { equals: cleanUsername, mode: 'insensitive' } },
+                    { email: { equals: cleanEmail, mode: 'insensitive' } }
+                ]
             }
         });
 
         if (existingUser) {
-            return res.status(400).json({ message: 'Username hoặc email đã tồn tại' });
+            const isSameEmail = existingUser.email.toLowerCase() === cleanEmail.toLowerCase();
+            const isSameUsername = existingUser.username.toLowerCase() === cleanUsername.toLowerCase();
+
+            if (isSameEmail && isSameUsername) {
+                return res.status(400).json({
+                    message: `Tài khoản với tên đăng nhập "${cleanUsername}" và email "${cleanEmail}" đã tồn tại trong hệ thống.`,
+                    existingUser: { id: existingUser.id, username: existingUser.username, email: existingUser.email, role: existingUser.role }
+                });
+            }
+
+            if (isSameEmail) {
+                const roleLabel = existingUser.role === 'STUDENT' ? 'Học viên' : existingUser.role === 'TEACHER' ? 'Giảng viên' : 'Quản trị viên';
+                return res.status(400).json({
+                    message: `Email "${cleanEmail}" đã được sử dụng bởi tài khoản "${existingUser.username}" (Vai trò hiện tại: ${roleLabel}). Bạn có thể cập nhật vai trò của tài khoản này thành ${role === 'TEACHER' ? 'Giảng viên' : role} hoặc nhập một email khác.`,
+                    existingUser: { id: existingUser.id, username: existingUser.username, email: existingUser.email, role: existingUser.role }
+                });
+            }
+
+            if (isSameUsername) {
+                return res.status(400).json({
+                    message: `Tên đăng nhập "${cleanUsername}" đã được sử dụng. Vui lòng chọn một tên đăng nhập khác.`,
+                    existingUser: { id: existingUser.id, username: existingUser.username, role: existingUser.role }
+                });
+            }
+
+            return res.status(400).json({ message: 'Tên đăng nhập hoặc email đã tồn tại trong hệ thống.' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await prisma.user.create({
             data: {
-                username,
-                email,
+                username: cleanUsername,
+                email: cleanEmail,
                 password: hashedPassword,
                 role: role || 'STUDENT',
-                gender
+                gender: gender || null
             },
             select: {
                 id: true,
@@ -440,9 +475,10 @@ export const createUser = async (req: Request, res: Response) => {
             }
         });
 
-        res.status(201).json({ message: 'Tạo user thành công', user });
-    } catch (error) {
-        res.status(500).json({ message: 'Lỗi khi tạo user', error });
+        res.status(201).json({ message: 'Tạo tài khoản thành công', user });
+    } catch (error: any) {
+        console.error('Error in createUser:', error);
+        res.status(500).json({ message: error.message || 'Lỗi khi tạo tài khoản', error });
     }
 };
 
@@ -451,14 +487,42 @@ export const updateUser = async (req: Request, res: Response) => {
         const { id } = req.params;
         const { username, email, role, gender, avatarUrl } = req.body;
 
+        const cleanUsername = username ? username.trim() : undefined;
+        const cleanEmail = email ? email.trim() : undefined;
+
+        if (cleanUsername || cleanEmail) {
+            const duplicate = await prisma.user.findFirst({
+                where: {
+                    AND: [
+                        { id: { not: id as string } },
+                        {
+                            OR: [
+                                ...(cleanUsername ? [{ username: { equals: cleanUsername, mode: 'insensitive' as const } }] : []),
+                                ...(cleanEmail ? [{ email: { equals: cleanEmail, mode: 'insensitive' as const } }] : [])
+                            ]
+                        }
+                    ]
+                }
+            });
+
+            if (duplicate) {
+                if (cleanEmail && duplicate.email.toLowerCase() === cleanEmail.toLowerCase()) {
+                    return res.status(400).json({ message: `Email "${cleanEmail}" đã được sử dụng bởi tài khoản "${duplicate.username}".` });
+                }
+                if (cleanUsername && duplicate.username.toLowerCase() === cleanUsername.toLowerCase()) {
+                    return res.status(400).json({ message: `Tên đăng nhập "${cleanUsername}" đã được sử dụng bởi tài khoản khác.` });
+                }
+            }
+        }
+
         const user = await prisma.user.update({
             where: { id: id as string },
             data: {
-                username,
-                email,
-                role,
-                gender,
-                avatarUrl
+                ...(cleanUsername ? { username: cleanUsername } : {}),
+                ...(cleanEmail ? { email: cleanEmail } : {}),
+                ...(role ? { role } : {}),
+                ...(gender !== undefined ? { gender } : {}),
+                ...(avatarUrl !== undefined ? { avatarUrl } : {})
             },
             select: {
                 id: true,
@@ -471,9 +535,10 @@ export const updateUser = async (req: Request, res: Response) => {
             }
         });
 
-        res.json({ message: 'Cập nhật user thành công', user });
-    } catch (error) {
-        res.status(500).json({ message: 'Lỗi khi cập nhật user', error });
+        res.json({ message: 'Cập nhật tài khoản thành công', user });
+    } catch (error: any) {
+        console.error('Error in updateUser:', error);
+        res.status(500).json({ message: error.message || 'Lỗi khi cập nhật tài khoản', error });
     }
 };
 

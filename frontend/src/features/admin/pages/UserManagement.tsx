@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
     Activity,
+    AlertCircle,
     AlertTriangle,
     BookOpenCheck,
     CheckCircle2,
@@ -12,6 +13,7 @@ import {
     KeyRound,
     LoaderCircle,
     Mail,
+    Pencil,
     RefreshCw,
     Search,
     ShieldCheck,
@@ -60,6 +62,7 @@ export default function UserManagement() {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<UserTarget | null>(null);
     const [resetTarget, setResetTarget] = useState<UserTarget | null>(null);
+    const [editTarget, setEditTarget] = useState<ManagedUser | null>(null);
     const [newPassword, setNewPassword] = useState('');
     const [actionLoading, setActionLoading] = useState(false);
 
@@ -321,6 +324,9 @@ export default function UserManagement() {
                                                             <Eye className="h-3.5 w-3.5" aria-hidden="true" />
                                                             Hồ sơ tri thức
                                                         </Link>
+                                                        <IconButton label="Chỉnh sửa tài khoản / vai trò" onClick={() => setEditTarget(user)}>
+                                                            <Pencil className="h-4 w-4" aria-hidden="true" />
+                                                        </IconButton>
                                                         <IconButton label="Đặt lại mật khẩu" onClick={() => setResetTarget({ id: user.id, username: user.username })}>
                                                             <KeyRound className="h-4 w-4" aria-hidden="true" />
                                                         </IconButton>
@@ -359,6 +365,9 @@ export default function UserManagement() {
                                             <Eye className="h-4 w-4" aria-hidden="true" />
                                             Hồ sơ tri thức
                                         </Link>
+                                        <IconButton label="Chỉnh sửa tài khoản" onClick={() => setEditTarget(user)}>
+                                            <Pencil className="h-4 w-4" />
+                                        </IconButton>
                                         <IconButton label="Đặt lại mật khẩu" onClick={() => setResetTarget({ id: user.id, username: user.username })}>
                                             <KeyRound className="h-4 w-4" />
                                         </IconButton>
@@ -401,6 +410,17 @@ export default function UserManagement() {
                     onClose={() => setShowCreateModal(false)}
                     onSuccess={() => {
                         setShowCreateModal(false);
+                        void loadUsers();
+                    }}
+                />
+            )}
+
+            {editTarget && (
+                <EditUserModal
+                    user={editTarget}
+                    onClose={() => setEditTarget(null)}
+                    onSuccess={() => {
+                        setEditTarget(null);
                         void loadUsers();
                     }}
                 />
@@ -567,22 +587,26 @@ function CreateUserModal({ onClose, onSuccess }: { onClose: () => void; onSucces
         gender: 'MALE',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
+        setErrorMessage(null);
         try {
             setIsSubmitting(true);
             await adminApi.createUser(formData);
             onSuccess();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to create user:', error);
+            const serverMsg = error.response?.data?.message || 'Không thể tạo tài khoản. Vui lòng kiểm tra lại thông tin nhập.';
+            setErrorMessage(serverMsg);
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Tạo học viên mới">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Tạo tài khoản mới">
             <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-[26px] border border-white/50 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#131827] sm:p-7">
                 <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-3">
@@ -590,8 +614,8 @@ function CreateUserModal({ onClose, onSuccess }: { onClose: () => void; onSucces
                             <UserRoundPlus className="h-5 w-5" aria-hidden="true" />
                         </span>
                         <div>
-                            <h3 className="text-lg font-black text-text-primary">Tạo học viên mới</h3>
-                            <p className="mt-1 text-xs text-text-tertiary">Khởi tạo tài khoản và phân quyền truy cập.</p>
+                            <h3 className="text-lg font-black text-text-primary">Tạo tài khoản mới</h3>
+                            <p className="mt-1 text-xs text-text-tertiary">Khởi tạo tài khoản học viên, giảng viên hoặc quản trị viên.</p>
                         </div>
                     </div>
                     <button type="button" onClick={onClose} className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 dark:hover:bg-white/5" aria-label="Đóng">
@@ -599,13 +623,24 @@ function CreateUserModal({ onClose, onSuccess }: { onClose: () => void; onSucces
                     </button>
                 </div>
 
+                {errorMessage && (
+                    <div className="mt-4 flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50/90 p-4 text-xs font-semibold leading-relaxed text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
+                        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                        <div className="flex-1">{errorMessage}</div>
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                     <FormField label="Tên đăng nhập" icon={UserRound}>
                         <input
                             required
                             value={formData.username}
-                            onChange={(event) => setFormData((current) => ({ ...current, username: event.target.value }))}
+                            onChange={(event) => {
+                                setErrorMessage(null);
+                                setFormData((current) => ({ ...current, username: event.target.value }));
+                            }}
                             className="min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-text-primary outline-none focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
+                            placeholder="Ví dụ: giaovien_python"
                         />
                     </FormField>
                     <FormField label="Email" icon={Mail}>
@@ -613,8 +648,12 @@ function CreateUserModal({ onClose, onSuccess }: { onClose: () => void; onSucces
                             required
                             type="email"
                             value={formData.email}
-                            onChange={(event) => setFormData((current) => ({ ...current, email: event.target.value }))}
+                            onChange={(event) => {
+                                setErrorMessage(null);
+                                setFormData((current) => ({ ...current, email: event.target.value }));
+                            }}
                             className="min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-text-primary outline-none focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
+                            placeholder="Ví dụ: giaovien@example.com"
                         />
                     </FormField>
                     <FormField label="Mật khẩu khởi tạo" icon={KeyRound}>
@@ -622,7 +661,10 @@ function CreateUserModal({ onClose, onSuccess }: { onClose: () => void; onSucces
                             required
                             type="password"
                             value={formData.password}
-                            onChange={(event) => setFormData((current) => ({ ...current, password: event.target.value }))}
+                            onChange={(event) => {
+                                setErrorMessage(null);
+                                setFormData((current) => ({ ...current, password: event.target.value }));
+                            }}
                             className="min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-text-primary outline-none focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
                         />
                     </FormField>
@@ -657,6 +699,128 @@ function CreateUserModal({ onClose, onSuccess }: { onClose: () => void; onSucces
                         <button type="submit" disabled={isSubmitting} className="inline-flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-violet-600 text-sm font-bold text-white transition hover:bg-violet-700 disabled:opacity-50">
                             {isSubmitting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <UserRoundPlus className="h-4 w-4" />}
                             Tạo tài khoản
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+}
+
+function EditUserModal({
+    user,
+    onClose,
+    onSuccess,
+}: {
+    user: ManagedUser;
+    onClose: () => void;
+    onSuccess: () => void;
+}) {
+    const [formData, setFormData] = useState({
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        gender: user.gender || 'MALE',
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    const handleSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
+        setErrorMessage(null);
+        try {
+            setIsSubmitting(true);
+            await adminApi.updateUser(user.id, formData);
+            onSuccess();
+        } catch (error: any) {
+            console.error('Failed to update user:', error);
+            const serverMsg = error.response?.data?.message || 'Không thể cập nhật tài khoản. Vui lòng thử lại.';
+            setErrorMessage(serverMsg);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Chỉnh sửa tài khoản">
+            <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-[26px] border border-white/50 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#131827] sm:p-7">
+                <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">
+                            <Pencil className="h-5 w-5" aria-hidden="true" />
+                        </span>
+                        <div>
+                            <h3 className="text-lg font-black text-text-primary">Chỉnh sửa tài khoản</h3>
+                            <p className="mt-1 text-xs text-text-tertiary">Cập nhật thông tin và vai trò người dùng “{user.username}”.</p>
+                        </div>
+                    </div>
+                    <button type="button" onClick={onClose} className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 dark:hover:bg-white/5" aria-label="Đóng">
+                        <X className="h-4 w-4" />
+                    </button>
+                </div>
+
+                {errorMessage && (
+                    <div className="mt-4 flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50/90 p-4 text-xs font-semibold leading-relaxed text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
+                        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                        <div className="flex-1">{errorMessage}</div>
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                    <FormField label="Tên đăng nhập" icon={UserRound}>
+                        <input
+                            required
+                            value={formData.username}
+                            onChange={(event) => {
+                                setErrorMessage(null);
+                                setFormData((current) => ({ ...current, username: event.target.value }));
+                            }}
+                            className="min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-text-primary outline-none focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
+                        />
+                    </FormField>
+                    <FormField label="Email" icon={Mail}>
+                        <input
+                            required
+                            type="email"
+                            value={formData.email}
+                            onChange={(event) => {
+                                setErrorMessage(null);
+                                setFormData((current) => ({ ...current, email: event.target.value }));
+                            }}
+                            className="min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-text-primary outline-none focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
+                        />
+                    </FormField>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <FormField label="Vai trò" icon={ShieldCheck}>
+                            <select
+                                value={formData.role}
+                                onChange={(event) => setFormData((current) => ({ ...current, role: event.target.value as any }))}
+                                className="min-h-11 w-full cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-text-primary outline-none focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
+                            >
+                                <option value="STUDENT">Học viên</option>
+                                <option value="TEACHER">Giảng viên</option>
+                                <option value="ADMIN">Quản trị viên</option>
+                            </select>
+                        </FormField>
+                        <FormField label="Giới tính" icon={UserRound}>
+                            <select
+                                value={formData.gender}
+                                onChange={(event) => setFormData((current) => ({ ...current, gender: event.target.value as any }))}
+                                className="min-h-11 w-full cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-text-primary outline-none focus:border-violet-500 dark:border-white/10 dark:bg-bg-tertiary"
+                            >
+                                <option value="MALE">Nam</option>
+                                <option value="FEMALE">Nữ</option>
+                                <option value="OTHER">Khác</option>
+                            </select>
+                        </FormField>
+                    </div>
+                    <div className="flex flex-col-reverse gap-3 pt-3 sm:flex-row">
+                        <button type="button" onClick={onClose} className="min-h-11 flex-1 cursor-pointer rounded-xl border border-slate-200 text-sm font-bold text-text-secondary transition hover:bg-slate-50 dark:border-white/10 dark:hover:bg-white/5">
+                            Hủy
+                        </button>
+                        <button type="submit" disabled={isSubmitting} className="inline-flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-violet-600 text-sm font-bold text-white transition hover:bg-violet-700 disabled:opacity-50">
+                            {isSubmitting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                            Lưu thay đổi
                         </button>
                     </div>
                 </form>
