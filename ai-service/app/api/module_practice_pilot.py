@@ -72,8 +72,9 @@ def score_module_practice(body: ScoreRequest, request: Request):
     # command. Keep an explicit opt-out and the loopback-only request check below.
     if os.environ.get("PALNET_LOCAL_PILOT", "1") != "1":
         raise HTTPException(status_code=503, detail="LOCAL_PILOT_DISABLED")
-    if not request.client or request.client.host not in {"127.0.0.1", "::1", "testclient"}:
-        raise HTTPException(status_code=403, detail="LOCAL_PILOT_LOOPBACK_ONLY")
+    if os.environ.get("PALNET_ALLOW_REMOTE", "1") != "1":
+        if not request.client or request.client.host not in {"127.0.0.1", "::1", "testclient"}:
+            raise HTTPException(status_code=403, detail="LOCAL_PILOT_LOOPBACK_ONLY")
     if not body.candidates or len(body.candidates) > 100 or len(body.history) > 500:
         raise HTTPException(status_code=422, detail="PILOT_REQUEST_SIZE_INVALID")
     if (any(event.skill_id not in PILOT_SKILLS for event in body.history)

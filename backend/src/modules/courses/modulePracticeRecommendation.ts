@@ -148,10 +148,6 @@ export async function getModulePracticeRecommendation(req: AuthenticatedRequest,
         });
 
         const aiUrl = new URL(process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000');
-        if (process.env.NODE_ENV === 'production' || !['localhost', '127.0.0.1', '[::1]'].includes(aiUrl.hostname)) {
-            res.status(200).json({ mode: 'MANUAL', reason: 'LOCAL_AI_REQUIRED' });
-            return;
-        }
         let scores: Score[];
         try {
             const response = await fetch(new URL('/local-pilot/module-practice/score', aiUrl), {

@@ -23,3 +23,4 @@
 2. **Diff Block Standard**: Code edits MUST use Search & Replace Diff blocks (`<<<<<<< SEARCH`).
 3. **Fast Verification**: Test runner MUST execute isolated local checks (<5s).
 4. **Trajectory Sync**: Flush outdated file snapshots after `/build`.
+5. **Work Logging (Nhật ký)**: Sau khi hoàn thành bất kỳ tác vụ nào, BẮT BUỘC cập nhật nhật ký công việc vào thư mục `Nhật ký/YYYY-MM-DD.md`.

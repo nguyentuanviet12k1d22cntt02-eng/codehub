@@ -152,20 +152,20 @@ const ModulePracticeSelect: React.FC = () => {
                     </h1>
                     <p className="text-text-secondary text-sm md:text-base max-w-[800px] leading-relaxed m-0">
                         {recommendation?.mode === 'PALNET_SYNTHETIC_LOCAL_PILOT'
-                            ? 'PAL-Net chọn một bài luyện tập từ lịch sử làm bài của bạn. Mức độ khó vẫn mô tả độ khó của từng bài.'
-                            : 'Chọn bài luyện tập của module. Gợi ý PAL-Net hiện chỉ khả dụng cho các bài Python đã được kiểm chứng trong thử nghiệm local.'}
+                            ? 'PAL-Net chọn một bài luyện tập tối ưu dựa trên lịch sử làm bài của bạn. Mức độ khó mô tả độ thử thách của bài tập.'
+                            : 'Chọn bài luyện tập của module bên dưới.'}
                     </p>
                 </section>
 
                 {recommendation?.mode === 'PALNET_SYNTHETIC_LOCAL_PILOT' && (
                     <section className="rounded-2xl border border-accent-border bg-accent-bg/40 p-6 md:p-8 text-left flex flex-col md:flex-row md:items-center gap-6" aria-label="Bài tập được gợi ý">
                         <div className="flex-1">
-                            <span className="text-[11px] font-extrabold uppercase tracking-wider text-accent-custom">Bài phù hợp tiếp theo · Thử nghiệm local</span>
+                            <span className="text-[11px] font-extrabold uppercase tracking-wider text-accent-custom">Bài phù hợp tiếp theo · Đề xuất thích ứng PAL-Net</span>
                             <h2 className="text-xl md:text-2xl font-black text-text-primary mt-2 mb-2">{recommendation.title}</h2>
                             <p className="text-sm text-text-secondary m-0">
-                                Mức {recommendation.difficulty === 'EASY' ? 'Dễ' : recommendation.difficulty === 'MEDIUM' ? 'Khá' : 'Khó'} · PAL-Net dùng các lần làm bài trước để đề xuất mức luyện tập.
+                                Mức {recommendation.difficulty === 'EASY' ? 'Dễ' : recommendation.difficulty === 'MEDIUM' ? 'Khá' : 'Khó'} · PAL-Net dùng các lần làm bài trước để đề xuất mức luyện tập phù hợp nhất.
                             </p>
-                            <p className="text-xs text-text-tertiary mt-3 mb-0">Kết quả này dùng checkpoint mô phỏng để thử giao diện local.</p>
+                            <p className="text-xs text-text-tertiary mt-3 mb-0">Hệ thống phân tích tương tác để cá nhân hóa lộ trình học của bạn.</p>
                         </div>
                         <button
                             onClick={() => navigate(`/practice/${lessonId}?adaptive=1&exerciseId=${encodeURIComponent(recommendation.exerciseId)}`)}

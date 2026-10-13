@@ -44,3 +44,6 @@ ai-service/data/external/assistments_2009_2010/processed/*
 # Generated Knowledge Tracing checkpoints, logs, and predictions
 ai-service/artifacts/knowledge_tracing/
 
+# Scratch & temporary test scripts
+scratch/
+
