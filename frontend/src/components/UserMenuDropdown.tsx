@@ -13,7 +13,9 @@ export default function UserMenuDropdown({ className = '' }: UserMenuDropdownPro
 
     const user = getValidUser();
     const username = user?.username || 'Tài khoản';
-    const isAdmin = user?.role === 'ADMIN';
+    const canAccessManagement = user?.role === 'ADMIN' || user?.role === 'TEACHER';
+    const managementLabel = user?.role === 'TEACHER' ? 'Trang Giảng Viên' : 'Trang Admin';
+    const roleBadge = user?.role === 'TEACHER' ? 'TEACHER' : 'ADMIN';
 
     // Click outside to close dropdown
     useEffect(() => {
@@ -48,13 +50,13 @@ export default function UserMenuDropdown({ className = '' }: UserMenuDropdownPro
 
     return (
         <div className={`relative flex items-center gap-3 ${className}`} ref={dropdownRef}>
-            {/* Quick Admin Shortcut Button if user is Admin */}
-            {isAdmin && (
+            {/* Quick Management Shortcut Button for Admin or Teacher */}
+            {canAccessManagement && (
                 <button
                     onClick={() => navigate('/admin')}
                     className="hidden sm:inline-flex items-center text-xs font-bold px-3 py-1.5 rounded-lg bg-accent-custom/10 text-accent-custom border border-accent-border hover:bg-accent-custom hover:text-white transition-all shadow-sm"
                 >
-                    Trang Admin
+                    {managementLabel}
                 </button>
             )}
 
@@ -115,8 +117,8 @@ export default function UserMenuDropdown({ className = '' }: UserMenuDropdownPro
                             <span className="text-[10px] text-text-secondary">Profile</span>
                         </button>
 
-                        {/* Admin Item (Only for Admin role) */}
-                        {isAdmin && (
+                        {/* Admin / Teacher Management Item */}
+                        {canAccessManagement && (
                             <button
                                 onClick={() => {
                                     setIsOpen(false);
@@ -124,9 +126,9 @@ export default function UserMenuDropdown({ className = '' }: UserMenuDropdownPro
                                 }}
                                 className="w-full text-left px-3 py-2 text-xs font-semibold rounded-xl text-accent-custom hover:bg-accent-custom/10 transition-colors flex items-center justify-between"
                             >
-                                <span>Trang Quản Trị</span>
+                                <span>{user?.role === 'TEACHER' ? 'Trang Giảng Viên' : 'Trang Quản Trị'}</span>
                                 <span className="text-[9px] px-1.5 py-0.5 rounded bg-accent-custom/20 text-accent-custom font-bold">
-                                    ADMIN
+                                    {roleBadge}
                                 </span>
                             </button>
                         )}

@@ -34,7 +34,7 @@ export const authenticateAdmin = async (req: AuthenticatedRequest, res: Response
             return res.status(401).json({ message: 'User không tồn tại' });
         }
 
-        if (user.role !== 'ADMIN') {
+        if (user.role !== 'ADMIN' && user.role !== 'TEACHER') {
             return res.status(403).json({ message: 'Bạn không có quyền truy cập trang này' });
         }
 

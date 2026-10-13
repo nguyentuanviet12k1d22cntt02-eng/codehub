@@ -34,7 +34,7 @@ const Login: React.FC = () => {
                     console.error("Failed to parse token payload", e);
                 }
 
-                if (role === 'ADMIN') {
+                if (role === 'ADMIN' || role === 'TEACHER') {
                     navigate('/admin');
                 } else {
                     navigate('/dashboard');

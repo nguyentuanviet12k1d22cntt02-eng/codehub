@@ -120,11 +120,12 @@ export default function AdminLayout() {
         }
 
         const parsedUser = JSON.parse(userData) as AdminUser;
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate the authenticated administrator once on mount
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate the authenticated administrator or teacher once on mount
         setUser(parsedUser);
-        if (parsedUser.role !== 'ADMIN') {
+        if (parsedUser.role !== 'ADMIN' && parsedUser.role !== 'TEACHER') {
             alert('Bạn không có quyền truy cập trang này');
             navigate('/');
+            return;
         }
     }, [navigate]);
 
@@ -146,7 +147,23 @@ export default function AdminLayout() {
         [location.pathname]
     );
 
-    const displayName = user?.fullName || user?.username || 'Quản trị viên';
+    const isTeacher = user?.role === 'TEACHER';
+
+    const filteredPrimaryNavigation = useMemo(() => {
+        if (isTeacher) {
+            return primaryNavigation.filter((item) => item.to !== '/admin/users');
+        }
+        return primaryNavigation;
+    }, [isTeacher]);
+
+    const filteredOperationsNavigation = useMemo(() => {
+        if (isTeacher) {
+            return operationsNavigation.filter((item) => item.to !== '/admin/ai-keys');
+        }
+        return operationsNavigation;
+    }, [isTeacher]);
+
+    const displayName = user?.fullName || user?.username || (isTeacher ? 'Giảng viên' : 'Quản trị viên');
     const initialLetter = displayName.charAt(0).toUpperCase();
 
     const handleLogout = () => {
@@ -185,7 +202,9 @@ export default function AdminLayout() {
                         </span>
                         <span className={isSidebarCollapsed ? 'lg:hidden' : ''}>
                             <span className="block text-[15px] font-black leading-none tracking-[-0.02em] text-slate-950 dark:text-white">MCODE</span>
-                            <span className="mt-1 block text-[9px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-300">Admin console</span>
+                            <span className="mt-1 block text-[9px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-300">
+                                {isTeacher ? 'Instructor studio' : 'Admin console'}
+                            </span>
                         </span>
                     </button>
 
@@ -202,7 +221,7 @@ export default function AdminLayout() {
                 <nav className="admin-sidebar-scroll flex-1 overflow-y-auto px-3 py-5" aria-label="Điều hướng quản trị">
                     <NavigationGroup
                         label="Không gian làm việc"
-                        items={primaryNavigation}
+                        items={filteredPrimaryNavigation}
                         pathname={location.pathname}
                         collapsed={isSidebarCollapsed}
                     />
@@ -238,7 +257,7 @@ export default function AdminLayout() {
 
                     <NavigationGroup
                         label="Vận hành hệ thống"
-                        items={operationsNavigation}
+                        items={filteredOperationsNavigation}
                         pathname={location.pathname}
                         collapsed={isSidebarCollapsed}
                     />
@@ -254,7 +273,7 @@ export default function AdminLayout() {
                                 <span className="block truncate text-xs font-bold text-slate-900 dark:text-white">{displayName}</span>
                                 <span className="mt-1 flex items-center gap-1.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-300">
                                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                                    Quản trị viên
+                                    {isTeacher ? 'Giảng viên' : 'Quản trị viên'}
                                 </span>
                             </span>
                         </div>

@@ -80,12 +80,12 @@ export const AppNavbar: React.FC<AppNavbarProps> = ({ className = '' }) => {
                             </Link>
                         );
                     })}
-                    {role === 'ADMIN' && (
+                    {(role === 'ADMIN' || role === 'TEACHER') && (
                         <Link
                             to="/admin"
-                            className="rounded-xl px-3.5 py-2 text-xs font-bold text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-500/10"
+                            className="rounded-xl px-3.5 py-2 text-xs font-bold text-violet-600 transition-colors hover:bg-violet-50 dark:text-violet-300 dark:hover:bg-violet-500/10"
                         >
-                            Quản trị
+                            {role === 'ADMIN' ? 'Quản trị' : 'Trang Giảng viên'}
                         </Link>
                     )}
                 </nav>
@@ -128,13 +128,13 @@ export const AppNavbar: React.FC<AppNavbarProps> = ({ className = '' }) => {
                                 </Link>
                             );
                         })}
-                        {role === 'ADMIN' && (
+                        {(role === 'ADMIN' || role === 'TEACHER') && (
                             <Link
                                 to="/admin"
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="flex min-h-11 items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold text-rose-600 bg-rose-50/50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20"
+                                className="flex min-h-11 items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold text-violet-600 bg-violet-50/50 dark:bg-violet-500/10 hover:bg-violet-100 dark:hover:bg-violet-500/20"
                             >
-                                Quản trị
+                                {role === 'ADMIN' ? 'Quản trị' : 'Trang Giảng viên'}
                             </Link>
                         )}
                     </div>
