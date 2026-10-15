@@ -88,6 +88,9 @@ export class BatchCodeRunner {
                 });
             }
 
+            if (options?.strictIsolation) {
+                throw new Error('RUNNER_UNAVAILABLE: Docker image is required for isolated execution.');
+            }
             return await this.runLocally({ workspace, language, config, inputs, runtimeMs, compileTimeoutMs });
         } finally {
             await fs.rm(workspace, { recursive: true, force: true });

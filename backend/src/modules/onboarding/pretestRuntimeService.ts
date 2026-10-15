@@ -1,7 +1,8 @@
 import crypto from 'crypto';
 import { Prisma, ProgrammingLanguage } from '@prisma/client';
 import { prisma } from '../../infrastructure/database/prisma';
-import { BatchCodeRunner } from '../../infrastructure/sandbox/batch/batch.runner';
+import { sandboxService } from '../../infrastructure/sandbox/sandbox.service';
+import { useJudge0 } from '../../infrastructure/sandbox/judge0/judge0.client';
 import {
   AssessmentResponseDto,
   LearnerProfileResponseDto,
@@ -148,8 +149,6 @@ function snapshotData(item: BankItem, index: number) {
 }
 
 export class PretestRuntimeService {
-  private readonly runner = new BatchCodeRunner();
-
   public async createOrResumeAttempt(userId: string, surveyId: string): Promise<PretestAttemptDto> {
     if (!isUuid(surveyId)) throw new Error('INVALID_SURVEY_ID: surveyId không hợp lệ.');
     const survey = await prisma.learnerSurvey.findUnique({ where: { id: surveyId } });
@@ -388,7 +387,7 @@ export class PretestRuntimeService {
             const rubric = isRecord(question.rubricJson) ? question.rubricJson : {};
             const runnerSpec = isRecord(rubric.runnerSpec) ? rubric.runnerSpec : {};
             const timeoutMs = Number.isInteger(runnerSpec.timeLimitMs) ? Number(runnerSpec.timeLimitMs) : 1000;
-            const results = await this.runner.run(answer.submittedCode ?? '', locked.language, cases.map(item => item.input), {
+            const results = await sandboxService.executeBatch(answer.submittedCode ?? '', locked.language, cases.map(item => item.input), {
               strictIsolation: true, timeoutMs, compileTimeoutMs: 10_000, memoryLimit: '128m',
             });
             const passed = results.map((result, index) => result.status === 'SUCCESS'
@@ -399,7 +398,7 @@ export class PretestRuntimeService {
             testPassRatio = score;
             gradingMethod = 'RUNNER_VERIFIED';
             details = {
-              runner: 'BatchCodeRunner/Docker-only', total: cases.length, passed: passedCount,
+              runner: useJudge0() ? 'Judge0/isolated' : 'BatchCodeRunner/Docker-only', total: cases.length, passed: passedCount,
               cases: results.map((result, index) => ({
                 index, hidden: cases[index].isHidden, passed: passed[index],
                 status: result.status, runtimeMs: result.runtimeMs,

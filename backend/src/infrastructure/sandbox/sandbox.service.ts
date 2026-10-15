@@ -10,6 +10,15 @@ import { SqlRunner } from './sql/sql.runner';
 import { JavaScriptRunner } from './js/js.runner';
 import { CppRunner } from './cpp/cpp.runner';
 import { BatchCodeRunner } from './batch/batch.runner';
+import { executeJudge0, useJudge0 } from './judge0/judge0.client';
+import { existsSync, readFileSync } from 'fs';
+import path from 'path';
+
+function requireSafeProvider(): void {
+    if (process.env.NODE_ENV === 'production' || process.env.ALLOW_LOCAL_SANDBOX === 'false') {
+        throw new Error('RUNNER_UNAVAILABLE: Configure SANDBOX_PROVIDER=judge0 for isolated execution.');
+    }
+}
 
 export class SandboxService {
     private runners: Map<SupportedLanguage, ICodeRunner> = new Map();
@@ -50,20 +59,38 @@ export class SandboxService {
         language: SupportedLanguage = 'PYTHON',
         options?: ExecutionOptions
     ): Promise<ExecuteResult> {
-        const runner = this.getRunner(language);
-        return runner.run(code, options);
+        if (useJudge0()) {
+            if (language === 'SQL') {
+                const deployed = path.join(__dirname, 'sql', 'sql.runner.py');
+                const source = path.join(__dirname, '..', '..', '..', 'src', 'infrastructure', 'sandbox', 'sql', 'sql.runner.py');
+                const wrapper = readFileSync(existsSync(deployed) ? deployed : source, 'utf8');
+                return executeJudge0(wrapper, 'PYTHON', code, options?.timeoutMs || 5000);
+            }
+            return executeJudge0(code, language, options?.inputData || '', options?.timeoutMs || 5000);
+        }
+        requireSafeProvider();
+        if (language === 'SQL' || language === 'JAVA') {
+            throw new Error('RUNNER_UNAVAILABLE: Isolated local runner unavailable for this language.');
+        }
+        const [result] = await this.batchRunner.run(code, language, [options?.inputData || ''], {
+            timeoutMs: options?.timeoutMs, memoryLimit: options?.memoryLimit, strictIsolation: true
+        });
+        return result;
     }
 
-    /**
-     * Chấm nhiều testcase trong cùng một sandbox. C++ chỉ được biên dịch một lần;
-     * Python và JavaScript cũng chỉ khởi tạo một container cho toàn bộ lượt nộp.
-     */
+    /** Chấm từng testcase qua Judge0, hoặc trong một Docker container cách ly khi chạy cục bộ. */
     public async executeBatch(
         code: string,
         language: SupportedLanguage,
         inputData: string[],
         options?: BatchExecutionOptions
     ): Promise<ExecuteResult[]> {
+        if (useJudge0()) {
+            const results: ExecuteResult[] = [];
+            for (const input of inputData) results.push(await this.execute(code, language, {...options, inputData: input}));
+            return results;
+        }
+        requireSafeProvider();
         if (language !== 'PYTHON' && language !== 'JAVASCRIPT' && language !== 'CPP' && language !== 'C') {
             const { compileTimeoutMs: _compileTimeoutMs, ...executionOptions } = options || {};
             return Promise.all(inputData.map((input) => this.execute(code, language, {
@@ -71,7 +98,7 @@ export class SandboxService {
                 inputData: input
             })));
         }
-        return this.batchRunner.run(code, language, inputData, options);
+        return this.batchRunner.run(code, language, inputData, {...options, strictIsolation: true});
     }
 
     /**

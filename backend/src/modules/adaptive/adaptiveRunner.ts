@@ -2,6 +2,7 @@ import { spawn } from 'child_process';
 import { randomUUID, createHash } from 'crypto';
 import { parse } from 'acorn';
 import { Draft, Specification, CaseResult, draftSchema, specificationSchema } from './adaptive.contracts';
+import { executeJudge0, useJudge0 } from '../../infrastructure/sandbox/judge0/judge0.client';
 
 const VERSION = 'adaptive_harness_v4';
 const MAX_OUTPUT = 128000;
@@ -206,6 +207,36 @@ function executeCase(code: string, draft: Draft, spec: Specification, index: num
     });
 }
 
+async function executeJudge0Case(code: string, draft: Draft, spec: Specification, index: number): Promise<CaseResult> {
+    const tc = draft.test_cases[index];
+    const start = performance.now();
+    const source = spec.language === 'cpp' ? code : spec.language === 'javascript' ? JAVASCRIPT : PYTHON;
+    const language = spec.language === 'cpp' ? 'CPP' : spec.language === 'javascript' ? 'JAVASCRIPT' : 'PYTHON';
+    const stdin = spec.language === 'cpp' ? tc.input || '' : JSON.stringify(sandboxInput(code, draft, spec, index));
+    try {
+        const output = await executeJudge0(source, language, stdin, executionTimeoutMs(spec.language), {
+            memoryKb: spec.language === 'cpp' ? 256000 : 128000
+        });
+        const state = output.status === 'SUCCESS' ? 'SUCCESS' : output.status === 'TIMEOUT' ? 'TIMEOUT' : 'RUNTIME_ERROR';
+        return {
+            case_index: index + 1, is_hidden: tc.is_hidden, category: tc.category,
+            input: tc.input ?? JSON.stringify(tc.arguments), expected: tc.expected_output,
+            actual: output.stdout.trimEnd(), stderr: output.stderr,
+            passed: state === 'SUCCESS' && equalOutput(output.stdout.trimEnd(), tc.expected_output, spec),
+            executed: true, status: state, runtime_ms: output.runtimeMs,
+            image: 'judge0', harness_version: VERSION
+        };
+    } catch (error) {
+        return {
+            case_index: index + 1, is_hidden: tc.is_hidden, category: tc.category,
+            input: tc.input ?? JSON.stringify(tc.arguments), expected: tc.expected_output,
+            actual: '', stderr: error instanceof Error ? error.message : 'JUDGE0_UNAVAILABLE',
+            passed: false, executed: false, status: 'INFRA_ERROR',
+            runtime_ms: Math.round(performance.now() - start), image: 'judge0', harness_version: VERSION
+        };
+    }
+}
+
 export async function runExercise(rawDraft: unknown, rawSpec: unknown, code?: string) {
     const draft = draftSchema.parse(rawDraft), spec = specificationSchema.parse(rawSpec);
     if ((spec.language === 'cpp' && spec.execution.mode !== 'stdio') || (spec.language === 'sql' && (spec.execution.mode !== 'sql' || spec.execution.dialect !== 'sqlite'))
@@ -219,9 +250,15 @@ export async function runExercise(rawDraft: unknown, rawSpec: unknown, code?: st
     return slot(async () => {
         const test_results: CaseResult[] = [];
         for (let i=0;i<draft.test_cases.length;i++) {
-            const result = await executeCase(source,draft,spec,i);
+            const result = await (useJudge0() ? executeJudge0Case(source,draft,spec,i) :
+                process.env.NODE_ENV === 'production' || process.env.ALLOW_LOCAL_SANDBOX === 'false'
+                    ? Promise.resolve({status:'INFRA_ERROR',executed:false,passed:false,case_index:i+1,
+                        is_hidden:draft.test_cases[i].is_hidden,category:draft.test_cases[i].category,
+                        input:'',expected:'',actual:'',stderr:'ISOLATED_RUNNER_REQUIRED',runtime_ms:0,
+                        image:'none',harness_version:VERSION} as CaseResult)
+                    : executeCase(source,draft,spec,i));
             test_results.push(result);
-            if (result.status === 'INFRA_ERROR') return {passed:false,status:'INFRA_ERROR',error:'Docker daemon or configured image is unavailable',errors:['DOCKER_UNAVAILABLE'],test_results,harness_version:VERSION};
+            if (result.status === 'INFRA_ERROR') return {passed:false,status:'INFRA_ERROR',error:'Isolated sandbox unavailable',errors:['SANDBOX_UNAVAILABLE'],test_results,harness_version:VERSION};
         }
         return {passed:test_results.every(t=>t.passed),status:'EXECUTED',test_results,
             errors:test_results.filter(t=>!t.passed).map(t=>'Test #'+t.case_index+': '+t.status+(t.status==='SUCCESS' ? ' OUTPUT_MISMATCH' : '')),
