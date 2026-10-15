@@ -4,15 +4,19 @@ const {randomUUID} = require('crypto');
 const {internalHeaders} = require('../dist/modules/adaptive/adaptiveEvidence');
 
 const base = (process.env.PROBE_AI_URL || 'https://codehub-ai.onrender.com').replace(/\/$/, '');
+const concept = process.env.PROBE_CONCEPT || 'PY-BASICS-01';
+const advanced = concept === 'PY-DICT-01';
 const body = JSON.stringify({
     user_id: '00000000-0000-4000-8000-000000000001',
     session_id: randomUUID(), trace_id: 'trace_sandbox_probe_' + randomUUID().replace(/-/g, ''),
-    language: 'python', target_concept_id: 'PY-DICT-01',
-    messages: [{sender: 'USER', content: 'Vẫn tạo bài Python về dictionary cho tôi'}],
-    learner_context: {pending_confirmation: {
-        type: 'PREREQUISITE_OVERRIDE', target_concept_id: 'PY-DICT-01',
+    language: 'python', target_concept_id: concept,
+    messages: [{sender: 'USER', content: advanced
+        ? 'Vẫn tạo bài Python về dictionary cho tôi'
+        : 'Tạo bài tập thực hành Python về biến và kiểu dữ liệu cơ bản'}],
+    learner_context: advanced ? {pending_confirmation: {
+        type: 'PREREQUISITE_OVERRIDE', target_concept_id: concept,
         target_concept_name: 'Dictionary', language: 'python'
-    }}
+    }} : {}
 });
 
 (async () => {
