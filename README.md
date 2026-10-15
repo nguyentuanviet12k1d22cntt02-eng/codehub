@@ -131,6 +131,13 @@ npx prisma generate
 npx prisma db seed
 ```
 
+On Render, the AI service must also know how to call the backend's sandbox
+validation endpoint. Set `ADAPTIVE_BACKEND_URL` to the backend origin (for
+example, `https://your-backend.onrender.com`). If `BACKEND_INTERNAL_URL` already
+points to that backend's `/api/internal/ai-keys`, the AI service derives the
+same origin automatically. Both services must share the same
+`ADAPTIVE_INTERNAL_SECRET` (or `JWT_SECRET`) for signed internal requests.
+
 ### 3. Frontend Setup
 ```bash
 cd frontend

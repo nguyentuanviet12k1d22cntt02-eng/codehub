@@ -181,7 +181,7 @@ class AdaptiveLearningOrchestrator:
                     def run_tests():
                         passed, errors, tests = self.sandbox.validate(draft, spec, min(90, client.remaining()))
                         return {"passed": passed, "errors": errors, "test_results": tests, "harness_version": "adaptive_harness_v4"}
-                    validation = evidence.step("SandboxValidator", "DOCKER_EXECUTION", {"draft": draft, "specification": spec.model_dump()}, run_tests, attempt)
+                    validation = evidence.step("SandboxValidator", "ISOLATED_SANDBOX", {"draft": draft, "specification": spec.model_dump()}, run_tests, attempt)
                     if not validation["passed"]:
                         feedback, repair_target = validation, "EXERCISE"
                         continue
