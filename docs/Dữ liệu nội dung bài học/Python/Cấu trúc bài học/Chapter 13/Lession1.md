@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-05.04"
+lessonId: "LS-08.04"
 title: "Tư duy Hướng đối tượng (Class vs Object)"
 difficulty: "EASY"
 estimatedDuration: 15
 keywords: ["OOP", "class", "object", "instance", "blueprint"]
-prerequisites: ["LS-05.03"]
+prerequisites: ["LS-08.03"]
 ---
 
-# 📘 Lesson 05.04: Tư duy Hướng đối tượng (Class vs Object)
+# 📘 Lesson 08.04: Tư duy Hướng đối tượng (Class vs Object)
 
 ---
 
@@ -98,4 +98,4 @@ Hãy định nghĩa một lớp trống tên là `Student` (sử dụng từ kh�
 * 🚗 **Object** là thực thể thực tế được sinh ra từ khuôn mẫu Class đó.
 * 🛠️ Dùng từ khóa **`class`** để khai báo lớp và gọi `Class()` để khởi tạo đối tượng.
 
-Trong bài học tiếp theo **[LS-05.05: Thuộc tính và Phương thức]**, chúng ta sẽ học cách thổi hồn vào Class bằng cách thêm dữ liệu (Thuộc tính) và hành động (Phương thức) cho nó.
+Trong bài học tiếp theo **[LS-08.05: Thuộc tính và Phương thức]**, chúng ta sẽ học cách thổi hồn vào Class bằng cách thêm dữ liệu (Thuộc tính) và hành động (Phương thức) cho nó.

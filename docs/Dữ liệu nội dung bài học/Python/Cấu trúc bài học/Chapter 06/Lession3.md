@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-03.03"
+lessonId: "LS-04.03"
 title: "Các phương thức chuỗi phổ biến"
 difficulty: "EASY"
 estimatedDuration: 20
 keywords: ["string methods", "strip", "replace", "split", "join"]
-prerequisites: ["LS-03.02"]
+prerequisites: ["LS-04.02"]
 ---
 
-# 📘 Lesson 03.03: Các phương thức chuỗi phổ biến
+# 📘 Lesson 04.03: Các phương thức chuỗi phổ biến
 
 ---
 
@@ -99,4 +99,4 @@ Khai báo biến `message = "Python-is-fun"`. Hãy thay thế tất cả dấu g
 * 🔄 Các phương thức chuỗi **không** thay đổi chuỗi gốc, bạn bắt buộc phải gán lại kết quả vào biến nếu muốn lưu trữ.
 * 🧩 `split()` và `join()` là cặp bài trùng để xử lý chuyển đổi qua lại giữa chuỗi và danh sách (List).
 
-Trong bài học tiếp theo **[LS-03.04: Định dạng chuỗi (F-string)]**, chúng ta sẽ học cách ghép các biến số, chuỗi ký tự vào trong một thông báo hiển thị một cách gọn gàng và đẹp mắt nhất.
+Trong bài học tiếp theo **[LS-04.04: Định dạng chuỗi (F-string)]**, chúng ta sẽ học cách ghép các biến số, chuỗi ký tự vào trong một thông báo hiển thị một cách gọn gàng và đẹp mắt nhất.

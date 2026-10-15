@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-03.11"
+lessonId: "LS-06.02"
 title: "Dictionary: Cấu trúc Key-Value"
 difficulty: "EASY"
 estimatedDuration: 15
 keywords: ["dictionary", "key-value", "mapping", "curly braces"]
-prerequisites: ["LS-03.05"]
+prerequisites: ["LS-05.01"]
 ---
 
-# 📘 Lesson 03.11: Dictionary: Cấu trúc Key-Value
+# 📘 Lesson 06.02: Dictionary: Cấu trúc Key-Value
 
 ---
 
@@ -103,4 +103,4 @@ Hãy khởi tạo một Dictionary tên là `car` lưu trữ thông tin về m�
 * 🛡️ **Key** phải là duy nhất và không đổi, được dùng thay thế cho chỉ số index số nguyên để tra cứu.
 * ⚠️ Cẩn thận lỗi **`KeyError`** khi gọi Key không tồn tại.
 
-Trong bài học tiếp theo **[LS-03.12: Thao tác trên Dictionary]**, chúng ta sẽ học cách thêm, sửa, xóa các cặp Key-Value động và cách duyệt qua một từ điển bằng vòng lặp.
+Trong bài học tiếp theo **[LS-06.03: Thao tác trên Dictionary]**, chúng ta sẽ học cách thêm, sửa, xóa các cặp Key-Value động và cách duyệt qua một từ điển bằng vòng lặp.

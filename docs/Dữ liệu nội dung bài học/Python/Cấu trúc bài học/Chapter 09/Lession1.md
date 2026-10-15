@@ -1,5 +1,5 @@
 ---
-lessonId: "LS-04.01"
+lessonId: "LS-07.01"
 title: "Tư duy đóng gói và Lệnh def"
 difficulty: "EASY"
 estimatedDuration: 15
@@ -7,7 +7,7 @@ keywords: ["function", "def", "reusability", "encapsulation"]
 prerequisites: ["LS-01.07"]
 ---
 
-# 📘 Lesson 04.01: Tư duy đóng gói và Lệnh def
+# 📘 Lesson 07.01: Tư duy đóng gói và Lệnh def
 
 ---
 
@@ -92,4 +92,4 @@ Hãy định nghĩa một hàm tên là `show_banner` in ra màn hình chuỗi k
 * 🔑 Dùng từ khóa **`def`** để định nghĩa hàm và cặp ngoặc đơn `()` để kích hoạt/gọi hàm.
 * ⚠️ Phải định nghĩa hàm trước rồi mới được gọi hàm ở phía dưới.
 
-Trong bài học tiếp theo **[LS-04.02: Tham số và Đối số]**, chúng ta sẽ học cách truyền dữ liệu đầu vào cho hàm để hàm xử lý linh động thay vì chỉ in ra các dòng chữ tĩnh cố định.
+Trong bài học tiếp theo **[LS-07.02: Tham số và Đối số]**, chúng ta sẽ học cách truyền dữ liệu đầu vào cho hàm để hàm xử lý linh động thay vì chỉ in ra các dòng chữ tĩnh cố định.

@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-05.01"
+lessonId: "LS-08.01"
 title: "Cấu trúc bộ nhớ và Hàm open()"
 difficulty: "EASY"
 estimatedDuration: 15
 keywords: ["file handling", "open", "file pointer", "RAM vs Disk"]
-prerequisites: ["LS-04.07"]
+prerequisites: ["LS-07.07"]
 ---
 
-# 📘 Lesson 05.01: Cấu trúc bộ nhớ và Hàm open()
+# 📘 Lesson 08.01: Cấu trúc bộ nhớ và Hàm open()
 
 ---
 
@@ -88,4 +88,4 @@ Hãy viết dòng code mở một file tên là `"output.txt"` ở chế độ g
 * 🔑 Sử dụng hàm **`open("tên_file", "mode", encoding="utf-8")`** để bắt đầu kết nối với file.
 * 🔒 Luôn ghi nhớ gọi phương thức **`close()`** để đóng file sau khi sử dụng xong.
 
-Trong bài học tiếp theo **[LS-05.02: Đọc và Ghi File Text]**, chúng ta sẽ học các phương thức thực tế để đọc nội dung chữ và ghi các dòng chữ vào file.
+Trong bài học tiếp theo **[LS-08.02: Đọc và Ghi File Text]**, chúng ta sẽ học các phương thức thực tế để đọc nội dung chữ và ghi các dòng chữ vào file.

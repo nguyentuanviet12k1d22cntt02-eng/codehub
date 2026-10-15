@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-03.07"
+lessonId: "LS-05.03"
 title: "Duyệt mảng bằng Vòng lặp"
 difficulty: "MEDIUM"
 estimatedDuration: 20
 keywords: ["list iteration", "for loop", "index loop", "enumerate"]
-prerequisites: ["LS-03.05", "LS-02.07"]
+prerequisites: ["LS-05.01", "LS-03.03"]
 ---
 
-# 📘 Lesson 03.07: Duyệt mảng bằng Vòng lặp
+# 📘 Lesson 05.03: Duyệt mảng bằng Vòng lặp
 
 ---
 
@@ -98,4 +98,4 @@ Cho danh sách điểm số `scores = [7, 8, 5, 9, 6]`. Hãy viết chương tr�
 * 🏷️ Sử dụng `for item in my_list` nếu chỉ cần đọc giá trị của phần tử.
 * 📍 Sử dụng `for i, item in enumerate(my_list)` khi cần dùng cả vị trí và giá trị phần tử.
 
-Trong bài học tiếp theo **[LS-03.08: Sắp xếp và Tìm kiếm cơ bản]**, chúng ta sẽ học cách sắp xếp các phần tử trong danh sách theo thứ tự tăng/giảm dần và tìm kiếm xem phần tử có nằm trong danh sách hay không.
+Trong bài học tiếp theo **[LS-05.04: Sắp xếp và Tìm kiếm cơ bản]**, chúng ta sẽ học cách sắp xếp các phần tử trong danh sách theo thứ tự tăng/giảm dần và tìm kiếm xem phần tử có nằm trong danh sách hay không.

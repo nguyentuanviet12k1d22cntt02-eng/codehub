@@ -1,9 +1,170 @@
 import os
 import json
+import re
+import unicodedata
 from typing import Dict, List, Any, Optional
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_DIR = os.path.join(BASE_DIR, "data")
+
+
+TOPIC_ALIASES = {
+    "python": {
+        "keyerror": "PY-DICT-02",
+        "dictionary comprehension": "PY-DICT-03",
+        "dict comprehension": "PY-DICT-03",
+        "list comprehension": "PY-LIST-03",
+        "f string": "PY-STRING-02",
+        "fstring": "PY-STRING-02",
+        "dictionary": "PY-DICT-01",
+        "dict": "PY-DICT-01",
+        "tu dien": "PY-DICT-01",
+        "key value": "PY-DICT-01",
+        "list": "PY-LIST-01",
+        "array": "PY-LIST-01",
+        "danh sach": "PY-LIST-01",
+        "mang": "PY-LIST-01",
+        "tuple": "PY-TUPLE-01",
+        "set": "PY-SET-01",
+        "tap hop": "PY-SET-01",
+        "string": "PY-STRING-01",
+        "chuoi": "PY-STRING-01",
+        "while": "PY-FLOW-02",
+        "for": "PY-FLOW-03",
+        "loop": "PY-FLOW-03",
+        "vong lap": "PY-FLOW-03",
+        "condition": "PY-FLOW-01",
+        "if else": "PY-FLOW-01",
+        "dieu kien": "PY-FLOW-01",
+        "function": "PY-FUNC-01",
+        "def": "PY-FUNC-01",
+        "ham": "PY-FUNC-01",
+        "exception": "PY-EXC-01",
+        "try except": "PY-EXC-01",
+        "ngoai le": "PY-EXC-01",
+        "file": "PY-IO-01",
+        "tep": "PY-IO-01",
+        "module": "PY-MODULE-01",
+        "import": "PY-MODULE-01",
+        "oop": "PY-OOP-01",
+        "class": "PY-OOP-01",
+        "huong doi tuong": "PY-OOP-01",
+        "casting": "PY-BASICS-02",
+        "ep kieu": "PY-BASICS-02",
+        "operator": "PY-BASICS-03",
+        "toan tu": "PY-BASICS-03",
+        "variable": "PY-BASICS-01",
+        "bien": "PY-BASICS-01",
+    },
+    "javascript": {
+        "higher order array": "JS-ARRAY-HOF-01",
+        "map filter reduce": "JS-ARRAY-HOF-01",
+        "destructuring": "JS-DESTRUCT-01",
+        "spread rest": "JS-SPREADREST-01",
+        "prototype": "JS-PROTO-01",
+        "closure": "JS-CLOSURE-01",
+        "hoisting": "JS-EXEC-01",
+        "arrow function": "JS-ARROW-01",
+        "arrow": "JS-ARROW-01",
+        "set map": "JS-SETMAP-01",
+        "dictionary": "JS-OBJECT-01",
+        "key value": "JS-OBJECT-01",
+        "object": "JS-OBJECT-01",
+        "array": "JS-ARRAY-01",
+        "mang": "JS-ARRAY-01",
+        "string": "JS-STRING-01",
+        "chuoi": "JS-STRING-01",
+        "function": "JS-FUNC-01",
+        "ham": "JS-FUNC-01",
+        "scope": "JS-SCOPE-01",
+        "this": "JS-THIS-01",
+        "class": "JS-CLASS-01",
+        "oop": "JS-CLASS-01",
+        "error": "JS-ERROR-01",
+        "exception": "JS-ERROR-01",
+        "module": "JS-MODULE-01",
+        "loop": "JS-LOOP-01",
+        "vong lap": "JS-LOOP-01",
+        "condition": "JS-COND-01",
+        "dieu kien": "JS-COND-01",
+        "coercion": "JS-COERCE-01",
+        "ep kieu": "JS-COERCE-01",
+        "type": "JS-TYPE-01",
+        "kieu du lieu": "JS-TYPE-01",
+        "variable": "JS-VAR-01",
+        "bien": "JS-VAR-01",
+    },
+    "cpp": {
+        "smart pointer": "CPP-SMARTPTR-01",
+        "unordered map": "CPP-CACHE-01",
+        "backtracking": "CPP-BACKTRACK-01",
+        "quay lui": "CPP-BACKTRACK-01",
+        "recursion": "CPP-RECUR-01",
+        "de quy": "CPP-RECUR-01",
+        "bitwise": "CPP-BITWISE-01",
+        "pointer": "CPP-PTR-01",
+        "con tro": "CPP-PTR-01",
+        "vector": "CPP-VECTOR-01",
+        "array": "CPP-ARRAY-01",
+        "mang": "CPP-ARRAY-01",
+        "matrix": "CPP-MATRIX-01",
+        "ma tran": "CPP-MATRIX-01",
+        "string": "CPP-STRING-01",
+        "chuoi": "CPP-STRING-01",
+        "struct": "CPP-STRUCT-01",
+        "enum": "CPP-ENUMVAR-01",
+        "variant": "CPP-ENUMVAR-01",
+        "hash": "CPP-CACHE-01",
+        "map": "CPP-CACHE-01",
+        "algorithm": "CPP-BUILD-01",
+        "iterator": "CPP-BUILD-01",
+        "file": "CPP-FILE-01",
+        "stream": "CPP-FILE-01",
+        "exception": "CPP-EXC-01",
+        "function": "CPP-FUNC-01",
+        "ham": "CPP-FUNC-01",
+        "loop": "CPP-LOOP-01",
+        "vong lap": "CPP-LOOP-01",
+        "condition": "CPP-COND-01",
+        "dieu kien": "CPP-COND-01",
+        "type": "CPP-TYPE-01",
+        "kieu du lieu": "CPP-TYPE-01",
+        "syntax": "CPP-SYNTAX-01",
+        "cu phap": "CPP-SYNTAX-01",
+        "input output": "CPP-SYNTAX-01",
+    },
+    "sql": {
+        "group by": "SQL-AGG-01",
+        "order by": "SQL-SORT-01",
+        "primary key": "SQL-RDBMS-01",
+        "foreign key": "SQL-RDBMS-01",
+        "inner join": "SQL-JOIN-01",
+        "left join": "SQL-JOIN-01",
+        "join": "SQL-JOIN-01",
+        "aggregate": "SQL-AGG-01",
+        "count": "SQL-AGG-01",
+        "sum": "SQL-AGG-01",
+        "avg": "SQL-AGG-01",
+        "sort": "SQL-SORT-01",
+        "limit": "SQL-SORT-01",
+        "where": "SQL-WHERE-01",
+        "filter": "SQL-WHERE-01",
+        "and or not": "SQL-LOGIC-01",
+        "logic": "SQL-LOGIC-01",
+        "select": "SQL-DQL-01",
+        "distinct": "SQL-DQL-01",
+        "alias": "SQL-DQL-01",
+        "database": "SQL-RDBMS-01",
+        "rdbms": "SQL-RDBMS-01",
+        "table": "SQL-RDBMS-01",
+    },
+}
+
+
+def _fold_topic(value: str) -> str:
+    value = value.lower().replace("đ", "d")
+    value = "".join(c for c in unicodedata.normalize("NFD", value) if unicodedata.category(c) != "Mn")
+    return re.sub(r"[^a-z0-9]+", " ", value).strip()
 
 
 class KnowledgeGraphService:
@@ -83,9 +244,9 @@ class KnowledgeGraphService:
             self.downstream_graph[lang][cid] = []
 
             # Index keywords and names to help resolve topic
-            name_lower = (skill.get("name") or "").lower()
-            scope_lower = (skill.get("scope") or "").lower()
-            topic_id = (skill.get("topic_id") or "").lower()
+            name_lower = _fold_topic(skill.get("name") or "")
+            scope_lower = _fold_topic(skill.get("scope") or "")
+            topic_id = _fold_topic(skill.get("topic_id") or "")
             
             self.topic_index[lang][cid.lower()] = cid
             self.topic_index[lang][name_lower] = cid
@@ -93,7 +254,7 @@ class KnowledgeGraphService:
                 self.topic_index[lang][topic_id] = cid
 
             # Parse keywords in scope
-            for kw in scope_lower.replace(",", " ").replace("/", " ").split():
+            for kw in scope_lower.split():
                 if len(kw) > 3:
                     self.topic_index[lang][kw] = cid
 
@@ -159,7 +320,11 @@ class KnowledgeGraphService:
         if not topic:
             return None
 
-        topic_clean = topic.strip().lower()
+        topic_raw = topic.strip()
+        direct_id = topic_raw.upper()
+        if direct_id in self.concept_index.get(lang, {}):
+            return direct_id
+        topic_clean = _fold_topic(topic_raw)
 
         # Resolve the course's compound List lesson before applying generic
         # matching.  This also canonicalizes an LLM response such as
@@ -176,33 +341,37 @@ class KnowledgeGraphService:
         if lang == "python" and topic_clean == "array" and "PY-LIST-01" in self.concept_index.get(lang, {}):
             return "PY-LIST-01"
 
-        # Direct match in index
+        # The aliases are curriculum-owned. Broad requests deliberately map
+        # to the foundation concept of that topic instead of whichever skill
+        # happens to appear first in the JSON file.
+        aliases = TOPIC_ALIASES.get(lang, {})
+        if topic_clean in aliases and aliases[topic_clean] in self.concept_index.get(lang, {}):
+            return aliases[topic_clean]
+        for alias in sorted(aliases, key=len, reverse=True):
+            if re.search(rf"(?<![a-z0-9]){re.escape(alias)}(?![a-z0-9])", topic_clean):
+                concept_id = aliases[alias]
+                if concept_id in self.concept_index.get(lang, {}):
+                    return concept_id
+
+        # Direct normalized name/topic match in index.
         if topic_clean in self.topic_index.get(lang, {}):
             return self.topic_index[lang][topic_clean]
 
-        # Substring match across all skills
-        best_match = None
+        # Token overlap is only a final fallback. It cannot match a short
+        # topic against a concept ID (the old `dict` -> `PY-DICT-01` accident).
+        topic_tokens = set(topic_clean.split())
+        scored = []
         for cid, skill in self.concept_index.get(lang, {}).items():
-            name = (skill.get("name") or "").lower()
-            scope = (skill.get("scope") or "").lower()
-            if topic_clean in name or topic_clean in cid.lower() or topic_clean in scope:
-                return cid
-
-        # Common synonym dictionary
-        synonyms = {
-            "function": ["func", "hàm", "arrow", "parameter"],
-            "loop": ["loop", "for", "while", "vòng lặp", "lặp"],
-            "array": ["array", "list", "mảng", "danh sách"],
-            "dict": ["dictionary", "từ điển", "object", "map"],
-            "oop": ["class", "hướng đối tượng", "lớp", "constructor", "kế thừa"],
-            "pointer": ["con trỏ", "reference", "địa chỉ", "tham chiếu"]
-        }
-        for syn_key, kw_list in synonyms.items():
-            if any(kw in topic_clean for kw in kw_list):
-                for cid, skill in self.concept_index.get(lang, {}).items():
-                    c_name = (skill.get("name") or "").lower()
-                    if any(kw in c_name or kw in cid.lower() for kw in kw_list):
-                        return cid
+            searchable = _fold_topic(" ".join([
+                skill.get("name") or "",
+                skill.get("scope") or "",
+                skill.get("topic_id") or "",
+            ]))
+            overlap = len(topic_tokens.intersection(searchable.split()))
+            if overlap:
+                scored.append((overlap, -int(skill.get("difficulty_level") or 0), cid))
+        if scored:
+            return sorted(scored, reverse=True)[0][2]
 
         return None
 

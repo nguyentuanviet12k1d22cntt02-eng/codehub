@@ -88,7 +88,7 @@ class PipelineTests(unittest.TestCase):
                 raise AssertionError("An explicit topic must not use the LLM router")
 
         route = IntentRouterAgent(FailingClient()).route("Tôi muốn học vòng lặp while trong python")
-        self.assertEqual(route.intent, "EXPLAIN_CONCEPT")
+        self.assertEqual(route.intent, "CLARIFY_LEARNING_MODE")
         self.assertEqual(route.language, "python")
         self.assertEqual(route.topic, "PY-FLOW-02")
 
@@ -183,7 +183,7 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(error.exception.code, "ROUTING_SCHEMA_INVALID")
 
     def test_router_prompt_defines_every_intent_and_required_json_fields(self):
-        for value in ("GENERAL_CHAT", "EXPLAIN_CONCEPT", "ASK_KNOWLEDGE", "REQUEST_ADAPTIVE_EXERCISE", "CREATE_LEARNING_PATH", "CHECK_WEAKNESS", '"intent"', '"language"', '"topic"'):
+        for value in ("GENERAL_CHAT", "CLARIFY_LEARNING_MODE", "EXPLAIN_CONCEPT", "ASK_KNOWLEDGE", "REQUEST_ADAPTIVE_EXERCISE", "CREATE_LEARNING_PATH", "CHECK_WEAKNESS", '"intent"', '"language"', '"topic"'):
             self.assertIn(value, ROUTER_SYSTEM_PROMPT)
 
     def test_transient_failure_rotates_to_the_next_key_before_provider_failover(self):

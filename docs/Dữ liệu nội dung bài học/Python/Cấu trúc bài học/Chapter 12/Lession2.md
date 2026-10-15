@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-05.02"
+lessonId: "LS-08.02"
 title: "Đọc và Ghi File Text"
 difficulty: "EASY"
 estimatedDuration: 20
 keywords: ["read", "readline", "write", "writelines", "file text"]
-prerequisites: ["LS-05.01"]
+prerequisites: ["LS-08.01"]
 ---
 
-# 📘 Lesson 05.02: Đọc và Ghi File Text
+# 📘 Lesson 08.02: Đọc và Ghi File Text
 
 ---
 
@@ -113,4 +113,4 @@ Hãy viết chương trình mở file `"input.txt"` ở chế độ đọc, duy�
 * ✍️ Sử dụng phương thức **`.write()`** để ghi dữ liệu chuỗi vào file (nhớ ép kiểu dữ liệu phi chuỗi thành string).
 * 📖 Sử dụng phương thức **`.read()`** để đọc hết nội dung file, hoặc dùng vòng lặp **`for line in file`** để duyệt qua từng dòng một cách tiết kiệm RAM.
 
-Trong bài học tiếp theo **[LS-05.03: Context Manager với từ khóa 'with']**, chúng ta sẽ học một cú pháp hiện đại và an toàn tuyệt đối giúp tự động đóng file mà không bao giờ lo bị quên gọi lệnh `close()`.
+Trong bài học tiếp theo **[LS-08.03: Context Manager với từ khóa 'with']**, chúng ta sẽ học một cú pháp hiện đại và an toàn tuyệt đối giúp tự động đóng file mà không bao giờ lo bị quên gọi lệnh `close()`.

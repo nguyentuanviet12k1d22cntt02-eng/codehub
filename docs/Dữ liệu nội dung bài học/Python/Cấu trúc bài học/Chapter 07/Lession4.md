@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-03.08"
+lessonId: "LS-05.04"
 title: "Sắp xếp và Tìm kiếm cơ bản"
 difficulty: "MEDIUM"
 estimatedDuration: 20
 keywords: ["sort", "search", "sorted", "index", "in operator"]
-prerequisites: ["LS-03.06"]
+prerequisites: ["LS-05.02"]
 ---
 
-# 📘 Lesson 03.08: Sắp xếp và Tìm kiếm cơ bản
+# 📘 Lesson 05.04: Sắp xếp và Tìm kiếm cơ bản
 
 ---
 
@@ -104,4 +104,4 @@ Khai báo danh sách `prices = [150, 99, 250, 49]`. Hãy sắp xếp danh sách 
 * 📍 Dùng `.index()` để lấy vị trí chỉ số của phần tử.
 * 🔄 Phân biệt rõ giữa `.sort()` (sắp xếp trực tiếp danh sách gốc) và `sorted()` (tạo danh sách đã sắp xếp mới).
 
-Trong bài học tiếp theo **[LS-03.09: Tuple: Danh sách bất biến]**, chúng ta sẽ làm quen với người anh em sinh đôi của List nhưng mang đặc tính an toàn tuyệt đối: không cho phép thêm sửa xóa phần tử sau khi tạo.
+Trong bài học tiếp theo **[LS-05.05: Tuple: Danh sách bất biến]**, chúng ta sẽ làm quen với người anh em sinh đôi của List nhưng mang đặc tính an toàn tuyệt đối: không cho phép thêm sửa xóa phần tử sau khi tạo.

@@ -1,5 +1,5 @@
 ---
-lessonId: "LS-04.05"
+lessonId: "LS-07.05"
 title: "Nhận diện Ngoại lệ (Exceptions)"
 difficulty: "EASY"
 estimatedDuration: 15
@@ -7,7 +7,7 @@ keywords: ["exceptions", "runtime errors", "ValueError", "ZeroDivisionError", "T
 prerequisites: ["LS-01.10"]
 ---
 
-# 📘 Lesson 04.05: Nhận diện Ngoại lệ (Exceptions)
+# 📘 Lesson 07.05: Nhận diện Ngoại lệ (Exceptions)
 
 ---
 
@@ -84,4 +84,4 @@ Hãy viết một dòng code Python thực hiện một phép toán hoặc ép k
 * 📋 Các loại ngoại lệ phổ biến: `ZeroDivisionError`, `ValueError`, `TypeError`, `IndexError`, `KeyError`.
 * 🛡️ Lập trình viên giỏi cần học cách nhận diện tên các lỗi này để chuẩn bị phương án phòng thủ.
 
-Trong bài học tiếp theo **[LS-04.06: Bắt lỗi với Try-Except]**, chúng ta sẽ học cách dựng "lá chắn phòng thủ" để khi gặp các lỗi này, chương trình vẫn bình an chạy tiếp chứ không bị sập đột ngột.
+Trong bài học tiếp theo **[LS-07.06: Bắt lỗi với Try-Except]**, chúng ta sẽ học cách dựng "lá chắn phòng thủ" để khi gặp các lỗi này, chương trình vẫn bình an chạy tiếp chứ không bị sập đột ngột.

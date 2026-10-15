@@ -48,6 +48,22 @@ class AdaptiveLearningOrchestrator:
                 "last_concept_id": context.get("last_concept_id"), "pending_confirmation": context.get("pending_confirmation")},
                 lambda: IntentRouterAgent(client).route(user_text, {**context, "language": language or context.get("language", "python")}, trace_id))
             intent = routing.intent
+            if intent == "CLARIFY_LEARNING_MODE":
+                concept = self.kg.get_concept(routing.language, routing.topic)
+                if not concept:
+                    raise ValueError("Chưa xác định được chủ đề cần học trong đồ thị tri thức")
+                pending_confirmation = {
+                    "type": "LEARNING_MODE_SELECTION",
+                    "target_concept_id": routing.topic,
+                    "target_concept_name": concept.get("name", routing.topic),
+                    "language": routing.language,
+                }
+                return result(
+                    "AWAITING_CONFIRMATION",
+                    f"Bạn muốn bắt đầu chủ đề **{concept.get('name', routing.topic)}** theo cách nào?",
+                    pending_confirmation=pending_confirmation,
+                    suggested_options=["Học lý thuyết", "Làm bài thực hành"],
+                )
             if intent in ("GENERAL_CHAT", "EXPLAIN_CONCEPT", "ASK_KNOWLEDGE", "CHECK_WEAKNESS"):
                 if intent == "CHECK_WEAKNESS":
                     data = evidence.step("LearnerStateService", "DATABASE_SNAPSHOT", {"language": routing.language},

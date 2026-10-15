@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-03.04"
+lessonId: "LS-04.04"
 title: "Định dạng chuỗi (F-string)"
 difficulty: "EASY"
 estimatedDuration: 15
 keywords: ["f-string", "string formatting", "interpolation"]
-prerequisites: ["LS-03.03"]
+prerequisites: ["LS-04.03"]
 ---
 
-# 📘 Lesson 03.04: Định dạng chuỗi (F-string)
+# 📘 Lesson 04.04: Định dạng chuỗi (F-string)
 
 ---
 
@@ -98,4 +98,4 @@ Khai báo biến `mon_hoc = "Python"` và `so_luong = 12`. Sử dụng F-string 
 * 📦 Dùng cặp ngoặc nhọn **`{}`** để nhúng các biến hoặc biểu thức lập trình vào chuỗi văn bản.
 * ⚡ F-string có tốc độ thực thi nhanh hơn và dễ đọc hơn nhiều so với việc nối chuỗi bằng toán tử cộng `+`.
 
-Trong bài học tiếp theo **[LS-03.05: Khái niệm List & Khởi tạo]**, chúng ta sẽ chính thức bước sang cấu trúc dữ liệu tuần tự đa năng nhất của Python - Danh sách (List), để lưu trữ nhiều phần tử cùng lúc thay vì các biến đơn lẻ.
+Trong bài học tiếp theo **[LS-05.01: Khái niệm List & Khởi tạo]**, chúng ta sẽ chính thức bước sang cấu trúc dữ liệu tuần tự đa năng nhất của Python - Danh sách (List), để lưu trữ nhiều phần tử cùng lúc thay vì các biến đơn lẻ.

@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-05.07"
+lessonId: "LS-08.07"
 title: "Khái quát về Kế thừa (Inheritance)"
 difficulty: "MEDIUM"
 estimatedDuration: 20
 keywords: ["inheritance", "subclass", "superclass", "parent class", "child class", "method overriding"]
-prerequisites: ["LS-05.06"]
+prerequisites: ["LS-08.06"]
 ---
 
-# 📘 Lesson 05.07: Khái quát về Kế thừa (Inheritance)
+# 📘 Lesson 08.07: Khái quát về Kế thừa (Inheritance)
 
 ---
 

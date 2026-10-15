@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-03.10"
+lessonId: "LS-06.01"
 title: "Set: Tập hợp toán học"
 difficulty: "MEDIUM"
 estimatedDuration: 15
 keywords: ["set", "mathematical set", "unique", "unordered", "curly braces"]
-prerequisites: ["LS-03.05"]
+prerequisites: ["LS-05.01"]
 ---
 
-# 📘 Lesson 03.10: Set: Tập hợp toán học
+# 📘 Lesson 06.01: Set: Tập hợp toán học
 
 ---
 
@@ -98,4 +98,4 @@ Khai báo hai tập hợp: `set_a = {1, 2, 3}` và `set_b = {3, 4, 5}`. Hãy tì
 * ➕ Dùng `.add()` để thêm, `.discard()` để xóa phần tử an toàn.
 * 🧮 Hỗ trợ đắc lực cho các phép toán tập hợp: giao (`&`), hợp (`|`), hiệu (`-`).
 
-Trong bài học tiếp theo **[LS-03.11: Dictionary: Cấu trúc Key-Value]**, chúng ta sẽ làm quen với cấu trúc ánh xạ cực kỳ hữu ích - Từ điển (Dictionary), giúp tổ chức thông tin dưới dạng cặp khóa - giá trị.
+Trong bài học tiếp theo **[LS-06.02: Dictionary: Cấu trúc Key-Value]**, chúng ta sẽ làm quen với cấu trúc ánh xạ cực kỳ hữu ích - Từ điển (Dictionary), giúp tổ chức thông tin dưới dạng cặp khóa - giá trị.

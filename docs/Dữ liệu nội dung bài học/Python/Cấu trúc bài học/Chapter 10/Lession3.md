@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-04.07"
+lessonId: "LS-07.07"
 title: "Luồng Finally và Ném lỗi chủ động"
 difficulty: "MEDIUM"
 estimatedDuration: 20
 keywords: ["finally", "raise", "custom error", "resource cleanup"]
-prerequisites: ["LS-04.06"]
+prerequisites: ["LS-07.06"]
 ---
 
-# 📘 Lesson 04.07: Luồng Finally và Ném lỗi chủ động
+# 📘 Lesson 07.07: Luồng Finally và Ném lỗi chủ động
 
 ---
 
@@ -95,4 +95,4 @@ Hãy viết hàm `tinh_thuong(diem)` nhận vào điểm số. Nếu điểm l�
 * 🧹 Khối **`finally`** là nơi lý tưởng để giải phóng tài nguyên (đóng file, ngắt kết nối mạng) vì nó luôn luôn được chạy.
 * 🛑 Sử dụng từ khóa **`raise`** để chủ động phát hiện dữ liệu phi logic và ném lỗi ngăn chặn hệ thống xử lý sai.
 
-Trong bài học tiếp theo **[LS-04.08: Khái niệm Module và Lệnh Import]**, chúng ta sẽ học cách chia nhỏ chương trình thành các file mã nguồn độc lập (Module) để quản lý mã nguồn sạch sẽ, khoa học hơn.
+Trong bài học tiếp theo **[LS-07.08: Khái niệm Module và Lệnh Import]**, chúng ta sẽ học cách chia nhỏ chương trình thành các file mã nguồn độc lập (Module) để quản lý mã nguồn sạch sẽ, khoa học hơn.

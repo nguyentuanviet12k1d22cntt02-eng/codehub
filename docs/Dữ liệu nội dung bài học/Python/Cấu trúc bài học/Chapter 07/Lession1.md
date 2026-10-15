@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-03.05"
+lessonId: "LS-05.01"
 title: "Khái niệm List & Khởi tạo"
 difficulty: "EASY"
 estimatedDuration: 15
 keywords: ["list", "array", "initialization", "element"]
-prerequisites: ["LS-03.01"]
+prerequisites: ["LS-04.01"]
 ---
 
-# 📘 Lesson 03.05: Khái niệm List & Khởi tạo
+# 📘 Lesson 05.01: Khái niệm List & Khởi tạo
 
 ---
 
@@ -98,4 +98,4 @@ Hãy khởi tạo một danh sách tên là `my_hobbies` chứa 3 sở thích c�
 * 🔢 Các phần tử có thứ tự và được truy xuất qua chỉ số **Index** (bắt đầu từ `0`).
 * 📏 Dùng **`len(list)`** để kiểm tra số lượng phần tử của danh sách.
 
-Trong bài học tiếp theo **[LS-03.06: Cập nhật & Sửa đổi List]**, chúng ta sẽ học cách thêm phần tử mới, xóa bỏ hoặc sửa đổi các phần tử hiện có trong một danh sách một cách động.
+Trong bài học tiếp theo **[LS-05.02: Cập nhật & Sửa đổi List]**, chúng ta sẽ học cách thêm phần tử mới, xóa bỏ hoặc sửa đổi các phần tử hiện có trong một danh sách một cách động.

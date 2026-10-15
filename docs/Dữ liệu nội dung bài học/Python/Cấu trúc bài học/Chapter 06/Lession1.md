@@ -1,5 +1,5 @@
 ---
-lessonId: "LS-03.01"
+lessonId: "LS-04.01"
 title: "Chuỗi như một Mảng: Indexing"
 difficulty: "EASY"
 estimatedDuration: 15
@@ -7,7 +7,7 @@ keywords: ["string", "indexing", "sequence", "char"]
 prerequisites: ["LS-01.05"]
 ---
 
-# 📘 Lesson 03.01: Chuỗi như một Mảng: Indexing
+# 📘 Lesson 04.01: Chuỗi như một Mảng: Indexing
 
 ---
 
@@ -104,4 +104,4 @@ Khai báo biến `username = "PythonStudent"`. Hãy in ra màn hình ký tự đ
 * 🔒 Chuỗi là **bất biến** (Immutable), không thể sửa trực tiếp từng ký tự.
 * ⚠️ Hãy luôn chú ý độ dài của chuỗi để tránh lỗi **`IndexError`**.
 
-Trong bài học tiếp theo **[LS-03.02: Cắt chuỗi (Slicing)]**, chúng ta sẽ học cách trích xuất cả một cụm từ hoặc một phần của chuỗi thay vì chỉ một ký tự đơn lẻ.
+Trong bài học tiếp theo **[LS-04.02: Cắt chuỗi (Slicing)]**, chúng ta sẽ học cách trích xuất cả một cụm từ hoặc một phần của chuỗi thay vì chỉ một ký tự đơn lẻ.

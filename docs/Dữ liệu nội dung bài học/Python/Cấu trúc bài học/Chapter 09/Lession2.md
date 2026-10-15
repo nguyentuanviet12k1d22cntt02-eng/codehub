@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-04.02"
+lessonId: "LS-07.02"
 title: "Tham số và Đối số"
 difficulty: "EASY"
 estimatedDuration: 20
 keywords: ["parameters", "arguments", "positional arguments", "keyword arguments"]
-prerequisites: ["LS-04.01"]
+prerequisites: ["LS-07.01"]
 ---
 
-# 📘 Lesson 04.02: Tham số và Đối số
+# 📘 Lesson 07.02: Tham số và Đối số
 
 ---
 
@@ -108,4 +108,4 @@ calc_total(100)
 * ⚖️ Đảm bảo truyền đúng số lượng đối số tương ứng với số lượng tham số yêu cầu để tránh lỗi `TypeError`.
 * 🛡️ Sử dụng **tham số mặc định** ở phía sau danh sách tham số để tăng tính linh động.
 
-Trong bài học tiếp theo **[LS-04.03: Trả về kết quả (Return)]**, chúng ta sẽ học cách đưa kết quả tính toán của hàm ra ngoài chương trình để tiếp tục sử dụng thay vì chỉ in ra màn hình.
+Trong bài học tiếp theo **[LS-07.03: Trả về kết quả (Return)]**, chúng ta sẽ học cách đưa kết quả tính toán của hàm ra ngoài chương trình để tiếp tục sử dụng thay vì chỉ in ra màn hình.

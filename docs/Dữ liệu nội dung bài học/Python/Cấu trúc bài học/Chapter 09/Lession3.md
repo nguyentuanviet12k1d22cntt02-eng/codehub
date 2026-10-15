@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-04.03"
+lessonId: "LS-07.03"
 title: "Trả về kết quả (Return)"
 difficulty: "EASY"
 estimatedDuration: 15
 keywords: ["return", "return value", "function output", "none"]
-prerequisites: ["LS-04.02"]
+prerequisites: ["LS-07.02"]
 ---
 
-# 📘 Lesson 04.03: Trả về kết quả (Return)
+# 📘 Lesson 07.03: Trả về kết quả (Return)
 
 ---
 
@@ -101,4 +101,4 @@ print(x + 10)
 * 🛑 Lệnh `return` kết thúc hoạt động của hàm ngay lập tức khi được kích hoạt.
 * 🚫 Nếu một hàm không có từ khóa `return`, giá trị mặc định trả về là **`None`**.
 
-Trong bài học tiếp theo **[LS-04.04: Phạm vi của Biến (Scope)]**, chúng ta sẽ học về ranh giới kiểm soát biến: tại sao biến khai báo trong hàm không thể gọi được ở ngoài hàm và ngược lại.
+Trong bài học tiếp theo **[LS-07.04: Phạm vi của Biến (Scope)]**, chúng ta sẽ học về ranh giới kiểm soát biến: tại sao biến khai báo trong hàm không thể gọi được ở ngoài hàm và ngược lại.

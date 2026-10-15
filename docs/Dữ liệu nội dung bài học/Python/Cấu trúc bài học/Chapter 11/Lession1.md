@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-04.08"
+lessonId: "LS-07.08"
 title: "Khái niệm Module và Lệnh Import"
 difficulty: "EASY"
 estimatedDuration: 15
 keywords: ["module", "import", "from import", "reusability", "namespace"]
-prerequisites: ["LS-04.01"]
+prerequisites: ["LS-07.01"]
 ---
 
-# 📘 Lesson 04.08: Khái niệm Module và Lệnh Import
+# 📘 Lesson 07.08: Khái niệm Module và Lệnh Import
 
 ---
 
@@ -105,4 +105,4 @@ Hãy viết câu lệnh import để nạp thư viện toán học **`math`** c�
 * 🛠️ Dùng `import tên_module` hoặc `from tên_module import tên_hàm` để nạp mã nguồn.
 * 🏷️ Dùng từ khóa `as` để rút gọn hoặc đổi tên module khi gọi cho thuận tiện.
 
-Trong bài học tiếp theo **[LS-04.09: Khám phá Standard Library]**, chúng ta sẽ khám phá kho tàng các thư viện được cài đặt sẵn cực kỳ hùng hậu của Python như xử lý toán học, ngày tháng, và sinh dữ liệu ngẫu nhiên.
+Trong bài học tiếp theo **[LS-07.09: Khám phá Standard Library]**, chúng ta sẽ khám phá kho tàng các thư viện được cài đặt sẵn cực kỳ hùng hậu của Python như xử lý toán học, ngày tháng, và sinh dữ liệu ngẫu nhiên.

@@ -6,6 +6,7 @@
 export type AdaptiveIntent = 
     | 'REQUEST_ADAPTIVE_EXERCISE'
     | 'CHECK_WEAKNESS'
+    | 'CLARIFY_LEARNING_MODE'
     | 'EXPLAIN_CONCEPT'
     | 'GENERAL_CHAT';
 

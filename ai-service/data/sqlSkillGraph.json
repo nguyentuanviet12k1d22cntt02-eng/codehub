@@ -215,7 +215,8 @@
       "difficulty_level": 2,
       "bloom_level": "Apply",
       "estimated_time_minutes": 35,
-      "practice_count": 4
+      "practice_count": 4,
+      "content_status": "PLANNED"
     },
     {
       "id": "SQL-AGG-01",
@@ -239,7 +240,8 @@
       "difficulty_level": 3,
       "bloom_level": "Analyze",
       "estimated_time_minutes": 45,
-      "practice_count": 4
+      "practice_count": 4,
+      "content_status": "PLANNED"
     },
     {
       "id": "SQL-JOIN-01",
@@ -264,7 +266,8 @@
       "difficulty_level": 3,
       "bloom_level": "Analyze",
       "estimated_time_minutes": 50,
-      "practice_count": 5
+      "practice_count": 5,
+      "content_status": "PLANNED"
     }
   ],
   "prerequisites": [

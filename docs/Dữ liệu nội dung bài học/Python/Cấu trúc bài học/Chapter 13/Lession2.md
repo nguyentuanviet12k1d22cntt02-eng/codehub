@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-05.05"
+lessonId: "LS-08.05"
 title: "Thuộc tính và Phương thức"
 difficulty: "EASY"
 estimatedDuration: 20
 keywords: ["attributes", "methods", "OOP", "self parameter"]
-prerequisites: ["LS-05.04"]
+prerequisites: ["LS-08.04"]
 ---
 
-# 📘 Lesson 05.05: Thuộc tính và Phương thức
+# 📘 Lesson 08.05: Thuộc tính và Phương thức
 
 ---
 
@@ -112,4 +112,4 @@ Hãy định nghĩa lớp `Person`. Lớp này có một phương thức tên l�
 * ⚙️ **Phương thức (Methods)** là các hành động (hàm) được gắn vào đối tượng.
 * 🔑 Luôn khai báo tham số **`self`** làm đối số đầu tiên của mọi phương thức trong Class.
 
-Trong bài học tiếp theo **[LS-05.06: Phương thức Khởi tạo (__init__)]**, chúng ta sẽ tìm hiểu cách thiết lập các thông tin ban đầu (như tên, tuổi) cho đối tượng ngay vào lúc vừa bấm nút khởi tạo đối tượng.
+Trong bài học tiếp theo **[LS-08.06: Phương thức Khởi tạo (__init__)]**, chúng ta sẽ tìm hiểu cách thiết lập các thông tin ban đầu (như tên, tuổi) cho đối tượng ngay vào lúc vừa bấm nút khởi tạo đối tượng.

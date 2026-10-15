@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-03.02"
+lessonId: "LS-04.02"
 title: "Cắt chuỗi (Slicing)"
 difficulty: "EASY"
 estimatedDuration: 15
 keywords: ["string", "slicing", "substring", "step"]
-prerequisites: ["LS-03.01"]
+prerequisites: ["LS-04.01"]
 ---
 
-# 📘 Lesson 03.02: Cắt chuỗi (Slicing)
+# 📘 Lesson 04.02: Cắt chuỗi (Slicing)
 
 ---
 
@@ -100,4 +100,4 @@ Khai báo biến `code = "MCODE-2026-ACTIVE"`. Hãy cắt chuỗi để lấy ra
 * 🚫 Biên phải `stop` **không** được tính vào chuỗi con kết quả.
 * 🔄 Dùng bước nhảy âm `[::-1]` là cách nhanh nhất để đảo ngược chuỗi trong Python.
 
-Trong bài học tiếp theo **[LS-03.03: Các phương thức chuỗi phổ biến]**, chúng ta sẽ khám phá các công cụ tích hợp sẵn của Python để biến đổi chữ hoa chữ thường, tìm kiếm và thay thế nội dung trong chuỗi.
+Trong bài học tiếp theo **[LS-04.03: Các phương thức chuỗi phổ biến]**, chúng ta sẽ khám phá các công cụ tích hợp sẵn của Python để biến đổi chữ hoa chữ thường, tìm kiếm và thay thế nội dung trong chuỗi.

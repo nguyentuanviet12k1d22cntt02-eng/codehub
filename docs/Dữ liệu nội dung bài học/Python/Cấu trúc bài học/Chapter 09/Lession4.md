@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-04.04"
+lessonId: "LS-07.04"
 title: "Phạm vi của Biến (Scope)"
 difficulty: "MEDIUM"
 estimatedDuration: 20
 keywords: ["variable scope", "local variable", "global variable", "global keyword", "LEGB"]
-prerequisites: ["LS-04.03"]
+prerequisites: ["LS-07.03"]
 ---
 
-# 📘 Lesson 04.04: Phạm vi của Biến (Scope)
+# 📘 Lesson 07.04: Phạm vi của Biến (Scope)
 
 ---
 
@@ -108,4 +108,4 @@ Khai báo biến toàn cục `status = "OFF"`. Hãy định nghĩa hàm `turn_on
 * 🌍 **Biến toàn cục (Global)** sống suốt chương trình, hàm có thể đọc nhưng không được sửa trực tiếp.
 * 🔑 Dùng từ khóa **`global`** trong hàm nếu bắt buộc phải thay đổi giá trị biến toàn cục.
 
-Trong bài học tiếp theo **[LS-04.05: Nhận diện Ngoại lệ (Exceptions)]**, chúng ta sẽ chuyển sang một chương mới cực kỳ quan trọng: quản lý và phòng tránh các lỗi phát sinh làm sập chương trình khi đang chạy.
+Trong bài học tiếp theo **[LS-07.05: Nhận diện Ngoại lệ (Exceptions)]**, chúng ta sẽ chuyển sang một chương mới cực kỳ quan trọng: quản lý và phòng tránh các lỗi phát sinh làm sập chương trình khi đang chạy.

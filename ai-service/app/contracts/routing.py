@@ -3,7 +3,7 @@ from typing import Optional, Literal
 from pydantic import BaseModel, Field
 
 class RoutingDecision(BaseModel):
-    intent: Literal["GENERAL_CHAT", "EXPLAIN_CONCEPT", "ASK_KNOWLEDGE", "REQUEST_ADAPTIVE_EXERCISE", "CREATE_LEARNING_PATH", "CHECK_WEAKNESS"]
+    intent: Literal["GENERAL_CHAT", "CLARIFY_LEARNING_MODE", "EXPLAIN_CONCEPT", "ASK_KNOWLEDGE", "REQUEST_ADAPTIVE_EXERCISE", "CREATE_LEARNING_PATH", "CHECK_WEAKNESS"]
     language: Literal["python", "javascript", "cpp", "sql"]
     topic: Optional[str] = Field(...)
     difficulty_request: Literal["easier", "same", "harder", "auto"] = "auto"

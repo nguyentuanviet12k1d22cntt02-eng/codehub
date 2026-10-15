@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-03.09"
+lessonId: "LS-05.05"
 title: "Tuple: Danh sách bất biến"
 difficulty: "EASY"
 estimatedDuration: 15
 keywords: ["tuple", "immutable sequence", "parentheses", "data protection"]
-prerequisites: ["LS-03.05"]
+prerequisites: ["LS-05.01"]
 ---
 
-# 📘 Lesson 03.09: Tuple: Danh sách bất biến
+# 📘 Lesson 05.05: Tuple: Danh sách bất biến
 
 ---
 
@@ -97,4 +97,4 @@ Khai báo một Tuple tên là `db_config` chứa 3 thông tin lần lượt là
 * ⚡ Tuple tối ưu bộ nhớ và có tốc độ xử lý nhanh hơn List.
 * 🛡️ Sử dụng Tuple để lưu trữ các dữ liệu mang tính cấu hình, tọa độ hoặc thông tin không được phép thay đổi.
 
-Trong bài học tiếp theo **[LS-03.10: Set: Tập hợp toán học]**, chúng ta sẽ khám phá cấu trúc dữ liệu Tập hợp (Set) độc đáo với đặc trưng không chứa phần tử trùng lặp và không có thứ tự.
+Trong bài học tiếp theo **[LS-06.01: Set: Tập hợp toán học]**, chúng ta sẽ khám phá cấu trúc dữ liệu Tập hợp (Set) độc đáo với đặc trưng không chứa phần tử trùng lặp và không có thứ tự.

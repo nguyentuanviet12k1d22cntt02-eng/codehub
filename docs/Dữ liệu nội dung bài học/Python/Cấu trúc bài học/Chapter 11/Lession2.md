@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-04.09"
+lessonId: "LS-07.09"
 title: "Khám phá Standard Library"
 difficulty: "EASY"
 estimatedDuration: 15
 keywords: ["standard library", "math module", "random module", "datetime module", "built-in batteries"]
-prerequisites: ["LS-04.08"]
+prerequisites: ["LS-07.08"]
 ---
 
-# 📘 Lesson 04.09: Khám phá Standard Library
+# 📘 Lesson 07.09: Khám phá Standard Library
 
 ---
 

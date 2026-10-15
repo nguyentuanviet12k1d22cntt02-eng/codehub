@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-04.06"
+lessonId: "LS-07.06"
 title: "Bắt lỗi với Try-Except"
 difficulty: "EASY"
 estimatedDuration: 20
 keywords: ["try-except", "exception handling", "safety", "error recovery"]
-prerequisites: ["LS-04.05"]
+prerequisites: ["LS-07.05"]
 ---
 
-# 📘 Lesson 04.06: Bắt lỗi với Try-Except
+# 📘 Lesson 07.06: Bắt lỗi với Try-Except
 
 ---
 
@@ -93,4 +93,4 @@ Hãy viết chương trình yêu cầu người dùng nhập một chuỗi số 
 * 🪓 Sử dụng **`except TenLoi`** để xử lý êm xuôi các lỗi cụ thể đó.
 * 🚫 Tránh viết `except:` chung chung để không che giấu các lỗi lập trình tiềm ẩn.
 
-Trong bài học tiếp theo **[LS-04.07: Luồng Finally và Ném lỗi chủ động]**, chúng ta sẽ học cách đảm bảo dọn dẹp bộ nhớ (như đóng file) dù lỗi có xảy ra hay không, và cách tự tạo ra lỗi một cách chủ động.
+Trong bài học tiếp theo **[LS-07.07: Luồng Finally và Ném lỗi chủ động]**, chúng ta sẽ học cách đảm bảo dọn dẹp bộ nhớ (như đóng file) dù lỗi có xảy ra hay không, và cách tự tạo ra lỗi một cách chủ động.

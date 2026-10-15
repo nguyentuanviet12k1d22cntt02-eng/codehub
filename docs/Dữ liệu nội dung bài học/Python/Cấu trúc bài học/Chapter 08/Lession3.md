@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-03.12"
+lessonId: "LS-06.03"
 title: "Thao tác trên Dictionary"
 difficulty: "MEDIUM"
 estimatedDuration: 20
 keywords: ["dictionary operations", "get method", "keys", "values", "items", "del"]
-prerequisites: ["LS-03.11"]
+prerequisites: ["LS-06.02"]
 ---
 
-# 📘 Lesson 03.12: Thao tác trên Dictionary
+# 📘 Lesson 06.03: Thao tác trên Dictionary
 
 ---
 

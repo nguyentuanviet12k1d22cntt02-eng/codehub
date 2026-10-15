@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-05.06"
+lessonId: "LS-08.06"
 title: "Phương thức Khởi tạo (__init__)"
 difficulty: "EASY"
 estimatedDuration: 20
 keywords: ["__init__", "constructor", "initialization", "self attributes"]
-prerequisites: ["LS-05.05"]
+prerequisites: ["LS-08.05"]
 ---
 
-# 📘 Lesson 05.06: Phương thức Khởi tạo (\_\_init\_\_)
+# 📘 Lesson 08.06: Phương thức Khởi tạo (\_\_init\_\_)
 
 ---
 
@@ -109,4 +109,4 @@ Hãy định nghĩa một lớp `Rectangle` (Hình chữ nhật) có phương th
 * 📦 Dùng cú pháp **`self.tên = giá_trị`** bên trong `__init__` để lưu trữ dữ liệu lâu dài vào đối tượng.
 * ⚠️ Nhớ truyền đủ đối số yêu cầu khi tạo đối tượng từ lớp.
 
-Trong bài học tiếp theo **[LS-05.07: Khái quát về Kế thừa (Inheritance)]**, chúng ta sẽ học cách tái sử dụng mã nguồn của Class cũ bằng cách kế thừa các thuộc tính và hành động sang một Class mới nâng cấp hơn.
+Trong bài học tiếp theo **[LS-08.07: Khái quát về Kế thừa (Inheritance)]**, chúng ta sẽ học cách tái sử dụng mã nguồn của Class cũ bằng cách kế thừa các thuộc tính và hành động sang một Class mới nâng cấp hơn.

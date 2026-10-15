@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-03.06"
+lessonId: "LS-05.02"
 title: "Cập nhật & Sửa đổi List"
 difficulty: "EASY"
 estimatedDuration: 20
 keywords: ["list modification", "append", "insert", "remove", "pop", "mutable"]
-prerequisites: ["LS-03.05"]
+prerequisites: ["LS-05.01"]
 ---
 
-# 📘 Lesson 03.06: Cập nhật & Sửa đổi List
+# 📘 Lesson 05.02: Cập nhật & Sửa đổi List
 
 ---
 
@@ -104,4 +104,4 @@ Khai báo danh sách `tasks = ["Học bài", "Quét nhà"]`. Hãy thêm phần t
 * ➕ Dùng `append()` để thêm vào cuối, `insert()` để chèn vào vị trí bất kỳ.
 * ➖ Dùng `remove()` để xóa theo giá trị, `pop()` để xóa theo chỉ số (index).
 
-Trong bài học tiếp theo **[LS-03.07: Duyệt mảng bằng Vòng lặp]**, chúng ta sẽ học cách quét qua từng phần tử của danh sách bằng vòng lặp để thực hiện tính toán tự động trên hàng loạt dữ liệu.
+Trong bài học tiếp theo **[LS-05.03: Duyệt mảng bằng Vòng lặp]**, chúng ta sẽ học cách quét qua từng phần tử của danh sách bằng vòng lặp để thực hiện tính toán tự động trên hàng loạt dữ liệu.

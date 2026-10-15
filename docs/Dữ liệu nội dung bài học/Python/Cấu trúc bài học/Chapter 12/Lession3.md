@@ -1,13 +1,13 @@
 ---
-lessonId: "LS-05.03"
+lessonId: "LS-08.03"
 title: "Context Manager với từ khóa 'with'"
 difficulty: "EASY"
 estimatedDuration: 15
 keywords: ["with statement", "context manager", "auto close", "file safety"]
-prerequisites: ["LS-05.02"]
+prerequisites: ["LS-08.02"]
 ---
 
-# 📘 Lesson 05.03: Context Manager với từ khóa 'with'
+# 📘 Lesson 08.03: Context Manager với từ khóa 'with'
 
 ---
 
@@ -92,4 +92,4 @@ Hãy viết chương trình sử dụng cấu trúc `with` để mở một file
 * 🛡️ Sử dụng **`with open(...) as f:`** là phương pháp chuẩn mực và an toàn nhất để làm việc với file trong Python.
 * 🚪 Hệ thống tự động đóng file (giải phóng tài nguyên) ngay khi luồng code chạy ra ngoài khối thụt lề.
 
-Chúc mừng bạn đã làm chủ được luồng xử lý File I/O! Trong bài học tiếp theo **[LS-05.04: Tư duy Hướng đối tượng (Class vs Object)]**, chúng ta sẽ chính thức bước vào thế giới của **OOP (Lập trình hướng đối tượng)**, học cách trừu tượng hóa các thực thể ngoài đời thực vào trong code.
+Chúc mừng bạn đã làm chủ được luồng xử lý File I/O! Trong bài học tiếp theo **[LS-08.04: Tư duy Hướng đối tượng (Class vs Object)]**, chúng ta sẽ chính thức bước vào thế giới của **OOP (Lập trình hướng đối tượng)**, học cách trừu tượng hóa các thực thể ngoài đời thực vào trong code.
