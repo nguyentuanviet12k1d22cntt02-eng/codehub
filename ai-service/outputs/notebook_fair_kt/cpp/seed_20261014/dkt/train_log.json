@@ -1,0 +1,45 @@
+{
+  "trained_in_notebook": true,
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_log_loss": 0.6924244402233599,
+      "validation_log_loss": 0.6917818873774005
+    },
+    {
+      "epoch": 2,
+      "train_log_loss": 0.687287571454289,
+      "validation_log_loss": 0.6904286895126284
+    },
+    {
+      "epoch": 3,
+      "train_log_loss": 0.6826653528695155,
+      "validation_log_loss": 0.6891842324788862
+    },
+    {
+      "epoch": 4,
+      "train_log_loss": 0.6779599302144163,
+      "validation_log_loss": 0.6885253316034619
+    },
+    {
+      "epoch": 5,
+      "train_log_loss": 0.6735931550613558,
+      "validation_log_loss": 0.688341000068089
+    },
+    {
+      "epoch": 6,
+      "train_log_loss": 0.6686806341614386,
+      "validation_log_loss": 0.6889069819349684
+    },
+    {
+      "epoch": 7,
+      "train_log_loss": 0.663862761423644,
+      "validation_log_loss": 0.6896435766807809
+    },
+    {
+      "epoch": 8,
+      "train_log_loss": 0.6577438200363005,
+      "validation_log_loss": 0.6897407770326496
+    }
+  ]
+}

@@ -605,6 +605,60 @@ class PipelineTests(unittest.TestCase):
         spec=AdaptiveExercisePlanner().plan_exercise(IntentRouterAgent().route("Tạo bài Python"),"u")
         self.assertFalse(CriticEvaluatorAgent(client).evaluate_content("theory",DRAFT,spec)["is_approved"])
 
+    def test_false_expected_output_contract_claim_is_rechecked_without_regeneration(self):
+        class RechecksContract(Client):
+            def __init__(self):
+                super().__init__()
+                self.critic_calls = 0
+            def json(self, stage, system, data):
+                if stage == "CriticEvaluatorAgent":
+                    self.calls.append(dict(stage=stage, provider="TEST_DOUBLE", status="SUCCEEDED"))
+                    self.critic_calls += 1
+                    if self.critic_calls == 1:
+                        return {**REVIEW, "is_approved": False, "exercise_approved": False,
+                            "feedback_target": "EXERCISE",
+                            "feedback": "expected_output phải là JSON object, không phải chuỗi."}
+                    return copy.deepcopy(REVIEW)
+                return super().json(stage, system, data)
+
+        class CountingSandbox(Sandbox):
+            calls = 0
+            @staticmethod
+            def validate(draft, spec, timeout=40):
+                CountingSandbox.calls += 1
+                return Sandbox.validate(draft, spec, timeout)
+
+        client = RechecksContract()
+        result = AdaptiveLearningOrchestrator(lambda: client, CountingSandbox).process_turn(
+            "u", [{"sender": "USER", "content": "Tạo bài Python"}])
+        self.assertEqual(result["status"], "SUCCEEDED")
+        self.assertEqual(client.critic_calls, 2)
+        self.assertEqual(client.exercise_calls, 1)
+        self.assertEqual(CountingSandbox.calls, 1)
+
+    def test_contract_recheck_does_not_auto_approve_a_real_content_error(self):
+        class RejectsContent(Client):
+            def __init__(self):
+                super().__init__()
+                self.critic_calls = 0
+            def json(self, stage, system, data):
+                if stage == "CriticEvaluatorAgent":
+                    self.critic_calls += 1
+                    if self.critic_calls == 1:
+                        return {**REVIEW, "is_approved": False, "exercise_approved": False,
+                            "feedback_target": "EXERCISE",
+                            "feedback": "expected_output phải là JSON object, không phải chuỗi."}
+                    return {**REVIEW, "is_approved": False, "exercise_approved": False,
+                        "feedback_target": "EXERCISE", "feedback": "Test biên không khớp với yêu cầu của đề."}
+                return super().json(stage, system, data)
+
+        client = RejectsContent()
+        spec = AdaptiveExercisePlanner().plan_exercise(IntentRouterAgent().route("Tạo bài Python"), "u")
+        review = CriticEvaluatorAgent(client).evaluate_content("theory", DRAFT, spec, verified_contract=True)
+        self.assertFalse(review["is_approved"])
+        self.assertEqual(review["feedback_target"], "EXERCISE")
+        self.assertEqual(client.critic_calls, 2)
+
     def test_compatibility_only_rejection_repairs_theory_not_verified_exercise(self):
         client=Client()
         client.json=lambda *args: {**REVIEW, "is_approved":False, "compatibility_approved":False,
@@ -789,6 +843,8 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(client.exercise_calls,3)
         self.assertEqual(result["error"]["code"],"REPAIR_LIMIT_REACHED")
         self.assertIsNone(result["exercise"])
+        self.assertIn("Chưa phát hành bài", result["reply"])
+        self.assertTrue(result["suggested_options"])
 
     def test_provider_failure_is_retained(self):
         class Broken(Client):

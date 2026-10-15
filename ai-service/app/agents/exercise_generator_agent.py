@@ -15,6 +15,9 @@ và call_style bắt buộc: "spread" gọi solution(*arguments), còn "single" 
 và gọi solution(arguments[0]). Ví dụ solution(nums, k) dùng {"arguments":[[1,2,3],2],"call_style":"spread"};
 solution(lines) dùng {"arguments":[["a","b"]],"call_style":"single"}. Không dùng trường input cho function.
 expected_output là chuỗi JSON biểu diễn giá trị trả về.
+Nếu bài Python dùng dictionary, các khóa phải hashable: list/dict từ JSON arguments không
+thể dùng trực tiếp làm khóa. Nếu đề chủ ý dùng khóa tuple, nghiệm mẫu phải chuyển list
+đầu vào thành tuple trước khi truy cập dictionary; thêm test biên cho trường hợp này.
 Python/JS không cần tự gọi solution. C++ dùng main đọc stdin, xuất stdout, chuẩn C++17.
 SQL dùng SQLite, cung cấp fixture_sql CREATE TABLE/INSERT, expected_output JSON mảng các hàng
 (ví dụ [[1,2],[3,4]] hoặc [["Lan"],["Minh"]]); chuỗi trong JSON dùng nháy kép,

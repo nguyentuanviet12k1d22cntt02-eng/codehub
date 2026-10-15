@@ -1,0 +1,4197 @@
+{
+  "schema_version": "real-exercise-catalog/1.0",
+  "language": "python",
+  "database_language": "PYTHON",
+  "data_origin": "REAL_PRODUCT_CATALOG",
+  "contains_learner_data": false,
+  "source_graph": "pythonSkillGraph.json",
+  "mapping_basis": "Versioned lesson mappings in the language skill graph",
+  "items": [
+    {
+      "item_id": "565c03a5-0524-401f-8d2b-28abc4a82bc2",
+      "item_title": "Chào mừng bạn đến với Python",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.01",
+      "lesson_title": "Máy tính và Ngôn ngữ lập trình",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "edfeea6a-3e1c-461d-8e83-abbe078ef9d6",
+      "item_title": "Chương trình Hello World",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.01",
+      "lesson_title": "Máy tính và Ngôn ngữ lập trình",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "2b3d1a08-7692-4a83-8cd1-149c237fe97d",
+      "item_title": "In thông điệp lập trình",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.02",
+      "lesson_title": "Môi trường lập trình Python",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "b28ce14f-b2b9-4933-801c-734ad15e1ee3",
+      "item_title": "Sử dụng lệnh in cơ bản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.02",
+      "lesson_title": "Môi trường lập trình Python",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "49858f43-44ee-42b6-b877-f8644e851efa",
+      "item_title": "Chú thích phép tính",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.03",
+      "lesson_title": "Chương trình Python đầu tiên",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "ffe18ae9-47c6-4cb7-8629-c022bfff8563",
+      "item_title": "Viết chú thích và in nhiều dòng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.03",
+      "lesson_title": "Chương trình Python đầu tiên",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "2c11fad2-9ce7-48b6-a3f8-70452d6d5364",
+      "item_title": "Khai báo biến cơ bản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.04",
+      "lesson_title": "Khái niệm Biến và Cách đặt tên",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "475a72d4-c121-4671-9acd-0698de09adae",
+      "item_title": "Quản lý hồ sơ nhân vật game",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.04",
+      "lesson_title": "Khái niệm Biến và Cách đặt tên",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "7c828bbb-302d-48b9-a6c2-cf9dc40b7c20",
+      "item_title": "Tính toán hóa đơn áo thun",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.04",
+      "lesson_title": "Khái niệm Biến và Cách đặt tên",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "256b7793-d84b-4f71-bb92-c23d7339cf1b",
+      "item_title": "Khai báo kiểu dữ liệu nguyên thủy",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.05",
+      "lesson_title": "Các kiểu dữ liệu nguyên thủy",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "8d4b8712-5e9f-4d16-b7b8-a157d7ec68bc",
+      "item_title": "Kiểm tra kiểu dữ liệu logic Boolean",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.05",
+      "lesson_title": "Các kiểu dữ liệu nguyên thủy",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "8a462752-08d3-4f5d-849a-40f4bfd4ce09",
+      "item_title": "Kiểm tra kiểu dữ liệu số nguyên và số thực",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.05",
+      "lesson_title": "Các kiểu dữ liệu nguyên thủy",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "44c0d849-7b28-4bb5-bf55-72406de9ddd9",
+      "item_title": "Kiểm tra kiểu dữ liệu với type()",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.05",
+      "lesson_title": "Các kiểu dữ liệu nguyên thủy",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "40fe74a6-b7e8-4c23-9529-6c1768005d59",
+      "item_title": "Tính chu vi diện tích hình chữ nhật",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.06",
+      "lesson_title": "Toán tử số học",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "6f602dba-d4f0-4622-a7bc-c5608d4d5882",
+      "item_title": "Tính lũy thừa cơ số 2",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.06",
+      "lesson_title": "Toán tử số học",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "9bfc2ca5-9217-4e36-93f8-a1deabc52d46",
+      "item_title": "Tính toán chia chia lấy dư pizza",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.06",
+      "lesson_title": "Toán tử số học",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "d4803954-55e3-48a8-b85b-9daa92365e60",
+      "item_title": "Cập nhật ví tiết kiệm",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.07",
+      "lesson_title": "Toán tử gán và Cập nhật biến",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "88b88982-bea5-4508-9bb1-7c169f56dc7d",
+      "item_title": "Chia kẹo giảm dần",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.07",
+      "lesson_title": "Toán tử gán và Cập nhật biến",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "8bd187d6-76cc-4a41-916b-d4d46d8c14e6",
+      "item_title": "Đếm số lượt truy cập",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.07",
+      "lesson_title": "Toán tử gán và Cập nhật biến",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "a8c9bc9f-2567-4131-8862-f9477440ea9f",
+      "item_title": "Định dạng ngày xuất bản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.08",
+      "lesson_title": "Hàm xuất dữ liệu (Print)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "28e847e5-04ee-4346-8e60-783ac3c81a21",
+      "item_title": "In các từ nối bằng dấu gạch ngang",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.08",
+      "lesson_title": "Hàm xuất dữ liệu (Print)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "95da3927-ea49-47d9-8ca4-41843864062b",
+      "item_title": "Chào hỏi người dùng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.09",
+      "lesson_title": "Hàm nhập dữ liệu (Input)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "f50d7b8e-a889-443a-bce8-35c04b2ce24c",
+      "item_title": "Lặp lại từ khóa",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.09",
+      "lesson_title": "Hàm nhập dữ liệu (Input)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "029c70e9-ccf5-48ed-9d67-bc541aea6724",
+      "item_title": "Nhập món ăn yêu thích",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.09",
+      "lesson_title": "Hàm nhập dữ liệu (Input)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-01"
+      ]
+    },
+    {
+      "item_id": "80d363be-cb49-4202-abb7-0e4cd190aaaa",
+      "item_title": "Cộng thêm 100",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.10",
+      "lesson_title": "Ép kiểu dữ liệu (Type Casting)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-02"
+      ]
+    },
+    {
+      "item_id": "f35e08fb-e616-46f9-9c4e-599dcebeb7b8",
+      "item_title": "Ghép tuổi của bạn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.10",
+      "lesson_title": "Ép kiểu dữ liệu (Type Casting)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-02"
+      ]
+    },
+    {
+      "item_id": "17d39d5a-7b73-4653-abec-ce7804982b39",
+      "item_title": "Tính tổng hai số thực",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.10",
+      "lesson_title": "Ép kiểu dữ liệu (Type Casting)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-02"
+      ]
+    },
+    {
+      "item_id": "de718483-1344-47ee-9e7a-6fb45c6a8fa1",
+      "item_title": "Chuyển đổi đơn vị tiền tệ",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "7a383180-fdfd-4086-b118-cf33b0776780",
+      "item_title": "Chuyển đổi giây thành giờ, phút, giây",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "1e684b14-a36d-4689-a65f-8d226867e32a",
+      "item_title": "Chuyển đổi nhiệt độ từ Celsius sang Fahrenheit",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "ab80098b-cf58-4815-8041-191fcd4edc90",
+      "item_title": "Hoán đổi giá trị hai biến",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "f335ff73-1d43-4f82-9579-691cc77f21fb",
+      "item_title": "Tính chu vi và diện tích hình chữ nhật",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "8459499b-02d8-48e0-98b1-3d7285af02a7",
+      "item_title": "Tính chu vi và diện tích hình tròn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "45c415d2-ab5e-4b3f-a75c-e82622ba3eeb",
+      "item_title": "Tính điểm thi cuối kỳ (có trọng số)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "22e28ad1-0aab-4fbc-a186-ff998c8af866",
+      "item_title": "Tính điểm trung bình của ba môn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "0b9b620a-30ab-4cfd-8670-b18137a65802",
+      "item_title": "Tính diện tích bề mặt và thể tích hình cầu",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "07219be1-29c2-487f-bf4e-4a10b2e319b9",
+      "item_title": "Tính diện tích hình bình hành",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "9d1c77e9-d88f-4c1a-a363-2e611129341b",
+      "item_title": "Tính diện tích hình tam giác (khi biết đáy và chiều cao)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "93f582bc-edf0-40fe-b109-9af0d5d40b22",
+      "item_title": "Tính diện tích hình thang",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "6d920425-f578-43dc-adf0-464ee236bbd4",
+      "item_title": "Tính diện tích hình vành khăn (hình tròn đồng tâm)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "8d4b8653-a684-4ad5-b558-b1630dcfb684",
+      "item_title": "Tính diện tích toàn phần của hình trụ",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "c0d37544-80df-4a41-b1ab-0f0642297070",
+      "item_title": "Tính độ dài cạnh huyền của tam giác vuông",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "bb3f5bcb-538d-41e8-ad87-ad0371963af1",
+      "item_title": "Tính giá trị biểu thức số học",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "c0ac4668-8c89-4cd8-adb5-09446aebdd17",
+      "item_title": "Tính hiệu hai số",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "29114862-7771-46d7-93db-b05e79ac708d",
+      "item_title": "Tính khoảng cách giữa hai điểm trong mặt phẳng 2D",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "a4a69dc9-c567-4656-a1da-e8c7cd11164e",
+      "item_title": "Tính thể tích hình hộp chữ nhật",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "fe86519f-6841-4b69-ad8d-5d8d3cbb21f0",
+      "item_title": "Tính thể tích hình nón",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "c2fc7154-774d-4840-861a-c81e40938d37",
+      "item_title": "Tính thể tích hình trụ",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "3f26b30e-f363-46e1-a5ba-292f75201040",
+      "item_title": "Tính thời gian di chuyển",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "106bd1dd-b04b-42df-a830-b6aad92e05a2",
+      "item_title": "Tính thương nguyên và phần dư",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "0079e117-4b41-43e3-9499-2d5a446159d6",
+      "item_title": "Tính tích ba số",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "e9ee153e-7b72-4e7d-b862-072075f1ca24",
+      "item_title": "Tính tọa độ trung điểm của đoạn thẳng trong mặt phẳng 2D",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "c087d75a-97f8-4065-9330-c99dd4ac4390",
+      "item_title": "Tính toán chi phí sơn nhà",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "56c7bda5-2b12-446c-b5ed-a6c72cbe9fd5",
+      "item_title": "Tính toán chi phí xây dựng hàng rào",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "df41b662-5d83-4d61-85ff-2f81d6df7056",
+      "item_title": "Tính toán lợi nhuận và phần trăm lợi nhuận",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "d6ca7f7c-fb92-4936-84d3-1da0e920c8f1",
+      "item_title": "Tính tổng hai số",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "114a80c9-e232-4d0e-8dc1-39376e7c1310",
+      "item_title": "Tính tổng tiền mua hàng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-01.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 1",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "7493c189-4094-4cbb-acd2-199ce07cde61",
+      "item_title": "Kiểm tra sốt",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.01",
+      "lesson_title": "Biểu thức Logic & Toán tử so sánh",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "f0ce058f-0771-44f6-ab25-1e3f4f8f9596",
+      "item_title": "So sánh hai số nhập vào",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.01",
+      "lesson_title": "Biểu thức Logic & Toán tử so sánh",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "1b335f7d-5311-40a5-bf88-d0e1397012d3",
+      "item_title": "Kiểm tra điểm đạt",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.02",
+      "lesson_title": "Khái niệm rẽ nhánh và Lệnh if",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "709cd0b1-6ad5-43d0-a25d-f9083fc2efad",
+      "item_title": "Kiểm tra ví mua vé phim",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.02",
+      "lesson_title": "Khái niệm rẽ nhánh và Lệnh if",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "de9fd17a-4916-430f-9178-7c35b061bcac",
+      "item_title": "Kiểm tra chẵn lẻ",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.03",
+      "lesson_title": "Lệnh if-else và if-elif-else",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "a5c65484-55c1-4281-b2fc-f5a39faaa26e",
+      "item_title": "Phân loại độ tuổi",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.03",
+      "lesson_title": "Lệnh if-else và if-elif-else",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "2c192212-66d4-4f7d-b2e8-1cdd0f9b6103",
+      "item_title": "Phân loại học lực",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.03",
+      "lesson_title": "Lệnh if-else và if-elif-else",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "5cd5c0e2-9dda-443a-8362-6ef8c1389596",
+      "item_title": "Tìm số lớn nhất",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.03",
+      "lesson_title": "Lệnh if-else và if-elif-else",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "50544039-a6da-4dfc-879c-61f908371ced",
+      "item_title": "Kiểm tra năm nhuận",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.04",
+      "lesson_title": "Toán tử Logic kết hợp",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "4f02cdc5-0400-4537-838d-c8f961df3012",
+      "item_title": "Kiểm tra thông tin đăng nhập",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.04",
+      "lesson_title": "Toán tử Logic kết hợp",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "193e7ad2-7fb5-4be0-b95d-9b0ee3e20476",
+      "item_title": "Xét duyệt giảm giá",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.04",
+      "lesson_title": "Toán tử Logic kết hợp",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "35720b22-1c97-4c10-88ad-5dda767af428",
+      "item_title": "Xét tuyển đại học",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.04",
+      "lesson_title": "Toán tử Logic kết hợp",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-BASICS-03"
+      ]
+    },
+    {
+      "item_id": "4f77f955-8fbf-4565-aa24-21e439db6e28",
+      "item_title": "Định vị điểm trong hệ tọa độ 2D",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "a923c572-84cc-429a-9787-8925695a2e4e",
+      "item_title": "Giải phương trình bậc hai",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "83d56e04-fe17-4f8c-b42c-03bdefae1d53",
+      "item_title": "Hệ Thống Đánh Giá Học Sinh Toàn Diện",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "294c15d4-ec35-41fd-8cd7-424c355a5587",
+      "item_title": "Hệ Thống Giá Cước Taxi",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "3baeca09-ecb0-4053-98e9-a42f49b39824",
+      "item_title": "Hệ thống phát hiện giao dịch bất thường (Gian lận)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "52c73ecb-5a0d-43d6-a285-738c918b8304",
+      "item_title": "Kiểm tra ký tự đầu tiên của chuỗi",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "7a60e924-dd1e-4a6c-bf2a-79103a392bf4",
+      "item_title": "Kiểm tra số có 2 chữ số",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "f6a4b73e-427a-447e-8327-c8bbfe5687a3",
+      "item_title": "Kiểm Tra Tính Hợp Lệ Của Ngày (Tháng có 30, 31, 28/29 ngày)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "0fa65587-6e7a-4835-a335-8d812dd0698a",
+      "item_title": "Kiểm tra tính hợp lệ của tuổi và điểm",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "199c8e91-fffc-4a5d-8b9e-ff938cdcdada",
+      "item_title": "Kiểm tra trạng thái nước",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "784c1c85-aad2-4190-b104-cc539f92dac3",
+      "item_title": "Kiểm Tra và Đánh Giá Mật Khẩu Đơn Giản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "1f410d7d-f7ae-43f6-b3b3-f96519e13a1a",
+      "item_title": "Mô Phỏng Điều Khiển Đèn Giao Thông Đơn Giản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "83c354cb-389c-42c5-aa07-9134165bae6b",
+      "item_title": "Phân loại điểm số chi tiết",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "bb920549-a509-42e7-b741-1951d4731c8f",
+      "item_title": "Phân Loại Phản Hồi Khách Hàng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "2fea6b8b-abf9-4079-b468-5cb05fc3d772",
+      "item_title": "Phân Loại Thời Tiết và Hoạt Động Gợi Ý",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "348c1adc-93e5-470c-872b-de593bc010c3",
+      "item_title": "Quyết Định Giảm Giá Đơn Hàng (Nâng Cao)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "01d2ed36-94d7-4e6c-8a30-06115950cda4",
+      "item_title": "Quyết định mở/đóng cửa hàng theo giờ và ngày",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "ce632ce2-9429-44f0-9a01-5380d69e77a6",
+      "item_title": "Quyết Định Tuyển Dụng Nhân Sự",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "06a574af-d994-4c55-a3d0-3d322745c21b",
+      "item_title": "Quyết định xem phim theo tuổi và thể loại",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "7b7c4561-f92e-467d-9747-595bc1499dcd",
+      "item_title": "Tính hóa đơn tiền điện luỹ tiến và thuế suất",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "c1c9af81-641d-45ca-8429-c7a5ea2cd81c",
+      "item_title": "Xác định Điểm Đến của Người Dùng (Theo Thời gian và Sở thích)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "2febdcb7-948b-4216-8e22-2c79e32e9970",
+      "item_title": "Xác định loại hình học (Tam giác cân/đều)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "9f1a8216-52d1-4554-b754-5907fb72159d",
+      "item_title": "Xác định Loại Năm (Năm Nhuận Nâng Cao)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "dc644f65-8c8a-4ea5-9989-0be5048d4c16",
+      "item_title": "Xác định loại nhiệt độ",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "d7a79381-0a00-4fbc-8756-c3933972ec14",
+      "item_title": "Xác định loại số phức tạp",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "69dfc1ab-f218-4d74-9437-e60e9b5200fd",
+      "item_title": "Xác định ngày hôm sau (Next Day)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "bface3fd-55a4-4827-b8be-c917819f2859",
+      "item_title": "Xác định Phân Loại Số Học (Dương/Âm, Chẵn/Lẻ, Chia hết cho 3/5)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "949ac099-dc42-4e04-a9d3-8f908edb8f9c",
+      "item_title": "Xác định Phân Loại Thu Nhập và Thuế",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "9a46f0f0-3b12-4ac8-a757-ebd0b086471d",
+      "item_title": "Xếp Loại Điểm Chuẩn cho Nhập Học",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "143e25d2-39b8-4af1-a585-aa9c7956a772",
+      "item_title": "Xử Lý Đơn Hàng Online (Trạng thái và Thông báo)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-02.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 2",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "dfa294f5-87a7-47dc-aeec-70c51d872108",
+      "item_title": "In các lượt từ 1 đến N",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.01",
+      "lesson_title": "Lesson 3.1: Tại sao cần vòng lặp?",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "2939a432-8ce8-4bb8-ae25-5a5e6dc13fea",
+      "item_title": "In các số chẵn đến N",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.01",
+      "lesson_title": "Lesson 3.1: Tại sao cần vòng lặp?",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "850ebb44-68a9-406d-a338-f10543a7b288",
+      "item_title": "Lặp lại lời chào",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.01",
+      "lesson_title": "Lesson 3.1: Tại sao cần vòng lặp?",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "d87418be-bd94-445b-a330-05bd9782b869",
+      "item_title": "Cộng dồn theo lượt",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.02",
+      "lesson_title": "Lesson 3.2: Tư duy vòng lặp",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "7ca22089-a2e0-4feb-836c-0f41b3a5ca0f",
+      "item_title": "Theo dõi biến đếm",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.02",
+      "lesson_title": "Lesson 3.2: Tư duy vòng lặp",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "a479e6b6-008b-400c-9c13-23f1d9569b14",
+      "item_title": "Tính tích theo lượt",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.02",
+      "lesson_title": "Lesson 3.2: Tư duy vòng lặp",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "69f6e527-867e-490e-bdd6-7c2a3a49da5f",
+      "item_title": "Đếm ngược bằng for",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.03",
+      "lesson_title": "Lesson 3.3: Vòng lặp for và range()",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "b4e62eee-a7b3-4c72-8409-d473244f507a",
+      "item_title": "In bảng nhân",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.03",
+      "lesson_title": "Lesson 3.3: Vòng lặp for và range()",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "93fff21a-50e6-48a1-b935-bf83dcddabc2",
+      "item_title": "Tổng số chẵn bằng for",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.03",
+      "lesson_title": "Lesson 3.3: Vòng lặp for và range()",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "0bd771f1-8b93-48d4-a210-600f83a54f61",
+      "item_title": "Đếm ngược bằng while",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.04",
+      "lesson_title": "Lesson 3.4: Vòng lặp while và điều kiện dừng",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "7cbbfb47-d225-42a6-b770-93dc1ee9cc95",
+      "item_title": "Dừng khi gặp 0",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.04",
+      "lesson_title": "Lesson 3.4: Vòng lặp while và điều kiện dừng",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "e64a265d-efaa-4075-846b-8c8d659d06ff",
+      "item_title": "Tổng từ 1 đến N bằng while",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.04",
+      "lesson_title": "Lesson 3.4: Vòng lặp while và điều kiện dừng",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "433ae635-89f7-45f0-bfc6-f4651b99f66e",
+      "item_title": "Bỏ qua số chẵn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.05",
+      "lesson_title": "Lesson 3.5: Điều khiển vòng lặp với break và continue",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-04"
+      ]
+    },
+    {
+      "item_id": "3888ca54-5d52-44e0-b36d-0bf6a5ae8f59",
+      "item_title": "Tìm số chia hết cho 7 đầu tiên",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.05",
+      "lesson_title": "Lesson 3.5: Điều khiển vòng lặp với break và continue",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-04"
+      ]
+    },
+    {
+      "item_id": "c245c655-cd00-4ee1-87c4-c43c5a620fdb",
+      "item_title": "Đếm số chẵn trong đoạn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.06",
+      "lesson_title": "Lesson 3.6: Kết hợp vòng lặp với if",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "b46f976e-cb62-4f2f-ba67-6a08bcf0f8c0",
+      "item_title": "Tìm điểm đạt đầu tiên",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.06",
+      "lesson_title": "Lesson 3.6: Kết hợp vòng lặp với if",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "ab56c2a6-084d-43a0-b8cb-e422f3339b13",
+      "item_title": "Tổng số chia hết cho 5",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.06",
+      "lesson_title": "Lesson 3.6: Kết hợp vòng lặp với if",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-01"
+      ]
+    },
+    {
+      "item_id": "094deb05-580e-4e82-a715-e7830c9b42ef",
+      "item_title": "Bảng nhân nhỏ",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.07",
+      "lesson_title": "Lesson 3.7: Vòng lặp lồng nhau",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "b02b9df3-f3b0-4d24-b2fe-f2fd30becfc9",
+      "item_title": "In hình chữ nhật sao",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.07",
+      "lesson_title": "Lesson 3.7: Vòng lặp lồng nhau",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "2f6eee2d-8275-4559-bf46-9be6592d6638",
+      "item_title": "Mini project: Báo cáo nhiệt độ",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.08",
+      "lesson_title": "Lesson 3.8: Luyện tập tổng hợp và mini project",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "aec5a8c4-e450-4365-9232-05d00e326a9b",
+      "item_title": "Thống kê điểm đạt",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.08",
+      "lesson_title": "Lesson 3.8: Luyện tập tổng hợp và mini project",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "48efb5fe-c2a4-4b5d-9087-0c3d678a8fcc",
+      "item_title": "Đếm ngược bằng for",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "ef2a46b4-2274-4316-9a07-2858f132cb3e",
+      "item_title": "Đếm số chẵn dương trong đoạn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "c1a8b460-f849-477f-9124-2918315948a4",
+      "item_title": "Đếm số chia hết cho 3",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "6e3edd56-837e-47b4-bcb5-5d00fd23f3cf",
+      "item_title": "Đếm số lẻ trong đoạn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "f3a6a0df-e144-4911-bc59-f786293eb01f",
+      "item_title": "In bảng nhân của một số",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "f296c88e-0f24-48b4-b55f-2fe3fce8606b",
+      "item_title": "In bình phương từ 1 đến N",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "399c79e9-0417-47df-88c9-3941e32161db",
+      "item_title": "In các số chẵn đến N",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "91b4b0ce-941c-424c-bb3a-efd1f980dc33",
+      "item_title": "In các số từ 1 đến N",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "f4ae497c-0db8-4731-8ca4-231476db6908",
+      "item_title": "In lời chào N lần",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "b8f7d9cd-becd-4786-aeb8-7ec52091ad4e",
+      "item_title": "Tìm số chia hết cho 7 đầu tiên",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "da8062a8-faa7-4d0c-91ce-ab01c10132e6",
+      "item_title": "Tính tích từ 1 đến N",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "1c3b9846-6495-43be-ac40-fed3506171bd",
+      "item_title": "Tính tổng các số chẵn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "2f84ea0e-542d-4ca6-a686-e4e396bbc702",
+      "item_title": "Tính tổng trong đoạn A đến B",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "78ba9f3f-a129-4df7-a6cb-cd9c8d3ee008",
+      "item_title": "Tính tổng từ 1 đến N",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "04fee925-199c-4dcb-9896-6441d803101b",
+      "item_title": "Tổng số chia hết cho 3 hoặc 5",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_FOR",
+      "lesson_title": "Luyện thêm với vòng lặp for",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-03"
+      ]
+    },
+    {
+      "item_id": "97cc0339-58a5-475d-a3e0-21c2389d86b0",
+      "item_title": "Cộng đến khi gặp 0",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "d01e0399-2469-4b8f-80c1-d87a05a17848",
+      "item_title": "Đảo ngược số nguyên",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "d0ff29e8-4b53-48a0-ba37-8cdeb7737788",
+      "item_title": "Đếm chữ số",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "f05363a8-f89d-48f5-a820-f88b865ccbaa",
+      "item_title": "Đếm ngược đơn giản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "b42d1729-fd73-4d48-bda1-2eeaa3cafe40",
+      "item_title": "Đếm số dương đến khi gặp số âm",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "11463fd6-6694-4fdb-8611-89d41e77ebbc",
+      "item_title": "Đếm từ 1 đến N bằng while",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "1bf893c8-ce12-4770-9764-1ee296c28016",
+      "item_title": "Giới hạn ba lần nhập mã PIN",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "a52f9756-52ea-4992-8b1e-fd9b7557ac46",
+      "item_title": "In bội của 5 đến N",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "49e716a9-ed45-4abd-8ef3-5dea8787594c",
+      "item_title": "In số chẵn bằng while",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "4d8b4a85-ae14-4daa-8340-a6703bad7e05",
+      "item_title": "Tìm bội của 5 đầu tiên",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "9f143d6a-d104-4e8f-8972-feb85bca6f6d",
+      "item_title": "Tìm chữ số lớn nhất",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "c03edb56-558d-4cec-85e6-dc5b983ea7f4",
+      "item_title": "Tính tích từ 1 đến N bằng while",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "c3986f4f-e143-476c-bf90-1fd3ba4b3e4f",
+      "item_title": "Tính tổng các chữ số",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "ae60bd2b-1a29-4363-a749-69458650a5d2",
+      "item_title": "Tính tổng số lẻ bằng while",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "4ba00adf-8748-4cb1-93b3-1810df984793",
+      "item_title": "Tính tổng từ 1 đến N bằng while",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-03.MP_WHILE",
+      "lesson_title": "Luyện thêm với vòng lặp while",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FLOW-02"
+      ]
+    },
+    {
+      "item_id": "ede543d4-7674-45ec-8c15-3e4c3043e909",
+      "item_title": "Hàm in khẩu hiệu",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.01",
+      "lesson_title": "Chuỗi như một Mảng: Indexing",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-01"
+      ]
+    },
+    {
+      "item_id": "a94cc96c-bb8d-4c77-bc08-4051aef4ca99",
+      "item_title": "Hàm in vạch kẻ ngang",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.01",
+      "lesson_title": "Chuỗi như một Mảng: Indexing",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-01"
+      ]
+    },
+    {
+      "item_id": "09d6af5c-9489-46b8-a9f7-c77d868911d8",
+      "item_title": "Hàm chào tên riêng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.02",
+      "lesson_title": "Cắt chuỗi (Slicing)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-01"
+      ]
+    },
+    {
+      "item_id": "fab601f0-a390-484c-8760-adaa602403ac",
+      "item_title": "Hàm tính lũy thừa mặc định",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.02",
+      "lesson_title": "Cắt chuỗi (Slicing)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-01"
+      ]
+    },
+    {
+      "item_id": "09b48e93-0be4-40dd-b8bf-6522b0caa467",
+      "item_title": "Hàm tìm số lớn nhất của hai số",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.03",
+      "lesson_title": "Các phương thức chuỗi phổ biến",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "d7a25a8a-236f-461c-8305-8b5b72efb87d",
+      "item_title": "Hàm tính diện tích",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.03",
+      "lesson_title": "Các phương thức chuỗi phổ biến",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "8506d952-cc7d-475d-bf58-8c966b44ba9b",
+      "item_title": "Đếm lượt gọi hàm",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.04",
+      "lesson_title": "Định dạng chuỗi (F-string)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "7f2bd6d3-13e7-4700-bbeb-d87dbee8ed6d",
+      "item_title": "Phạm vi nonlocal",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.04",
+      "lesson_title": "Định dạng chuỗi (F-string)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "e39e6aac-9812-4299-b030-063b7f2058c3",
+      "item_title": "Sửa đổi danh sách toàn cục",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.04",
+      "lesson_title": "Định dạng chuỗi (F-string)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "7044d2d9-69c3-49a4-ad93-0437c47e8456",
+      "item_title": "Tăng biến toàn cục",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.04",
+      "lesson_title": "Định dạng chuỗi (F-string)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "0636c5de-f1ab-47db-8e2a-1e7abbba594a",
+      "item_title": "Tránh ghi đè biến toàn cục",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.04",
+      "lesson_title": "Định dạng chuỗi (F-string)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "9793078e-f743-4964-8983-a7e571e5a2d3",
+      "item_title": "Chuyển đổi chữ hoa, chữ thường",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "493065e0-8406-4a7d-a329-7f76c4329d78",
+      "item_title": "Đảo ngược chuỗi",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "3b07d16c-210d-4c54-ba32-ea3db57d25a4",
+      "item_title": "Định dạng chuỗi với f-string",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "79b69288-4072-40e6-a88b-67a5d2142650",
+      "item_title": "Độ dài chuỗi",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "ab8839f8-cb32-44dc-bcde-8844500cb3a5",
+      "item_title": "Lặp chuỗi",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "e62c5091-1b17-42b8-a405-efe2ff7e01a4",
+      "item_title": "Lấy ký tự ở vị trí cụ thể",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "f5e6c92d-ed11-489c-b7df-abf09f69267a",
+      "item_title": "Loại bỏ khoảng trắng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "25713bf2-f2ad-492e-8148-a0a3b0e557c2",
+      "item_title": "Nối chuỗi",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "308d1b7f-632b-4156-aa55-e1703ddff24e",
+      "item_title": "Slicing để loại bỏ ký tự đầu và cuối",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "20b8c8c3-628e-48af-a24a-f72c5ad4440a",
+      "item_title": "Slicing với bước nhảy lớn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "e0bd4176-f44e-4a47-876f-72247f9291a7",
+      "item_title": "Slicing với chỉ số âm",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "9e557f9d-4d7f-4249-810a-fc1a45e58ca7",
+      "item_title": "Tạo và in chuỗi",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "3a12a76a-aacb-4114-8de0-4f1ac5806d82",
+      "item_title": "Thay thế chuỗi con",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "acf0460d-c3a0-403b-83e1-187026199e44",
+      "item_title": "Tìm và đếm chuỗi con",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "542ffe8c-b7b7-4c53-8aa7-4d02e68c2a4b",
+      "item_title": "Trích xuất các ký tự với bước nhảy",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "c0b86609-fa99-40eb-8e07-c07910cb95b5",
+      "item_title": "Trích xuất một phần chuỗi từ cuối",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "fcb0c8b7-b14a-49f7-a365-f5dc1654afd8",
+      "item_title": "Trích xuất một phần chuỗi từ đầu",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "5a63f0a2-f4cd-4360-badc-021822fc57b2",
+      "item_title": "Trích xuất một phần của chuỗi",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "d6f98a71-c568-4e0a-85d5-6e73a083760d",
+      "item_title": "Trích xuất xen kẽ và đảo ngược",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "5438a2c1-d493-4742-9dbd-0659c4884d21",
+      "item_title": "Truy cập ký tự",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-04.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 4",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-STRING-02"
+      ]
+    },
+    {
+      "item_id": "37402b3e-63cf-449a-8174-cc81512442ee",
+      "item_title": "Khởi tạo danh sách lặp phần tử",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.01",
+      "lesson_title": "Khái niệm List & Khởi tạo",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-01"
+      ]
+    },
+    {
+      "item_id": "571417b3-8e14-4e24-8d79-48dc5fe140e9",
+      "item_title": "Tạo và in danh sách số nguyên",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.01",
+      "lesson_title": "Khái niệm List & Khởi tạo",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-01"
+      ]
+    },
+    {
+      "item_id": "be1d84b0-d5d7-4d29-b9c8-82f25f76c837",
+      "item_title": "Chèn phần tử với insert",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.02",
+      "lesson_title": "Cập nhật & Sửa đổi List",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-01"
+      ]
+    },
+    {
+      "item_id": "4988070c-6dad-4fff-a82e-e9e1193f521a",
+      "item_title": "Thay thế phần tử theo chỉ số",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.02",
+      "lesson_title": "Cập nhật & Sửa đổi List",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-01"
+      ]
+    },
+    {
+      "item_id": "0c367f73-8c6c-4e32-a146-7c4af461f514",
+      "item_title": "Đếm phần tử chia hết cho 3",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.03",
+      "lesson_title": "Duyệt mảng bằng Vòng lặp",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "1ac520b8-5f10-4b2c-a759-9c39c6110ea8",
+      "item_title": "Duyệt mảng và in bình phương",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.03",
+      "lesson_title": "Duyệt mảng bằng Vòng lặp",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "3951829c-530f-466c-b85a-fa8ca1cecef5",
+      "item_title": "Đếm tần suất xuất hiện với count()",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.04",
+      "lesson_title": "Sắp xếp và Tìm kiếm cơ bản",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "308bfac0-48e0-47f9-9d59-138a0592d21f",
+      "item_title": "Kiểm tra phần tử thuộc danh sách",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.04",
+      "lesson_title": "Sắp xếp và Tìm kiếm cơ bản",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "8f0b5d5e-a9e3-462f-82f6-b0d6ecadd402",
+      "item_title": "Sắp xếp danh sách giảm dần",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.04",
+      "lesson_title": "Sắp xếp và Tìm kiếm cơ bản",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "f334c3e8-eb9c-4d15-9da4-d85198f0d420",
+      "item_title": "Tìm chỉ số đầu tiên của phần tử",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.04",
+      "lesson_title": "Sắp xếp và Tìm kiếm cơ bản",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "e06c56a3-744b-4ab7-951b-06bd8ca8c1c9",
+      "item_title": "Tìm phần tử lớn thứ nhì",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.04",
+      "lesson_title": "Sắp xếp và Tìm kiếm cơ bản",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "88587319-7288-436b-8287-830bbd03877e",
+      "item_title": "Đếm phần tử trong Tuple",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.05",
+      "lesson_title": "Tuple: Danh sách bất biến",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-TUPLE-01"
+      ]
+    },
+    {
+      "item_id": "f9739865-0be1-43e5-acb5-64aae18b2e6b",
+      "item_title": "Ghép nối hai Tuple",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.05",
+      "lesson_title": "Tuple: Danh sách bất biến",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-TUPLE-01"
+      ]
+    },
+    {
+      "item_id": "143df9ce-fc38-4e5e-a961-c2d7749106a5",
+      "item_title": "Mở gói Tuple (Tuple Unpacking)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.05",
+      "lesson_title": "Tuple: Danh sách bất biến",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-TUPLE-01"
+      ]
+    },
+    {
+      "item_id": "9ae61d53-aaa3-4026-ac37-0a7efd681b0a",
+      "item_title": "Tạo Tuple và truy cập phần tử đầu cuối",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.05",
+      "lesson_title": "Tuple: Danh sách bất biến",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-TUPLE-01"
+      ]
+    },
+    {
+      "item_id": "f21518a4-603e-49d2-a804-aff2071dca7d",
+      "item_title": "Tìm vị trí phần tử trong Tuple",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.05",
+      "lesson_title": "Tuple: Danh sách bất biến",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-TUPLE-01"
+      ]
+    },
+    {
+      "item_id": "b7806a4c-e837-44a6-a83e-b2a6dae09dfe",
+      "item_title": "Đảo ngược thứ tự danh sách (không dùng slicing [-1])",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "e29c24f9-c9b8-47bd-9fe6-a4d5c4ccc8a5",
+      "item_title": "Đếm các số lớn hơn một ngưỡng cho trước",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "e83bb87b-4029-41aa-918d-43d488195f62",
+      "item_title": "Đếm số lần xuất hiện của một phần tử",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "7f5ade00-5c68-4a5c-8830-c6925f7a9122",
+      "item_title": "In từng Phần tử của Danh sách",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "482149a4-bbd1-443e-8e8b-d36cd80f37c8",
+      "item_title": "Khai báo và In Danh sách Đơn giản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "f15015dd-c762-4c5c-b968-095246487a0c",
+      "item_title": "Kiểm tra danh sách có chứa phần tử trùng lặp không",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "8e5987cf-60a4-4262-b8c2-d465e1e7a951",
+      "item_title": "Kiểm tra danh sách rỗng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "206d8021-8cbf-456f-bdd2-091498d41913",
+      "item_title": "Kiểm tra Độ dài Danh sách",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "a2375397-8259-47fd-a4c5-4ad8d9206a38",
+      "item_title": "Kiểm tra Phần tử có Tồn tại không",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "e0e89d90-cf76-4d3a-9127-adbfcc1005e1",
+      "item_title": "Kiểm tra và sửa lỗi Danh sách đã sắp xếp (Gần đúng)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "1c0ee18f-9e7c-440e-a753-acc43edb9a83",
+      "item_title": "Lấy một Phần của Danh sách (Slicing cơ bản)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "c77a2307-fecf-41af-b392-f302814c1525",
+      "item_title": "Lấy một Phần tử theo Vị trí",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "26fcd69c-061b-4bf2-a95e-7cf0474f5873",
+      "item_title": "Lấy N phần tử đầu tiên",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "47b38806-90ee-4889-9808-2e345fd9c655",
+      "item_title": "Lọc các số dương từ danh sách",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "be9b4034-155c-469f-913e-1dfa8d1ccd1a",
+      "item_title": "Nhân đôi các phần tử trong danh sách (tạo danh sách mới)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "173706d5-e142-4cb7-bdda-3c018f0fef31",
+      "item_title": "Nối hai danh sách",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "325511df-af53-463a-b070-86d5f272c6e6",
+      "item_title": "Sắp xếp Danh sách Tăng dần",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "ea9b7d7a-4408-4d1a-b548-fb33e7134f0f",
+      "item_title": "Tạo danh sách số chẵn/lẻ từ danh sách khác",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "2338f025-61a6-4d87-bc67-44b5ba5722a0",
+      "item_title": "Tạo danh sách từ Dữ liệu người dùng nhập",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "c767bc41-28c8-4d09-a0ff-c35fd67a456c",
+      "item_title": "Thay đổi Giá trị của một Phần tử",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "160f5efd-8a80-4042-b0ac-d9cc97e16324",
+      "item_title": "Thêm Phần tử vào Cuối Danh sách",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "4c8ebed8-0040-48a4-8872-c47784aeb415",
+      "item_title": "Tìm cặp số có tổng bằng K",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "c46dd996-b6c4-4036-a50d-201fd385da09",
+      "item_title": "Tìm phần tử xuất hiện nhiều nhất (Mode)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "eecec1d6-3fe8-4fa9-b5cc-24e2fdbfc7f0",
+      "item_title": "Tìm số Lớn nhất trong Danh sách",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "f0f571fd-38a1-4e4b-84f2-56bec3844036",
+      "item_title": "Tìm số Nhỏ nhất trong Danh sách",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "7e8c9cbd-2a3f-4d0a-b92f-50014459902d",
+      "item_title": "Tìm vị trí (chỉ số) của một phần tử",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "5a40edc6-c7a1-4eff-b0e4-8e88022ea016",
+      "item_title": "Tính tổng các phần tử chẵn/lẻ trong danh sách",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "2da20f29-a245-4d83-b537-16b4be8d6920",
+      "item_title": "Tính Tổng các số trong Danh sách",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "917ecf7e-88f0-44b7-96ee-bb4e86145a29",
+      "item_title": "Tính trung bình cộng của các số trong danh sách",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "4ebd3a27-ac99-4811-afe9-88598d4eeca3",
+      "item_title": "Xóa các phần tử tại các chỉ số cụ thể",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "06819689-c324-4cf8-abb8-065c7ade5105",
+      "item_title": "Xóa các phần tử trùng lặp và giữ thứ tự (Unique and Ordered)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "e865b02c-a954-4bf4-86a2-cf455b0dd0a3",
+      "item_title": "Xóa một Phần tử cụ thể (theo giá trị)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "0e5047eb-ce1b-4946-a000-87d35010f615",
+      "item_title": "Xóa Phần tử theo Vị trí",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "a3fd1b62-8741-4694-a37a-09bbdefaa6cc",
+      "item_title": "Xóa tất cả các lần xuất hiện của một phần tử",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "d4f8f603-d8b7-44ef-b6d2-86a729ba1956",
+      "item_title": "Xoay vòng danh sách (Rotate List)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-05.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 5",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-LIST-02"
+      ]
+    },
+    {
+      "item_id": "32491a11-d42b-4dc7-9ac6-be35dc1b2db8",
+      "item_title": "Set: Tập hợp toán học",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.01",
+      "lesson_title": "Set: Tập hợp toán học",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-SET-01"
+      ]
+    },
+    {
+      "item_id": "8b237e85-69f8-40a0-b1fe-3d0621ef032a",
+      "item_title": "Dictionary: Cấu trúc Key-Value",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.02",
+      "lesson_title": "Dictionary: Cấu trúc Key-Value",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-DICT-01"
+      ]
+    },
+    {
+      "item_id": "383447c7-7547-4e1e-932c-a9cbb00cc633",
+      "item_title": "Thao tác trên Dictionary",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.03",
+      "lesson_title": "Thao tác trên Dictionary",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "49e473e1-e496-44dd-a87f-b42c3ff4ca3b",
+      "item_title": "Chuyển đổi List of Dictionaries sang Dictionary",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "583461b9-a000-4043-a75e-efce776aa46a",
+      "item_title": "Đảo ngược dictionary (có trùng value)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "26ef93f8-c0d1-4b48-939f-7583e9a0f7a6",
+      "item_title": "Đếm số lần xuất hiện của các từ",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "9e1f6f04-580e-46b2-8f46-24e76e0822a9",
+      "item_title": "Đếm số lượng phần tử duy nhất trong danh sách",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "f8bdfd0f-1e51-4809-8a06-6ecbb9a6b436",
+      "item_title": "Hệ thống quản lý Hashtags bài viết",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "023a50f3-f8ee-46fb-9d46-4edfcdd6aa12",
+      "item_title": "Kích thước của Dictionary",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "4f55875b-3715-46f5-ab13-7e1e222d948a",
+      "item_title": "Kiểm tra sự tồn tại của key",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "2d84f680-4dc6-4502-b448-674965040728",
+      "item_title": "Lặp qua cả key và value",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "80867578-b355-4870-b79c-e8f5282fe45f",
+      "item_title": "Lặp qua các key",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "35a6a27a-13e5-4970-9032-3ed59d091736",
+      "item_title": "Lặp qua các value",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "2f71b7f6-f880-4bad-a770-ec6fb2ebacca",
+      "item_title": "Loại bỏ từ trùng và hiển thị sắp xếp",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "e692203f-e1a9-4e3e-9f9c-c821f7f553a9",
+      "item_title": "Phân tích phần tử trùng và độc nhất giữa 2 danh sách khách hàng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "90bc921b-00e1-423b-88e0-a690011605cf",
+      "item_title": "Phép toán hiệu đối xứng tùy biến",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "00c01cd8-2c1d-493d-9703-4bd829d453c4",
+      "item_title": "Quản lý điểm học sinh",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "e03ec5c1-adcc-4e15-aadf-8742c6bdbb69",
+      "item_title": "Sử dụng .get() với giá trị mặc định",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "a79d4420-67ba-419e-9aab-6d441ee7d2a2",
+      "item_title": "Sửa đổi giá trị",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "6c3f5a1c-4bdf-4241-867d-cfbbaf865ea2",
+      "item_title": "Tạo Dictionary và truy cập giá trị",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "9a26e9f7-5f35-4056-8892-33fc4909e392",
+      "item_title": "Thêm cặp key-value mới",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "5dd30834-06a7-4bd7-be31-57f29b1f6349",
+      "item_title": "Tìm giá trị lớn nhất/nhỏ nhất trong Dictionary",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "fd026dca-563c-4ef3-ae2e-768f6ef60706",
+      "item_title": "Tìm mối quan hệ bạn chung (Social Network)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "24088679-3757-4e12-ac9e-05a399cf5b76",
+      "item_title": "Xóa cặp key-value",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-06.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 6",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-DICT-02"
+      ]
+    },
+    {
+      "item_id": "178ac130-b1b8-4128-bf7f-3518b7a61a0e",
+      "item_title": "Tư duy đóng gói và Lệnh def",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.01",
+      "lesson_title": "Tư duy đóng gói và Lệnh def",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FUNC-01"
+      ]
+    },
+    {
+      "item_id": "206fa2f9-697b-4d15-bb47-9faa0bde480b",
+      "item_title": "Tham số và Đối số",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.02",
+      "lesson_title": "Tham số và Đối số",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FUNC-02"
+      ]
+    },
+    {
+      "item_id": "b0025bcb-5603-486c-b1ab-fac33c40ae69",
+      "item_title": "Trả về kết quả (Return)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.03",
+      "lesson_title": "Trả về kết quả (Return)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FUNC-01"
+      ]
+    },
+    {
+      "item_id": "fc8db2c9-c0d5-4551-b23c-16eeeecaa9f3",
+      "item_title": "Phạm vi của Biến (Scope)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.04",
+      "lesson_title": "Phạm vi của Biến (Scope)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-FUNC-04"
+      ]
+    },
+    {
+      "item_id": "c10e0400-0fd6-4b03-9401-2c0308b27436",
+      "item_title": "Nhận diện Ngoại lệ (Exceptions)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.05",
+      "lesson_title": "Nhận diện Ngoại lệ (Exceptions)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-EXC-01"
+      ]
+    },
+    {
+      "item_id": "91a827b8-4868-4c44-b7de-f946ff38c8ad",
+      "item_title": "Bắt lỗi với Try-Except",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.06",
+      "lesson_title": "Bắt lỗi với Try-Except",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-EXC-01"
+      ]
+    },
+    {
+      "item_id": "8e2cb95c-f6c2-4ac5-9af0-13745658b0ad",
+      "item_title": "Luồng Finally và Ném lỗi chủ động",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.07",
+      "lesson_title": "Luồng Finally và Ném lỗi chủ động",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-EXC-03"
+      ]
+    },
+    {
+      "item_id": "05a6d342-487c-4bb9-ad8c-f042eded7cf7",
+      "item_title": "Khái niệm Module và Lệnh Import",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.08",
+      "lesson_title": "Khái niệm Module và Lệnh Import",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-MODULE-01"
+      ]
+    },
+    {
+      "item_id": "17c31d23-b348-40fd-8981-789e07ad47e5",
+      "item_title": "Khám phá Standard Library",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.09",
+      "lesson_title": "Khám phá Standard Library",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "052d26c0-3307-44af-80bc-6307ed068b78",
+      "item_title": "Bắt các loại ngoại lệ lồng nhau",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "2e2aa230-9f16-4400-9d03-49afa0621976",
+      "item_title": "Bắt lỗi chia cho 0",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "c8e80e7c-b0a3-4706-bab0-9ab0c87ef607",
+      "item_title": "Bắt lỗi ép kiểu dữ liệu",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "009ce998-acf2-4ccd-a87e-4debf443dc40",
+      "item_title": "Custom Exception - Lỗi số âm",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "c7dea275-e1dd-4bb8-b458-653c9d89457e",
+      "item_title": "Đếm số ngày giữa hai thời gian với module datetime",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "4f692ccb-a8ce-41e3-84f3-94019fab2d74",
+      "item_title": "Fibonacci thứ N",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "b39ac033-804f-45d5-b2c9-41cb59e3d6e2",
+      "item_title": "Giao dịch rút tiền ATM an toàn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "f68a256a-b491-4ae2-9fe7-e227c62c789d",
+      "item_title": "Hàm chào hỏi linh hoạt (Tham số mặc định)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "08ca3bd9-a535-4856-9567-4192fb69ff42",
+      "item_title": "Hàm chuẩn hóa tên người",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "1d710312-6d56-4440-9454-b592d67e480c",
+      "item_title": "Hàm in lời chào",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "e30fb7c1-6a66-424d-9129-32d003db790c",
+      "item_title": "Hàm kiểm tra số chẵn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "cc3b3941-aa81-47e0-8e6a-2358a1a08a69",
+      "item_title": "Hàm kiểm tra số nguyên tố",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "7df0154f-b6eb-40d0-9fb3-3ce17af80bd4",
+      "item_title": "Hàm tính bình phương",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "44e5ffa9-51e9-4df7-b995-ad3baecdf372",
+      "item_title": "Hàm tính chu vi hình chữ nhật",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "cde49c88-3027-4896-a349-1f5ca5505932",
+      "item_title": "Hàm tính giai thừa",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "afa2b150-e849-4ca6-a3ce-d5f9218423d8",
+      "item_title": "Hàm tính tổng một danh sách",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "d3cd1645-9d75-472b-a186-b55faf981ed0",
+      "item_title": "Khử trùng lặp chuỗi dùng đệ quy",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "4c284dcf-c0ee-4ee9-8e1f-decadd6ba1de",
+      "item_title": "Sử dụng module math để tính căn bậc hai",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "648aa709-8128-4e47-8a72-9b675bbd5391",
+      "item_title": "Sử dụng module random sinh số ngẫu nhiên",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "6b78f296-e489-4732-a426-738de86f23f0",
+      "item_title": "Thuật toán Tìm kiếm Nhị phân (Binary Search)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "e8951760-d1f0-4f72-b8f7-55c70457ef2e",
+      "item_title": "Tìm số lớn hơn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "cc51ec22-95d3-4726-960a-a12560341c4b",
+      "item_title": "Tìm số tốt nhất (Hàm lọc)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "35dd1298-543e-4c5d-92b9-958e171bbe7b",
+      "item_title": "Tính lãi kép (Compound Interest)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "262ad94e-d955-42b1-858d-c65d8ddeba5f",
+      "item_title": "Tự thiết kế thư viện toán học riêng và nạp",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "139fd9ad-7b97-41f0-a0df-c9ff99a7ce97",
+      "item_title": "Xử lý ngoại lệ KeyError và IndexError",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-07.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 7",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-MODULE-02"
+      ]
+    },
+    {
+      "item_id": "81d29cc1-71c5-4d71-aec6-645b85086660",
+      "item_title": "Cấu trúc bộ nhớ và Hàm open()",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.01",
+      "lesson_title": "Cấu trúc bộ nhớ và Hàm open()",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-IO-01"
+      ]
+    },
+    {
+      "item_id": "a9a856ee-f6ed-48d5-9c95-54646cf674ae",
+      "item_title": "Đọc và Ghi File Text",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.02",
+      "lesson_title": "Đọc và Ghi File Text",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-IO-01"
+      ]
+    },
+    {
+      "item_id": "45f369df-dc38-452c-9f52-4239497f4d28",
+      "item_title": "Context Manager với từ khóa 'with'",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.03",
+      "lesson_title": "Context Manager với từ khóa 'with'",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-IO-01"
+      ]
+    },
+    {
+      "item_id": "38cb13cb-f0ca-4531-9cc9-0b6c33763788",
+      "item_title": "Tư duy Hướng đối tượng (Class vs Object)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.04",
+      "lesson_title": "Tư duy Hướng đối tượng (Class vs Object)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-OOP-01"
+      ]
+    },
+    {
+      "item_id": "815ea08d-5cf6-4909-864b-acc1835ed3ec",
+      "item_title": "Thuộc tính và Phương thức",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.05",
+      "lesson_title": "Thuộc tính và Phương thức",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-OOP-02"
+      ]
+    },
+    {
+      "item_id": "af45a695-e853-4a9e-abf0-41d9bad774aa",
+      "item_title": "Phương thức Khởi tạo (__init__)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.06",
+      "lesson_title": "Phương thức Khởi tạo (__init__)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-OOP-01"
+      ]
+    },
+    {
+      "item_id": "a3c33496-a583-472e-a8e9-2a5aeb9f5c31",
+      "item_title": "Khái quát về Kế thừa (Inheritance)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.07",
+      "lesson_title": "Khái quát về Kế thừa (Inheritance)",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "32acb16b-5c15-4bba-96e3-d267d739f12a",
+      "item_title": "Đếm số lượng từ trong tập tin văn bản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "aacd1c46-4677-41a4-b276-aa2db2732c5c",
+      "item_title": "Định nghĩa phương thức hoạt động",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "08389959-216a-4d90-b43e-a576daacfd39",
+      "item_title": "Đọc dữ liệu từ tập tin",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "6987da26-8002-468d-9590-e6d5704e0551",
+      "item_title": "Đọc file theo dòng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "e4824016-6267-48aa-8a18-1b67a16e81ee",
+      "item_title": "Đọc số và tính tổng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "bb779466-6fae-43c6-a0d2-87eafd34812c",
+      "item_title": "Đọc tệp, lọc dữ liệu và xuất báo cáo",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "2721cbac-06fd-4599-b2d8-47aa536cb497",
+      "item_title": "Ghi danh sách số vào tập tin",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "54b0f538-67ee-41fc-8bdc-f755fdb00fbf",
+      "item_title": "Ghi đè biểu thức biểu diễn đối tượng (__str__)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "17cd4751-aef6-47bc-8bc8-3f2c27e2f76c",
+      "item_title": "Ghi thêm dòng mới (Append)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "b0d5faf3-79f6-45ed-8fa6-65009562f7e8",
+      "item_title": "Ghi thông điệp vào tập tin",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "ac95e910-3bd9-43cc-9a14-78273b1dd392",
+      "item_title": "Hệ thống đa hình tính chu vi diện tích hình học (Polymorphism)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "b66b1663-d9aa-4720-985d-6c2eb4867281",
+      "item_title": "Hệ thống đọc lỗi log và cảnh báo (Log Analyzer)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "b01f9971-9c95-4aee-90e9-dcc5ed270643",
+      "item_title": "Hệ thống Quản lý Thư viện (Library Management System)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "7ad188e4-7b05-496c-ad24-830e7e03cd0c",
+      "item_title": "Kiểm tra và tính chu vi Tam giác",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "3b05dfe4-1c57-486d-9ee1-3a9903547552",
+      "item_title": "Lập trình kế thừa Động vật kêu",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "377e2b02-3b78-4538-98af-1d5296df6d42",
+      "item_title": "Lớp có constructor định nghĩa thuộc tính",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "5666b95a-ccca-4866-9f43-a542e3f2dfd6",
+      "item_title": "Lớp Học Sinh cơ bản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "b63bc6c7-5864-4128-b5b8-06f21912d101",
+      "item_title": "Lớp Nhân viên tính lương thực lĩnh",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "e1a87ce2-f75d-4ab1-b3b8-309f5c7dda1f",
+      "item_title": "Lớp Phân Số (Fraction)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "20760d45-5492-4c4f-b1a9-27031b951da0",
+      "item_title": "Lớp Tài khoản ngân hàng (Account)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "a5a916b6-c387-4ce1-88ca-f215cdb6b4ec",
+      "item_title": "Lớp tính diện tích hình tròn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "083b88b2-8082-4d89-925b-0c702cb5d074",
+      "item_title": "Lưu trữ và phục hồi trạng thái đối tượng dạng JSON",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "04c98deb-071b-4560-9dd6-ecc67aaa16b9",
+      "item_title": "Sao chép tệp văn bản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "3f9849b6-0441-4f13-861d-8a5d6890aa37",
+      "item_title": "Tài khoản ngân hàng nâng cao và kế thừa thẻ tín dụng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    },
+    {
+      "item_id": "61be14c6-19e5-41a3-99be-b176cadf7f54",
+      "item_title": "Xử lý tệp dữ liệu CSV kiểu mộc",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "LS-08.MP",
+      "lesson_title": "Bài tập thực hành tổng hợp Module 8",
+      "course_title": "Lập trình Python cơ bản cho người mới bắt đầu",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "PY-OOP-03"
+      ]
+    }
+  ]
+}

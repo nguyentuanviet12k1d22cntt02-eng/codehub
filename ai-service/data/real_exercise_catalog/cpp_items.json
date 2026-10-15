@@ -1,0 +1,637 @@
+{
+  "schema_version": "real-exercise-catalog/1.0",
+  "language": "cpp",
+  "database_language": "CPP",
+  "data_origin": "REAL_PRODUCT_CATALOG",
+  "contains_learner_data": false,
+  "source_graph": "cppSkillGraph.json",
+  "mapping_basis": "Versioned lesson mappings in the language skill graph",
+  "items": [
+    {
+      "item_id": "e623ed52-c06e-4ab8-b8cb-badfef7f05ae",
+      "item_title": "Chương trình C++ đầu tiên: Giới thiệu bản thân",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-01.01",
+      "lesson_title": "Tổng quan ngôn ngữ C++ và Quy trình Biên dịch",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "CPP-SYNTAX-01"
+      ]
+    },
+    {
+      "item_id": "e66cbeaa-e8d9-4b18-8f8d-ab1aae72ba5f",
+      "item_title": "Tính tổng hai số nguyên từ dòng nhập bàn phím",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-01.02",
+      "lesson_title": "Cấu trúc chương trình C++ chuẩn C++17 và Thao tác I/O cơ bản",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "CPP-SYNTAX-01",
+        "CPP-TYPE-01"
+      ]
+    },
+    {
+      "item_id": "7f0afbc6-1514-4fd7-a698-b8e0ebce7f36",
+      "item_title": "Tính chu vi và diện tích hình tròn với hằng số const PI",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-01.03",
+      "lesson_title": "Hệ thống Biến, Hằng số (const) và Các Kiểu dữ liệu Nguyên thủy",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "CPP-TYPE-01"
+      ]
+    },
+    {
+      "item_id": "dba84a78-1d4e-4bf8-acae-35c70583157b",
+      "item_title": "Tính tích hai số nguyên lớn chống tràn số",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-01.04",
+      "lesson_title": "Hệ thống Toán tử Số học, Gán và Toán tử Tăng/Giảm",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-TYPE-01"
+      ]
+    },
+    {
+      "item_id": "a15f283a-ac9a-44a1-912d-4939181fefaa",
+      "item_title": "Quy đổi thời gian từ giây sang Giờ, Phút, Giây",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-01.05",
+      "lesson_title": "Bản chất Ép kiểu (Type Casting) và Vấn đề Tràn số (Overflow)",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-TYPE-01"
+      ]
+    },
+    {
+      "item_id": "7b42e931-321d-4a45-b2ff-93f9c91a1c43",
+      "item_title": "Kiểm tra độ tuổi lái xe hợp lệ",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-02.01",
+      "lesson_title": "Cấu trúc Rẽ nhánh if, else if, else và Khối lệnh {}",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "CPP-COND-01"
+      ]
+    },
+    {
+      "item_id": "64f38a91-37a0-43f1-8b4c-6020d7b06b5c",
+      "item_title": "Xếp loại học lực học sinh",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-02.02",
+      "lesson_title": "Toán tử So sánh, Toán tử Logic và Cơ chế Đoản mạch (Short-Circuit)",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "CPP-COND-01"
+      ]
+    },
+    {
+      "item_id": "ecb0635c-b240-4e9a-a9dd-26588738d962",
+      "item_title": "Tra cứu số ngày bằng switch-case",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-02.03",
+      "lesson_title": "Cấu trúc Lựa chọn switch-case và Từ khóa break",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "CPP-COND-01"
+      ]
+    },
+    {
+      "item_id": "9d201f7a-ae50-4b43-8d02-0562b617c9eb",
+      "item_title": "Phân loại chẵn lẻ với toán tử ba ngôi",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-02.04",
+      "lesson_title": "Biểu thức Điều kiện 3 ngôi (Ternary Operator) và Kỹ thuật Early Return",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "CPP-COND-01"
+      ]
+    },
+    {
+      "item_id": "ffa2cfec-f804-4f6a-899b-d3e6f18fc0ce",
+      "item_title": "Tổng 1 đến n bằng vòng lặp for",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-03.01",
+      "lesson_title": "Vòng lặp for Cơ bản và Vòng đời Biến đếm",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "CPP-LOOP-01"
+      ]
+    },
+    {
+      "item_id": "891fd72a-ed30-456a-9806-1855a02d4cc6",
+      "item_title": "Tổng chữ số bằng vòng lặp while",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-03.02",
+      "lesson_title": "Vòng lặp while và Kiểm soát Vòng lặp Vô tận",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "CPP-LOOP-01"
+      ]
+    },
+    {
+      "item_id": "1f7df4ba-3813-47d6-83a1-ef131319dd05",
+      "item_title": "Nhập lại đến khi có số dương",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-03.03",
+      "lesson_title": "Vòng lặp do-while và Ứng dụng Kiểm tra Tính Hợp lệ Dữ liệu",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "CPP-LOOP-01"
+      ]
+    },
+    {
+      "item_id": "b5fe71f6-3c6d-4e19-83b0-4b13c4f7acc6",
+      "item_title": "break và continue có kiểm soát",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-03.04",
+      "lesson_title": "Kiểm soát Dòng lặp với break và continue",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-LOOP-01"
+      ]
+    },
+    {
+      "item_id": "1fad0def-9469-4464-8a9d-f023d1ac45e4",
+      "item_title": "In hình chữ nhật bằng vòng lặp lồng nhau",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-03.05",
+      "lesson_title": "Vòng lặp Lồng nhau (Nested Loops) và Tư duy Không gian 2D",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-LOOP-01"
+      ]
+    },
+    {
+      "item_id": "e47d9a19-aa73-4021-a69c-bad838602ae0",
+      "item_title": "Hàm tính lũy thừa base^exp",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-04.01",
+      "lesson_title": "Cấu trúc Hàm (Function), Tham số và Giá trị trả về",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "CPP-FUNC-01"
+      ]
+    },
+    {
+      "item_id": "867dd557-bef0-41e8-ac80-24712912d7df",
+      "item_title": "Hàm hoán đổi giá trị hai số nguyên (Custom Swap)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-04.02",
+      "lesson_title": "Truyền Tham trị (Pass-by-Value) và Truyền Tham chiếu (Pass-by-Reference)",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-FUNC-01"
+      ]
+    },
+    {
+      "item_id": "0f910a0b-cc36-4b65-92de-2c8d3cd8aa32",
+      "item_title": "Hàm kiểm tra mật khẩu an toàn với const std::string&",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-04.03",
+      "lesson_title": "Tham chiếu Hằng (const Reference) - Tiêu chuẩn tối ưu hóa C++",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-FUNC-01"
+      ]
+    },
+    {
+      "item_id": "b2c51f0a-ad29-4dfa-adb1-9269fe7a4b9b",
+      "item_title": "Nạp chồng hàm tính diện tích hình học",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-04.04",
+      "lesson_title": "Phạm vi Biến (Scope), Thời gian sống và Kỹ thuật Nạp chồng Hàm (Overloading)",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-MEM-01"
+      ]
+    },
+    {
+      "item_id": "562d4c58-1089-4a58-ad55-5a3c51d7efa9",
+      "item_title": "Tính giai thừa N! bằng hàm đệ quy",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-04.05",
+      "lesson_title": "Cơ chế Đệ quy (Recursion) Cơ bản và Điều kiện Dừng",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "CPP-RECUR-01"
+      ]
+    },
+    {
+      "item_id": "f422cd42-279b-4be9-9e14-4d332a8b120c",
+      "item_title": "Tính trung bình cộng các phần tử trong mảng tĩnh",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-05.01",
+      "lesson_title": "Mảng 1 Chiều (Fixed-size Array): Bản chất Ô nhớ và Khai báo",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "CPP-ARRAY-01"
+      ]
+    },
+    {
+      "item_id": "8f66a082-f6c7-4bce-beca-543b75fbabf9",
+      "item_title": "Tìm giá trị lớn nhất và nhỏ nhất trong mảng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-05.02",
+      "lesson_title": "Các Thuật toán Duyệt và Tìm kiếm Cơ bản trên Mảng (Linear Search, Min/Max)",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-ARRAY-01"
+      ]
+    },
+    {
+      "item_id": "121e4a9d-300e-4a67-89f7-bd7f87b31fc5",
+      "item_title": "Đếm tần suất chữ số",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-05.03",
+      "lesson_title": "Kỹ thuật Mảng Đếm (Frequency Array / Hash Table Cơ bản)",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-ARRAY-01"
+      ]
+    },
+    {
+      "item_id": "386c60d5-7d3e-46ab-9739-27c47fab8a99",
+      "item_title": "Chèn một phần tử vào mảng đã dùng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-05.04",
+      "lesson_title": "Kỹ thuật Chèn, Xóa và Dịch chuyển Phần tử trên Mảng",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-ARRAY-01"
+      ]
+    },
+    {
+      "item_id": "affe38e6-49d1-4c9f-8eab-df1d8f2df941",
+      "item_title": "Đếm số lượng chữ cái in hoa và in thường trong chuỗi",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-06.01",
+      "lesson_title": "Bản chất Chuỗi ký tự: Phân biệt C-string và std::string Hiện đại",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "CPP-STRING-01"
+      ]
+    },
+    {
+      "item_id": "813e123c-8c83-4a59-833e-beed85ad5f8b",
+      "item_title": "Nhập thông tin sinh viên có khoảng trắng an toàn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-06.02",
+      "lesson_title": "Các Thao tác và Phương thức Chuẩn trên std::string",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-STRING-01"
+      ]
+    },
+    {
+      "item_id": "46fa63d6-3a69-4a9e-a999-39c775ef4e46",
+      "item_title": "Tách và đếm số lượng từ trong câu bằng stringstream",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-06.03",
+      "lesson_title": "Kỹ thuật Duyệt và Biến đổi Chuỗi Ký tự",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-STRING-01"
+      ]
+    },
+    {
+      "item_id": "367dd9c5-e146-4145-b087-f8f134e2ccb2",
+      "item_title": "Tính tổng tất cả các phần tử trong ma trận 2D",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-07.01",
+      "lesson_title": "Bản chất Ma trận trong Bộ nhớ (Row-major) và Thao tác Nhập/Xuất lưới 2D",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-MATRIX-01"
+      ]
+    },
+    {
+      "item_id": "9a5e6bf6-5098-46b9-b7e9-71baddd94c9f",
+      "item_title": "Tính tổng đường chéo chính và đường chéo phụ ma trận vuông",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-07.02",
+      "lesson_title": "Ma trận Vuông: Quy luật Đường chéo Chính, Phụ và Ma trận Chuyển vị",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-MATRIX-01"
+      ]
+    },
+    {
+      "item_id": "78f44dc1-9a44-497e-9f9f-f2f358d79d9f",
+      "item_title": "Kiểm tra trạng thái Thắng thua của bàn cờ Tic-Tac-Toe 3x3",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP-07.03",
+      "lesson_title": "Kỹ thuật Duyệt Lân cận trên Lưới 2D (4 hướng / 8 hướng)",
+      "course_title": "Lập trình C++ Cơ bản & Tư duy Thuật toán (C++ Foundations)",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "CPP-MATRIX-01"
+      ]
+    },
+    {
+      "item_id": "b01c1781-96b8-4f39-9ad6-6e93eb6f52c7",
+      "item_title": "Đèn giao thông với enum class",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-01.01",
+      "lesson_title": "Kiểu liệt kê enum class (Scoped Enums) và Kỹ thuật Bit-fields",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-ENUMVAR-01"
+      ]
+    },
+    {
+      "item_id": "264a5f45-bf20-4082-b45b-0948961ec8ef",
+      "item_title": "Bản ghi học viên bằng struct",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-01.02",
+      "lesson_title": "Kiểu cấu trúc struct Nâng cao và Bộ nhớ Đệm Alignment / Padding",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-STRUCT-01"
+      ]
+    },
+    {
+      "item_id": "39607ca1-2c74-4aa9-b484-1b4ac4ffbf41",
+      "item_title": "Đọc giá trị an toàn bằng std::variant",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-01.03",
+      "lesson_title": "Bản chất Kiểu Hợp union và std::variant An toàn trong C++17",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-ENUMVAR-01"
+      ]
+    },
+    {
+      "item_id": "f26fcf26-2d3e-4a50-af2d-ec7b02e25efc",
+      "item_title": "Tổng dãy động với std::vector",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-02.01",
+      "lesson_title": "std::vector: Cơ chế Cấp phát Động Capacity vs Size và Kỹ thuật reserve()",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-VECTOR-01"
+      ]
+    },
+    {
+      "item_id": "fc1bc842-30a2-4f62-8508-6e864d857e8c",
+      "item_title": "Tổng đường chéo ma trận vector",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-02.02",
+      "lesson_title": "Ma trận Động 2D Linh hoạt với std::vector lồng nhau",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-VECTOR-01",
+        "CPP-MATRIX-01"
+      ]
+    },
+    {
+      "item_id": "aa2be806-ae1a-4fb6-86b9-b3b7231f4a1f",
+      "item_title": "Đọc tuple bằng structured binding",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-02.03",
+      "lesson_title": "std::pair, std::tuple và Cú pháp Structured Binding trong C++17",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-STRUCT-01"
+      ]
+    },
+    {
+      "item_id": "000006a6-7fe4-4cd8-bb36-cea7269c4358",
+      "item_title": "Liên kết hai node",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-02.04",
+      "lesson_title": "Cấu trúc Danh sách Liên kết Tự cài đặt và std::forward_list",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "CPP-PTR-01"
+      ]
+    },
+    {
+      "item_id": "813d2287-3407-49c3-adf8-75773b9d9267",
+      "item_title": "Tách bản ghi với stringstream",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-03.01",
+      "lesson_title": "Phân tích Cú pháp và Tách từ với std::stringstream",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-FILE-01"
+      ]
+    },
+    {
+      "item_id": "22fe2758-e982-43da-8e63-6a0aaad181d5",
+      "item_title": "Cắt lát an toàn bằng string_view",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-03.02",
+      "lesson_title": "Chuỗi Không Sao chép std::string_view và Tối ưu hóa Bộ nhớ Tạm",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-FILE-01"
+      ]
+    },
+    {
+      "item_id": "1e1a8a7e-e497-42c4-868b-28828466846c",
+      "item_title": "Kiểm tra mã sinh viên bằng regex_match",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-03.03",
+      "lesson_title": "Xử lý Biểu thức Chính quy (std::regex) trong C++11/17",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "CPP-FILE-01"
+      ]
+    },
+    {
+      "item_id": "f8d6d686-f375-49d4-a3de-59facb29ceed",
+      "item_title": "Tìm phần tử lớn nhất bằng chia để trị",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-04.01",
+      "lesson_title": "Kỹ thuật Chia để Trị (Divide and Conquer) và Cây Đệ quy",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "CPP-RECUR-01"
+      ]
+    },
+    {
+      "item_id": "293de5bb-f353-4988-88b1-65f96ba3da70",
+      "item_title": "Sinh hoán vị bằng quay lui",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-04.02",
+      "lesson_title": "Mô hình Quay lui (Backtracking Framework) và Bài toán Sinh Hoán vị",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "CPP-BACKTRACK-01"
+      ]
+    },
+    {
+      "item_id": "06fd3fca-9d45-4894-aa62-1a0ff86878da",
+      "item_title": "Đếm nghiệm N-Queens có cắt tỉa",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-04.03",
+      "lesson_title": "Cắt tỉa Nhánh cận (Branch and Bound) và Bài toán N-Queens",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "CPP-BACKTRACK-01"
+      ]
+    },
+    {
+      "item_id": "8db6a6c0-1d7b-4e86-a68c-6492cf4bb493",
+      "item_title": "Sắp xếp rồi tìm nhị phân",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-05.01",
+      "lesson_title": "Khung Thuật toán Chuẩn STL (<algorithm>): std::sort, std::binary_search",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-BUILD-01"
+      ]
+    },
+    {
+      "item_id": "41717c1d-5a7d-4688-84c2-6c39b81f773f",
+      "item_title": "In giá trị duy nhất có thứ tự bằng std::set",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-05.02",
+      "lesson_title": "Cấu trúc Cây Đỏ-Đen: std::set, std::map và Độ phức tạp O(log N)",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-CACHE-01"
+      ]
+    },
+    {
+      "item_id": "6caf1f6f-5d69-4727-abb3-e3e0b44b2384",
+      "item_title": "Đếm truy vấn bằng unordered_map",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-05.03",
+      "lesson_title": "Bảng Băm Hiện đại: std::unordered_set và std::unordered_map O(1)",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-CACHE-01"
+      ]
+    },
+    {
+      "item_id": "bdef782f-c2f1-477d-ae98-709119bea459",
+      "item_title": "Kiểm tra một cờ trong bitmask",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-06.01",
+      "lesson_title": "Phép Toán Bit (Bitwise Operations) và Ứng dụng Quản lý Cờ Hiệu (Bitmask)",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-BITWISE-01"
+      ]
+    },
+    {
+      "item_id": "a1941ac3-628e-4ca7-831d-aa7b83c48efa",
+      "item_title": "Bảo vệ phép chia bằng ngoại lệ",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-06.02",
+      "lesson_title": "Cơ chế Bắt và Ném Ngoại lệ An toàn (try, catch, throw, std::exception)",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "CPP-EXC-01"
+      ]
+    },
+    {
+      "item_id": "a7c0a8f5-4e1a-46bc-8a37-caa01ef193cc",
+      "item_title": "Sở hữu độc quyền với unique_ptr",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "CPP2-06.03",
+      "lesson_title": "Con trỏ Thông minh Hiện đại: std::unique_ptr, std::shared_ptr và RAII",
+      "course_title": "Lập trình C++ Nâng cao & Thư viện Chuẩn (C++17 Advanced)",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "CPP-SMARTPTR-01"
+      ]
+    }
+  ]
+}

@@ -8,7 +8,7 @@
 
 | Nguồn | Loại | Người học | Event có nhãn | Skill/item | Kết luận |
 | --- | --- | ---: | ---: | ---: | --- |
-| `ai-service/data/mock_user_history.csv` | Synthetic/seed | 120 | 11.823 (9.905 attempt #1) | 6 legacy KC, 83 item | Chỉ smoke test kỹ thuật; cấm dùng làm bằng chứng thực nghiệm hoặc cộng ngưỡng triển khai. |
+| `ai-service/data/mock_user_history.csv` (snapshot lịch sử; file seed đã loại bỏ ngày 2026-10-15) | Synthetic/seed | 120 | 11.823 (9.905 attempt #1) | 6 legacy KC, 83 item | Chỉ smoke test kỹ thuật; cấm dùng làm bằng chứng thực nghiệm hoặc cộng ngưỡng triển khai. |
 | `submissions` | LearnPython thật, coding exercise | 7 Python / 2 C++ / 1 JavaScript | 804 `PASSED/FAILED`; 479 first item-attempt | Nối tới lesson; mapping skill chưa verified | Chưa KT-ready; thiếu mapping version và cohort đủ lớn. |
 | `practice_submissions` | LearnPython thật, practice | 0 | 0 | Problem/tag chưa phải skill chuẩn | Chưa có dữ liệu. |
 | `pretest_answers` + assessment hợp lệ | LearnPython thật, pre-test | 0 | 0 | Có `primarySkillId` + graphVersion khi phát sinh | Chưa có dữ liệu. |

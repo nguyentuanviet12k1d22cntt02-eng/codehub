@@ -1,0 +1,35 @@
+{
+  "schema_version": "real-exercise-inventory/1.0",
+  "data_origin": "REAL_PRODUCT_DATABASE",
+  "privacy": "Aggregate counts only; no learner identifiers or submitted code",
+  "catalog_items": {
+    "python": 322,
+    "javascript": 127,
+    "cpp": 48
+  },
+  "catalog_skills": {
+    "python": 26,
+    "javascript": 23,
+    "cpp": 21
+  },
+  "real_submission_inventory": [
+    {
+      "language": "CPP",
+      "labeled_events": 4,
+      "learners": 1,
+      "covered_items": 1
+    },
+    {
+      "language": "JAVASCRIPT",
+      "labeled_events": 1,
+      "learners": 1,
+      "covered_items": 1
+    },
+    {
+      "language": "PYTHON",
+      "labeled_events": 486,
+      "learners": 7,
+      "covered_items": 128
+    }
+  ]
+}

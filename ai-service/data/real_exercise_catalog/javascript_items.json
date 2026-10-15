@@ -1,0 +1,1662 @@
+{
+  "schema_version": "real-exercise-catalog/1.0",
+  "language": "javascript",
+  "database_language": "JAVASCRIPT",
+  "data_origin": "REAL_PRODUCT_CATALOG",
+  "contains_learner_data": false,
+  "source_graph": "javascriptSkillGraph.json",
+  "mapping_basis": "Versioned lesson mappings in the language skill graph",
+  "items": [
+    {
+      "item_id": "52e1f486-1ecf-4c9f-b12a-485a958a70ec",
+      "item_title": "In thông điệp chào mừng JavaScript 2026",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-01.01",
+      "lesson_title": "Bài 1.1: Lịch sử JavaScript, ECMAScript & Môi trường thực thi",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-VAR-01"
+      ]
+    },
+    {
+      "item_id": "3dc9affc-4074-46e3-8d8c-dced512bff2d",
+      "item_title": "In thông tin phiên bản ECMAScript hiện đại",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-01.01",
+      "lesson_title": "Bài 1.1: Lịch sử JavaScript, ECMAScript & Môi trường thực thi",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-VAR-01"
+      ]
+    },
+    {
+      "item_id": "cee22f10-7e42-4fc8-a948-c86d02cdbbaa",
+      "item_title": "Lời chào đa ngôn ngữ trên Console",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-01.01",
+      "lesson_title": "Bài 1.1: Lịch sử JavaScript, ECMAScript & Môi trường thực thi",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-VAR-01"
+      ]
+    },
+    {
+      "item_id": "17264396-5c47-4f10-912e-7789f8b69aa9",
+      "item_title": "Chú thích tài liệu cho chức năng in banner",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-01.02",
+      "lesson_title": "Bài 1.2: Cú pháp câu lệnh, dấu chấm phẩy & Chú thích (Comments)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-VAR-01"
+      ]
+    },
+    {
+      "item_id": "2c55312a-2d47-4c8e-9e56-61f02269c3be",
+      "item_title": "Ghi chú quy tắc đặt tên và kết thúc câu lệnh",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-01.02",
+      "lesson_title": "Bài 1.2: Cú pháp câu lệnh, dấu chấm phẩy & Chú thích (Comments)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-VAR-01"
+      ]
+    },
+    {
+      "item_id": "f05f8c8a-e426-4c3b-b9f6-6b57e5156b30",
+      "item_title": "Viết chú thích chuẩn mực và in khẩu hiệu",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-01.02",
+      "lesson_title": "Bài 1.2: Cú pháp câu lệnh, dấu chấm phẩy & Chú thích (Comments)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-VAR-01"
+      ]
+    },
+    {
+      "item_id": "1c7e2c49-76a4-4eb3-b23c-29692df23d59",
+      "item_title": "Khởi tạo hồ sơ người dùng (User Profile)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-01.03",
+      "lesson_title": "Bài 1.3: Khai báo biến với let, const, var & Quy tắc đặt tên",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-VAR-01"
+      ]
+    },
+    {
+      "item_id": "ce261b66-fb55-4cb9-975b-3e4d00c14466",
+      "item_title": "Quản lý số dư ví điện tử (E-Wallet)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-01.03",
+      "lesson_title": "Bài 1.3: Khai báo biến với let, const, var & Quy tắc đặt tên",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-VAR-01"
+      ]
+    },
+    {
+      "item_id": "c4fc3c56-744b-4335-90ce-201c94fe5040",
+      "item_title": "Quản lý thông tin khóa học với const và let",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-01.03",
+      "lesson_title": "Bài 1.3: Khai báo biến với let, const, var & Quy tắc đặt tên",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-VAR-01"
+      ]
+    },
+    {
+      "item_id": "6abccace-a669-4c98-b918-a0ad7296f361",
+      "item_title": "Tính điểm tích lũy của người chơi game",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-01.03",
+      "lesson_title": "Bài 1.3: Khai báo biến với let, const, var & Quy tắc đặt tên",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-VAR-01"
+      ]
+    },
+    {
+      "item_id": "01f64d3f-2c81-453b-a4a7-aadbad592b32",
+      "item_title": "Ghép chuỗi giới thiệu bản thân (Template String)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-01.04",
+      "lesson_title": "Bài 1.4: Xuất dữ liệu với console.log() & Ghép chuỗi cơ bản",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-VAR-01"
+      ]
+    },
+    {
+      "item_id": "ede2fe67-9e7b-487f-9829-ed65d9fc7953",
+      "item_title": "In bảng thống kê điểm 3 môn học",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-01.04",
+      "lesson_title": "Bài 1.4: Xuất dữ liệu với console.log() & Ghép chuỗi cơ bản",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-VAR-01"
+      ]
+    },
+    {
+      "item_id": "0249a0f4-be6f-46a8-abec-b143f7e11237",
+      "item_title": "In hóa đơn thanh toán sách lập trình",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-01.04",
+      "lesson_title": "Bài 1.4: Xuất dữ liệu với console.log() & Ghép chuỗi cơ bản",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-VAR-01"
+      ]
+    },
+    {
+      "item_id": "1e204476-70c7-4f28-822b-51cc368b79e2",
+      "item_title": "Xuất thông tin máy chủ hệ thống",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-01.04",
+      "lesson_title": "Bài 1.4: Xuất dữ liệu với console.log() & Ghép chuỗi cơ bản",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-VAR-01"
+      ]
+    },
+    {
+      "item_id": "a932ca0b-fa70-4344-8b5b-e9fc25999c19",
+      "item_title": "Kiểm tra kiểu dữ liệu các định danh",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-02.01",
+      "lesson_title": "Bài 2.1: Hệ thống kiểu dữ liệu nguyên thủy (Primitive Types) & Toán tử typeof",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-TYPE-01"
+      ]
+    },
+    {
+      "item_id": "c8842f48-c835-488e-a625-6670e9e5d33c",
+      "item_title": "Nhận diện kiểu BigInt và Symbol",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-02.01",
+      "lesson_title": "Bài 2.1: Hệ thống kiểu dữ liệu nguyên thủy (Primitive Types) & Toán tử typeof",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-TYPE-01"
+      ]
+    },
+    {
+      "item_id": "15623e7c-9d82-49c3-a1f4-3a8ffe7e9e83",
+      "item_title": "Phân biệt undefined và null trong JavaScript",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-02.01",
+      "lesson_title": "Bài 2.1: Hệ thống kiểu dữ liệu nguyên thủy (Primitive Types) & Toán tử typeof",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-TYPE-01"
+      ]
+    },
+    {
+      "item_id": "0f621b82-dd8e-4e6a-b176-4b58d5c4820e",
+      "item_title": "Đổi thời gian từ giây sang giờ, phút, giây",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-02.02",
+      "lesson_title": "Bài 2.2: Toán tử số học, toán tử gán & Thứ tự ưu tiên toán tử",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-TYPE-01"
+      ]
+    },
+    {
+      "item_id": "38a3b528-4172-4d1d-b3cb-68c32a427f1a",
+      "item_title": "Phân biệt tiền tố tăng (++x) và hậu tố tăng (x++)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-02.02",
+      "lesson_title": "Bài 2.2: Toán tử số học, toán tử gán & Thứ tự ưu tiên toán tử",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-TYPE-01"
+      ]
+    },
+    {
+      "item_id": "a5b3faee-1573-4047-a8bb-8b0062400714",
+      "item_title": "Tính lũy thừa và biểu thức có ngoặc",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-02.02",
+      "lesson_title": "Bài 2.2: Toán tử số học, toán tử gán & Thứ tự ưu tiên toán tử",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-TYPE-01"
+      ]
+    },
+    {
+      "item_id": "ce58225f-7bd1-450e-941e-6f049f40f520",
+      "item_title": "Tính toán chu vi, diện tích và chia kẹo",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-02.02",
+      "lesson_title": "Bài 2.2: Toán tử số học, toán tử gán & Thứ tự ưu tiên toán tử",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-TYPE-01"
+      ]
+    },
+    {
+      "item_id": "5d1d4152-1a03-4dca-9b77-a1233b057b87",
+      "item_title": "Kiểm tra so sánh null và undefined",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-02.03",
+      "lesson_title": "Bài 2.3: So sánh lỏng lẻo (==, !=) vs So sánh nghiêm ngặt (===, !==)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-TYPE-01"
+      ]
+    },
+    {
+      "item_id": "04e437f1-b822-4715-85fc-a7386d343fc0",
+      "item_title": "Phân biệt so sánh nghiêm ngặt và lỏng lẻo",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-02.03",
+      "lesson_title": "Bài 2.3: So sánh lỏng lẻo (==, !=) vs So sánh nghiêm ngặt (===, !==)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-TYPE-01"
+      ]
+    },
+    {
+      "item_id": "e05dd9db-abb6-4524-ac95-67b3e6d9d556",
+      "item_title": "So sánh chuỗi số và số nguyên",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-02.03",
+      "lesson_title": "Bài 2.3: So sánh lỏng lẻo (==, !=) vs So sánh nghiêm ngặt (===, !==)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-TYPE-01"
+      ]
+    },
+    {
+      "item_id": "44394e64-a0d2-4c9e-bc9e-f0a663646bb5",
+      "item_title": "Cơ chế ngắn mạch gán giá trị mặc định với ||",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-02.04",
+      "lesson_title": "Bài 2.4: Toán tử logic (&&, ||, !) & Đánh giá ngắn mạch (Short-circuit)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "0e9c89c3-95c1-48a6-b097-463d71f0ddb2",
+      "item_title": "Kiểm tra điều kiện cấp chứng chỉ xuất sắc",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-02.04",
+      "lesson_title": "Bài 2.4: Toán tử logic (&&, ||, !) & Đánh giá ngắn mạch (Short-circuit)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "0ad68508-d26d-4e44-b57a-c7828f1f772f",
+      "item_title": "Kiểm tra điều kiện mua hàng giảm giá (Voucher)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-02.04",
+      "lesson_title": "Bài 2.4: Toán tử logic (&&, ||, !) & Đánh giá ngắn mạch (Short-circuit)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "c874dc3c-7f38-4d35-b1ce-6c5ceed67bb3",
+      "item_title": "Toán tử phủ định kép (Double Bang !!)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-02.04",
+      "lesson_title": "Bài 2.4: Toán tử logic (&&, ||, !) & Đánh giá ngắn mạch (Short-circuit)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "a942a350-1caa-4494-ad34-ff5432e0fc0f",
+      "item_title": "Đọc và in thông tin sinh viên từ stdin",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-03.01",
+      "lesson_title": "Bài 3.1: Cơ chế nhập dữ liệu chuẩn stdin trong JavaScript thuần",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-RUNTIME-01"
+      ]
+    },
+    {
+      "item_id": "13607382-a8b0-41b5-9d8d-6140f4b97384",
+      "item_title": "Tính chu vi và diện tích hình chữ nhật từ stdin",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-03.01",
+      "lesson_title": "Bài 3.1: Cơ chế nhập dữ liệu chuẩn stdin trong JavaScript thuần",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-RUNTIME-01"
+      ]
+    },
+    {
+      "item_id": "b9b31ce2-3d86-441f-8fa3-326a0271c96e",
+      "item_title": "Tính tổng và tích hai số từ stdin",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-03.01",
+      "lesson_title": "Bài 3.1: Cơ chế nhập dữ liệu chuẩn stdin trong JavaScript thuần",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-RUNTIME-01"
+      ]
+    },
+    {
+      "item_id": "4d1f1245-b9e8-47c6-a900-dd96865e8b18",
+      "item_title": "Chuyển đổi đơn vị và tính tiền xăng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-03.02",
+      "lesson_title": "Bài 3.2: Chuyển đổi kiểu tường minh (String, Number, parseInt, parseFloat)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-COERCE-01"
+      ]
+    },
+    {
+      "item_id": "699084d1-59ea-4b48-8141-9a5df21d1c3a",
+      "item_title": "Chuyển đổi số sang chuỗi và ghép mã định danh (String)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-03.02",
+      "lesson_title": "Bài 3.2: Chuyển đổi kiểu tường minh (String, Number, parseInt, parseFloat)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COERCE-01"
+      ]
+    },
+    {
+      "item_id": "953f7b24-9fef-4670-9ea9-611b29a8c976",
+      "item_title": "Tính chỉ số khối cơ thể BMI (parseFloat & toFixed)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-03.02",
+      "lesson_title": "Bài 3.2: Chuyển đổi kiểu tường minh (String, Number, parseInt, parseFloat)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-COERCE-01"
+      ]
+    },
+    {
+      "item_id": "b973bce3-ed53-45ad-a358-e8586b184fb6",
+      "item_title": "Trích xuất kích thước từ chuỗi đơn vị pixel (parseInt)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-03.02",
+      "lesson_title": "Bài 3.2: Chuyển đổi kiểu tường minh (String, Number, parseInt, parseFloat)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COERCE-01"
+      ]
+    },
+    {
+      "item_id": "d41c0dbb-e008-42aa-8cb0-c6c312f46050",
+      "item_title": "Kiểm định dữ liệu đầu vào hợp lệ",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-03.03",
+      "lesson_title": "Bài 3.3: Ép kiểu ngầm định (Type Coercion), giá trị NaN & Number.isNaN()",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COERCE-01"
+      ]
+    },
+    {
+      "item_id": "eb9d8981-9078-425c-88b2-a8f7a636ca57",
+      "item_title": "Quan sát hiện tượng ép kiểu ngầm định của toán tử cộng và trừ",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-03.03",
+      "lesson_title": "Bài 3.3: Ép kiểu ngầm định (Type Coercion), giá trị NaN & Number.isNaN()",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COERCE-01"
+      ]
+    },
+    {
+      "item_id": "72bd22dd-b266-495b-ade4-ef41b32952d1",
+      "item_title": "Tính tổng mảng giá trị có chứa phần tử không hợp lệ (NaN)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-03.03",
+      "lesson_title": "Bài 3.3: Ép kiểu ngầm định (Type Coercion), giá trị NaN & Number.isNaN()",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-COERCE-01"
+      ]
+    },
+    {
+      "item_id": "458fe862-af54-4a68-a43b-04a38064189a",
+      "item_title": "Kiểm tra 6 giá trị Falsy kinh điển trong JavaScript",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-03.04",
+      "lesson_title": "Bài 3.4: Khái niệm Truthy, Falsy & Kỹ thuật chuyển đổi Boolean kép (!!)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "06d64a15-3918-48bb-b212-25a068715a84",
+      "item_title": "Kiểm tra chuỗi đầu vào có rỗng không từ stdin",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-03.04",
+      "lesson_title": "Bài 3.4: Khái niệm Truthy, Falsy & Kỹ thuật chuyển đổi Boolean kép (!!)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "fe1537c9-d987-4169-8e01-92c26d510880",
+      "item_title": "Kiểm tra trạng thái Truthy/Falsy của biến",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-03.04",
+      "lesson_title": "Bài 3.4: Khái niệm Truthy, Falsy & Kỹ thuật chuyển đổi Boolean kép (!!)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "2074dfdd-f496-451c-85a9-539b69c77412",
+      "item_title": "Phân biệt Truthy của mảng rỗng [] và object rỗng {}",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-03.04",
+      "lesson_title": "Bài 3.4: Khái niệm Truthy, Falsy & Kỹ thuật chuyển đổi Boolean kép (!!)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "8a1f6d1a-a7b4-4e5c-806b-7ade78aacb1b",
+      "item_title": "Kiểm tra độ tuổi lái xe và cấp bằng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-04.01",
+      "lesson_title": "Bài 4.1: Cấu trúc rẽ nhánh cơ bản với if, else và else if",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "24ef6d37-dbac-40c8-876a-b813acd10cdc",
+      "item_title": "Tính tiền vé rạp chiếu phim theo ngày trong tuần",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-04.01",
+      "lesson_title": "Bài 4.1: Cấu trúc rẽ nhánh cơ bản với if, else và else if",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "a2fcde14-c7b1-4797-bac8-3be8612dfac5",
+      "item_title": "Xác định tam giác hợp lệ và phân loại cơ bản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-04.01",
+      "lesson_title": "Bài 4.1: Cấu trúc rẽ nhánh cơ bản với if, else và else if",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "43b29569-8a51-491e-87dd-dabf62ce3d50",
+      "item_title": "Xếp loại kết quả học tập",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-04.01",
+      "lesson_title": "Bài 4.1: Cấu trúc rẽ nhánh cơ bản với if, else và else if",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "70515568-f9d3-4c08-b0bf-f325325bcb4a",
+      "item_title": "Kiểm tra số chẵn lẻ và dấu âm dương",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-04.02",
+      "lesson_title": "Bài 4.2: Biểu thức điều kiện ba ngôi (Ternary Operator)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "5ba4c0db-5656-4b3e-9435-f3ee8b80c233",
+      "item_title": "Tìm giá trị lớn nhất trong 2 số bằng toán tử ba ngôi",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-04.02",
+      "lesson_title": "Bài 4.2: Biểu thức điều kiện ba ngôi (Ternary Operator)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "77b9b089-2539-4669-884e-ecd2f09f78ec",
+      "item_title": "Toán tử ba ngôi lồng nhau đánh giá nhiệt độ môi trường",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-04.02",
+      "lesson_title": "Bài 4.2: Biểu thức điều kiện ba ngôi (Ternary Operator)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "2f979abf-97c3-4596-9746-4b1f4052d148",
+      "item_title": "Chuyển đổi số thứ tự thứ trong tuần sang tên tiếng Việt",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-04.03",
+      "lesson_title": "Bài 4.3: Lựa chọn đa nhánh với switch, case, break và default",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "195de716-53d4-46e4-b861-054596ec7da4",
+      "item_title": "Máy tính cầm tay 4 phép toán cơ bản (+, -, *, /)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-04.03",
+      "lesson_title": "Bài 4.3: Lựa chọn đa nhánh với switch, case, break và default",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "97361492-a086-46a0-b34f-f814935a7dba",
+      "item_title": "Nhóm nhiều case (Fall-through) xác định mùa trong năm",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-04.03",
+      "lesson_title": "Bài 4.3: Lựa chọn đa nhánh với switch, case, break và default",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "33fe6796-aec9-4060-a0f9-0f8e34f1dabd",
+      "item_title": "Tra cứu mã lỗi HTTP thường gặp",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-04.03",
+      "lesson_title": "Bài 4.3: Lựa chọn đa nhánh với switch, case, break và default",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "44911783-c37c-4a0b-80fa-f0737357e35c",
+      "item_title": "Hệ thống xác thực đăng nhập 2 bước (2FA)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-04.04",
+      "lesson_title": "Bài 4.4: Điều kiện lồng nhau & Xây dựng thuật toán kiểm tra dữ liệu phức hợp",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "bc1b69a7-a983-468a-9aa6-9b7d509dbbc1",
+      "item_title": "Tính cước phí giao hàng theo trọng lượng và khoảng cách",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-04.04",
+      "lesson_title": "Bài 4.4: Điều kiện lồng nhau & Xây dựng thuật toán kiểm tra dữ liệu phức hợp",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "d909a8d7-86f9-417d-92a2-149c802ef703",
+      "item_title": "Tính thuế thu nhập cá nhân lũy tiến từng phần đơn giản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-04.04",
+      "lesson_title": "Bài 4.4: Điều kiện lồng nhau & Xây dựng thuật toán kiểm tra dữ liệu phức hợp",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "JS-COND-01"
+      ]
+    },
+    {
+      "item_id": "6daba972-8f9e-4635-a036-681e7c3ed66f",
+      "item_title": "Tính tổng các số chẵn từ 1 đến N",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-05.01",
+      "lesson_title": "Bài 5.1: Vòng lặp for cơ bản và kỹ thuật duyệt dãy số",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-LOOP-01"
+      ]
+    },
+    {
+      "item_id": "f549206d-6fd8-4b8d-bfa8-1fa1f7e71f23",
+      "item_title": "Tìm Ước chung lớn nhất (UCLN) bằng thuật toán Euclid",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-05.02",
+      "lesson_title": "Bài 5.2: Vòng lặp điều kiện while và do...while",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-LOOP-01"
+      ]
+    },
+    {
+      "item_id": "0a5ed065-eb95-4188-852f-b8eb892fcf0c",
+      "item_title": "Tìm số nguyên dương đầu tiên chia hết cho cả 7 và 13 lớn hơn K",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-05.03",
+      "lesson_title": "Bài 5.3: Điều khiển luồng lặp với break, continue và tránh lặp vô tận",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-LOOP-01"
+      ]
+    },
+    {
+      "item_id": "dd71d346-2592-46b1-a51e-1b98e4b17e98",
+      "item_title": "Vẽ hình tam giác vuông dấu sao",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-05.04",
+      "lesson_title": "Bài 5.4: Vòng lặp lồng nhau (Nested Loops) & Cú pháp for...of cơ bản",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-LOOP-01"
+      ]
+    },
+    {
+      "item_id": "32a32cf8-8a73-4e4e-b737-89df62c78b3d",
+      "item_title": "Biểu thức hàm tính giai thừa của một số nguyên",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-06.01",
+      "lesson_title": "Bài 6.1: Khai báo hàm (Function Declaration) vs Biểu thức hàm (Function Expression)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-FUNC-01"
+      ]
+    },
+    {
+      "item_id": "65af0a8a-3133-4ad4-880f-eac26eda40d6",
+      "item_title": "Hàm kiểm tra số hoàn hảo (Perfect Number)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-06.01",
+      "lesson_title": "Bài 6.1: Khai báo hàm (Function Declaration) vs Biểu thức hàm (Function Expression)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-FUNC-01"
+      ]
+    },
+    {
+      "item_id": "8089a414-3dda-4f62-980c-92057b80db1a",
+      "item_title": "Viết hàm kiểm tra số nguyên tố",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-06.01",
+      "lesson_title": "Bài 6.1: Khai báo hàm (Function Declaration) vs Biểu thức hàm (Function Expression)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-FUNC-01"
+      ]
+    },
+    {
+      "item_id": "f5ff6b25-6d08-42d2-85f3-72dec6fc2d1f",
+      "item_title": "Hàm gửi tin nhắn chào mừng với tham số mặc định",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-06.02",
+      "lesson_title": "Bài 6.2: Tham số, đối số & Tham số mặc định (Default Parameters)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-FUNC-01"
+      ]
+    },
+    {
+      "item_id": "d2b26311-9d2e-4cae-9149-c4460dc95c84",
+      "item_title": "Tính hóa đơn tiền hàng có chiết khấu mặc định",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-06.02",
+      "lesson_title": "Bài 6.2: Tham số, đối số & Tham số mặc định (Default Parameters)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-FUNC-01"
+      ]
+    },
+    {
+      "item_id": "2501d3b3-4cb9-44d2-a638-83d67f2d74f0",
+      "item_title": "Tính thể tích khối hộp chữ nhật với chiều cao mặc định",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-06.02",
+      "lesson_title": "Bài 6.2: Tham số, đối số & Tham số mặc định (Default Parameters)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-FUNC-01"
+      ]
+    },
+    {
+      "item_id": "ec0f401c-c997-436c-9dc6-e08978d573df",
+      "item_title": "Hàm in banner không có return và kiểm tra giá trị undefined",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-06.03",
+      "lesson_title": "Bài 6.3: Lệnh return, giá trị trả về và hàm không trả về (undefined)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-FUNC-01"
+      ]
+    },
+    {
+      "item_id": "d06f3dce-b3b6-4f51-9cfe-30d8aad13af9",
+      "item_title": "Hàm kiểm tra số chẵn và cơ chế early return",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-06.03",
+      "lesson_title": "Bài 6.3: Lệnh return, giá trị trả về và hàm không trả về (undefined)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-FUNC-01"
+      ]
+    },
+    {
+      "item_id": "2f7329d2-cd9d-4dcc-8ae1-fbb1f7dd9bcb",
+      "item_title": "Viết hàm tìm số lớn nhất trong ba số",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-06.03",
+      "lesson_title": "Bài 6.3: Lệnh return, giá trị trả về và hàm không trả về (undefined)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-FUNC-01"
+      ]
+    },
+    {
+      "item_id": "272b9c7a-d89d-4ec8-91d7-c051beb11310",
+      "item_title": "Arrow function rút gọn tính bình phương một số",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-06.04",
+      "lesson_title": "Bài 6.4: Cú pháp Arrow Function & Phạm vi hàm (Function Scope)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-ARROW-01"
+      ]
+    },
+    {
+      "item_id": "6aa99913-d5c1-4415-86fa-82ac576bde41",
+      "item_title": "Chuyển đổi độ C sang độ F bằng Arrow Function",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-06.04",
+      "lesson_title": "Bài 6.4: Cú pháp Arrow Function & Phạm vi hàm (Function Scope)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-ARROW-01"
+      ]
+    },
+    {
+      "item_id": "7c01d3df-88cb-456b-8762-5776a8b71a18",
+      "item_title": "Phân biệt biến cục bộ trong hàm và biến toàn cục",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-06.04",
+      "lesson_title": "Bài 6.4: Cú pháp Arrow Function & Phạm vi hàm (Function Scope)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-ARROW-01"
+      ]
+    },
+    {
+      "item_id": "8333dfce-1401-458f-8257-080b65eb4ca1",
+      "item_title": "Tính giá trị trung bình cộng của mảng số thực",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-07.01",
+      "lesson_title": "Bài 7.1: Khởi tạo mảng, chỉ mục index và thuộc tính length",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-ARRAY-01"
+      ]
+    },
+    {
+      "item_id": "31291725-93a6-47d5-88e6-d74392e44ef0",
+      "item_title": "Trích xuất thông tin mảng số nguyên",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-07.01",
+      "lesson_title": "Bài 7.1: Khởi tạo mảng, chỉ mục index và thuộc tính length",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-ARRAY-01"
+      ]
+    },
+    {
+      "item_id": "006f482e-4c3a-4cf8-accb-556cfc04c07e",
+      "item_title": "Truy cập và cập nhật giá trị phần tử mảng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-07.01",
+      "lesson_title": "Bài 7.1: Khởi tạo mảng, chỉ mục index và thuộc tính length",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-ARRAY-01"
+      ]
+    },
+    {
+      "item_id": "d9e2ac05-7187-4b95-9f3f-fc2632c2c7f8",
+      "item_title": "Chèn và thay thế phần tử mảng bằng splice",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-07.02",
+      "lesson_title": "Bài 7.2: Thao tác biến đổi mảng (push, pop, shift, unshift, slice, splice)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-ARRAY-01"
+      ]
+    },
+    {
+      "item_id": "0d0bd728-bb78-49bc-9f5a-333eef487d0e",
+      "item_title": "Mô phỏng hàng đợi phục vụ khách hàng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-07.02",
+      "lesson_title": "Bài 7.2: Thao tác biến đổi mảng (push, pop, shift, unshift, slice, splice)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-ARRAY-01"
+      ]
+    },
+    {
+      "item_id": "b9b3cd5a-5c57-4ddb-9506-9fe358f4fd29",
+      "item_title": "Mô phỏng ngăn xếp (Stack LIFO) với push và pop",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-07.02",
+      "lesson_title": "Bài 7.2: Thao tác biến đổi mảng (push, pop, shift, unshift, slice, splice)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-ARRAY-01"
+      ]
+    },
+    {
+      "item_id": "2c4a0b98-ff55-43d8-9756-5ec71e135a07",
+      "item_title": "Trích xuất mảng con không làm thay đổi mảng gốc với slice",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-07.02",
+      "lesson_title": "Bài 7.2: Thao tác biến đổi mảng (push, pop, shift, unshift, slice, splice)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-ARRAY-01"
+      ]
+    },
+    {
+      "item_id": "874d5c3c-9cdc-487f-b02f-56c8717ca00c",
+      "item_title": "Kiểm định chất lượng điểm thi của lớp học",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-07.03",
+      "lesson_title": "Bài 7.3: Tìm kiếm và kiểm tra trong mảng (indexOf, includes, find, some, every)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-ARRAY-01"
+      ]
+    },
+    {
+      "item_id": "4944ec7a-7a98-45cb-b0a6-abc316d1da62",
+      "item_title": "Tìm số đầu tiên chia hết cho 7 bằng phương thức find",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-07.03",
+      "lesson_title": "Bài 7.3: Tìm kiếm và kiểm tra trong mảng (indexOf, includes, find, some, every)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-ARRAY-01"
+      ]
+    },
+    {
+      "item_id": "90355566-b168-48e6-9842-72c6862af83f",
+      "item_title": "Tra cứu vị trí và sự tồn tại của phần tử với indexOf & includes",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-07.03",
+      "lesson_title": "Bài 7.3: Tìm kiếm và kiểm tra trong mảng (indexOf, includes, find, some, every)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-ARRAY-01"
+      ]
+    },
+    {
+      "item_id": "b49334d5-8249-4a58-a799-4b0ddbb13dba",
+      "item_title": "Ánh xạ nhân đôi giá trị các phần tử bằng map",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-07.04",
+      "lesson_title": "Bài 7.4: Biến đổi và tổng hợp mảng (map, filter, reduce, sort)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-ARRAY-HOF-01"
+      ]
+    },
+    {
+      "item_id": "4434efdf-fbb5-42cc-814e-a0dbaee83887",
+      "item_title": "Lọc số chẵn, bình phương và tính tổng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-07.04",
+      "lesson_title": "Bài 7.4: Biến đổi và tổng hợp mảng (map, filter, reduce, sort)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-ARRAY-HOF-01"
+      ]
+    },
+    {
+      "item_id": "ca842119-5a9d-455a-a6d5-cb9c335e0c55",
+      "item_title": "Sắp xếp mảng số nguyên tăng dần và giảm dần bằng sort",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-07.04",
+      "lesson_title": "Bài 7.4: Biến đổi và tổng hợp mảng (map, filter, reduce, sort)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-ARRAY-HOF-01"
+      ]
+    },
+    {
+      "item_id": "2a53bab2-2e4b-4e49-b6db-f4920292119f",
+      "item_title": "Tính giá trị tích lũy và tìm số lớn nhất bằng reduce",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-07.04",
+      "lesson_title": "Bài 7.4: Biến đổi và tổng hợp mảng (map, filter, reduce, sort)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-ARRAY-HOF-01"
+      ]
+    },
+    {
+      "item_id": "f3b523c3-91fe-429e-a8e8-9e6a00956085",
+      "item_title": "Sử dụng ký tự thoát (Escape Sequences) cho chuỗi văn bản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-08.01",
+      "lesson_title": "Bài 8.1: Khai báo chuỗi, ký tự thoát & Template Literals (ES6)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-STRING-01"
+      ]
+    },
+    {
+      "item_id": "d6866d67-9a6c-4ef7-8471-e909c916555c",
+      "item_title": "Tạo thẻ thông tin học viên bằng Template Literals",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-08.01",
+      "lesson_title": "Bài 8.1: Khai báo chuỗi, ký tự thoát & Template Literals (ES6)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-STRING-01"
+      ]
+    },
+    {
+      "item_id": "c152b827-3fae-440c-94bf-038f7a355442",
+      "item_title": "Tính hóa đơn và định dạng biểu thức nội suy nhiều dòng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-08.01",
+      "lesson_title": "Bài 8.1: Khai báo chuỗi, ký tự thoát & Template Literals (ES6)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-STRING-01"
+      ]
+    },
+    {
+      "item_id": "865684c8-f287-4c3c-8186-65dc0210485c",
+      "item_title": "Chuẩn hóa và đo độ dài chuỗi văn bản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-08.02",
+      "lesson_title": "Bài 8.2: Độ dài chuỗi, toUpperCase(), toLowerCase() & trim()",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-STRING-01"
+      ]
+    },
+    {
+      "item_id": "d1eec740-76c9-4958-bf00-4423e8473612",
+      "item_title": "Chuyển đổi email về chữ thường chuẩn và xóa khoảng trắng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-08.02",
+      "lesson_title": "Bài 8.2: Độ dài chuỗi, toUpperCase(), toLowerCase() & trim()",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-STRING-01"
+      ]
+    },
+    {
+      "item_id": "b2dbec0a-f218-421d-9216-f841f27b305b",
+      "item_title": "Đếm số ký tự nguyên âm trong chuỗi văn bản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-08.02",
+      "lesson_title": "Bài 8.2: Độ dài chuỗi, toUpperCase(), toLowerCase() & trim()",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-STRING-01"
+      ]
+    },
+    {
+      "item_id": "75188f3a-3f33-4981-8393-7dc15d5bf4a3",
+      "item_title": "Kiểm định mã sinh viên hợp lệ",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-08.03",
+      "lesson_title": "Bài 8.3: Tìm kiếm & Trích xuất chuỗi (includes, startsWith, endsWith, slice)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-STRING-01"
+      ]
+    },
+    {
+      "item_id": "71c02eb2-8f94-425d-b404-8dd5de863beb",
+      "item_title": "Kiểm tra URL bảo mật giao thức HTTPS",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-08.03",
+      "lesson_title": "Bài 8.3: Tìm kiếm & Trích xuất chuỗi (includes, startsWith, endsWith, slice)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-STRING-01"
+      ]
+    },
+    {
+      "item_id": "ad8626c0-0873-4a41-9de1-ba2cca1edbe7",
+      "item_title": "Trích xuất tên miền mở rộng từ tên tệp tin (slice & lastIndexOf)",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-08.03",
+      "lesson_title": "Bài 8.3: Tìm kiếm & Trích xuất chuỗi (includes, startsWith, endsWith, slice)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-STRING-01"
+      ]
+    },
+    {
+      "item_id": "118b6281-0e8c-41f9-9d70-232ef40fc12d",
+      "item_title": "Ẩn các ký tự nhạy cảm trong số điện thoại bằng slice",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-08.04",
+      "lesson_title": "Bài 8.4: Tách ghép & Thay thế chuỗi (split, join, replace, replaceAll)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-STRING-01"
+      ]
+    },
+    {
+      "item_id": "963198c8-dbbf-4b33-b45f-112d01bcef5e",
+      "item_title": "Chuẩn hóa câu văn từ danh sách từ khóa",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-08.04",
+      "lesson_title": "Bài 8.4: Tách ghép & Thay thế chuỗi (split, join, replace, replaceAll)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-STRING-01"
+      ]
+    },
+    {
+      "item_id": "bb383ec4-8467-402d-8197-9574a22c102e",
+      "item_title": "Đảo ngược các ký tự trong từ bằng split, reverse và join",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-08.04",
+      "lesson_title": "Bài 8.4: Tách ghép & Thay thế chuỗi (split, join, replace, replaceAll)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-STRING-01"
+      ]
+    },
+    {
+      "item_id": "e0560f63-1ca6-4871-bb82-7ba72d5483b4",
+      "item_title": "Thay thế từ khóa cấm trong câu văn bằng replaceAll",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS1-08.04",
+      "lesson_title": "Bài 8.4: Tách ghép & Thay thế chuỗi (split, join, replace, replaceAll)",
+      "course_title": "Lập trình JavaScript Nền tảng & Cấu trúc Dữ liệu (JavaScript Foundations)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-STRING-01"
+      ]
+    },
+    {
+      "item_id": "2d902313-8ad9-4a15-b2c6-54b9f206f2e8",
+      "item_title": "Truy cập thuộc tính động của đối tượng sản phẩm",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-09.01",
+      "lesson_title": "Bài 9.1: Khởi tạo Object (Object Literal), Dot notation vs Bracket notation",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-OBJECT-01"
+      ]
+    },
+    {
+      "item_id": "2e40812b-7ed9-4b74-9abf-837c3579fff8",
+      "item_title": "Quản lý và dọn dẹp thuộc tính nhạy cảm của tài khoản",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-09.02",
+      "lesson_title": "Bài 9.2: Thêm, sửa, xóa thuộc tính với delete & Toán tử in",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-OBJECT-01"
+      ]
+    },
+    {
+      "item_id": "b83c8d16-190e-4761-843c-c50b0feb02e4",
+      "item_title": "Tính tổng doanh số bán hàng từ bảng dữ liệu",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-09.03",
+      "lesson_title": "Bài 9.3: Duyệt Object với for...in, Object.keys, values & entries",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-OBJECT-01"
+      ]
+    },
+    {
+      "item_id": "b31a955e-e2a9-46a4-976d-2ca687d2ed90",
+      "item_title": "Cập nhật cấu hình người dùng an toàn bằng Deep Clone",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-09.04",
+      "lesson_title": "Bài 9.4: Nested Object & Sao chép tham chiếu vs Deep Clone",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-OBJECT-01"
+      ]
+    },
+    {
+      "item_id": "2424a642-4ceb-41ea-ab4f-51bfe515b1d9",
+      "item_title": "Đọc cấu hình hệ thống an toàn với ?. và ??",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-09.05",
+      "lesson_title": "Bài 9.5: Optional Chaining (?.) & Nullish Coalescing (??)",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-OBJECT-01"
+      ]
+    },
+    {
+      "item_id": "30d688cf-0fee-40ad-a214-ab057f564a17",
+      "item_title": "Hoán đổi biến và phân rã đối tượng sinh viên",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-10.01",
+      "lesson_title": "Bài 10.1: Phân rã mảng & đối tượng nâng cao (Destructuring Assignment)",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-DESTRUCT-01"
+      ]
+    },
+    {
+      "item_id": "ee80ce22-b000-4fe6-9c05-e3a4251c582e",
+      "item_title": "Hợp nhất cấu hình ứng dụng bằng Spread Operator",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-10.02",
+      "lesson_title": "Bài 10.2: Toán tử lan truyền (Spread Operator ...) cho Array và Object",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-SPREADREST-01"
+      ]
+    },
+    {
+      "item_id": "14821c98-c350-4ba0-8c3a-d49577a662d4",
+      "item_title": "Hàm tính toán thống kê với số lượng tham số tùy ý",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-10.03",
+      "lesson_title": "Bài 10.3: Gom tham số với Rest Parameters (...args) trong hàm",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-SPREADREST-01"
+      ]
+    },
+    {
+      "item_id": "b57f7a8a-e067-4229-835d-a142a2f38a8e",
+      "item_title": "Tạo đối tượng nhật ký với thuộc tính tính toán động",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-10.04",
+      "lesson_title": "Bài 10.4: Shorthand Properties & Computed Property Names trong ES6",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-OBJECT-01"
+      ]
+    },
+    {
+      "item_id": "cc1399a0-ff7c-4e79-9ee0-330b9a987096",
+      "item_title": "Loại bỏ phần tử trùng lặp và đếm số lượng duy nhất",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-10.05",
+      "lesson_title": "Bài 10.5: Cấu trúc dữ liệu Set và Map trong JavaScript ES6",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-SETMAP-01"
+      ]
+    },
+    {
+      "item_id": "0416f9fb-e266-4122-892a-c1a5872721d4",
+      "item_title": "Mô phỏng hành vi Hoisting và thứ tự thực thi",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-11.01",
+      "lesson_title": "Bài 11.1: Execution Context, Call Stack & Cơ chế Hoisting",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-EXEC-01"
+      ]
+    },
+    {
+      "item_id": "ebc6c544-a665-4785-bde0-48bab4935085",
+      "item_title": "Minh họa hiện tượng che khuất biến Variable Shadowing",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-11.02",
+      "lesson_title": "Bài 11.2: Scope Chain & Kỹ thuật che khuất biến (Variable Shadowing)",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-SCOPE-01"
+      ]
+    },
+    {
+      "item_id": "74aae6a2-a95d-4ef3-a00f-6c7feda7355e",
+      "item_title": "Tạo bộ đếm tự tăng độc lập bằng Closure",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-11.03",
+      "lesson_title": "Bài 11.3: Lexical Scope & Kỹ thuật bao đóng (Closure) trong JavaScript",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "JS-CLOSURE-01"
+      ]
+    },
+    {
+      "item_id": "b7b1c42b-4936-4a53-9ef4-46ec9e6bf05e",
+      "item_title": "Xây dựng đối tượng ví điện tử sử dụng con trỏ this",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-11.04",
+      "lesson_title": "Bài 11.4: Từ khóa 'this' trong Object Method & Sự khác biệt với Arrow Function",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-THIS-01"
+      ]
+    },
+    {
+      "item_id": "6a9fe8e5-8014-436d-9479-bbe89dc51db5",
+      "item_title": "Mượn hàm tính thuế sản phẩm bằng call và apply",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-11.05",
+      "lesson_title": "Bài 11.5: Ràng buộc ngữ cảnh thực thi với bind(), call() và apply()",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "JS-THIS-01"
+      ]
+    },
+    {
+      "item_id": "c30734c9-a2ea-44b1-a5fb-d3cc2993a52b",
+      "item_title": "Thiết lập chuỗi kế thừa Prototype với Object.create",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-12.01",
+      "lesson_title": "Bài 12.1: Nguyên lý Prototype, __proto__ & Prototype Chain",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-PROTO-01"
+      ]
+    },
+    {
+      "item_id": "f04ba70b-0e16-4135-b50f-16b36077f201",
+      "item_title": "Thiết kế Constructor Function cho khóa học",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-12.02",
+      "lesson_title": "Bài 12.2: Constructor Function & Cơ chế chia sẻ bộ nhớ prototype",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-PROTO-01"
+      ]
+    },
+    {
+      "item_id": "4edd51ed-24f5-4054-b8f2-0a80841c60c2",
+      "item_title": "Xây dựng lớp quản lý tài khoản ngân hàng BankAccount",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-12.03",
+      "lesson_title": "Bài 12.3: Cú pháp class, constructor & Instance Methods trong Modern JS",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-CLASS-01"
+      ]
+    },
+    {
+      "item_id": "a89502be-5b8e-4945-b4f4-d0ac539cb06e",
+      "item_title": "Thiết kế hệ thống nhân sự với extends và super",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-12.04",
+      "lesson_title": "Bài 12.4: Kế thừa hướng đối tượng với extends & Hàm khởi tạo cha super()",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-CLASS-01"
+      ]
+    },
+    {
+      "item_id": "94c5775d-f309-4e16-826d-6cc68466b51e",
+      "item_title": "Đóng gói mật khẩu tài khoản với Private Field và Getter",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-12.05",
+      "lesson_title": "Bài 12.5: Phương thức tĩnh static, Getter/Setter & Private Fields (#)",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "JS-CLASS-01"
+      ]
+    },
+    {
+      "item_id": "a7a03834-cd5c-4436-8ba5-a26641509086",
+      "item_title": "Nhận diện phân loại lỗi runtime",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-13.01",
+      "lesson_title": "Bài 13.1: Phân loại lỗi: SyntaxError, TypeError, ReferenceError, RangeError",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-ERROR-01"
+      ]
+    },
+    {
+      "item_id": "44dfc5e9-b3aa-49de-a11e-081340fe53f1",
+      "item_title": "Phân tích cú pháp chuỗi JSON an toàn",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-13.02",
+      "lesson_title": "Bài 13.2: Bắt lỗi an toàn với khối try...catch...finally",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-ERROR-01"
+      ]
+    },
+    {
+      "item_id": "32fa2d64-e781-40eb-8d30-f4fd4c6d25ea",
+      "item_title": "Kiểm tra độ tuổi với Custom ValidationError",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-13.03",
+      "lesson_title": "Bài 13.3: Chủ động ném lỗi với throw & Custom Error Class",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-ERROR-01"
+      ]
+    },
+    {
+      "item_id": "5eee0b16-6edd-4a8e-8ef6-29aac388c2a6",
+      "item_title": "Xây dựng hàm kiểm định hồ sơ người dùng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-13.04",
+      "lesson_title": "Bài 13.4: Chiến lược Data Validation & Debugging với console và Stack Trace",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 2,
+      "difficulty_label": "MEDIUM",
+      "skill_ids": [
+        "JS-ERROR-01"
+      ]
+    },
+    {
+      "item_id": "c1a88d19-93e2-4e4d-b713-81d1aaf078ed",
+      "item_title": "Thiết kế mô-đun tính toán hình học chuẩn CommonJS",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-14.01",
+      "lesson_title": "Bài 14.1: Hệ thống mô-đun: CommonJS (require) vs ES Modules (import/export)",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-MODULE-01"
+      ]
+    },
+    {
+      "item_id": "dfc2b921-3075-4b3d-92e3-223dd6ada47c",
+      "item_title": "Mô-đun định dạng dữ liệu tài chính",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-14.02",
+      "lesson_title": "Bài 14.2: Named Export vs Default Export & Nguyên tắc Single Responsibility (SRP)",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 1,
+      "difficulty_label": "EASY",
+      "skill_ids": [
+        "JS-MODULE-01"
+      ]
+    },
+    {
+      "item_id": "f35585d1-dcca-43ec-9d5a-7ba2cfba3bc1",
+      "item_title": "Xây dựng hệ thống quản lý thực thể sinh viên StudentManager",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-14.03",
+      "lesson_title": "Bài 14.3: Dự án Mini Console: Hệ thống quản lý thực thể sinh viên",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "JS-MODULE-01"
+      ]
+    },
+    {
+      "item_id": "65a64f0a-94bc-4cce-8e05-e393a078b05d",
+      "item_title": "Xây dựng Transaction Engine xử lý sổ cái ngân hàng",
+      "item_source": "CODING_EXERCISE_DB",
+      "lesson_code": "JS2-14.04",
+      "lesson_title": "Bài 14.4: Engine xử lý giao dịch tài chính & Tổng kết tư duy JS thuần",
+      "course_title": "Lập trình JavaScript Nâng cao & Lập trình Hướng đối tượng (JavaScript Advanced & OOP)",
+      "difficulty": 3,
+      "difficulty_label": "HARD",
+      "skill_ids": [
+        "JS-MODULE-01"
+      ]
+    }
+  ]
+}

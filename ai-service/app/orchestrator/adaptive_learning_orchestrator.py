@@ -194,7 +194,7 @@ class AdaptiveLearningOrchestrator:
                 if theory is None or repair_target in ("BOTH", "THEORY"):
                     theory = make_theory()
                 review = evidence.step("CriticEvaluatorAgent", "LLM", {"theory": theory, "draft": draft, "specification": spec.model_dump()},
-                    lambda: critic.evaluate_content(theory["reply"], draft, spec), attempt)
+                    lambda: critic.evaluate_content(theory["reply"], draft, spec, verified_contract=True), attempt)
                 if not review["is_approved"]:
                     feedback, repair_target = review, review["feedback_target"]
                     continue
@@ -204,8 +204,14 @@ class AdaptiveLearningOrchestrator:
                 prefix = "Bài khởi đầu cho lộ trình" if intent == "CREATE_LEARNING_PATH" else "Bài tập"
                 return result("SUCCEEDED", f"{prefix} **{artifact['title']}** đã qua kiểm thử và thẩm định. {spec.reasoning}", artifact,
                     suggested_options=["Cho tôi bài dễ hơn", "Giải thích thêm lý thuyết", "Tạo bài tiếp theo"])
-            raise PipelineError("REPAIR_LIMIT_REACHED", "Các bước kiểm định chưa đạt sau 3 bản sinh; xem dẫn chứng từng lượt.")
+            raise PipelineError("REPAIR_LIMIT_REACHED", "Các bước kiểm định chưa đạt sau tối đa 3 lượt sửa; xem dẫn chứng từng lượt.")
         except Exception as exc:
+            if getattr(exc, "code", None) == "REPAIR_LIMIT_REACHED":
+                title = spec.concept_title if "spec" in locals() else "cùng chủ đề"
+                return result("FAILED", "AI chưa tạo được bài mới vượt qua toàn bộ kiểm thử và thẩm định sau 3 lần. "
+                    "Chưa phát hành bài; bạn có thể yêu cầu tạo một bài mới khác.",
+                    suggested_options=[f"Tạo bài tập mới về {title}"],
+                    error={"code": exc.code, "message": str(exc)[:1000], "details": getattr(exc, "details", {})})
             return result("FAILED", "Pipeline dừng tại bước chưa đạt. Bạn có thể xem dẫn chứng và lỗi cụ thể bên dưới.",
                 error={"code": getattr(exc, "code", "PIPELINE_FAILED"), "message": str(exc)[:1000], "details": getattr(exc, "details", {})})
 
@@ -256,7 +262,7 @@ class AdaptiveLearningOrchestrator:
                     lambda: ExplanationTutorAgent(client).explain(spec.target_concept, spec.concept_title, spec.language, user_text,
                         {"specification": spec.model_dump(), **grounding}), 1)
             review = evidence.step("CriticEvaluatorAgent", "LLM", {"theory": theory, "draft": draft, "specification": spec.model_dump(), "resumed": True},
-                lambda: CriticEvaluatorAgent(client).evaluate_content(theory["reply"], draft, spec), 1)
+                lambda: CriticEvaluatorAgent(client).evaluate_content(theory["reply"], draft, spec, verified_contract=True), 1)
             # A checkpoint can contain a verified exercise paired with an
             # earlier theory version (for example when a repair call timed
             # out). Repair that smaller artifact in place instead of failing
@@ -274,7 +280,7 @@ class AdaptiveLearningOrchestrator:
                          "previous_theory": previous_theory}, review), repair_attempt)
                 review = evidence.step("CriticEvaluatorAgent", "LLM",
                     {"theory": theory, "draft": draft, "specification": spec.model_dump(), "resumed": True},
-                    lambda: CriticEvaluatorAgent(client).evaluate_content(theory["reply"], draft, spec), repair_attempt)
+                    lambda: CriticEvaluatorAgent(client).evaluate_content(theory["reply"], draft, spec, verified_contract=True), repair_attempt)
             if not review["is_approved"]:
                 if review["feedback_target"] in ("EXERCISE", "BOTH"):
                     # The verified checkpoint itself needs replacement. Let

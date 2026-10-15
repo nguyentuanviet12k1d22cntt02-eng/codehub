@@ -1,0 +1,47 @@
+{
+  "schema_version": "synthetic-history-real-items/1.0",
+  "language": "python",
+  "data_origin": "SYNTHETIC_HISTORY_REAL_ITEMS",
+  "real_learner_data": false,
+  "real_exercise_data": true,
+  "purpose": "Offline BKT/DKT/PAL-Net pipeline comparison; not evidence of learner benefit",
+  "source_graph": "pythonSkillGraph.json",
+  "graph_version": "2.1",
+  "graph_sha256": "885c31f95faa2427e29eca95439d1782f89e717e26ee61f99a5cffea7adbf247",
+  "source_catalog": "python_items.json",
+  "catalog_schema_version": "real-exercise-catalog/1.0",
+  "catalog_sha256": "5c15767d10c8eccd5d5a06a1fdc2c5ab866b6f874fdee77e7a67ce415e627d42",
+  "dataset_sha256": "d0fdb291ce4703d378d5abc2d856f8c78266ef985cbf8896fbc50e6a110a0a9a",
+  "seed": 20261013,
+  "learners": 60,
+  "interactions": 6415,
+  "skills_in_graph": 35,
+  "skills_with_real_items": 26,
+  "skills_observed": 26,
+  "catalog_items": 322,
+  "items_observed": 305,
+  "persona_counts": {
+    "NEW": 12,
+    "STEADY": 12,
+    "TRIAL_ERROR": 12,
+    "FAST": 12,
+    "RETURNING": 12
+  },
+  "field_notes": {
+    "item_id": "Actual CodingExercise UUID exported read-only from the product database",
+    "item_title": "Actual CodingExercise title from the product database",
+    "lesson_code": "Actual stable lesson code from the product database",
+    "item_source": "CODING_EXERCISE_DB means the item exists in the product database",
+    "error_type": "Simulated mistake category; not inferred from source code or actual submissions",
+    "prereq_mastery_proxy": "Pre-attempt estimate from earlier rows only; not true mastery",
+    "attempt_index": "Simulated repeated attempt on the same real catalog item"
+  },
+  "limitations": [
+    "Learner identities, histories, outcomes, time and error types are simulated",
+    "Behavioral parameters are assumptions rather than estimates from real users",
+    "Curriculum order follows the graph, but prerequisite mastery is not used to generate correctness",
+    "No hint interaction is simulated because the product does not expose a hint action",
+    "Real exercise IDs do not make the simulated histories real telemetry",
+    "These results cannot establish pedagogical efficacy or production readiness"
+  ]
+}
