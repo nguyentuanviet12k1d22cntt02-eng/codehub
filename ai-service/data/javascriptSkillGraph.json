@@ -1,5 +1,5 @@
 {
-  "version": "3.1.0",
+  "version": "3.2.0",
   "domain": {
     "id": "JAVASCRIPT",
     "name": "Lập trình JavaScript Toàn diện, ES6+ & Hướng đối tượng (Modern JavaScript)",
@@ -1078,7 +1078,21 @@
     "JS2-14.01": "JS-MODULE-01",
     "JS2-14.02": "JS-MODULE-01",
     "JS2-14.03": "JS-MODULE-01",
-    "JS2-14.04": "JS-MODULE-01"
+    "JS2-14.04": "JS-MODULE-01",
+    "JS1-01.MP": "JS-VAR-01",
+    "JS1-02.MP": "JS-TYPE-01",
+    "JS1-03.MP": "JS-COERCE-01",
+    "JS1-04.MP": "JS-COND-01",
+    "JS1-05.MP": "JS-LOOP-01",
+    "JS1-06.MP": "JS-FUNC-01",
+    "JS1-07.MP": "JS-ARRAY-01",
+    "JS1-08.MP": "JS-STRING-01",
+    "JS2-09.MP": "JS-OBJECT-01",
+    "JS2-10.MP": "JS-SPREADREST-01",
+    "JS2-11.MP": "JS-THIS-01",
+    "JS2-12.MP": "JS-CLASS-01",
+    "JS2-13.MP": "JS-ERROR-01",
+    "JS2-14.MP": "JS-MODULE-01"
   },
   "detailed_lesson_mappings": {
     "JS1-01.01": {
@@ -1452,6 +1466,81 @@
         "JS-CLASS-01",
         "JS-ERROR-01"
       ]
+    },
+    "JS1-01.MP": {
+      "primary": "JS-VAR-01",
+      "supporting": [
+        "JS-RUNTIME-01"
+      ]
+    },
+    "JS1-02.MP": {
+      "primary": "JS-TYPE-01",
+      "supporting": []
+    },
+    "JS1-03.MP": {
+      "primary": "JS-COERCE-01",
+      "supporting": [
+        "JS-RUNTIME-01"
+      ]
+    },
+    "JS1-04.MP": {
+      "primary": "JS-COND-01",
+      "supporting": []
+    },
+    "JS1-05.MP": {
+      "primary": "JS-LOOP-01",
+      "supporting": [
+        "JS-COND-01"
+      ]
+    },
+    "JS1-06.MP": {
+      "primary": "JS-FUNC-01",
+      "supporting": [
+        "JS-ARROW-01"
+      ]
+    },
+    "JS1-07.MP": {
+      "primary": "JS-ARRAY-01",
+      "supporting": [
+        "JS-ARRAY-HOF-01"
+      ]
+    },
+    "JS1-08.MP": {
+      "primary": "JS-STRING-01",
+      "supporting": []
+    },
+    "JS2-09.MP": {
+      "primary": "JS-OBJECT-01",
+      "supporting": []
+    },
+    "JS2-10.MP": {
+      "primary": "JS-SPREADREST-01",
+      "supporting": [
+        "JS-DESTRUCT-01",
+        "JS-SETMAP-01"
+      ]
+    },
+    "JS2-11.MP": {
+      "primary": "JS-THIS-01",
+      "supporting": [
+        "JS-EXEC-01",
+        "JS-SCOPE-01",
+        "JS-CLOSURE-01"
+      ]
+    },
+    "JS2-12.MP": {
+      "primary": "JS-CLASS-01",
+      "supporting": [
+        "JS-PROTO-01"
+      ]
+    },
+    "JS2-13.MP": {
+      "primary": "JS-ERROR-01",
+      "supporting": []
+    },
+    "JS2-14.MP": {
+      "primary": "JS-MODULE-01",
+      "supporting": []
     }
   },
   "practice_problem_mappings": {}
