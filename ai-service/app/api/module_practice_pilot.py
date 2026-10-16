@@ -6,6 +6,7 @@ import hashlib
 import json
 import math
 import os
+import re
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -23,7 +24,8 @@ from app.knowledge_tracing.pilot import (
 
 router = APIRouter(prefix="/local-pilot/module-practice", tags=["local-pilot"])
 SERVICE_ROOT = Path(__file__).resolve().parents[2]
-RUN_ROOT = SERVICE_ROOT / "outputs" / "synthetic_pilot" / "20261008T065624Z_40969384"
+PILOT_RUNS_ROOT = SERVICE_ROOT / "outputs" / "synthetic_pilot"
+ACTIVE_RUN_PATH = PILOT_RUNS_ROOT / "active.json"
 
 
 def _matches_expected_hash(path: Path, expected: str) -> bool:
@@ -60,12 +62,27 @@ class ScoreRequest(BaseModel):
     candidates: list[Candidate]
 
 
+def load_active_run() -> tuple[Path, dict]:
+    """Resolve the explicitly activated, reproducible synthetic-pilot run."""
+    manifest = json.loads(ACTIVE_RUN_PATH.read_text(encoding="utf-8"))
+    run_id = manifest.get("run_id")
+    if not isinstance(run_id, str) or not re.fullmatch(r"\d{8}T\d{6}Z_[0-9a-f]{8}", run_id):
+        raise ValueError("Active pilot manifest has an invalid run ID")
+    run_root = (PILOT_RUNS_ROOT / run_id).resolve()
+    if run_root.parent != PILOT_RUNS_ROOT.resolve():
+        raise ValueError("Active pilot run must remain inside the pilot output directory")
+    return run_root, manifest
+
+
 @lru_cache(maxsize=1)
 def load_local_pilot():
     """Pin the local demo to its audited data, graph, features, and weights."""
-    report = json.loads((RUN_ROOT / "report.json").read_text(encoding="utf-8"))
-    checkpoint = torch.load(RUN_ROOT / "palnet_pilot.pt", map_location="cpu", weights_only=True)
-    if (not checkpoint.get("pilot_only")
+    run_root, manifest = load_active_run()
+    report = json.loads((run_root / "report.json").read_text(encoding="utf-8"))
+    checkpoint = torch.load(run_root / "palnet_pilot.pt", map_location="cpu", weights_only=True)
+    if (manifest.get("dataset_sha256") != report.get("dataset_sha256")
+            or manifest.get("graph_sha256") != report.get("graph_sha256")
+            or not checkpoint.get("pilot_only")
             or checkpoint.get("dataset_sha256") != report.get("dataset_sha256")
             or checkpoint.get("skill_ids") != PILOT_SKILLS
             or checkpoint.get("feature_names") != PAL_FEATURE_NAMES
@@ -131,4 +148,5 @@ def score_module_practice(body: ScoreRequest, request: Request):
 
 
 def checkpoint_hash() -> str:
-    return json.loads((RUN_ROOT / "report.json").read_text(encoding="utf-8"))["dataset_sha256"]
+    _, manifest = load_active_run()
+    return str(manifest["dataset_sha256"])

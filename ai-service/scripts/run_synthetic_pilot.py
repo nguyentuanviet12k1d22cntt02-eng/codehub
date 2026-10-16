@@ -40,6 +40,7 @@ from app.knowledge_tracing.pilot import (  # noqa: E402
 CSV_PATH = SERVICE_ROOT / "data" / "synthetic_pilot_learners.csv"
 META_PATH = SERVICE_ROOT / "data" / "synthetic_pilot_10_learners_metadata.json"
 GRAPH_PATH = SERVICE_ROOT / "data" / "skill_graph.json"
+ACTIVE_RUN_PATH = SERVICE_ROOT / "outputs" / "synthetic_pilot" / "active.json"
 
 
 def pal_tensors(samples, users: tuple[str, ...]) -> TensorDataset:
@@ -201,12 +202,27 @@ def run_training(gate: dict, epochs: int, seed: int, output_root: Path) -> Path:
     return output_dir
 
 
+def activate_run(output_dir: Path) -> None:
+    """Atomically select a completed, audited run for the local-pilot API."""
+    report = json.loads((output_dir / "report.json").read_text(encoding="utf-8"))
+    manifest = {
+        "schema_version": "synthetic-pilot-active-run/1.0",
+        "run_id": output_dir.name,
+        "dataset_sha256": report["dataset_sha256"],
+        "graph_sha256": report["graph_sha256"],
+    }
+    temporary_path = ACTIVE_RUN_PATH.with_suffix(".json.tmp")
+    temporary_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    temporary_path.replace(ACTIVE_RUN_PATH)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--train", action="store_true", help="Run offline training after the gate passes")
     parser.add_argument("--epochs", type=int, default=8)
     parser.add_argument("--seed", type=int, default=20261008)
     parser.add_argument("--output-root", type=Path, default=SERVICE_ROOT / "outputs" / "synthetic_pilot")
+    parser.add_argument("--activate", action="store_true", help="Select the completed run for the local-pilot API")
     args = parser.parse_args()
     if args.epochs < 1:
         parser.error("--epochs must be positive")
@@ -215,7 +231,9 @@ def main() -> None:
     print(json.dumps({"feature_gate": gate}, indent=2))
     if args.train:
         output_dir = run_training(gate, args.epochs, args.seed, args.output_root)
-        print(json.dumps({"offline_run": str(output_dir), "serving_eligible": False}))
+        if args.activate:
+            activate_run(output_dir)
+        print(json.dumps({"offline_run": str(output_dir), "active": args.activate, "serving_eligible": False}))
 
 
 if __name__ == "__main__":

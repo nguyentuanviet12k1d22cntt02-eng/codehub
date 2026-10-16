@@ -5,9 +5,10 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
 
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
-from app.api.module_practice_pilot import load_local_pilot
+from app.api.module_practice_pilot import ScoreRequest, load_local_pilot, score_module_practice
 from app.knowledge_tracing.pilot import predict_next_pal
 from main import app
 
@@ -43,12 +44,15 @@ class LocalModulePracticePilotTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["engine"], "PALNET_SYNTHETIC_LOCAL_PILOT")
 
-    def test_non_loopback_client_cannot_use_default_enabled_pilot(self):
-        remote_client = TestClient(app, client=("192.0.2.1", 50000))
-        with patch.dict(os.environ, {"PALNET_LOCAL_PILOT": "1"}):
+    def test_non_loopback_client_is_blocked_when_remote_access_is_disabled(self):
+        with patch.dict(os.environ, {"PALNET_LOCAL_PILOT": "1", "PALNET_ALLOW_REMOTE": "0"}):
             del os.environ["PALNET_LOCAL_PILOT"]
-            response = remote_client.post("/local-pilot/module-practice/score", json=self.body)
-        self.assertEqual(response.status_code, 403)
+            with self.assertRaises(HTTPException) as raised:
+                score_module_practice(
+                    ScoreRequest(**self.body),
+                    SimpleNamespace(client=SimpleNamespace(host="192.0.2.1")),
+                )
+        self.assertEqual(raised.exception.status_code, 403)
 
     def test_unknown_skill_rejected(self):
         body = dict(self.body, candidates=[{"id": "bad", "skill_id": "PY-STRING-01", "difficulty": 1}])

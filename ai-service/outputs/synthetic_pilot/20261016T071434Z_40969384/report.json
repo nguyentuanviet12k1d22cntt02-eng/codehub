@@ -1,0 +1,157 @@
+{
+  "purpose": "synthetic pilot technical feasibility only; not learner efficacy",
+  "dataset_type": "SYNTHETIC",
+  "interpretation_limit": "Forty simulated learners; test metrics are descriptive, not evidence of real-world model benefit",
+  "serving_eligible": false,
+  "dataset_sha256": "40969384fe86f98d5f32a96d48cb7a873119c6350ff989598d3f982301391fbf",
+  "graph_sha256": "d229720d427e56e3ead712851e1c4f7ff7549d1c92ce20775d8ac5c6f0fa8a6e",
+  "seed": 20261008,
+  "max_epochs": 8,
+  "split_user_ids": {
+    "train": [
+      "syn_average_02",
+      "syn_average_03",
+      "syn_average_06",
+      "syn_average_08",
+      "syn_average_09",
+      "syn_average_10",
+      "syn_erratic_01",
+      "syn_erratic_02",
+      "syn_erratic_03",
+      "syn_erratic_05",
+      "syn_erratic_06",
+      "syn_erratic_10",
+      "syn_fast_01",
+      "syn_fast_02",
+      "syn_fast_03",
+      "syn_fast_06",
+      "syn_fast_07",
+      "syn_fast_08",
+      "syn_struggle_03",
+      "syn_struggle_04",
+      "syn_struggle_06",
+      "syn_struggle_07",
+      "syn_struggle_09",
+      "syn_struggle_10"
+    ],
+    "validation": [
+      "syn_average_01",
+      "syn_average_07",
+      "syn_erratic_04",
+      "syn_erratic_09",
+      "syn_fast_05",
+      "syn_fast_09",
+      "syn_struggle_02",
+      "syn_struggle_08"
+    ],
+    "test": [
+      "syn_average_04",
+      "syn_average_05",
+      "syn_erratic_07",
+      "syn_erratic_08",
+      "syn_fast_04",
+      "syn_fast_10",
+      "syn_struggle_01",
+      "syn_struggle_05"
+    ]
+  },
+  "scored_policy": "t>=2 for all models; held-out learner history is observed only before each predicted step",
+  "model_features": {
+    "DKT": "shifted prior skill/outcome tokens + current target skill",
+    "PAL-Net": [
+      "log_prior_target_exposures",
+      "prior_target_accuracy",
+      "log_prior_total_exposures",
+      "prior_global_accuracy",
+      "target_difficulty_over_3",
+      "causal_prereq_mastery_proxy"
+    ]
+  },
+  "baseline_train_rate": 0.5288888888888889,
+  "validation": {
+    "baseline": {
+      "events": 305,
+      "label_0": 150,
+      "label_1": 155,
+      "auc_roc": 0.5,
+      "accuracy_at_0_5": 0.5081967213114754,
+      "rmse": 0.5003608493465428,
+      "f1": 0.6739130434782609,
+      "f1_threshold": 0.5,
+      "log_loss": 0.6938708758139377,
+      "brier": 0.2503609795587937,
+      "ece_equal_count_10": 0.1427176684881603
+    },
+    "DKT": {
+      "events": 305,
+      "label_0": 150,
+      "label_1": 155,
+      "auc_roc": 0.6764301075268817,
+      "accuracy_at_0_5": 0.6295081967213115,
+      "rmse": 0.47601274259054255,
+      "f1": 0.64576802507837,
+      "f1_threshold": 0.5,
+      "log_loss": 0.6448656020640466,
+      "brier": 0.22658813110857012,
+      "ece_equal_count_10": 0.057812074266496254
+    },
+    "PAL-Net": {
+      "events": 305,
+      "label_0": 150,
+      "label_1": 155,
+      "auc_roc": 0.674989247311828,
+      "accuracy_at_0_5": 0.6459016393442623,
+      "rmse": 0.47865888148392866,
+      "f1": 0.6666666666666666,
+      "f1_threshold": 0.5,
+      "log_loss": 0.6505039324101599,
+      "brier": 0.22911432482344565,
+      "ece_equal_count_10": 0.05291386188053692
+    }
+  },
+  "test": {
+    "baseline": {
+      "events": 309,
+      "label_0": 136,
+      "label_1": 173,
+      "auc_roc": 0.5,
+      "accuracy_at_0_5": 0.5598705501618123,
+      "rmse": 0.49736845553226633,
+      "f1": 0.7178423236514523,
+      "f1_threshold": 0.5,
+      "log_loss": 0.6878930199793855,
+      "brier": 0.24737538055855202,
+      "ece_equal_count_10": 0.10508450197770584
+    },
+    "DKT": {
+      "events": 309,
+      "label_0": 136,
+      "label_1": 173,
+      "auc_roc": 0.5915079904794288,
+      "accuracy_at_0_5": 0.56957928802589,
+      "rmse": 0.4928883067332309,
+      "f1": 0.6253521126760564,
+      "f1_threshold": 0.5,
+      "log_loss": 0.6788510658950022,
+      "brier": 0.2429388829143515,
+      "ece_equal_count_10": 0.09310268916937142
+    },
+    "PAL-Net": {
+      "events": 309,
+      "label_0": 136,
+      "label_1": 173,
+      "auc_roc": 0.6374532471948317,
+      "accuracy_at_0_5": 0.6213592233009708,
+      "rmse": 0.48496467200728754,
+      "f1": 0.6608695652173913,
+      "f1_threshold": 0.5,
+      "log_loss": 0.6632620484137421,
+      "brier": 0.23519073309513597,
+      "ece_equal_count_10": 0.10477650049820689
+    }
+  },
+  "selected_epoch": {
+    "DKT": 8,
+    "PAL-Net": 5
+  }
+}
