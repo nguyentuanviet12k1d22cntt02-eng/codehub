@@ -14,16 +14,8 @@ export interface ExecuteResult {
 export interface ExecutionOptions {
     inputData?: string;
     timeoutMs?: number;
-    memoryLimit?: string;
+    memoryKb?: number;
 }
 
 export interface BatchExecutionOptions extends Omit<ExecutionOptions, 'inputData'> {
-    compileTimeoutMs?: number;
-    /** QC/pre-test only: fail closed instead of executing untrusted code locally. */
-    strictIsolation?: boolean;
-}
-
-export interface ICodeRunner {
-    readonly language: SupportedLanguage;
-    run(code: string, options?: ExecutionOptions): Promise<ExecuteResult>;
 }

@@ -1,9 +1,9 @@
 {
-  "version": "3.0.0",
+  "version": "3.1.0",
   "domain": {
     "id": "JAVASCRIPT",
     "name": "Lập trình JavaScript Toàn diện, ES6+ & Hướng đối tượng (Modern JavaScript)",
-    "description": "Đồ thị tri thức chuẩn hóa 23 kỹ năng nguyên tử (Atomic Skills) với 30 liên kết tiên quyết (DAG), hỗ trợ chẩn đoán đa kỹ năng và định tuyến học tập thích ứng."
+    "description": "Đồ thị tri thức chuẩn hóa 23 kỹ năng với 29 liên kết tiên quyết (DAG), hỗ trợ chẩn đoán đa kỹ năng và định tuyến học tập thích ứng. Cạnh biểu thị điều kiện học kỹ năng, không đồng nhất với thứ tự bài học."
   },
   "tiers": [
     {
@@ -259,10 +259,10 @@
       "domain_id": "JAVASCRIPT",
       "module_id": "MOD-JS-VAR",
       "topic_id": "TOPIC-JS-IO",
-      "stage": 0,
-      "tier": 1,
+      "stage": 1,
+      "tier": 2,
       "scope": "stdin/file runtime, fs.readFileSync, process.stdin parsing",
-      "prerequisites": [],
+      "prerequisites": ["JS-TYPE-01"],
       "learning_objectives": [
         "Đọc luồng dữ liệu chuẩn stdin trong môi trường thi trực tuyến Node.js",
         "Tách chuỗi đầu vào theo dòng hoặc khoảng trắng với trim() và split()",
@@ -429,8 +429,7 @@
       "tier": 4,
       "scope": "global/function/block scope, shadowing, lexical access",
       "prerequisites": [
-        "JS-VAR-01",
-        "JS-FUNC-01"
+        "JS-EXEC-01"
       ],
       "learning_objectives": [
         "Phân biệt Global Scope, Function Scope và Block Scope",
@@ -514,7 +513,7 @@
       "tier": 2,
       "scope": "template literals, trim, split, join, search, replace, includes",
       "prerequisites": [
-        "JS-FUNC-01"
+        "JS-TYPE-01"
       ],
       "learning_objectives": [
         "Nội suy biểu thức và tạo chuỗi nhiều dòng bằng Template Literals (`${expr}`)",
@@ -656,8 +655,7 @@
       "tier": 4,
       "scope": "creation/execution phase, call stack, TDZ, hoisting",
       "prerequisites": [
-        "JS-VAR-01",
-        "JS-SCOPE-01"
+        "JS-FUNC-01"
       ],
       "learning_objectives": [
         "Hiểu 2 giai đoạn thực thi (Creation Phase & Execution Phase) của JavaScript Engine",
@@ -799,8 +797,7 @@
       "tier": 5,
       "scope": "try/catch/finally, throw, custom Error class, validation, debugging",
       "prerequisites": [
-        "JS-CLASS-01",
-        "JS-FUNC-01"
+        "JS-CLASS-01"
       ],
       "learning_objectives": [
         "Bắt và xử lý ngoại lệ an toàn bằng khối try...catch...finally",
@@ -883,16 +880,16 @@
       "reason": "Arrow functions are a function-syntax extension."
     },
     {
-      "source": "JS-VAR-01",
-      "target": "JS-SCOPE-01",
+      "source": "JS-TYPE-01",
+      "target": "JS-RUNTIME-01",
       "relation": "prerequisite",
-      "reason": "Scope determines visibility/lifetime of declarations."
+      "reason": "Đọc và chuyển đổi dữ liệu đầu vào cần nhận biết kiểu giá trị, chuỗi và số."
     },
     {
-      "source": "JS-FUNC-01",
+      "source": "JS-EXEC-01",
       "target": "JS-SCOPE-01",
       "relation": "prerequisite",
-      "reason": "Function scope is part of function execution."
+      "reason": "Bài học về scope tiếp nối execution context và giải thích cách phân giải tên trong môi trường từ vựng."
     },
     {
       "source": "JS-TYPE-01",
@@ -913,10 +910,10 @@
       "reason": "HOFs require callback functions."
     },
     {
-      "source": "JS-FUNC-01",
+      "source": "JS-TYPE-01",
       "target": "JS-STRING-01",
       "relation": "prerequisite",
-      "reason": "String operations are commonly encapsulated in functions."
+      "reason": "Chuỗi là một kiểu dữ liệu; thao tác chuỗi không đòi hỏi biết khai báo hàm trước."
     },
     {
       "source": "JS-TYPE-01",
@@ -961,16 +958,10 @@
       "reason": "Collection selection builds on array/data handling."
     },
     {
-      "source": "JS-VAR-01",
+      "source": "JS-FUNC-01",
       "target": "JS-EXEC-01",
       "relation": "prerequisite",
-      "reason": "Hoisting/TDZ apply to declarations."
-    },
-    {
-      "source": "JS-SCOPE-01",
-      "target": "JS-EXEC-01",
-      "relation": "prerequisite",
-      "reason": "Execution context resolves lexical names."
+      "reason": "Call stack và hoisting của khai báo hàm cần biết hàm, tham số và lời gọi."
     },
     {
       "source": "JS-SCOPE-01",
@@ -1013,12 +1004,6 @@
       "target": "JS-ERROR-01",
       "relation": "prerequisite",
       "reason": "Custom Error classes extend Error."
-    },
-    {
-      "source": "JS-FUNC-01",
-      "target": "JS-ERROR-01",
-      "relation": "prerequisite",
-      "reason": "throw/try-catch are used around function execution."
     },
     {
       "source": "JS-OBJECT-01",

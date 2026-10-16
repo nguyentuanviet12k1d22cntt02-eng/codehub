@@ -2,7 +2,6 @@ import crypto from 'crypto';
 import { Prisma, ProgrammingLanguage } from '@prisma/client';
 import { prisma } from '../../infrastructure/database/prisma';
 import { sandboxService } from '../../infrastructure/sandbox/sandbox.service';
-import { useJudge0 } from '../../infrastructure/sandbox/judge0/judge0.client';
 import {
   AssessmentResponseDto,
   LearnerProfileResponseDto,
@@ -388,7 +387,7 @@ export class PretestRuntimeService {
             const runnerSpec = isRecord(rubric.runnerSpec) ? rubric.runnerSpec : {};
             const timeoutMs = Number.isInteger(runnerSpec.timeLimitMs) ? Number(runnerSpec.timeLimitMs) : 1000;
             const results = await sandboxService.executeBatch(answer.submittedCode ?? '', locked.language, cases.map(item => item.input), {
-              strictIsolation: true, timeoutMs, compileTimeoutMs: 10_000, memoryLimit: '128m',
+              timeoutMs, memoryKb: 128000,
             });
             const passed = results.map((result, index) => result.status === 'SUCCESS'
               && normalizeStdout(result.stdout) === normalizeStdout(cases[index].expectedStdout));
@@ -398,7 +397,7 @@ export class PretestRuntimeService {
             testPassRatio = score;
             gradingMethod = 'RUNNER_VERIFIED';
             details = {
-              runner: useJudge0() ? 'Judge0/isolated' : 'BatchCodeRunner/Docker-only', total: cases.length, passed: passedCount,
+              runner: 'Judge0/isolated', total: cases.length, passed: passedCount,
               cases: results.map((result, index) => ({
                 index, hidden: cases[index].isHidden, passed: passed[index],
                 status: result.status, runtimeMs: result.runtimeMs,
@@ -497,7 +496,7 @@ export class PretestRuntimeService {
       });
       await prisma.idempotencyRecord.deleteMany({ where: { userId, scope, key, responseBody: { equals: Prisma.DbNull } } });
       if (/RUNNER_UNAVAILABLE/.test(error?.message ?? '')) {
-        throw new Error('RUNNER_UNAVAILABLE: Docker chấm bài hiện không khả dụng; bài làm chưa bị tính sai.');
+        throw new Error('RUNNER_UNAVAILABLE: Judge0 hiện không khả dụng; bài làm chưa bị tính sai.');
       }
       throw error;
     }

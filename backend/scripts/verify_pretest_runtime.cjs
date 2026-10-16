@@ -1,4 +1,4 @@
-/** End-to-end verification against the configured database and Docker runner.
+/** End-to-end verification against the configured database and Judge0 runner.
  * Creates isolated synthetic users, runs one full Python Basics Pre-test, then
  * deletes only those synthetic users (all related rows cascade). Never prints
  * answer keys, submitted code, hidden inputs or expected outputs. */
@@ -98,7 +98,7 @@ async function main() {
       idempotentReplay: replayed.assessmentId === submitted.assessmentId,
       crossUserAccessBlocked: true,
       publicSecretsBlocked: true,
-      dockerPracticalQuestions: 3,
+      judge0PracticalQuestions: 3,
       cleanup: 'SYNTHETIC_USERS_DELETED',
     };
   } finally {

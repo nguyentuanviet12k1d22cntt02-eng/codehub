@@ -258,8 +258,7 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
             }
         }
 
-        // 3. Chuẩn bị mã nguồn một lần, sau đó chạy độc lập từng testcase trong cùng sandbox.
-        // Tránh việc C++ phải biên dịch lại và tạo container mới cho mỗi testcase.
+        // 3. Gửi từng testcase thành một submission Judge0 độc lập.
         let totalRuntime = 0;
         let hasSystemError = false;
         const testCases = exercise.testCases || [];

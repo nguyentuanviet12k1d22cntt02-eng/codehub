@@ -1,11 +1,9 @@
-import { spawn } from 'child_process';
-import { randomUUID, createHash } from 'crypto';
+import { createHash } from 'crypto';
 import { parse } from 'acorn';
 import { Draft, Specification, CaseResult, draftSchema, specificationSchema } from './adaptive.contracts';
-import { executeJudge0, useJudge0 } from '../../infrastructure/sandbox/judge0/judge0.client';
+import { executeJudge0 } from '../../infrastructure/sandbox/judge0/judge0.client';
 
 const VERSION = 'adaptive_harness_v4';
-const MAX_OUTPUT = 128000;
 const MAX_CONCURRENT_RUNS = 2;
 let active = 0;
 const waiting: (() => void)[] = [];
@@ -129,7 +127,7 @@ export function staticConstraints(code: string, spec: Specification): string[] {
             if (!/^[A-Za-z_]\w*$/.test(name)) return ['UNSUPPORTED_CONSTRAINT'];
             if (new RegExp('\\b' + name + '\\b').test(stripped)) found.add(name);
         }
-    } else if (spec.language === 'python') return []; // Enforced on AST inside the container.
+    } else if (spec.language === 'python') return []; // Enforced on AST inside the Judge0 wrapper.
     else if (spec.required_constructs.length || spec.forbidden_constructs.length) return ['SQL_CONSTRAINT_REQUIRES_SQL_POLICY'];
     return [...spec.required_constructs.filter(c => !found.has(c)).map(c => 'CONSTRAINT_REQUIRED:' + c),
         ...spec.forbidden_constructs.filter(c => found.has(c)).map(c => 'CONSTRAINT_FORBIDDEN:' + c)];
@@ -142,9 +140,7 @@ export function sandboxInput(code: string, draft: Draft, spec: Specification, in
 }
 
 export function executionTimeoutMs(language: string): number {
-    // Docker startup on Windows can take several seconds even for a constant
-    // result. This is a wall-clock harness allowance; it is not a fallback
-    // and does not relax the container's resource limits.
+    // Judge0 includes queueing and sandbox startup in the wall-clock envelope.
     return language === 'cpp' ? 12000 : 8000;
 }
 
@@ -162,49 +158,6 @@ function testContractErrors(draft: Draft, spec: Specification): string[] {
         }
     });
     return errors;
-}
-
-function executeCase(code: string, draft: Draft, spec: Specification, index: number): Promise<CaseResult> {
-    const tc = draft.test_cases[index];
-    const displayInput = tc.input ?? JSON.stringify(tc.arguments);
-    const image = spec.language === 'cpp' ? (process.env.ADAPTIVE_CPP_IMAGE || 'gcc:12')
-        : spec.language === 'javascript' ? (process.env.ADAPTIVE_JS_IMAGE || 'node:20-alpine')
-        : (process.env.ADAPTIVE_PYTHON_IMAGE || 'python:3.11-alpine');
-    const name = 'adaptive-' + randomUUID();
-    const args = ['run','--rm','--pull=never','-i','--name',name,'--network','none','--read-only',
-        '--cap-drop=ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory',spec.language === 'cpp' ? '512m' : '128m',
-        '--cpus','1','--user','65534:65534','--tmpfs','/tmp:rw,exec,nosuid,size=128m',image];
-    let input = JSON.stringify(sandboxInput(code,draft,spec,index));
-    if (spec.language === 'cpp') {
-        const source = Buffer.from(code).toString('base64'), stdin = Buffer.from(tc.input || '').toString('base64');
-        args.push('sh','-c', "printf '%s' '" + source + "' | base64 -d > /tmp/main.cpp && g++ -std=c++17 -O0 /tmp/main.cpp -o /tmp/program && printf '%s' '" + stdin + "' | base64 -d | /tmp/program");
-        input = '';
-    } else if (spec.language === 'javascript') args.push('node','-e',JAVASCRIPT);
-    else args.push('python','-I','-c',PYTHON);
-    return new Promise(resolve => {
-        const start = performance.now();
-        const child = spawn('docker', args, {windowsHide:true, stdio:'pipe'});
-        let stdout = '', stderr = '', status = '', finished = false;
-        const timeoutMs = executionTimeoutMs(spec.language);
-        const cleanup = () => { const p = spawn('docker',['rm','-f',name],{windowsHide:true,stdio:'ignore'}); p.on('error',()=>{}); };
-        const finish = (exitCode: number | null, infrastructure = false) => {
-            if (finished) return;
-            finished = true;
-            clearTimeout(timer);
-            const state = infrastructure || exitCode === 125 || exitCode === 127 ? 'INFRA_ERROR'
-                : status || (exitCode === 0 ? 'SUCCESS' : stderr.includes('CONSTRAINT_') ? 'CONSTRAINT_VIOLATION' : 'RUNTIME_ERROR');
-            resolve({case_index:index+1,is_hidden:tc.is_hidden,category:tc.category,input:displayInput,expected:tc.expected_output,
-                actual:stdout.trimEnd(),stderr,passed:state==='SUCCESS' && equalOutput(stdout.trimEnd(),tc.expected_output,spec),
-                executed:state!=='INFRA_ERROR',status:state,runtime_ms:Math.round(performance.now()-start),image,harness_version:VERSION});
-        };
-        const timer = setTimeout(() => {status='TIMEOUT'; child.kill(); cleanup(); finish(null);},timeoutMs);
-        child.stdout.on('data', data => {stdout+=data.toString(); if(stdout.length>MAX_OUTPUT){stdout=stdout.slice(0,MAX_OUTPUT);status='OUTPUT_LIMIT';child.kill();cleanup();}});
-        child.stderr.on('data', data => {stderr+=data.toString(); if(stderr.length>MAX_OUTPUT){stderr=stderr.slice(0,MAX_OUTPUT);status='OUTPUT_LIMIT';child.kill();cleanup();}});
-        child.on('error', () => {stderr='DOCKER_NOT_AVAILABLE'; finish(null,true);});
-        child.on('close', code => finish(code));
-        child.stdin.on('error',()=>{});
-        child.stdin.end(input);
-    });
 }
 
 async function executeJudge0Case(code: string, draft: Draft, spec: Specification, index: number): Promise<CaseResult> {
@@ -250,13 +203,7 @@ export async function runExercise(rawDraft: unknown, rawSpec: unknown, code?: st
     return slot(async () => {
         const test_results: CaseResult[] = [];
         for (let i=0;i<draft.test_cases.length;i++) {
-            const result = await (useJudge0() ? executeJudge0Case(source,draft,spec,i) :
-                process.env.NODE_ENV === 'production' || process.env.ALLOW_LOCAL_SANDBOX === 'false'
-                    ? Promise.resolve({status:'INFRA_ERROR',executed:false,passed:false,case_index:i+1,
-                        is_hidden:draft.test_cases[i].is_hidden,category:draft.test_cases[i].category,
-                        input:'',expected:'',actual:'',stderr:'ISOLATED_RUNNER_REQUIRED',runtime_ms:0,
-                        image:'none',harness_version:VERSION} as CaseResult)
-                    : executeCase(source,draft,spec,i));
+            const result = await executeJudge0Case(source,draft,spec,i);
             test_results.push(result);
             if (result.status === 'INFRA_ERROR') return {passed:false,status:'INFRA_ERROR',error:'Isolated sandbox unavailable',errors:['SANDBOX_UNAVAILABLE'],test_results,harness_version:VERSION};
         }

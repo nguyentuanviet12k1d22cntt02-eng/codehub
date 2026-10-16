@@ -1,20 +1,14 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const { SandboxService } = require('../dist/infrastructure/sandbox/sandbox.service');
 const { runExercise } = require('../dist/modules/adaptive/adaptiveRunner');
 
 function withJudge0Mock(output, action) {
-    const previous = {
-        fetch: global.fetch,
-        provider: process.env.SANDBOX_PROVIDER,
-        local: process.env.ALLOW_LOCAL_SANDBOX,
-        nodeEnv: process.env.NODE_ENV
-    };
+    const previousFetch = global.fetch;
     const sent = [];
-    process.env.SANDBOX_PROVIDER = 'judge0';
-    process.env.ALLOW_LOCAL_SANDBOX = 'false';
-    process.env.NODE_ENV = 'production';
-    global.fetch = async (url, init) => {
+    global.fetch = async (_url, init) => {
         if (init.method === 'POST') {
             sent.push(JSON.parse(init.body));
             return {ok: true, json: async () => ({token: 'a'.repeat(36)})};
@@ -22,16 +16,11 @@ function withJudge0Mock(output, action) {
         return {ok: true, json: async () => ({status: {id: 3}, stdout: output, stderr: null, time: '0.01'})};
     };
     return Promise.resolve().then(() => action(sent)).finally(() => {
-        global.fetch = previous.fetch;
-        for (const [name, value] of [
-            ['SANDBOX_PROVIDER', previous.provider], ['ALLOW_LOCAL_SANDBOX', previous.local], ['NODE_ENV', previous.nodeEnv]
-        ]) {
-            if (value === undefined) delete process.env[name]; else process.env[name] = value;
-        }
+        global.fetch = previousFetch;
     });
 }
 
-test('regular exercise submissions use isolated Judge0 for every supported language', async () => {
+test('all supported submissions use Judge0 without a provider switch', async () => {
     await withJudge0Mock('ok\n', async sent => {
         const service = new SandboxService();
         for (const [language, id] of [['PYTHON', 92], ['JAVASCRIPT', 93], ['CPP', 105], ['C', 50], ['SQL', 92]]) {
@@ -66,39 +55,28 @@ test('AI reference solution is verified remotely without sending hidden answers'
     });
 });
 
-test('production rejects direct execution when remote sandbox is not configured', async () => {
-    const previous = {provider: process.env.SANDBOX_PROVIDER, nodeEnv: process.env.NODE_ENV};
-    delete process.env.SANDBOX_PROVIDER;
-    process.env.NODE_ENV = 'production';
-    try {
-        await assert.rejects(() => new SandboxService().execute('print(1)', 'PYTHON'), /RUNNER_UNAVAILABLE/);
-    } finally {
-        if (previous.provider === undefined) delete process.env.SANDBOX_PROVIDER;
-        else process.env.SANDBOX_PROVIDER = previous.provider;
-        if (previous.nodeEnv === undefined) delete process.env.NODE_ENV;
-        else process.env.NODE_ENV = previous.nodeEnv;
-    }
-});
-
-test('Judge0 outage never falls back to local execution', async () => {
+test('Judge0 outage fails closed and never executes locally', async () => {
     await withJudge0Mock('unused', async () => {
         global.fetch = async () => ({ok: false, status: 503});
         await assert.rejects(() => new SandboxService().execute('print(1)', 'PYTHON'), /JUDGE0_HTTP_503/);
     });
 });
 
-test('SQL cannot use the legacy in-process runner without Judge0', async () => {
-    const previous = {provider: process.env.SANDBOX_PROVIDER, nodeEnv: process.env.NODE_ENV,
-        local: process.env.ALLOW_LOCAL_SANDBOX};
-    delete process.env.SANDBOX_PROVIDER;
-    process.env.NODE_ENV = 'development';
-    delete process.env.ALLOW_LOCAL_SANDBOX;
-    try {
-        await assert.rejects(() => new SandboxService().execute('SELECT 1', 'SQL'), /RUNNER_UNAVAILABLE/);
-    } finally {
-        for (const [name, value] of [['SANDBOX_PROVIDER', previous.provider], ['NODE_ENV', previous.nodeEnv],
-            ['ALLOW_LOCAL_SANDBOX', previous.local]]) {
-            if (value === undefined) delete process.env[name]; else process.env[name] = value;
-        }
+test('local Docker and process runners are absent from the execution path', () => {
+    const backendRoot = path.resolve(__dirname, '..');
+    const activeSources = [
+        'src/infrastructure/sandbox/sandbox.service.ts',
+        'src/infrastructure/queue/queueService.ts',
+        'src/modules/adaptive/adaptiveRunner.ts',
+    ].map(file => fs.readFileSync(path.join(backendRoot, file), 'utf8')).join('\n');
+    assert.doesNotMatch(activeSources, /spawn\s*\(\s*['"]docker|runCodeInDocker|BatchCodeRunner|ALLOW_LOCAL_SANDBOX/);
+    for (const removed of [
+        'src/infrastructure/sandbox/batch/batch.runner.ts',
+        'src/infrastructure/sandbox/python/python.runner.ts',
+        'src/infrastructure/sandbox/js/js.runner.ts',
+        'src/infrastructure/sandbox/cpp/cpp.runner.ts',
+        'src/infrastructure/sandbox/utils/docker.utils.ts',
+    ]) {
+        assert.equal(fs.existsSync(path.join(backendRoot, removed)), false, removed);
     }
 });

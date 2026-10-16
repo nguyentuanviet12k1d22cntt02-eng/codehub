@@ -36,7 +36,7 @@ export interface GradingDiagnostics {
     testsTotal: number;
 }
 
-const INFRA_ERROR_PATTERN = /docker(?: daemon| api|\.sock| not available)|cannot connect to the docker|sandbox (?:không|did not)|no such (?:container|image)|grading_interrupted/i;
+const INFRA_ERROR_PATTERN = /judge0(?:_|\s|-)?.*(?:unavailable|timeout|deadline|http)|sandbox (?:không|did not)|grading_interrupted/i;
 const SYNTAX_ERROR_PATTERN = /\b(?:syntaxerror|indentationerror|taberror)\b|syntax error|unexpected token|unexpected end of input|unterminated (?:string|literal)|expected .* before/i;
 const COMPILE_ERROR_PATTERN = /^\[Lỗi biên dịch |compilation (?:failed|error)|compiler error/i;
 

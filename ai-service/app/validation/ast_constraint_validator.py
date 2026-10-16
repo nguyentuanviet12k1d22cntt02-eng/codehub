@@ -84,9 +84,9 @@ class AstConstraintValidator:
 
     @classmethod
     def _validate_python_invocation_contract(cls, code: str, exercise_data: Dict[str, Any], spec: ExerciseSpecification, errors: List[str]):
-        """Catch an incompatible function signature before a Docker execution.
+        """Catch an incompatible function signature before a Judge0 execution.
 
-        This is deliberately a preflight check only.  Docker remains the
+        This is deliberately a preflight check only. Judge0 remains the
         execution authority, but a known mismatch is returned as a precise
         repair instruction instead of a generic runtime failure.
         """

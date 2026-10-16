@@ -8,33 +8,30 @@ Welcome to **VIBECODE AI**, a modern, state-of-the-art Adaptive Online Programmi
 
 *   **Adaptive Recommendation Engine (PAL-Net / BKT / DKT):** Automatically personalizes learning paths. Exercises are proposed within the user's *Zone of Proximal Development (ZPD)*—not too easy to cause boredom, nor too hard to cause discouragement.
 *   **User Profiling & Clustering:** Group learners into 4 behavioral archetypes (*Optimizer, Persister, Rusher, and Stuck*) using Machine Learning (K-Means/DBSCAN).
-*   **Isolated Code Execution:** Production sends submissions and AI-generated solutions to Judge0; local development can use Docker. Execution is resource-limited and requests network access be disabled.
+*   **Isolated Code Execution:** Every submission and AI-generated solution is sent to Judge0. The backend never executes learner code locally or through its own Docker daemon.
 *   **Comprehensive Student Tracking & Practice Arena:** Analyze submissions, active timelines, logic attempts, and algorithm problems with live leaderboards.
 
 ---
 
 ## ⚡ Daily Startup Workflow
 
-Once initial setup is complete, follow this simple 4-step routine to spin up all 3 microservices smoothly every day:
+Once initial setup is complete, follow this simple 3-step routine to spin up all 3 microservices smoothly every day:
 
-### 1️⃣ Launch Docker Desktop
-* Open **Docker Desktop** on your machine and ensure the Docker daemon status is active (`Running`).
-
-### 2️⃣ Terminal 1: Launch Backend Server (Port 3000)
+### 1️⃣ Terminal 1: Launch Backend Server (Port 3000)
 ```bash
 cd backend
 npm run dev
 ```
 *(Server active at `http://localhost:3000`)*
 
-### 3️⃣ Terminal 2: Launch Frontend Web UI (Port 5173)
+### 2️⃣ Terminal 2: Launch Frontend Web UI (Port 5173)
 ```bash
 cd frontend
 npm run dev
 ```
 *(Web UI active at `http://localhost:5173`)*
 
-### 4️⃣ Terminal 3: Launch AI Recommendation Microservice (Port 8000)
+### 3️⃣ Terminal 3: Launch AI Recommendation Microservice (Port 8000)
 ```bash
 cd ai-service
 
@@ -61,7 +58,7 @@ uvicorn main:app --reload --port 8000
 | **Frontend** | ![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB) ![Vite](https://img.shields.io/badge/Vite-B73BFE?style=flat-square&logo=vite&logoColor=FFD627) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white) |
 | **Backend** | ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=flat-square&logo=node.js&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-3982CC?style=flat-square&logo=prisma&logoColor=white) |
 | **Database** | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white) (Supabase / Local) |
-| **Sandbox** | Judge0 CE public on production; Docker for local development |
+| **Sandbox** | Judge0 CE for every environment |
 | **AI/ML Engine** | ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white) ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white) ![Pandas](https://img.shields.io/badge/Pandas-150458?style=flat-square&logo=pandas&logoColor=white) ![Scikit-Learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white) |
 
 ---
@@ -74,7 +71,7 @@ LearnPython/
 │   ├── prisma/               # Schema (schema.prisma), Migrations & Seed data
 │   ├── src/
 │   │   ├── modules/          # Domain features (auth, courses, practice, learning-path, admin...)
-│   │   ├── infrastructure/   # Sandbox runners (Judge0/Docker), database, email, queue
+│   │   ├── infrastructure/   # Judge0 client, database, email, queue
 │   │   ├── shared/           # Common middleware (auth, adminAuth), types
 │   │   └── app.ts            # Express entrypoint
 │   ├── scripts/              # Helper admin & database scripts
@@ -109,7 +106,6 @@ Perform these steps **only once** after cloning the repository on a new environm
 
 ### 1. System Requirements
 *   [Node.js](https://nodejs.org/) (v18+)
-*   [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Required for Code Execution Sandbox)
 *   [PostgreSQL](https://www.postgresql.org/) (Local instance or Cloud Supabase URL)
 *   [Python](https://www.python.org/) (v3.9+)
 
@@ -123,9 +119,9 @@ npm install
 # PORT=3000
 # DATABASE_URL="postgresql://postgres:password@localhost:5432/learnpython_db?schema=public"
 # AI_SERVICE_URL="http://localhost:8000"
-# Production: SANDBOX_PROVIDER=judge0
-# Production: JUDGE0_BASE_URL=https://ce.judge0.com
-# Production: ALLOW_LOCAL_SANDBOX=false
+# Judge0 endpoint used in every environment:
+# JUDGE0_BASE_URL=https://ce.judge0.com
+# JUDGE0_API_KEY=optional-token-for-your-Judge0-instance
 
 npx prisma generate
 npx prisma db seed
@@ -168,8 +164,7 @@ pip install torch --extra-index-url https://download.pytorch.org/whl/cpu
 - **`Address already in use` Error (Port Conflict)**:
   - Check if another terminal is already running `npm run dev` or `uvicorn`. Close redundant terminal processes before restarting.
 - **Code Execution Editor Fails**:
-  - Local Docker mode: verify that Docker Desktop is running and healthy.
-  - Production Judge0 mode: verify `SANDBOX_PROVIDER`, `JUDGE0_BASE_URL` and Judge0 availability. If Judge0 is unavailable, execution fails closed; the backend never falls back to running student code locally. Judge0 public is a third-party service with no project-controlled uptime or isolation guarantee, so do not send secrets in submitted code.
+  - Verify `JUDGE0_BASE_URL`, the optional `JUDGE0_API_KEY`, and Judge0 availability. If Judge0 is unavailable, execution fails closed; the backend never falls back to running student code locally. Judge0 public is a third-party service with no project-controlled uptime or isolation guarantee, so do not send secrets in submitted code.
 
 ---
 

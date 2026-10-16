@@ -6,10 +6,6 @@ const LANGUAGE_IDS: Partial<Record<SupportedLanguage, number>> = {
 const MAX_OUTPUT = 128000;
 const POLL_INTERVAL_MS = 450;
 
-export function useJudge0(): boolean {
-    return process.env.SANDBOX_PROVIDER?.toLowerCase() === 'judge0';
-}
-
 function baseUrl(): string {
     const url = new URL(process.env.JUDGE0_BASE_URL || 'https://ce.judge0.com');
     if (url.protocol !== 'https:' && !(url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname))) {

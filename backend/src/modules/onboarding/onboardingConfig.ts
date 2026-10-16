@@ -39,8 +39,8 @@ export const SUPPORTED_LANGUAGES: SupportedLanguage[] = ['PYTHON', 'JAVASCRIPT',
 
 export const GRAPH_VERSIONS: Record<SupportedLanguage, string> = {
   PYTHON: '2.1',
-  JAVASCRIPT: '3.0.0',
-  CPP: '4.0.0',
+  JAVASCRIPT: '3.1.0',
+  CPP: '4.1.0',
   SQL: '2.0',
 };
 

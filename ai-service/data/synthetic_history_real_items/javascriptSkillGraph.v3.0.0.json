@@ -1,0 +1,1473 @@
+{
+  "version": "3.0.0",
+  "domain": {
+    "id": "JAVASCRIPT",
+    "name": "Lập trình JavaScript Toàn diện, ES6+ & Hướng đối tượng (Modern JavaScript)",
+    "description": "Đồ thị tri thức chuẩn hóa 23 kỹ năng nguyên tử (Atomic Skills) với 30 liên kết tiên quyết (DAG), hỗ trợ chẩn đoán đa kỹ năng và định tuyến học tập thích ứng."
+  },
+  "tiers": [
+    {
+      "tier": 1,
+      "name": "Root & Fundamental",
+      "description": "Khai báo biến, kiểu dữ liệu nguyên thủy và runtime I/O."
+    },
+    {
+      "tier": 2,
+      "name": "Core Programming",
+      "description": "Ép kiểu, điều kiện, vòng lặp, hàm, mảng, chuỗi và đối tượng."
+    },
+    {
+      "tier": 3,
+      "name": "Composition & Modern JS",
+      "description": "Higher-Order Functions, Destructuring, Spread/Rest và Collection Set/Map."
+    },
+    {
+      "tier": 4,
+      "name": "Runtime & Execution Model",
+      "description": "Scope, Execution Context, Hoisting, Closure, this và Prototype Chain."
+    },
+    {
+      "tier": 5,
+      "name": "Engineering & Architecture",
+      "description": "Lập trình hướng đối tượng ES6 Classes, Xử lý lỗi và Module hóa."
+    }
+  ],
+  "modules": [
+    {
+      "id": "MOD-JS-VAR",
+      "name": "Biến & Môi trường Thực thi",
+      "order": 1
+    },
+    {
+      "id": "MOD-JS-TYPE",
+      "name": "Kiểu Dữ liệu & Ép kiểu",
+      "order": 2
+    },
+    {
+      "id": "MOD-JS-CONTROL",
+      "name": "Cấu trúc Điều khiển & Lặp",
+      "order": 3
+    },
+    {
+      "id": "MOD-JS-FUNC",
+      "name": "Hàm & Lập trình Hàm",
+      "order": 4
+    },
+    {
+      "id": "MOD-JS-DATA",
+      "name": "Cấu trúc Dữ liệu & Chuỗi",
+      "order": 5
+    },
+    {
+      "id": "MOD-JS-ES6",
+      "name": "Modern JavaScript ES6+",
+      "order": 6
+    },
+    {
+      "id": "MOD-JS-EXEC",
+      "name": "Cơ chế Cốt lõi & Scope",
+      "order": 7
+    },
+    {
+      "id": "MOD-JS-OOP",
+      "name": "OOP & Kế thừa",
+      "order": 8
+    },
+    {
+      "id": "MOD-JS-ENG",
+      "name": "Kỹ thuật Xử lý Lỗi & Modules",
+      "order": 9
+    }
+  ],
+  "topics": [
+    {
+      "id": "TOPIC-JS-DECL",
+      "name": "Khai báo & Biến",
+      "module_id": "MOD-JS-VAR"
+    },
+    {
+      "id": "TOPIC-JS-TYPES",
+      "name": "Kiểu Nguyên thủy",
+      "module_id": "MOD-JS-TYPE"
+    },
+    {
+      "id": "TOPIC-JS-COERCE",
+      "name": "Ép kiểu & Coercion",
+      "module_id": "MOD-JS-TYPE"
+    },
+    {
+      "id": "TOPIC-JS-COND",
+      "name": "Rẽ nhánh Điều kiện",
+      "module_id": "MOD-JS-CONTROL"
+    },
+    {
+      "id": "TOPIC-JS-LOOP",
+      "name": "Vòng lặp Loop",
+      "module_id": "MOD-JS-CONTROL"
+    },
+    {
+      "id": "TOPIC-JS-FUNCS",
+      "name": "Định nghĩa Hàm",
+      "module_id": "MOD-JS-FUNC"
+    },
+    {
+      "id": "TOPIC-JS-ARROW",
+      "name": "Arrow Functions",
+      "module_id": "MOD-JS-FUNC"
+    },
+    {
+      "id": "TOPIC-JS-SCOPE",
+      "name": "Phạm vi Scope",
+      "module_id": "MOD-JS-EXEC"
+    },
+    {
+      "id": "TOPIC-JS-ARRAY",
+      "name": "Mảng Array",
+      "module_id": "MOD-JS-DATA"
+    },
+    {
+      "id": "TOPIC-JS-HOF",
+      "name": "Higher-Order Methods",
+      "module_id": "MOD-JS-FUNC"
+    },
+    {
+      "id": "TOPIC-JS-STR",
+      "name": "Xử lý Chuỗi",
+      "module_id": "MOD-JS-DATA"
+    },
+    {
+      "id": "TOPIC-JS-OBJ",
+      "name": "Đối tượng Object",
+      "module_id": "MOD-JS-DATA"
+    },
+    {
+      "id": "TOPIC-JS-DESTRUCT",
+      "name": "Destructuring",
+      "module_id": "MOD-JS-ES6"
+    },
+    {
+      "id": "TOPIC-JS-SPREAD",
+      "name": "Spread & Rest",
+      "module_id": "MOD-JS-ES6"
+    },
+    {
+      "id": "TOPIC-JS-COLL",
+      "name": "Set & Map",
+      "module_id": "MOD-JS-ES6"
+    },
+    {
+      "id": "TOPIC-JS-CONTEXT",
+      "name": "Execution Context",
+      "module_id": "MOD-JS-EXEC"
+    },
+    {
+      "id": "TOPIC-JS-CLOSURE",
+      "name": "Closure Bao đóng",
+      "module_id": "MOD-JS-EXEC"
+    },
+    {
+      "id": "TOPIC-JS-THIS",
+      "name": "Ngữ cảnh this",
+      "module_id": "MOD-JS-EXEC"
+    },
+    {
+      "id": "TOPIC-JS-PROTO",
+      "name": "Prototype Chain",
+      "module_id": "MOD-JS-OOP"
+    },
+    {
+      "id": "TOPIC-JS-CLASS",
+      "name": "ES6 Classes",
+      "module_id": "MOD-JS-OOP"
+    },
+    {
+      "id": "TOPIC-JS-ERR",
+      "name": "Ngoại lệ & Bắt lỗi",
+      "module_id": "MOD-JS-ENG"
+    },
+    {
+      "id": "TOPIC-JS-MOD",
+      "name": "Mô-đun Modules",
+      "module_id": "MOD-JS-ENG"
+    },
+    {
+      "id": "TOPIC-JS-IO",
+      "name": "Runtime I/O",
+      "module_id": "MOD-JS-VAR"
+    }
+  ],
+  "skills": [
+    {
+      "id": "JS-VAR-01",
+      "concept_id": "JS-VAR-01",
+      "name": "Khai báo Biến & Hằng số (let, const, var)",
+      "concept_name": "Khai báo Biến & Hằng số (let, const, var)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-VAR",
+      "topic_id": "TOPIC-JS-DECL",
+      "stage": 0,
+      "tier": 1,
+      "scope": "let/const/var, naming, assignment, console.log",
+      "prerequisites": [],
+      "learning_objectives": [
+        "Phân biệt phạm vi block scope của let/const và function scope của var",
+        "Hiểu tính bất biến khi gán lại giá trị của hằng số const",
+        "Sử dụng console.log() để xuất dữ liệu và theo dõi biến"
+      ],
+      "associated_errors": [
+        "Assignment to constant",
+        "ReferenceError"
+      ],
+      "difficulty_level": 1,
+      "bloom_level": "Remember",
+      "estimated_time_minutes": 25,
+      "practice_count": 4
+    },
+    {
+      "id": "JS-TYPE-01",
+      "concept_id": "JS-TYPE-01",
+      "name": "Kiểu Dữ liệu Nguyên thủy & Toán tử typeof",
+      "concept_name": "Kiểu Dữ liệu Nguyên thủy & Toán tử typeof",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-TYPE",
+      "topic_id": "TOPIC-JS-TYPES",
+      "stage": 0,
+      "tier": 1,
+      "scope": "string, number, boolean, null, undefined, symbol, bigint, typeof",
+      "prerequisites": [
+        "JS-VAR-01"
+      ],
+      "learning_objectives": [
+        "Nắm vững 7 kiểu dữ liệu nguyên thủy (Primitive Types) trong chuẩn ECMAScript",
+        "Sử dụng toán tử typeof để kiểm tra kiểu dữ liệu trong thời gian chạy",
+        "Hiểu sự khác nhau giữa null (đối tượng rỗng có chủ đích) và undefined"
+      ],
+      "associated_errors": [
+        "TypeError",
+        "wrong-type assumptions"
+      ],
+      "difficulty_level": 1,
+      "bloom_level": "Understand",
+      "estimated_time_minutes": 25,
+      "practice_count": 4
+    },
+    {
+      "id": "JS-RUNTIME-01",
+      "concept_id": "JS-RUNTIME-01",
+      "name": "Xử lý Dữ liệu Vào/Ra Môi trường Thực thi (Runtime I/O)",
+      "concept_name": "Xử lý Dữ liệu Vào/Ra Môi trường Thực thi (Runtime I/O)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-VAR",
+      "topic_id": "TOPIC-JS-IO",
+      "stage": 0,
+      "tier": 1,
+      "scope": "stdin/file runtime, fs.readFileSync, process.stdin parsing",
+      "prerequisites": [],
+      "learning_objectives": [
+        "Đọc luồng dữ liệu chuẩn stdin trong môi trường thi trực tuyến Node.js",
+        "Tách chuỗi đầu vào theo dòng hoặc khoảng trắng với trim() và split()",
+        "Xử lý an toàn các trường hợp đầu vào rỗng hoặc kết thúc tệp"
+      ],
+      "associated_errors": [
+        "input parsing",
+        "empty input"
+      ],
+      "difficulty_level": 1,
+      "bloom_level": "Understand",
+      "estimated_time_minutes": 20,
+      "practice_count": 3
+    },
+    {
+      "id": "JS-COERCE-01",
+      "concept_id": "JS-COERCE-01",
+      "name": "Ép kiểu Dữ liệu & Giá trị NaN",
+      "concept_name": "Ép kiểu Dữ liệu & Giá trị NaN",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-TYPE",
+      "topic_id": "TOPIC-JS-COERCE",
+      "stage": 1,
+      "tier": 2,
+      "scope": "Number, parseInt, parseFloat, implicit coercion, NaN, Number.isNaN",
+      "prerequisites": [
+        "JS-TYPE-01"
+      ],
+      "learning_objectives": [
+        "Thực hiện ép kiểu tường minh với Number(), parseInt(), parseFloat()",
+        "Nhận biết và kiểm soát cơ chế ép kiểu ngầm định (Implicit Coercion)",
+        "Kiểm tra giá trị NaN chuẩn xác với Number.isNaN() thay vì so sánh trực tiếp"
+      ],
+      "associated_errors": [
+        "NaN propagation",
+        "unexpected coercion"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Understand",
+      "estimated_time_minutes": 30,
+      "practice_count": 4
+    },
+    {
+      "id": "JS-COND-01",
+      "concept_id": "JS-COND-01",
+      "name": "Cấu trúc Rẽ nhánh & Khái niệm Truthy/Falsy",
+      "concept_name": "Cấu trúc Rẽ nhánh & Khái niệm Truthy/Falsy",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-CONTROL",
+      "topic_id": "TOPIC-JS-COND",
+      "stage": 1,
+      "tier": 2,
+      "scope": "if/else, switch/case, ternary ?:, logical conditions, short-circuit",
+      "prerequisites": [
+        "JS-TYPE-01"
+      ],
+      "learning_objectives": [
+        "Làm chủ cấu trúc rẽ nhánh if, else if, else và switch-case",
+        "Hiểu bảng giá trị Falsy trong JS (false, 0, '', null, undefined, NaN)",
+        "Sử dụng toán tử 3 ngôi (Ternary Operator) và đánh giá ngắn mạch (&&, ||)"
+      ],
+      "associated_errors": [
+        "Logic Error",
+        "SyntaxError"
+      ],
+      "difficulty_level": 1,
+      "bloom_level": "Apply",
+      "estimated_time_minutes": 30,
+      "practice_count": 5
+    },
+    {
+      "id": "JS-LOOP-01",
+      "concept_id": "JS-LOOP-01",
+      "name": "Vòng lặp & Kiểm soát Luồng lặp (for, while, break/continue)",
+      "concept_name": "Vòng lặp & Kiểm soát Luồng lặp (for, while, break/continue)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-CONTROL",
+      "topic_id": "TOPIC-JS-LOOP",
+      "stage": 1,
+      "tier": 2,
+      "scope": "for, while, do...while, break, continue, nested loops",
+      "prerequisites": [
+        "JS-COND-01"
+      ],
+      "learning_objectives": [
+        "Làm chủ vòng lặp for kinh điển với 3 thành phần (init, condition, step)",
+        "Áp dụng vòng lặp while và do...while cho bài toán lặp điều kiện dừng",
+        "Kiểm soát bước nhảy với break, continue và phòng chống lặp vô hạn"
+      ],
+      "associated_errors": [
+        "Infinite Loop",
+        "RangeError"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Apply",
+      "estimated_time_minutes": 35,
+      "practice_count": 5
+    },
+    {
+      "id": "JS-FUNC-01",
+      "concept_id": "JS-FUNC-01",
+      "name": "Hàm & Quản lý Tham số (Functions & Parameters)",
+      "concept_name": "Hàm & Quản lý Tham số (Functions & Parameters)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-FUNC",
+      "topic_id": "TOPIC-JS-FUNCS",
+      "stage": 2,
+      "tier": 2,
+      "scope": "declaration/expression, parameters, arguments, return, default params",
+      "prerequisites": [
+        "JS-TYPE-01"
+      ],
+      "learning_objectives": [
+        "Phân biệt Function Declaration (có hoisting) và Function Expression",
+        "Thiết lập tham số mặc định (Default Parameters) an toàn",
+        "Sử dụng lệnh return để trả về dữ liệu và kết thúc hàm sớm"
+      ],
+      "associated_errors": [
+        "ReferenceError",
+        "wrong argument handling"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Apply",
+      "estimated_time_minutes": 35,
+      "practice_count": 5
+    },
+    {
+      "id": "JS-ARROW-01",
+      "concept_id": "JS-ARROW-01",
+      "name": "Cú pháp Arrow Function (=>)",
+      "concept_name": "Cú pháp Arrow Function (=>)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-FUNC",
+      "topic_id": "TOPIC-JS-ARROW",
+      "stage": 3,
+      "tier": 3,
+      "scope": "=> syntax, implicit return, lexical this",
+      "prerequisites": [
+        "JS-FUNC-01"
+      ],
+      "learning_objectives": [
+        "Làm chủ cú pháp rút gọn của Arrow Function và trả về ngầm định (Implicit Return)",
+        "Sử dụng Arrow Function làm callback ngắn gọn trong các hàm xử lý dữ liệu",
+        "Hiểu cơ chế không tự tạo ngữ cảnh this riêng của Arrow Function"
+      ],
+      "associated_errors": [
+        "TypeError",
+        "wrong this behavior"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Apply",
+      "estimated_time_minutes": 25,
+      "practice_count": 4
+    },
+    {
+      "id": "JS-SCOPE-01",
+      "concept_id": "JS-SCOPE-01",
+      "name": "Phạm vi Biến & Phân giải Tên (Scope & Name Resolution)",
+      "concept_name": "Phạm vi Biến & Phân giải Tên (Scope & Name Resolution)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-EXEC",
+      "topic_id": "TOPIC-JS-SCOPE",
+      "stage": 4,
+      "tier": 4,
+      "scope": "global/function/block scope, shadowing, lexical access",
+      "prerequisites": [
+        "JS-VAR-01",
+        "JS-FUNC-01"
+      ],
+      "learning_objectives": [
+        "Phân biệt Global Scope, Function Scope và Block Scope",
+        "Hiểu cơ chế Scope Chain trong việc tra cứu định danh biến",
+        "Nhận biết và phòng tránh lỗi che khuất biến (Variable Shadowing)"
+      ],
+      "associated_errors": [
+        "ReferenceError",
+        "shadowing bugs"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Apply",
+      "estimated_time_minutes": 35,
+      "practice_count": 4
+    },
+    {
+      "id": "JS-ARRAY-01",
+      "concept_id": "JS-ARRAY-01",
+      "name": "Mảng (Array) & Thao tác Indexing/Mutating",
+      "concept_name": "Mảng (Array) & Thao tác Indexing/Mutating",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-DATA",
+      "topic_id": "TOPIC-JS-ARRAY",
+      "stage": 2,
+      "tier": 2,
+      "scope": "indexing, length, push/pop/shift/unshift, slice/splice",
+      "prerequisites": [
+        "JS-TYPE-01"
+      ],
+      "learning_objectives": [
+        "Truy xuất và cập nhật phần tử mảng qua chỉ số 0-indexed và length",
+        "Sử dụng các phương thức biến đổi mảng: push(), pop(), shift(), unshift()",
+        "Phân biệt phương thức không đột biến slice() và đột biến splice()"
+      ],
+      "associated_errors": [
+        "undefined access",
+        "mutation bugs"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Apply",
+      "estimated_time_minutes": 35,
+      "practice_count": 5
+    },
+    {
+      "id": "JS-ARRAY-HOF-01",
+      "concept_id": "JS-ARRAY-HOF-01",
+      "name": "Phương thức Mảng Bậc cao (Higher-Order Methods: map, filter, reduce)",
+      "concept_name": "Phương thức Mảng Bậc cao (Higher-Order Methods: map, filter, reduce)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-FUNC",
+      "topic_id": "TOPIC-JS-HOF",
+      "stage": 3,
+      "tier": 3,
+      "scope": "map, filter, reduce, sort, callbacks, method chaining",
+      "prerequisites": [
+        "JS-ARRAY-01",
+        "JS-FUNC-01"
+      ],
+      "learning_objectives": [
+        "Chuyển đổi dữ liệu tuần tự với .map() không làm thay đổi mảng gốc",
+        "Lọc các phần tử thỏa mãn điều kiện logic với .filter()",
+        "Tích lũy giá trị tổng hợp linh hoạt với .reduce() và thiết lập initial value"
+      ],
+      "associated_errors": [
+        "TypeError in callback/reduce"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Analyze",
+      "estimated_time_minutes": 45,
+      "practice_count": 6
+    },
+    {
+      "id": "JS-STRING-01",
+      "concept_id": "JS-STRING-01",
+      "name": "Xử lý Chuỗi & Template Literals (String Processing)",
+      "concept_name": "Xử lý Chuỗi & Template Literals (String Processing)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-DATA",
+      "topic_id": "TOPIC-JS-STR",
+      "stage": 2,
+      "tier": 2,
+      "scope": "template literals, trim, split, join, search, replace, includes",
+      "prerequisites": [
+        "JS-FUNC-01"
+      ],
+      "learning_objectives": [
+        "Nội suy biểu thức và tạo chuỗi nhiều dòng bằng Template Literals (`${expr}`)",
+        "Thực hiện chuẩn hóa chuỗi với trim(), toLowerCase(), toUpperCase()",
+        "Chuyển đổi linh hoạt giữa chuỗi và mảng qua split() và join()"
+      ],
+      "associated_errors": [
+        "SyntaxError",
+        "wrong string assumptions"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Apply",
+      "estimated_time_minutes": 30,
+      "practice_count": 4
+    },
+    {
+      "id": "JS-OBJECT-01",
+      "concept_id": "JS-OBJECT-01",
+      "name": "Đối tượng (Object) & Cấu trúc Key-Value",
+      "concept_name": "Đối tượng (Object) & Cấu trúc Key-Value",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-DATA",
+      "topic_id": "TOPIC-JS-OBJ",
+      "stage": 2,
+      "tier": 2,
+      "scope": "object literal, dot/bracket access, add/update/delete, in operator, Object.keys",
+      "prerequisites": [
+        "JS-TYPE-01"
+      ],
+      "learning_objectives": [
+        "Khởi tạo đối tượng bằng Object Literal và quản lý cặp thuộc tính Key-Value",
+        "Truy xuất linh hoạt qua Dot notation (.) và Bracket notation ([])",
+        "Thao tác thêm, sửa, xóa thuộc tính với delete và duyệt keys/values"
+      ],
+      "associated_errors": [
+        "TypeError",
+        "undefined property"
+      ],
+      "difficulty_level": 2,
+      "bloom_level": "Apply",
+      "estimated_time_minutes": 35,
+      "practice_count": 5
+    },
+    {
+      "id": "JS-DESTRUCT-01",
+      "concept_id": "JS-DESTRUCT-01",
+      "name": "Kỹ thuật Phân rã Dữ liệu (Destructuring Assignment)",
+      "concept_name": "Kỹ thuật Phân rã Dữ liệu (Destructuring Assignment)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-ES6",
+      "topic_id": "TOPIC-JS-DESTRUCT",
+      "stage": 3,
+      "tier": 3,
+      "scope": "array/object destructuring, renaming, default values, nested destructuring",
+      "prerequisites": [
+        "JS-OBJECT-01",
+        "JS-ARRAY-01"
+      ],
+      "learning_objectives": [
+        "Trích xuất nhanh thuộc tính đối tượng qua cú pháp const { a, b } = obj",
+        "Phân rã mảng theo thứ tự vị trí const [first, second] = arr",
+        "Đặt tên bí danh (Renaming) và gán giá trị mặc định khi destructuring"
+      ],
+      "associated_errors": [
+        "Cannot destructure property"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Apply",
+      "estimated_time_minutes": 30,
+      "practice_count": 4
+    },
+    {
+      "id": "JS-SPREADREST-01",
+      "concept_id": "JS-SPREADREST-01",
+      "name": "Toán tử Spread & Rest Parameters (...)",
+      "concept_name": "Toán tử Spread & Rest Parameters (...)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-ES6",
+      "topic_id": "TOPIC-JS-SPREAD",
+      "stage": 3,
+      "tier": 3,
+      "scope": "array/object spread, rest parameters, shallow copying, merging",
+      "prerequisites": [
+        "JS-OBJECT-01",
+        "JS-ARRAY-01",
+        "JS-FUNC-01"
+      ],
+      "learning_objectives": [
+        "Sử dụng Spread Operator (...) để sao chép nông và gộp mảng/đối tượng",
+        "Gom đối số hàm linh hoạt với Rest Parameters (...args)",
+        "Phân biệt rõ ràng ngữ cảnh lan truyền (Spread) và thu gom (Rest)"
+      ],
+      "associated_errors": [
+        "TypeError",
+        "accidental shallow copy"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Apply",
+      "estimated_time_minutes": 35,
+      "practice_count": 5
+    },
+    {
+      "id": "JS-SETMAP-01",
+      "concept_id": "JS-SETMAP-01",
+      "name": "Cấu trúc Tập hợp Set & Map Chuyên dụng",
+      "concept_name": "Cấu trúc Tập hợp Set & Map Chuyên dụng",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-ES6",
+      "topic_id": "TOPIC-JS-COLL",
+      "stage": 3,
+      "tier": 3,
+      "scope": "unique collections Set, key-value collections Map, size, has, delete",
+      "prerequisites": [
+        "JS-ARRAY-01"
+      ],
+      "learning_objectives": [
+        "Sử dụng Set để lưu trữ danh sách phần tử duy nhất và khử trùng dữ liệu",
+        "Áp dụng Map khi cần khóa là bất kỳ kiểu dữ liệu nào (Object, Function)",
+        "Thao tác các phương thức has(), get(), set(), delete() với độ phức tạp O(1)"
+      ],
+      "associated_errors": [
+        "TypeError",
+        "wrong collection API"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Apply",
+      "estimated_time_minutes": 30,
+      "practice_count": 4
+    },
+    {
+      "id": "JS-EXEC-01",
+      "concept_id": "JS-EXEC-01",
+      "name": "Ngữ cảnh Thực thi & Cơ chế Hoisting (Execution Context)",
+      "concept_name": "Ngữ cảnh Thực thi & Cơ chế Hoisting (Execution Context)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-EXEC",
+      "topic_id": "TOPIC-JS-CONTEXT",
+      "stage": 4,
+      "tier": 4,
+      "scope": "creation/execution phase, call stack, TDZ, hoisting",
+      "prerequisites": [
+        "JS-VAR-01",
+        "JS-SCOPE-01"
+      ],
+      "learning_objectives": [
+        "Hiểu 2 giai đoạn thực thi (Creation Phase & Execution Phase) của JavaScript Engine",
+        "Phân tích cơ chế Hoisting đối với var, let, const và function declaration",
+        "Hiểu vùng chết tạm thời (Temporal Dead Zone - TDZ) và lỗi ReferenceError"
+      ],
+      "associated_errors": [
+        "ReferenceError",
+        "TDZ access"
+      ],
+      "difficulty_level": 4,
+      "bloom_level": "Analyze",
+      "estimated_time_minutes": 45,
+      "practice_count": 4
+    },
+    {
+      "id": "JS-CLOSURE-01",
+      "concept_id": "JS-CLOSURE-01",
+      "name": "Bao đóng (Closure) & Biến Trạng thái Riêng tư",
+      "concept_name": "Bao đóng (Closure) & Biến Trạng thái Riêng tư",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-EXEC",
+      "topic_id": "TOPIC-JS-CLOSURE",
+      "stage": 4,
+      "tier": 4,
+      "scope": "closure, private state, factory functions, data encapsulation",
+      "prerequisites": [
+        "JS-SCOPE-01"
+      ],
+      "learning_objectives": [
+        "Hiểu nguyên lý Closure: hàm con ghi nhớ môi trường từ vựng của hàm cha",
+        "Ứng dụng Closure tạo biến Private và hàm sinh Factory Functions",
+        "Kiểm soát vòng đời tham chiếu bộ nhớ để tránh rò rỉ bộ nhớ (Memory Leak)"
+      ],
+      "associated_errors": [
+        "unexpected retained state",
+        "memory issues"
+      ],
+      "difficulty_level": 4,
+      "bloom_level": "Analyze",
+      "estimated_time_minutes": 45,
+      "practice_count": 5
+    },
+    {
+      "id": "JS-THIS-01",
+      "concept_id": "JS-THIS-01",
+      "name": "Từ khóa 'this' & Cơ chế Ràng buộc Ngữ cảnh (call, apply, bind)",
+      "concept_name": "Từ khóa 'this' & Cơ chế Ràng buộc Ngữ cảnh (call, apply, bind)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-EXEC",
+      "topic_id": "TOPIC-JS-THIS",
+      "stage": 4,
+      "tier": 4,
+      "scope": "method this, arrow this, call/apply/bind, dynamic vs lexical binding",
+      "prerequisites": [
+        "JS-ARROW-01",
+        "JS-OBJECT-01"
+      ],
+      "learning_objectives": [
+        "Xác định chính xác đối tượng mà từ khóa this trỏ tới theo 4 quy tắc gọi hàm",
+        "Chủ động gán ngữ cảnh bằng call(), apply() và mượn hàm (Method Borrowing)",
+        "Tạo hàm cố định ngữ cảnh bằng bind() để truyền làm event handler"
+      ],
+      "associated_errors": [
+        "undefined this",
+        "TypeError"
+      ],
+      "difficulty_level": 4,
+      "bloom_level": "Analyze",
+      "estimated_time_minutes": 45,
+      "practice_count": 5
+    },
+    {
+      "id": "JS-PROTO-01",
+      "concept_id": "JS-PROTO-01",
+      "name": "Chuỗi Kế thừa Nguyên mẫu (Prototype Chain)",
+      "concept_name": "Chuỗi Kế thừa Nguyên mẫu (Prototype Chain)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-OOP",
+      "topic_id": "TOPIC-JS-PROTO",
+      "stage": 4,
+      "tier": 4,
+      "scope": "prototype, __proto__, property lookup, constructor function",
+      "prerequisites": [
+        "JS-OBJECT-01"
+      ],
+      "learning_objectives": [
+        "Hiểu bản chất đối tượng nguyên mẫu prototype và liên kết __proto__",
+        "Phân tích cơ chế tra cứu thuộc tính dọc theo Prototype Chain",
+        "Định nghĩa phương thức dùng chung qua ConstructorFunction.prototype"
+      ],
+      "associated_errors": [
+        "TypeError",
+        "wrong prototype lookup"
+      ],
+      "difficulty_level": 4,
+      "bloom_level": "Analyze",
+      "estimated_time_minutes": 40,
+      "practice_count": 4
+    },
+    {
+      "id": "JS-CLASS-01",
+      "concept_id": "JS-CLASS-01",
+      "name": "Lập trình Hướng đối tượng Hiện đại (ES6 Classes & Inheritance)",
+      "concept_name": "Lập trình Hướng đối tượng Hiện đại (ES6 Classes & Inheritance)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-OOP",
+      "topic_id": "TOPIC-JS-CLASS",
+      "stage": 5,
+      "tier": 5,
+      "scope": "class, constructor, extends, super, static, getter/setter, #private",
+      "prerequisites": [
+        "JS-PROTO-01",
+        "JS-FUNC-01"
+      ],
+      "learning_objectives": [
+        "Khai báo lớp với class, hàm khởi tạo constructor và các instance methods",
+        "Thực hiện kế thừa lớp với extends và gọi hàm khởi tạo lớp cha qua super()",
+        "Bảo vệ dữ liệu với trường riêng tư (#private field) và phương thức tĩnh static"
+      ],
+      "associated_errors": [
+        "Must call super",
+        "TypeError"
+      ],
+      "difficulty_level": 4,
+      "bloom_level": "Create",
+      "estimated_time_minutes": 50,
+      "practice_count": 6
+    },
+    {
+      "id": "JS-ERROR-01",
+      "concept_id": "JS-ERROR-01",
+      "name": "Quản lý Ngoại lệ & Lớp Lỗi Tự định nghĩa (Error Handling & Validation)",
+      "concept_name": "Quản lý Ngoại lệ & Lớp Lỗi Tự định nghĩa (Error Handling & Validation)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-ENG",
+      "topic_id": "TOPIC-JS-ERR",
+      "stage": 5,
+      "tier": 5,
+      "scope": "try/catch/finally, throw, custom Error class, validation, debugging",
+      "prerequisites": [
+        "JS-CLASS-01",
+        "JS-FUNC-01"
+      ],
+      "learning_objectives": [
+        "Bắt và xử lý ngoại lệ an toàn bằng khối try...catch...finally",
+        "Chủ động ném ngoại lệ với throw new Error()",
+        "Xây dựng lớp lỗi tùy chỉnh (Custom ValidationError) kế thừa từ class Error"
+      ],
+      "associated_errors": [
+        "Uncaught Error",
+        "custom ValidationError"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Evaluate",
+      "estimated_time_minutes": 40,
+      "practice_count": 5
+    },
+    {
+      "id": "JS-MODULE-01",
+      "concept_id": "JS-MODULE-01",
+      "name": "Mô-đun hóa Mã nguồn (CommonJS & ES Modules)",
+      "concept_name": "Mô-đun hóa Mã nguồn (CommonJS & ES Modules)",
+      "domain_id": "JAVASCRIPT",
+      "module_id": "MOD-JS-ENG",
+      "topic_id": "TOPIC-JS-MOD",
+      "stage": 5,
+      "tier": 5,
+      "scope": "CommonJS vs ES Modules, import/export, default export, SRP organization",
+      "prerequisites": [
+        "JS-OBJECT-01",
+        "JS-FUNC-01"
+      ],
+      "learning_objectives": [
+        "Phân biệt hệ thống mô-đun CommonJS (require/module.exports) và ES Modules",
+        "Sử dụng Named Export và Default Export để tổ chức cấu trúc dự án",
+        "Áp dụng nguyên tắc đơn nhiệm (Single Responsibility Principle) trong chia tách tệp"
+      ],
+      "associated_errors": [
+        "module/export errors"
+      ],
+      "difficulty_level": 3,
+      "bloom_level": "Evaluate",
+      "estimated_time_minutes": 35,
+      "practice_count": 4
+    }
+  ],
+  "edges": [
+    {
+      "source": "JS-VAR-01",
+      "target": "JS-TYPE-01",
+      "relation": "prerequisite",
+      "reason": "Primitive values are stored in variables."
+    },
+    {
+      "source": "JS-TYPE-01",
+      "target": "JS-COERCE-01",
+      "relation": "prerequisite",
+      "reason": "Coercion is meaningful only after type concepts are known."
+    },
+    {
+      "source": "JS-TYPE-01",
+      "target": "JS-COND-01",
+      "relation": "prerequisite",
+      "reason": "Comparisons and Truthy/Falsy drive conditions."
+    },
+    {
+      "source": "JS-COND-01",
+      "target": "JS-LOOP-01",
+      "relation": "prerequisite",
+      "reason": "Loop termination uses conditions."
+    },
+    {
+      "source": "JS-TYPE-01",
+      "target": "JS-FUNC-01",
+      "relation": "prerequisite",
+      "reason": "Functions need values and types for parameters/returns."
+    },
+    {
+      "source": "JS-FUNC-01",
+      "target": "JS-ARROW-01",
+      "relation": "prerequisite",
+      "reason": "Arrow functions are a function-syntax extension."
+    },
+    {
+      "source": "JS-VAR-01",
+      "target": "JS-SCOPE-01",
+      "relation": "prerequisite",
+      "reason": "Scope determines visibility/lifetime of declarations."
+    },
+    {
+      "source": "JS-FUNC-01",
+      "target": "JS-SCOPE-01",
+      "relation": "prerequisite",
+      "reason": "Function scope is part of function execution."
+    },
+    {
+      "source": "JS-TYPE-01",
+      "target": "JS-ARRAY-01",
+      "relation": "prerequisite",
+      "reason": "Arrays are objects/values indexed by position."
+    },
+    {
+      "source": "JS-ARRAY-01",
+      "target": "JS-ARRAY-HOF-01",
+      "relation": "prerequisite",
+      "reason": "map/filter/reduce operate on arrays."
+    },
+    {
+      "source": "JS-FUNC-01",
+      "target": "JS-ARRAY-HOF-01",
+      "relation": "prerequisite",
+      "reason": "HOFs require callback functions."
+    },
+    {
+      "source": "JS-FUNC-01",
+      "target": "JS-STRING-01",
+      "relation": "prerequisite",
+      "reason": "String operations are commonly encapsulated in functions."
+    },
+    {
+      "source": "JS-TYPE-01",
+      "target": "JS-OBJECT-01",
+      "relation": "prerequisite",
+      "reason": "Objects are reference values building upon types."
+    },
+    {
+      "source": "JS-OBJECT-01",
+      "target": "JS-DESTRUCT-01",
+      "relation": "prerequisite",
+      "reason": "Destructuring extracts object/array data."
+    },
+    {
+      "source": "JS-ARRAY-01",
+      "target": "JS-DESTRUCT-01",
+      "relation": "prerequisite",
+      "reason": "Array destructuring requires array indexing semantics."
+    },
+    {
+      "source": "JS-OBJECT-01",
+      "target": "JS-SPREADREST-01",
+      "relation": "prerequisite",
+      "reason": "Object spread/rest builds on object properties."
+    },
+    {
+      "source": "JS-ARRAY-01",
+      "target": "JS-SPREADREST-01",
+      "relation": "prerequisite",
+      "reason": "Array spread builds on iterable/array semantics."
+    },
+    {
+      "source": "JS-FUNC-01",
+      "target": "JS-SPREADREST-01",
+      "relation": "prerequisite",
+      "reason": "Rest parameters belong to function parameter syntax."
+    },
+    {
+      "source": "JS-ARRAY-01",
+      "target": "JS-SETMAP-01",
+      "relation": "prerequisite",
+      "reason": "Collection selection builds on array/data handling."
+    },
+    {
+      "source": "JS-VAR-01",
+      "target": "JS-EXEC-01",
+      "relation": "prerequisite",
+      "reason": "Hoisting/TDZ apply to declarations."
+    },
+    {
+      "source": "JS-SCOPE-01",
+      "target": "JS-EXEC-01",
+      "relation": "prerequisite",
+      "reason": "Execution context resolves lexical names."
+    },
+    {
+      "source": "JS-SCOPE-01",
+      "target": "JS-CLOSURE-01",
+      "relation": "prerequisite",
+      "reason": "Closure depends on lexical scope."
+    },
+    {
+      "source": "JS-ARROW-01",
+      "target": "JS-THIS-01",
+      "relation": "prerequisite",
+      "reason": "Arrow this semantics must be compared with normal functions."
+    },
+    {
+      "source": "JS-OBJECT-01",
+      "target": "JS-THIS-01",
+      "relation": "prerequisite",
+      "reason": "Method calls establish object-based this."
+    },
+    {
+      "source": "JS-OBJECT-01",
+      "target": "JS-PROTO-01",
+      "relation": "prerequisite",
+      "reason": "Prototype lookup is object property lookup."
+    },
+    {
+      "source": "JS-PROTO-01",
+      "target": "JS-CLASS-01",
+      "relation": "prerequisite",
+      "reason": "ES6 class inheritance is built on prototypes."
+    },
+    {
+      "source": "JS-FUNC-01",
+      "target": "JS-CLASS-01",
+      "relation": "prerequisite",
+      "reason": "Constructors and methods are functions."
+    },
+    {
+      "source": "JS-CLASS-01",
+      "target": "JS-ERROR-01",
+      "relation": "prerequisite",
+      "reason": "Custom Error classes extend Error."
+    },
+    {
+      "source": "JS-FUNC-01",
+      "target": "JS-ERROR-01",
+      "relation": "prerequisite",
+      "reason": "throw/try-catch are used around function execution."
+    },
+    {
+      "source": "JS-OBJECT-01",
+      "target": "JS-MODULE-01",
+      "relation": "prerequisite",
+      "reason": "Modules export/import objects and functions."
+    },
+    {
+      "source": "JS-FUNC-01",
+      "target": "JS-MODULE-01",
+      "relation": "prerequisite",
+      "reason": "Modules primarily organize functions."
+    }
+  ],
+  "lesson_mappings": {
+    "JS1-01.01": "JS-VAR-01",
+    "JS1-01.02": "JS-VAR-01",
+    "JS1-01.03": "JS-VAR-01",
+    "JS1-01.04": "JS-VAR-01",
+    "JS1-02.01": "JS-TYPE-01",
+    "JS1-02.02": "JS-TYPE-01",
+    "JS1-02.03": "JS-TYPE-01",
+    "JS1-02.04": "JS-COND-01",
+    "JS1-03.01": "JS-RUNTIME-01",
+    "JS1-03.02": "JS-COERCE-01",
+    "JS1-03.03": "JS-COERCE-01",
+    "JS1-03.04": "JS-COND-01",
+    "JS1-04.01": "JS-COND-01",
+    "JS1-04.02": "JS-COND-01",
+    "JS1-04.03": "JS-COND-01",
+    "JS1-04.04": "JS-COND-01",
+    "JS1-05.01": "JS-LOOP-01",
+    "JS1-05.02": "JS-LOOP-01",
+    "JS1-05.03": "JS-LOOP-01",
+    "JS1-05.04": "JS-LOOP-01",
+    "JS1-06.01": "JS-FUNC-01",
+    "JS1-06.02": "JS-FUNC-01",
+    "JS1-06.03": "JS-FUNC-01",
+    "JS1-06.04": "JS-ARROW-01",
+    "JS1-07.01": "JS-ARRAY-01",
+    "JS1-07.02": "JS-ARRAY-01",
+    "JS1-07.03": "JS-ARRAY-01",
+    "JS1-07.04": "JS-ARRAY-HOF-01",
+    "JS1-08.01": "JS-STRING-01",
+    "JS1-08.02": "JS-STRING-01",
+    "JS1-08.03": "JS-STRING-01",
+    "JS1-08.04": "JS-STRING-01",
+    "JS2-09.01": "JS-OBJECT-01",
+    "JS2-09.02": "JS-OBJECT-01",
+    "JS2-09.03": "JS-OBJECT-01",
+    "JS2-09.04": "JS-OBJECT-01",
+    "JS2-09.05": "JS-OBJECT-01",
+    "JS2-10.01": "JS-DESTRUCT-01",
+    "JS2-10.02": "JS-SPREADREST-01",
+    "JS2-10.03": "JS-SPREADREST-01",
+    "JS2-10.04": "JS-OBJECT-01",
+    "JS2-10.05": "JS-SETMAP-01",
+    "JS2-11.01": "JS-EXEC-01",
+    "JS2-11.02": "JS-SCOPE-01",
+    "JS2-11.03": "JS-CLOSURE-01",
+    "JS2-11.04": "JS-THIS-01",
+    "JS2-11.05": "JS-THIS-01",
+    "JS2-12.01": "JS-PROTO-01",
+    "JS2-12.02": "JS-PROTO-01",
+    "JS2-12.03": "JS-CLASS-01",
+    "JS2-12.04": "JS-CLASS-01",
+    "JS2-12.05": "JS-CLASS-01",
+    "JS2-13.01": "JS-ERROR-01",
+    "JS2-13.02": "JS-ERROR-01",
+    "JS2-13.03": "JS-ERROR-01",
+    "JS2-13.04": "JS-ERROR-01",
+    "JS2-14.01": "JS-MODULE-01",
+    "JS2-14.02": "JS-MODULE-01",
+    "JS2-14.03": "JS-MODULE-01",
+    "JS2-14.04": "JS-MODULE-01"
+  },
+  "detailed_lesson_mappings": {
+    "JS1-01.01": {
+      "primary": "JS-VAR-01",
+      "supporting": [
+        "JS-RUNTIME-01"
+      ]
+    },
+    "JS1-01.02": {
+      "primary": "JS-VAR-01",
+      "supporting": []
+    },
+    "JS1-01.03": {
+      "primary": "JS-VAR-01",
+      "supporting": []
+    },
+    "JS1-01.04": {
+      "primary": "JS-VAR-01",
+      "supporting": [
+        "JS-STRING-01"
+      ]
+    },
+    "JS1-02.01": {
+      "primary": "JS-TYPE-01",
+      "supporting": [
+        "JS-VAR-01"
+      ]
+    },
+    "JS1-02.02": {
+      "primary": "JS-TYPE-01",
+      "supporting": [
+        "JS-VAR-01"
+      ]
+    },
+    "JS1-02.03": {
+      "primary": "JS-TYPE-01",
+      "supporting": [
+        "JS-COERCE-01"
+      ]
+    },
+    "JS1-02.04": {
+      "primary": "JS-COND-01",
+      "supporting": [
+        "JS-TYPE-01"
+      ]
+    },
+    "JS1-03.01": {
+      "primary": "JS-RUNTIME-01",
+      "supporting": [
+        "JS-STRING-01"
+      ]
+    },
+    "JS1-03.02": {
+      "primary": "JS-COERCE-01",
+      "supporting": [
+        "JS-TYPE-01"
+      ]
+    },
+    "JS1-03.03": {
+      "primary": "JS-COERCE-01",
+      "supporting": [
+        "JS-TYPE-01"
+      ]
+    },
+    "JS1-03.04": {
+      "primary": "JS-COND-01",
+      "supporting": [
+        "JS-COERCE-01"
+      ]
+    },
+    "JS1-04.01": {
+      "primary": "JS-COND-01",
+      "supporting": [
+        "JS-TYPE-01"
+      ]
+    },
+    "JS1-04.02": {
+      "primary": "JS-COND-01",
+      "supporting": []
+    },
+    "JS1-04.03": {
+      "primary": "JS-COND-01",
+      "supporting": []
+    },
+    "JS1-04.04": {
+      "primary": "JS-COND-01",
+      "supporting": [
+        "JS-COERCE-01"
+      ]
+    },
+    "JS1-05.01": {
+      "primary": "JS-LOOP-01",
+      "supporting": [
+        "JS-VAR-01",
+        "JS-COND-01"
+      ]
+    },
+    "JS1-05.02": {
+      "primary": "JS-LOOP-01",
+      "supporting": [
+        "JS-COND-01"
+      ]
+    },
+    "JS1-05.03": {
+      "primary": "JS-LOOP-01",
+      "supporting": [
+        "JS-COND-01"
+      ]
+    },
+    "JS1-05.04": {
+      "primary": "JS-LOOP-01",
+      "supporting": [
+        "JS-ARRAY-01"
+      ]
+    },
+    "JS1-06.01": {
+      "primary": "JS-FUNC-01",
+      "supporting": [
+        "JS-VAR-01"
+      ]
+    },
+    "JS1-06.02": {
+      "primary": "JS-FUNC-01",
+      "supporting": [
+        "JS-TYPE-01"
+      ]
+    },
+    "JS1-06.03": {
+      "primary": "JS-FUNC-01",
+      "supporting": [
+        "JS-TYPE-01"
+      ]
+    },
+    "JS1-06.04": {
+      "primary": "JS-ARROW-01",
+      "supporting": [
+        "JS-FUNC-01",
+        "JS-SCOPE-01"
+      ]
+    },
+    "JS1-07.01": {
+      "primary": "JS-ARRAY-01",
+      "supporting": [
+        "JS-TYPE-01"
+      ]
+    },
+    "JS1-07.02": {
+      "primary": "JS-ARRAY-01",
+      "supporting": [
+        "JS-FUNC-01"
+      ]
+    },
+    "JS1-07.03": {
+      "primary": "JS-ARRAY-01",
+      "supporting": [
+        "JS-COND-01"
+      ]
+    },
+    "JS1-07.04": {
+      "primary": "JS-ARRAY-HOF-01",
+      "supporting": [
+        "JS-ARRAY-01",
+        "JS-FUNC-01"
+      ]
+    },
+    "JS1-08.01": {
+      "primary": "JS-STRING-01",
+      "supporting": [
+        "JS-VAR-01"
+      ]
+    },
+    "JS1-08.02": {
+      "primary": "JS-STRING-01",
+      "supporting": [
+        "JS-FUNC-01"
+      ]
+    },
+    "JS1-08.03": {
+      "primary": "JS-STRING-01",
+      "supporting": [
+        "JS-COND-01"
+      ]
+    },
+    "JS1-08.04": {
+      "primary": "JS-STRING-01",
+      "supporting": [
+        "JS-ARRAY-01"
+      ]
+    },
+    "JS2-09.01": {
+      "primary": "JS-OBJECT-01",
+      "supporting": [
+        "JS-TYPE-01"
+      ]
+    },
+    "JS2-09.02": {
+      "primary": "JS-OBJECT-01",
+      "supporting": [
+        "JS-COND-01"
+      ]
+    },
+    "JS2-09.03": {
+      "primary": "JS-OBJECT-01",
+      "supporting": [
+        "JS-ARRAY-01",
+        "JS-LOOP-01"
+      ]
+    },
+    "JS2-09.04": {
+      "primary": "JS-OBJECT-01",
+      "supporting": [
+        "JS-FUNC-01"
+      ]
+    },
+    "JS2-09.05": {
+      "primary": "JS-OBJECT-01",
+      "supporting": [
+        "JS-COND-01"
+      ]
+    },
+    "JS2-10.01": {
+      "primary": "JS-DESTRUCT-01",
+      "supporting": [
+        "JS-OBJECT-01",
+        "JS-ARRAY-01"
+      ]
+    },
+    "JS2-10.02": {
+      "primary": "JS-SPREADREST-01",
+      "supporting": [
+        "JS-ARRAY-01",
+        "JS-OBJECT-01"
+      ]
+    },
+    "JS2-10.03": {
+      "primary": "JS-SPREADREST-01",
+      "supporting": [
+        "JS-FUNC-01"
+      ]
+    },
+    "JS2-10.04": {
+      "primary": "JS-OBJECT-01",
+      "supporting": [
+        "JS-VAR-01"
+      ]
+    },
+    "JS2-10.05": {
+      "primary": "JS-SETMAP-01",
+      "supporting": [
+        "JS-ARRAY-01",
+        "JS-OBJECT-01"
+      ]
+    },
+    "JS2-11.01": {
+      "primary": "JS-EXEC-01",
+      "supporting": [
+        "JS-VAR-01",
+        "JS-SCOPE-01"
+      ]
+    },
+    "JS2-11.02": {
+      "primary": "JS-SCOPE-01",
+      "supporting": [
+        "JS-VAR-01",
+        "JS-FUNC-01"
+      ]
+    },
+    "JS2-11.03": {
+      "primary": "JS-CLOSURE-01",
+      "supporting": [
+        "JS-SCOPE-01",
+        "JS-FUNC-01"
+      ]
+    },
+    "JS2-11.04": {
+      "primary": "JS-THIS-01",
+      "supporting": [
+        "JS-ARROW-01",
+        "JS-OBJECT-01"
+      ]
+    },
+    "JS2-11.05": {
+      "primary": "JS-THIS-01",
+      "supporting": [
+        "JS-FUNC-01",
+        "JS-OBJECT-01"
+      ]
+    },
+    "JS2-12.01": {
+      "primary": "JS-PROTO-01",
+      "supporting": [
+        "JS-OBJECT-01"
+      ]
+    },
+    "JS2-12.02": {
+      "primary": "JS-PROTO-01",
+      "supporting": [
+        "JS-FUNC-01",
+        "JS-THIS-01"
+      ]
+    },
+    "JS2-12.03": {
+      "primary": "JS-CLASS-01",
+      "supporting": [
+        "JS-PROTO-01",
+        "JS-FUNC-01"
+      ]
+    },
+    "JS2-12.04": {
+      "primary": "JS-CLASS-01",
+      "supporting": [
+        "JS-PROTO-01",
+        "JS-THIS-01"
+      ]
+    },
+    "JS2-12.05": {
+      "primary": "JS-CLASS-01",
+      "supporting": [
+        "JS-CLOSURE-01"
+      ]
+    },
+    "JS2-13.01": {
+      "primary": "JS-ERROR-01",
+      "supporting": [
+        "JS-TYPE-01",
+        "JS-SCOPE-01"
+      ]
+    },
+    "JS2-13.02": {
+      "primary": "JS-ERROR-01",
+      "supporting": [
+        "JS-FUNC-01"
+      ]
+    },
+    "JS2-13.03": {
+      "primary": "JS-ERROR-01",
+      "supporting": [
+        "JS-CLASS-01",
+        "JS-FUNC-01"
+      ]
+    },
+    "JS2-13.04": {
+      "primary": "JS-ERROR-01",
+      "supporting": [
+        "JS-OBJECT-01"
+      ]
+    },
+    "JS2-14.01": {
+      "primary": "JS-MODULE-01",
+      "supporting": [
+        "JS-OBJECT-01",
+        "JS-FUNC-01"
+      ]
+    },
+    "JS2-14.02": {
+      "primary": "JS-MODULE-01",
+      "supporting": [
+        "JS-FUNC-01"
+      ]
+    },
+    "JS2-14.03": {
+      "primary": "JS-MODULE-01",
+      "supporting": [
+        "JS-CLASS-01",
+        "JS-ARRAY-HOF-01"
+      ]
+    },
+    "JS2-14.04": {
+      "primary": "JS-MODULE-01",
+      "supporting": [
+        "JS-CLASS-01",
+        "JS-ERROR-01"
+      ]
+    }
+  },
+  "practice_problem_mappings": {}
+}

@@ -5,8 +5,8 @@ type ExpectedDatabaseCode = 'P2002' | 'P2003' | 'P2004' | '23514';
 
 const LANGUAGE_CASES = [
   { language: 'PYTHON', goalId: 'GOAL_PY_BASICS', graphVersion: '2.1', skillId: 'PY-BASICS-01' },
-  { language: 'JAVASCRIPT', goalId: 'GOAL_JS_BASICS', graphVersion: '3.0.0', skillId: 'JS-VAR-01' },
-  { language: 'CPP', goalId: 'GOAL_CPP_BASICS', graphVersion: '4.0.0', skillId: 'CPP-SYNTAX-01' },
+  { language: 'JAVASCRIPT', goalId: 'GOAL_JS_BASICS', graphVersion: '3.1.0', skillId: 'JS-VAR-01' },
+  { language: 'CPP', goalId: 'GOAL_CPP_BASICS', graphVersion: '4.1.0', skillId: 'CPP-SYNTAX-01' },
   { language: 'SQL', goalId: 'GOAL_SQL_BASICS', graphVersion: '2.0', skillId: 'SQL-RDBMS-01' },
 ] as const;
 

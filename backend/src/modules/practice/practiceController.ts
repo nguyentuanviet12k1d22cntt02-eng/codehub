@@ -212,7 +212,7 @@ export const submitPracticeCode = async (req: AuthenticatedRequest, res: Respons
             astResult = StaticCodeAnalyzer.analyze(code, language, problem.description || '', problem.title);
         }
 
-        // Chuẩn bị mã nguồn một lần, sau đó chạy từng testcase độc lập trong một sandbox.
+        // Gửi từng testcase thành một submission Judge0 độc lập.
         let totalRuntime = 0;
         let hasSystemError = false;
         // Python/JavaScript vẫn giữ ngưỡng 5 giây; C/C++ có thêm 1 giây cho runtime.

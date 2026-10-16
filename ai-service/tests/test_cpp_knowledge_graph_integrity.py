@@ -62,6 +62,16 @@ class CppKnowledgeGraphIntegrityTests(unittest.TestCase):
                     queue.append(target)
         self.assertEqual(visited, len(skill_ids), "Đồ thị C++ có chu trình")
 
+    def test_pointer_requires_lifetime_and_matrix_has_no_redundant_loop_edge(self):
+        edges = {(edge["source"], edge["target"]) for edge in self.graph["edges"]}
+        self.assertIn(("CPP-MEM-01", "CPP-PTR-01"), edges)
+        self.assertIn(("CPP-STRUCT-01", "CPP-PTR-01"), edges)
+        self.assertNotIn(("CPP-LOOP-01", "CPP-MATRIX-01"), edges)
+        self.assertNotIn(("CPP-MEM-01", "CPP-SMARTPTR-01"), edges)
+        snapshot = ROOT / "ai-service/data/synthetic_history_real_items/cppSkillGraph.v4.0.0.json"
+        metadata = json.loads((snapshot.parent / "cpp_metadata.json").read_text(encoding="utf-8"))
+        self.assertEqual(hashlib.sha256(snapshot.read_bytes()).hexdigest(), metadata["graph_sha256"])
+
     def test_every_source_lesson_is_mapped_once_with_valid_supporting_skills(self):
         lesson_ids = set()
         for content_path in CPP_CONTENT_ROOT.rglob("Lesson_*.md"):

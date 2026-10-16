@@ -165,7 +165,7 @@ const PracticeWorkspace: React.FC = () => {
             return;
         }
         setIsRunning(true);
-        setConsoleOutput('Đang biên dịch và thực thi code trong môi trường sandbox Docker...');
+        setConsoleOutput('Đang biên dịch và thực thi code trong môi trường Judge0...');
         setActiveTerminalTab('console');
 
         try {
@@ -528,7 +528,7 @@ const PracticeWorkspace: React.FC = () => {
                                             {isSubmitting ? (
                                                 <div className="flex flex-col items-center justify-center py-10">
                                                     <div className="w-7 h-7 border-3 border-accent-custom border-t-transparent rounded-full animate-spin mb-3"></div>
-                                                    <span className="text-xs text-text-tertiary">MCODE Sandbox đang chấm toàn bộ testcase ẩn...</span>
+                                                    <span className="text-xs text-text-tertiary">Judge0 đang chấm toàn bộ testcase ẩn...</span>
                                                 </div>
                                             ) : testcaseResults.length === 0 ? (
                                                 <div className="text-center py-10 text-text-tertiary">

@@ -1,5 +1,5 @@
 {
-  "version": "4.0.0",
+  "version": "4.1.0",
   "domain": {
     "id": "CPP",
     "name": "C++17: Nền tảng, STL và tư duy giải thuật",
@@ -83,7 +83,7 @@
     },
     {
       "id": "CPP-MATRIX-01", "concept_id": "CPP-MATRIX-01", "name": "Ma trận và duyệt không gian hai chiều", "concept_name": "Ma trận và duyệt không gian hai chiều", "domain_id": "CPP", "module_id": "MOD-CPP-DATA", "topic_id": "TOPIC-CPP-MATRIX", "stage": 3, "tier": 3,
-      "scope": "2D arrays, row-major, nested loops, diagonals, transpose, grid neighbors", "prerequisites": ["CPP-ARRAY-01", "CPP-LOOP-01"], "learning_objectives": ["Duyệt bảng dữ liệu hàng-cột đúng thứ tự", "Tính toán đường chéo và chuyển vị", "Kiểm soát biên khi duyệt ô lân cận"], "associated_errors": ["index errors", "SIGSEGV", "row-column confusion"], "difficulty_level": 3, "bloom_level": "Analyze", "estimated_time_minutes": 45, "practice_count": 3, "content_status": "PUBLISHED"
+      "scope": "2D arrays, row-major, nested loops, diagonals, transpose, grid neighbors", "prerequisites": ["CPP-ARRAY-01"], "learning_objectives": ["Duyệt bảng dữ liệu hàng-cột đúng thứ tự", "Tính toán đường chéo và chuyển vị", "Kiểm soát biên khi duyệt ô lân cận"], "associated_errors": ["index errors", "SIGSEGV", "row-column confusion"], "difficulty_level": 3, "bloom_level": "Analyze", "estimated_time_minutes": 45, "practice_count": 3, "content_status": "PUBLISHED"
     },
     {
       "id": "CPP-STRUCT-01", "concept_id": "CPP-STRUCT-01", "name": "struct, kiểu hợp thành và bố cục dữ liệu", "concept_name": "struct, kiểu hợp thành và bố cục dữ liệu", "domain_id": "CPP", "module_id": "MOD-CPP-RECORDS", "topic_id": "TOPIC-CPP-STRUCT", "stage": 3, "tier": 4,
@@ -95,7 +95,7 @@
     },
     {
       "id": "CPP-PTR-01", "concept_id": "CPP-PTR-01", "name": "Con trỏ và cấu trúc liên kết", "concept_name": "Con trỏ và cấu trúc liên kết", "domain_id": "CPP", "module_id": "MOD-CPP-RECORDS", "topic_id": "TOPIC-CPP-PTR", "stage": 4, "tier": 4,
-      "scope": "addresses, dereference, Node*, linked list, std::forward_list", "prerequisites": ["CPP-STRUCT-01"], "learning_objectives": ["Đọc được liên kết giữa các node qua con trỏ", "So sánh đánh đổi truy cập với chèn/xóa đầu danh sách", "Nhận diện null và vòng đời node"], "associated_errors": ["null dereference", "dangling pointer", "lost node"], "difficulty_level": 4, "bloom_level": "Analyze", "estimated_time_minutes": 40, "practice_count": 1, "content_status": "PUBLISHED"
+      "scope": "addresses, dereference, Node*, linked list, std::forward_list", "prerequisites": ["CPP-STRUCT-01", "CPP-MEM-01"], "learning_objectives": ["Đọc được liên kết giữa các node qua con trỏ", "So sánh đánh đổi truy cập với chèn/xóa đầu danh sách", "Nhận diện null và vòng đời node"], "associated_errors": ["null dereference", "dangling pointer", "lost node"], "difficulty_level": 4, "bloom_level": "Analyze", "estimated_time_minutes": 40, "practice_count": 1, "content_status": "PUBLISHED"
     },
     {
       "id": "CPP-FILE-01", "concept_id": "CPP-FILE-01", "name": "Xử lý văn bản nâng cao: stream, view và regex", "concept_name": "Xử lý văn bản nâng cao: stream, view và regex", "domain_id": "CPP", "module_id": "MOD-CPP-STL", "topic_id": "TOPIC-CPP-TEXT", "stage": 4, "tier": 4,
@@ -127,7 +127,7 @@
     },
     {
       "id": "CPP-SMARTPTR-01", "concept_id": "CPP-SMARTPTR-01", "name": "RAII và con trỏ thông minh", "concept_name": "RAII và con trỏ thông minh", "domain_id": "CPP", "module_id": "MOD-CPP-ROBUST", "topic_id": "TOPIC-CPP-RAII", "stage": 5, "tier": 5,
-      "scope": "RAII, unique_ptr, shared_ptr, weak_ptr, make_unique, ownership", "prerequisites": ["CPP-PTR-01", "CPP-MEM-01"], "learning_objectives": ["Mô tả ownership thay vì chỉ mô tả địa chỉ", "Ưu tiên unique_ptr và make_unique", "Nhận diện shared ownership và chu trình tham chiếu"], "associated_errors": ["memory leak", "double ownership", "reference cycle"], "difficulty_level": 4, "bloom_level": "Analyze", "estimated_time_minutes": 40, "practice_count": 1, "content_status": "PUBLISHED"
+      "scope": "RAII, unique_ptr, shared_ptr, weak_ptr, make_unique, ownership", "prerequisites": ["CPP-PTR-01"], "learning_objectives": ["Mô tả ownership thay vì chỉ mô tả địa chỉ", "Ưu tiên unique_ptr và make_unique", "Nhận diện shared ownership và chu trình tham chiếu"], "associated_errors": ["memory leak", "double ownership", "reference cycle"], "difficulty_level": 4, "bloom_level": "Analyze", "estimated_time_minutes": 40, "practice_count": 1, "content_status": "PUBLISHED"
     }
   ],
   "edges": [
@@ -140,10 +140,10 @@
     { "source": "CPP-ARRAY-01", "target": "CPP-VECTOR-01", "relation": "prerequisite", "reason": "vector mở rộng tư duy dãy liên tiếp từ mảng tĩnh." },
     { "source": "CPP-SYNTAX-01", "target": "CPP-STRING-01", "relation": "prerequisite", "reason": "Chuỗi gắn trực tiếp với nhập xuất dòng và trạng thái stream." },
     { "source": "CPP-ARRAY-01", "target": "CPP-MATRIX-01", "relation": "prerequisite", "reason": "Ma trận mở rộng chỉ mục một chiều thành hàng-cột." },
-    { "source": "CPP-LOOP-01", "target": "CPP-MATRIX-01", "relation": "prerequisite", "reason": "Duyệt ma trận cần vòng lặp lồng nhau và kiểm soát biên." },
     { "source": "CPP-TYPE-01", "target": "CPP-STRUCT-01", "relation": "prerequisite", "reason": "struct tổ hợp các trường đã có kiểu rõ ràng." },
     { "source": "CPP-TYPE-01", "target": "CPP-ENUMVAR-01", "relation": "prerequisite", "reason": "enum class, bit-field và variant đều yêu cầu hiểu kiểu và chuyển đổi." },
     { "source": "CPP-STRUCT-01", "target": "CPP-PTR-01", "relation": "prerequisite", "reason": "Node của danh sách liên kết là một bản ghi có liên kết con trỏ." },
+    { "source": "CPP-MEM-01", "target": "CPP-PTR-01", "relation": "prerequisite", "reason": "Con trỏ tới node chỉ an toàn khi hiểu phạm vi và vòng đời đối tượng để tránh con trỏ treo." },
     { "source": "CPP-STRING-01", "target": "CPP-FILE-01", "relation": "prerequisite", "reason": "stringstream, string_view và regex thao tác trên văn bản sẵn có." },
     { "source": "CPP-VECTOR-01", "target": "CPP-BUILD-01", "relation": "prerequisite", "reason": "Các ví dụ sort và binary_search cần một range tuần tự cụ thể." },
     { "source": "CPP-TYPE-01", "target": "CPP-CACHE-01", "relation": "prerequisite", "reason": "Khóa, giá trị, comparator và hash đều dựa trên ngữ nghĩa kiểu dữ liệu." },
@@ -152,8 +152,7 @@
     { "source": "CPP-VECTOR-01", "target": "CPP-BACKTRACK-01", "relation": "prerequisite", "reason": "Nhiều bài quay lui cần giữ trạng thái thay đổi được và kết quả theo dãy." },
     { "source": "CPP-TYPE-01", "target": "CPP-BITWISE-01", "relation": "prerequisite", "reason": "Bitwise cần hiểu kiểu số nguyên, dấu và phép chuyển đổi." },
     { "source": "CPP-FUNC-01", "target": "CPP-EXC-01", "relation": "prerequisite", "reason": "Ngoại lệ lan truyền qua biên hàm và được xử lý tại điểm gọi." },
-    { "source": "CPP-PTR-01", "target": "CPP-SMARTPTR-01", "relation": "prerequisite", "reason": "RAII diễn đạt ownership cho tài nguyên được truy cập qua con trỏ." },
-    { "source": "CPP-MEM-01", "target": "CPP-SMARTPTR-01", "relation": "prerequisite", "reason": "RAII dựa trên vòng đời xác định của đối tượng và scope." }
+    { "source": "CPP-PTR-01", "target": "CPP-SMARTPTR-01", "relation": "prerequisite", "reason": "RAII diễn đạt ownership cho tài nguyên được truy cập qua con trỏ." }
   ],
   "lesson_mappings": {
     "CPP-01.01": "CPP-SYNTAX-01", "CPP-01.02": "CPP-SYNTAX-01", "CPP-01.03": "CPP-TYPE-01", "CPP-01.04": "CPP-TYPE-01", "CPP-01.05": "CPP-TYPE-01",

@@ -1,4 +1,4 @@
-// Real integration run: real providers, real Docker, real PostgreSQL. No test doubles.
+// Real integration run: real providers, real Judge0, real PostgreSQL. No test doubles.
 require('dotenv').config({quiet:true});
 const {prisma}=require('../dist/infrastructure/database/prisma');
 const {getRun,learnerContext}=require('../dist/modules/adaptive/adaptiveRepository');

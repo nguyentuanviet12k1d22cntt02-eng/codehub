@@ -1,10 +1,6 @@
-// Run manually after setting SANDBOX_PROVIDER=judge0. Uses only harmless code.
+// Run manually against JUDGE0_BASE_URL. Uses only harmless code.
 const {SandboxService} = require('../dist/infrastructure/sandbox/sandbox.service');
 const {runExercise} = require('../dist/modules/adaptive/adaptiveRunner');
-
-if (process.env.SANDBOX_PROVIDER?.toLowerCase() !== 'judge0') {
-    throw new Error('Set SANDBOX_PROVIDER=judge0 before running this check.');
-}
 
 const cases = [
     {language:'python', mode:'function', code:'def solution(n): return n + 1',

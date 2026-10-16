@@ -1,4 +1,4 @@
-import { runCodeBatch, runCodeInDocker } from '../sandbox/sandbox.service';
+import { executeCode, executeCodeBatch } from '../sandbox/sandbox.service';
 import { BatchExecutionOptions, ExecuteResult, SupportedLanguage } from '../sandbox/sandbox.types';
 
 type QueueExecutionResult = ExecuteResult | ExecuteResult[];
@@ -31,12 +31,15 @@ class CodeExecutionQueue {
         timeoutMs?: number
     ): Promise<ExecuteResult> {
         const actualTimeout = timeoutMs ?? this.defaultTimeout(language);
-        return this.enqueue(language, () => runCodeInDocker(userCode, language, inputData, actualTimeout)) as Promise<ExecuteResult>;
+        return this.enqueue(language, () => executeCode(userCode, language, {
+            inputData,
+            timeoutMs: actualTimeout
+        })) as Promise<ExecuteResult>;
     }
 
     /**
      * Một job batch chiếm đúng một slot trong queue, dù nó có nhiều testcase.
-     * Nhờ vậy một lượt nộp không tạo nhiều container cạnh tranh CPU với chính nó.
+     * Nhờ vậy một lượt nộp không chiếm nhiều slot Judge0 cạnh tranh với chính nó.
      */
     public pushBatchJob(
         userCode: string,
@@ -45,7 +48,7 @@ class CodeExecutionQueue {
         options?: BatchExecutionOptions
     ): Promise<ExecuteResult[]> {
         const timeoutMs = options?.timeoutMs ?? this.defaultTimeout(language);
-        return this.enqueue(language, () => runCodeBatch(userCode, language, inputs, {
+        return this.enqueue(language, () => executeCodeBatch(userCode, language, inputs, {
             ...options,
             timeoutMs
         })) as Promise<ExecuteResult[]>;
@@ -103,5 +106,5 @@ class CodeExecutionQueue {
 }
 
 // Export một instance duy nhất (Singleton) cho toàn hệ thống
-// maxConcurrency=4: chạy 4 container Docker đồng thời
+// maxConcurrency=4: tối đa bốn lượt chấm Judge0 đồng thời.
 export const codeExecutionQueue = new CodeExecutionQueue(4);

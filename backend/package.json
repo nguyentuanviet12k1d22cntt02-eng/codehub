@@ -7,7 +7,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "build": "node scripts/cleanDist.cjs && tsc",
     "dev": "nodemon --watch src --ext ts,json --exec ts-node src/app.ts",
     "admin:create": "ts-node scripts/createAdminUser.ts",
     "admin:seed": "ts-node scripts/adminSeeder.ts"

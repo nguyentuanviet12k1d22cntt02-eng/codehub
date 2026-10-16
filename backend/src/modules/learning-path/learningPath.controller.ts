@@ -293,7 +293,7 @@ export const submitExerciseCode = async (req: AuthenticatedRequest, res: Respons
             return;
         }
 
-        // Run Docker Sandbox Execution via Code Execution Queue
+        // Chấm mã qua hàng đợi Judge0.
         let passedCases = 0;
         const totalCases = exercise.testCases.length;
         const results = [];

@@ -8,7 +8,7 @@ const files=[];
 const add=name=>{files.push({file:name,sha256:hash(name),bytes:fs.statSync(path.join(root,name)).size});};
 const runs=languages.map(language=>{
   const fullName=language+'-live-report.json',publicName=language+'-public-report.json';
-  const gradingName=language+'-grading.json',smokeName=language+'-docker-smoke.json';
+  const gradingName=language+'-grading.json',smokeName=language+'-judge0-smoke.json';
   const report=read(fullName),publicReport=read(publicName),grading=read(gradingName),smoke=read(smokeName);
   assert.equal(report.status,'SUCCEEDED',language+' pipeline must succeed');
   assert.equal(report.fallback_used,false,language+' must never use fallback');
@@ -20,20 +20,20 @@ const runs=languages.map(language=>{
   assert.equal(grading.correct.isPassed,true,language+' correct solution passes');
   assert.equal(grading.wrong.isPassed,false,language+' wrong solution fails');
   assert.equal(grading.repeated.adaptiveFeedback.delta,0,language+' repeated pass has no mastery gain');
-  assert.equal(smoke.kind,'REAL_DOCKER_SMOKE');
-  assert.equal(smoke.result?.passed,true,language+' Docker smoke');
+  assert.equal(smoke.kind,'REAL_JUDGE0_SMOKE');
+  assert.equal(smoke.result?.passed,true,language+' Judge0 smoke');
   [fullName,publicName,gradingName,smokeName].forEach(add);
   return {
     language,trace_id:report.trace_id,status:report.status,artifact_hash:report.exercise?.artifact_hash,
     stages:report.agent_traces.map(r=>({sequence:r.sequence,agent:r.agent,attempt:r.attempt,status:r.status,duration_ms:r.duration_ms})),
     model_calls:modelCalls.map(c=>({stage:c.stage,provider:c.provider,model:c.model,response_id:c.response_id,status:c.status,duration_ms:c.duration_ms,usage:c.usage,error_code:c.error_code})),
     checks:{no_fallback:true,publication_gate:true,public_report_protects_answers:true,real_correct_submission_passes:true,
-      real_wrong_submission_fails:true,duplicate_mastery_gain_prevented:true,docker_smoke_passes:true}
+      real_wrong_submission_fails:true,duplicate_mastery_gain_prevented:true,judge0_smoke_passes:true}
   };
 });
 for(const name of ['cpp-first-attempt-failed.json','cpp-second-attempt-failed.json','sql-provider-timeout.json','sql-schema-repair-failed.json']) if(fs.existsSync(path.join(root,name))) add(name);
 const result={schema_version:'1.0',kind:'REAL_PIPELINE_EVIDENCE_INDEX',generated_at:new Date().toISOString(),status:'PASSED',
-  statement:'Four real provider pipelines completed without fallback; every published artifact passed deterministic validation, Docker execution and critic review.',
+  statement:'Four real provider pipelines completed without fallback; every published artifact passed deterministic validation, Judge0 execution and critic review.',
   runs,retained_failures:files.filter(f=>f.file.includes('failed')||f.file.includes('timeout')),files};
 const encoded=JSON.stringify(result,null,2);
 fs.writeFileSync(path.join(root,'final-verification-summary.json'),encoded);

@@ -47,7 +47,7 @@ test('typed JSON comparison never ignores case or value type',()=>{
  assert.equal(equalOutput('true','"true"',spec),false);
  assert.equal(equalOutput('{"b":2,"a":1}','{"a":1,"b":2}',spec),true);
 });
-test('Docker harness allows startup time without dropping resource limits',()=>{
+test('Judge0 harness allows queue and sandbox startup time',()=>{
  assert.equal(executionTimeoutMs('python'),8000);
  assert.equal(executionTimeoutMs('javascript'),8000);
  assert.equal(executionTimeoutMs('cpp'),12000);

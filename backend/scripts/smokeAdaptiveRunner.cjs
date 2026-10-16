@@ -1,8 +1,8 @@
-// Real Docker smoke test, one language per invocation.
+// Real Judge0 smoke test, one language per invocation.
 const fs=require('fs'),path=require('path'),assert=require('node:assert/strict');
 const {runExercise}=require('../dist/modules/adaptive/adaptiveRunner');
 const language=process.argv[2]||'python';
-const output=path.resolve(__dirname,'../../reviews/ai-pipeline/'+language+'-docker-smoke.json');
+const output=path.resolve(__dirname,'../../reviews/ai-pipeline/'+language+'-judge0-smoke.json');
 const sources={
  python:'def helper(n):\n    return n * 2\ndef solution(n):\n    return helper(n)',
  javascript:'function solution(n) { return n * 2; }',
@@ -20,7 +20,7 @@ const draft={starter_code:'',reference_solution:sources[language],test_cases:[2,
 (async()=>{
  const result=await runExercise(draft,specification);
  fs.mkdirSync(path.dirname(output),{recursive:true});
- fs.writeFileSync(output,JSON.stringify({kind:'REAL_DOCKER_SMOKE',created_at:new Date().toISOString(),language,result},null,2));
+ fs.writeFileSync(output,JSON.stringify({kind:'REAL_JUDGE0_SMOKE',created_at:new Date().toISOString(),language,result},null,2));
  console.log(JSON.stringify({language,passed:result.passed,cases:result.test_results.map(t=>({passed:t.passed,status:t.status,actual:t.actual,stderr:t.stderr.slice(0,300)})),report:output}));
  assert.equal(result.passed,true);
 })().catch(e=>{console.error(e.message);process.exitCode=1;});
