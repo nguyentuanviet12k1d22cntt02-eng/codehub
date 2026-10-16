@@ -51,7 +51,24 @@ function lessonSkill(language: PilotLanguage, lessonCode: string, title: string)
     const graph = getSkillGraphData(language);
     const skill = graph?.lesson_mappings?.[lessonCode];
     const knownSkills = new Set((graph?.skills || []).map((item: { id?: unknown }) => String(item.id || '')));
-    return typeof skill === 'string' && knownSkills.has(skill) ? skill : null;
+    if (typeof skill === 'string' && knownSkills.has(skill)) return skill;
+
+    // Aggregate practice lessons (for example CPP-01.MP) deliberately bundle
+    // several ordinary lessons and therefore have no direct graph entry. Use
+    // the most represented mapped skill from that module until exercises carry
+    // their own explicit skill IDs. This keeps one coherent target skill for
+    // the pilot instead of silently dropping every valid exercise.
+    if (!lessonCode.endsWith('.MP')) return null;
+    const modulePrefix = lessonCode.slice(0, -3);
+    const counts = new Map<string, number>();
+    Object.entries(graph?.lesson_mappings || {}).forEach(([code, mappedSkill]) => {
+        if (code.startsWith(`${modulePrefix}.`) && typeof mappedSkill === 'string' && knownSkills.has(mappedSkill)) {
+            counts.set(mappedSkill, (counts.get(mappedSkill) || 0) + 1);
+        }
+    });
+    return [...counts.entries()]
+        .sort(([leftSkill, leftCount], [rightSkill, rightCount]) => rightCount - leftCount || leftSkill.localeCompare(rightSkill))
+        .at(0)?.[0] || null;
 }
 
 // Exported for the small backend contract test and for keeping legacy Python mappings stable.

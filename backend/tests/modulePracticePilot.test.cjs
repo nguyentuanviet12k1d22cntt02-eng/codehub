@@ -15,6 +15,17 @@ test('JavaScript and C++ lessons resolve against their own skill graphs', () => 
   assert.equal(languageForLessonCode('CPP-03.02'), 'CPP');
   assert.equal(skillForPractice('JS1-04.02', 'Bất kỳ bài JavaScript'), 'JS-COND-01');
   assert.equal(skillForPractice('CPP-03.02', 'Bất kỳ bài C++'), 'CPP-LOOP-01');
+  assert.equal(skillForPractice('CPP-01.MP', 'Bài tổng hợp C++'), 'CPP-TYPE-01');
+});
+
+test('aggregate C++ practice remains eligible when its test contract is complete', () => {
+  const candidates = verifiedPracticeCandidates('CPP-01.MP', [{
+    id: 'cpp-module-one', title: 'Tính tổng hai số', difficulty: 'EASY',
+    problemDescription: 'Nhập hai số và in tổng.', solutionCode: '#include <iostream>\nint main() {}',
+    testCases: [{ input: '1 2', expectedOutput: '3' }],
+  }]);
+  assert.equal(candidates.length, 1);
+  assert.equal(candidates[0].skill_id, 'CPP-TYPE-01');
 });
 
 test('placeholder grading content is excluded before adaptive selection', () => {

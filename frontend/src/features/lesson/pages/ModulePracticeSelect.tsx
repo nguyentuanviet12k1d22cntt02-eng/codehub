@@ -184,7 +184,7 @@ const ModulePracticeSelect: React.FC = () => {
 
                 {recommendation?.mode === 'MANUAL' && recommendation.reason === 'NO_VERIFIED_EXERCISES' && (
                     <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-5 text-sm text-amber-400 m-0" role="status">
-                        Bộ bài tổng hợp này cần được cập nhật testcase trước khi PAL-Net có thể đề xuất bài trên local.
+                        Bộ bài này chưa có bài tập đủ điều kiện để PAL-Net đề xuất. Hệ thống cần mô tả, đáp án, testcase và ánh xạ kỹ năng hợp lệ.
                     </p>
                 )}
 
