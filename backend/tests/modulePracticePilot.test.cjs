@@ -1,13 +1,20 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const {
-  skillForPractice, verifiedPracticeCandidates, selectPracticeCandidate,
+  languageForLessonCode, skillForPractice, verifiedPracticeCandidates, selectPracticeCandidate,
 } = require('../dist/modules/courses/modulePracticeRecommendation');
 
 test('module-practice mapping is limited to the six trained Python skills', () => {
   assert.equal(skillForPractice('LS-03.MP_FOR', 'In lời chào N lần'), 'PY-FLOW-03');
   assert.equal(skillForPractice('LS-03.MP_WHILE', 'Đếm từ 1 đến N bằng while'), 'PY-FLOW-02');
   assert.equal(skillForPractice('LS-04.MP', 'Đảo ngược chuỗi'), null);
+});
+
+test('JavaScript and C++ lessons resolve against their own skill graphs', () => {
+  assert.equal(languageForLessonCode('JS1-04.02'), 'JAVASCRIPT');
+  assert.equal(languageForLessonCode('CPP-03.02'), 'CPP');
+  assert.equal(skillForPractice('JS1-04.02', 'Bất kỳ bài JavaScript'), 'JS-COND-01');
+  assert.equal(skillForPractice('CPP-03.02', 'Bất kỳ bài C++'), 'CPP-LOOP-01');
 });
 
 test('placeholder grading content is excluded before adaptive selection', () => {

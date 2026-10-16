@@ -4,7 +4,7 @@ import { authService } from '../../../services/authService';
 import AppNavbar from '../../../components/AppNavbar';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../config/api';
-import { getModulePracticeRecommendation, type ModulePracticeRecommendation } from '../services/modulePracticeRecommendation';
+import { getModulePracticeRecommendation, isPilotRecommendation, type ModulePracticeRecommendation } from '../services/modulePracticeRecommendation';
 
 interface DBLesson {
     id: string;
@@ -47,7 +47,7 @@ const ModulePracticeSelect: React.FC = () => {
                 setLesson(data);
                 const suggestion = await getModulePracticeRecommendation(lessonId)
                     .catch((): ModulePracticeRecommendation => ({ mode: 'MANUAL', reason: 'LOCAL_MODEL_UNAVAILABLE' }));
-                const validSuggestion: ModulePracticeRecommendation = suggestion.mode === 'PALNET_SYNTHETIC_LOCAL_PILOT' &&
+                const validSuggestion: ModulePracticeRecommendation = isPilotRecommendation(suggestion) &&
                     !data.codingExercises?.some((ex: any) => ex.id === suggestion.exerciseId)
                     ? { mode: 'MANUAL', reason: 'EXERCISE_NOT_IN_LESSON' } : suggestion;
                 setRecommendation(validSuggestion);
@@ -151,19 +151,19 @@ const ModulePracticeSelect: React.FC = () => {
                         {lesson.title}
                     </h1>
                     <p className="text-text-secondary text-sm md:text-base max-w-[800px] leading-relaxed m-0">
-                        {recommendation?.mode === 'PALNET_SYNTHETIC_LOCAL_PILOT'
+                        {recommendation && isPilotRecommendation(recommendation)
                             ? 'PAL-Net chọn một bài luyện tập tối ưu dựa trên lịch sử làm bài của bạn. Mức độ khó mô tả độ thử thách của bài tập.'
                             : 'Chọn bài luyện tập của module bên dưới.'}
                     </p>
                 </section>
 
-                {recommendation?.mode === 'PALNET_SYNTHETIC_LOCAL_PILOT' && (
+                {recommendation && isPilotRecommendation(recommendation) && (
                     <section className="rounded-2xl border border-accent-border bg-accent-bg/40 p-6 md:p-8 text-left flex flex-col md:flex-row md:items-center gap-6" aria-label="Bài tập được gợi ý">
                         <div className="flex-1">
                             <span className="text-[11px] font-extrabold uppercase tracking-wider text-accent-custom">Bài phù hợp tiếp theo · Đề xuất thích ứng PAL-Net</span>
                             <h2 className="text-xl md:text-2xl font-black text-text-primary mt-2 mb-2">{recommendation.title}</h2>
                             <p className="text-sm text-text-secondary m-0">
-                                Mức {recommendation.difficulty === 'EASY' ? 'Dễ' : recommendation.difficulty === 'MEDIUM' ? 'Khá' : 'Khó'} · PAL-Net dùng các lần làm bài trước để đề xuất mức luyện tập phù hợp nhất.
+                                Mức {recommendation.difficulty === 'EASY' ? 'Dễ' : recommendation.difficulty === 'MEDIUM' ? 'Khá' : 'Khó'} · PAL-Net dùng các lần làm bài trước bằng {recommendation.language === 'CPP' ? 'C++' : recommendation.language === 'JAVASCRIPT' ? 'JavaScript' : 'Python'} để đề xuất mức luyện tập phù hợp nhất.
                             </p>
                             <p className="text-xs text-text-tertiary mt-3 mb-0">Hệ thống phân tích tương tác để cá nhân hóa lộ trình học của bạn.</p>
                         </div>
@@ -190,7 +190,7 @@ const ModulePracticeSelect: React.FC = () => {
 
                 {recommendation?.mode === 'MANUAL' && recommendation.reason === 'LOCAL_MODEL_UNAVAILABLE' && (
                     <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-5 text-sm text-amber-400 m-0" role="status">
-                        PAL-Net local chưa sẵn sàng. Bạn vẫn có thể chọn bài theo mức độ khó bên dưới.
+                        PAL-Net chưa sẵn sàng. Bạn vẫn có thể chọn bài theo mức độ khó bên dưới.
                     </p>
                 )}
 

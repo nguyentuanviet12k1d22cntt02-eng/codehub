@@ -204,7 +204,10 @@ def generate_learner(
     return history
 
 
-def generate(language: str, seed: int = 20261013, learners_per_persona: int = 12) -> tuple[Path, Path]:
+def generate(
+    language: str, seed: int = 20261013, learners_per_persona: int = 12,
+    output_root: Path = OUTPUT,
+) -> tuple[Path, Path]:
     if learners_per_persona < 4:
         raise ValueError("Need at least four learners per persona for grouped splits")
     graph_path = GRAPHS[language]
@@ -224,9 +227,9 @@ def generate(language: str, seed: int = 20261013, learners_per_persona: int = 12
         for learner in range(1, learners_per_persona + 1)
         for row in generate_learner(language, learner, persona, order, parents, items_by_skill, rng)
     ]
-    OUTPUT.mkdir(parents=True, exist_ok=True)
-    csv_path = OUTPUT / f"{language}_history.csv"
-    metadata_path = OUTPUT / f"{language}_metadata.json"
+    output_root.mkdir(parents=True, exist_ok=True)
+    csv_path = output_root / f"{language}_history.csv"
+    metadata_path = output_root / f"{language}_metadata.json"
     with csv_path.open("w", encoding="utf-8", newline="") as target:
         writer = csv.DictWriter(target, fieldnames=FIELDS)
         writer.writeheader()
@@ -275,9 +278,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--language", choices=(*GRAPHS, "all"), default="all")
     parser.add_argument("--seed", type=int, default=20261013)
+    parser.add_argument("--output-root", type=Path, default=OUTPUT)
     args = parser.parse_args()
     for language in GRAPHS if args.language == "all" else (args.language,):
-        csv_path, metadata_path = generate(language, seed=args.seed)
+        csv_path, metadata_path = generate(language, seed=args.seed, output_root=args.output_root)
         print(f"{language}: {csv_path} | {metadata_path}")
 
 

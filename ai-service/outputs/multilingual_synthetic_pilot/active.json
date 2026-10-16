@@ -1,0 +1,15 @@
+{
+  "schema_version": "multilingual-synthetic-pilot-active-runs/1.0",
+  "languages": {
+    "JAVASCRIPT": {
+      "run_id": "javascript_20261016T074413Z_06e12d90",
+      "dataset_sha256": "06e12d90b2bbbc4640706f5c14e6b4510385d712c8c42dea219299dfc51e0bed",
+      "graph_sha256": "37f7434eaf47af02863ea4d7f3f1d9a83e7a00299733ab0f9e397f73cbd1e42b"
+    },
+    "CPP": {
+      "run_id": "cpp_20261016T074415Z_780a3e8d",
+      "dataset_sha256": "780a3e8d6f530ed5356b54f22d22844c0d8c2f2c39934b29a56e83aaa7b43e3c",
+      "graph_sha256": "2659628ca882d0c4fcd1f6de01388310c31c1a4e7409d3b95d5044120332843e"
+    }
+  }
+}

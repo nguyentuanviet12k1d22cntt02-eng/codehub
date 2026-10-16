@@ -20,6 +20,13 @@ from app.knowledge_tracing.pilot import (
     PAL_FEATURE_NAMES, PILOT_SKILLS, PilotPALNet, PlannedTarget,
     causal_proxy, load_fixed_graph, pal_features, sha256_file,
 )
+from app.knowledge_tracing.multilingual_pilot import (
+    PlannedTarget as MultiLanguagePlannedTarget,
+    causal_proxy as multilingual_causal_proxy,
+    load_multilingual_pilot,
+    normalize_language as normalize_multilingual_language,
+    pal_features as multilingual_pal_features,
+)
 
 
 router = APIRouter(prefix="/local-pilot/module-practice", tags=["local-pilot"])
@@ -58,6 +65,7 @@ class Candidate(BaseModel):
 
 
 class ScoreRequest(BaseModel):
+    language: str = "PYTHON"
     history: list[HistoryEvent]
     candidates: list[Candidate]
 
@@ -107,9 +115,21 @@ def score_module_practice(body: ScoreRequest, request: Request):
             raise HTTPException(status_code=403, detail="LOCAL_PILOT_LOOPBACK_ONLY")
     if not body.candidates or len(body.candidates) > 100 or len(body.history) > 500:
         raise HTTPException(status_code=422, detail="PILOT_REQUEST_SIZE_INVALID")
+    language = str(body.language or "PYTHON").upper()
+    if language == "JS":
+        language = "JAVASCRIPT"
+    if language not in {"PYTHON", "JAVASCRIPT", "CPP"}:
+        raise HTTPException(status_code=422, detail="PILOT_LANGUAGE_INVALID")
+    if len({candidate.id for candidate in body.candidates}) != len(body.candidates):
+        raise HTTPException(status_code=422, detail="PILOT_SKILL_OR_CANDIDATE_INVALID")
+    if language == "PYTHON":
+        return _score_python_pilot(body)
+    return _score_multilingual_pilot(body, language)
+
+
+def _score_python_pilot(body: ScoreRequest):
     if (any(event.skill_id not in PILOT_SKILLS for event in body.history)
-            or any(candidate.skill_id not in PILOT_SKILLS for candidate in body.candidates)
-            or len({candidate.id for candidate in body.candidates}) != len(body.candidates)):
+            or any(candidate.skill_id not in PILOT_SKILLS for candidate in body.candidates)):
         raise HTTPException(status_code=422, detail="PILOT_SKILL_OR_CANDIDATE_INVALID")
     try:
         model, adjacency, prerequisites = load_local_pilot()
@@ -139,7 +159,52 @@ def score_module_practice(body: ScoreRequest, request: Request):
         raise HTTPException(status_code=503, detail="PILOT_SCORE_INVALID")
     return {
         "engine": "PALNET_SYNTHETIC_LOCAL_PILOT",
+        "language": "PYTHON",
         "dataset_sha256": checkpoint_hash(),
+        "scores": [
+            {"id": candidate.id, "predicted_correctness": round(float(probability), 6)}
+            for candidate, probability in zip(body.candidates, probabilities)
+        ],
+    }
+
+
+def _score_multilingual_pilot(body: ScoreRequest, language: str):
+    """Score only against the activated synthetic artifact for this language."""
+    try:
+        normalized_language = normalize_multilingual_language(language)
+        model, skill_ids, adjacency, prerequisites, report = load_multilingual_pilot(normalized_language)
+    except (OSError, ValueError, RuntimeError, KeyError) as exc:
+        raise HTTPException(status_code=503, detail="PILOT_CHECKPOINT_UNAVAILABLE") from exc
+    known_skills = set(skill_ids)
+    if (any(event.skill_id not in known_skills for event in body.history)
+            or any(candidate.skill_id not in known_skills for candidate in body.candidates)):
+        raise HTTPException(status_code=422, detail="PILOT_SKILL_OR_CANDIDATE_INVALID")
+    history = tuple(ObservedOutcome(item.skill_id, item.is_correct) for item in body.history)
+    targets = []
+    summaries = []
+    masteries = []
+    for candidate in body.candidates:
+        proxy = round(multilingual_causal_proxy(history, prerequisites[candidate.skill_id]), 4)
+        target = MultiLanguagePlannedTarget(candidate.skill_id, candidate.difficulty, proxy)
+        skill, summary, mastery = multilingual_pal_features(history, target, skill_ids)
+        targets.append(skill)
+        summaries.append(summary)
+        masteries.append(mastery)
+    with torch.no_grad():
+        logits = model(
+            torch.tensor(targets, dtype=torch.long),
+            torch.from_numpy(np.stack(summaries)),
+            torch.from_numpy(np.stack(masteries)),
+            adjacency,
+        )
+        probabilities = torch.sigmoid(logits).tolist()
+    if not all(math.isfinite(probability) for probability in probabilities):
+        raise HTTPException(status_code=503, detail="PILOT_SCORE_INVALID")
+    return {
+        "engine": "PALNET_SYNTHETIC_MULTILINGUAL_PILOT",
+        "language": normalized_language,
+        "dataset_sha256": str(report["dataset_sha256"]),
+        "graph_sha256": str(report["graph_sha256"]),
         "scores": [
             {"id": candidate.id, "predicted_correctness": round(float(probability), 6)}
             for candidate, probability in zip(body.candidates, probabilities)

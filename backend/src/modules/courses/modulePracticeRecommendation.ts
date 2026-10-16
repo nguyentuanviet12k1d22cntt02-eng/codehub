@@ -3,20 +3,21 @@ import { prisma } from '../../infrastructure/database/prisma';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
 import { getSkillGraphData } from '../recommendations/recommendationController';
 
-const PILOT_SKILLS = new Set([
+type PilotLanguage = 'PYTHON' | 'JAVASCRIPT' | 'CPP';
+
+const PYTHON_PILOT_SKILLS = new Set([
     'PY-BASICS-01', 'PY-BASICS-02', 'PY-BASICS-03',
     'PY-FLOW-01', 'PY-FLOW-02', 'PY-FLOW-03',
 ]);
-const PILOT_DATASET_SHA256 = '40969384fe86f98d5f32a96d48cb7a873119c6350ff989598d3f982301391fbf';
-const PRACTICE_SKILLS: Record<string, string> = {
+const PYTHON_PILOT_DATASET_SHA256 = '40969384fe86f98d5f32a96d48cb7a873119c6350ff989598d3f982301391fbf';
+const PYTHON_PRACTICE_SKILLS: Record<string, string> = {
     'LS-01.MP': 'PY-BASICS-03',
     'LS-02.MP': 'PY-FLOW-01',
     'LS-03.MP_FOR': 'PY-FLOW-03',
     'LS-03.MP_WHILE': 'PY-FLOW-02',
 };
-// These two exercises require string indexing / generator expressions outside
-// the six-skill pilot vocabulary; a single PY-FLOW-01 label would be misleading.
-const OUTSIDE_PILOT_TITLES = new Set([
+// These Python exercises require skills outside the six-skill Python pilot.
+const OUTSIDE_PYTHON_PILOT_TITLES = new Set([
     'Kiểm tra ký tự đầu tiên của chuỗi',
     'Kiểm Tra và Đánh Giá Mật Khẩu Đơn Giản',
 ]);
@@ -33,24 +34,47 @@ type Candidate = { id: string; title: string; difficulty: string; skill_id: stri
 type Score = { id: string; predicted_correctness: number };
 type HistoryEvent = { skill_id: string; is_correct: number };
 
-export function skillForPractice(lessonId: string, title: string): string | null {
-    if (lessonId === 'LS-01.MP' && title === 'Hoán đổi giá trị hai biến') return 'PY-BASICS-01';
-    return PRACTICE_SKILLS[lessonId] || null;
+const difficultyLevel = (difficulty: string): number => ({ EASY: 1, MEDIUM: 2, HARD: 3 }[difficulty] || 0);
+
+export function languageForLessonCode(lessonCode: string): PilotLanguage | null {
+    if (/^JS\d?-/i.test(lessonCode)) return 'JAVASCRIPT';
+    if (/^CPP-/i.test(lessonCode)) return 'CPP';
+    if (/^LS-/i.test(lessonCode)) return 'PYTHON';
+    return null;
 }
 
-export function verifiedPracticeCandidates(lessonId: string, exercises: PracticeExercise[]): Candidate[] {
-    if (!PRACTICE_SKILLS[lessonId]) return [];
+function lessonSkill(language: PilotLanguage, lessonCode: string, title: string): string | null {
+    if (language === 'PYTHON') {
+        if (lessonCode === 'LS-01.MP' && title === 'Hoán đổi giá trị hai biến') return 'PY-BASICS-01';
+        return PYTHON_PRACTICE_SKILLS[lessonCode] || null;
+    }
+    const graph = getSkillGraphData(language);
+    const skill = graph?.lesson_mappings?.[lessonCode];
+    const knownSkills = new Set((graph?.skills || []).map((item: { id?: unknown }) => String(item.id || '')));
+    return typeof skill === 'string' && knownSkills.has(skill) ? skill : null;
+}
+
+// Exported for the small backend contract test and for keeping legacy Python mappings stable.
+export function skillForPractice(lessonId: string, title: string, language?: PilotLanguage): string | null {
+    return lessonSkill(language || languageForLessonCode(lessonId) || 'PYTHON', lessonId, title);
+}
+
+export function verifiedPracticeCandidates(
+    lessonId: string, exercises: PracticeExercise[], language?: PilotLanguage,
+): Candidate[] {
+    const inferredLanguage = language || languageForLessonCode(lessonId);
+    if (!inferredLanguage) return [];
     return exercises.flatMap((exercise) => {
-        const levelByDifficulty: Record<string, number> = { EASY: 1, MEDIUM: 2, HARD: 3 };
-        const level = levelByDifficulty[String(exercise.difficulty)] || 0;
-        const minimumTests = ['LS-01.MP', 'LS-02.MP'].includes(lessonId) ? 3 : 1;
+        const level = difficultyLevel(String(exercise.difficulty));
+        const minimumTests = inferredLanguage === 'PYTHON' && ['LS-01.MP', 'LS-02.MP'].includes(lessonId) ? 3 : 1;
         if (!level || !exercise.problemDescription || !exercise.solutionCode ||
             /^val_0\s*=\s*input\(\)/.test(exercise.solutionCode) ||
             exercise.testCases.length < minimumTests ||
             exercise.testCases.some((test) => !test.expectedOutput.trim() || /Kết quả mẫu|\[Tên người\]/i.test(test.expectedOutput)) ||
-            OUTSIDE_PILOT_TITLES.has(exercise.title)) return [];
-        const skill = skillForPractice(lessonId, exercise.title);
-        return skill ? [{ id: exercise.id, title: exercise.title, difficulty: String(exercise.difficulty), skill_id: skill, level }] : [];
+            (inferredLanguage === 'PYTHON' && OUTSIDE_PYTHON_PILOT_TITLES.has(exercise.title))) return [];
+        const skill = lessonSkill(inferredLanguage, lessonId, exercise.title);
+        if (!skill || (inferredLanguage === 'PYTHON' && !PYTHON_PILOT_SKILLS.has(skill))) return [];
+        return [{ id: exercise.id, title: exercise.title, difficulty: String(exercise.difficulty), skill_id: skill, level }];
     });
 }
 
@@ -76,6 +100,17 @@ export function selectPracticeCandidate(candidates: Candidate[], scores: Score[]
         a.order - b.order,
     );
     return ranked[0] || null;
+}
+
+function pilotResponseIsValid(
+    language: PilotLanguage,
+    payload: { engine?: string; language?: string; dataset_sha256?: string; scores?: Score[] },
+): payload is { engine: string; language?: string; dataset_sha256: string; scores: Score[] } {
+    if (!Array.isArray(payload.scores)) return false;
+    if (language === 'PYTHON') {
+        return payload.engine === 'PALNET_SYNTHETIC_LOCAL_PILOT' && payload.dataset_sha256 === PYTHON_PILOT_DATASET_SHA256;
+    }
+    return payload.engine === 'PALNET_SYNTHETIC_MULTILINGUAL_PILOT' && payload.language === language;
 }
 
 export async function getModulePracticeRecommendation(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
@@ -104,11 +139,12 @@ export async function getModulePracticeRecommendation(req: AuthenticatedRequest,
             return;
         }
         const lessonCode = lesson.lessonId || '';
-        if (!PRACTICE_SKILLS[lessonCode]) {
+        const language = languageForLessonCode(lessonCode);
+        if (!language) {
             res.status(200).json({ mode: 'MANUAL', reason: 'SKILL_OUTSIDE_PILOT' });
             return;
         }
-        const candidates = verifiedPracticeCandidates(lessonCode, lesson.codingExercises);
+        const candidates = verifiedPracticeCandidates(lessonCode, lesson.codingExercises, language);
         if (!candidates.length) {
             res.status(200).json({ mode: 'MANUAL', reason: 'NO_VERIFIED_EXERCISES' });
             return;
@@ -124,10 +160,10 @@ export async function getModulePracticeRecommendation(req: AuthenticatedRequest,
             return;
         }
 
-        const graph = getSkillGraphData('PYTHON');
+        const graph = getSkillGraphData(language);
         const lessonMappings: Record<string, string> = graph?.lesson_mappings || {};
         const submissions = await prisma.submission.findMany({
-            where: { userId, language: 'PYTHON', status: { in: ['PASSED', 'FAILED'] } },
+            where: { userId, language, status: { in: ['PASSED', 'FAILED'] } },
             orderBy: [{ submittedAt: 'desc' }, { id: 'desc' }],
             take: 500,
             select: { status: true, exercise: { select: {
@@ -138,13 +174,12 @@ export async function getModulePracticeRecommendation(req: AuthenticatedRequest,
         });
         const history = submissions.reverse().flatMap((submission) => {
             const code = submission.exercise.lesson.lessonId || '';
-            const isPractice = code.includes('.MP');
-            const skill = isPractice
-                ? verifiedPracticeCandidates(code, [submission.exercise]).at(0)?.skill_id
+            if (languageForLessonCode(code) !== language) return [];
+            const skill = language === 'PYTHON' && code.includes('.MP')
+                ? verifiedPracticeCandidates(code, [submission.exercise], language).at(0)?.skill_id
                 : lessonMappings[code];
-            return skill && PILOT_SKILLS.has(skill)
-                ? [{ skill_id: skill, is_correct: submission.status === 'PASSED' ? 1 : 0 }]
-                : [];
+            const valid = language === 'PYTHON' ? PYTHON_PILOT_SKILLS.has(skill || '') : Boolean(skill);
+            return valid ? [{ skill_id: skill!, is_correct: submission.status === 'PASSED' ? 1 : 0 }] : [];
         });
 
         const defaultAiUrl = process.env.NODE_ENV === 'production'
@@ -156,17 +191,18 @@ export async function getModulePracticeRecommendation(req: AuthenticatedRequest,
             const response = await fetch(new URL('/local-pilot/module-practice/score', aiUrl), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ history, candidates: open.map(({ id, skill_id, level }) => ({ id, skill_id, difficulty: level })) }),
+                body: JSON.stringify({
+                    language, history,
+                    candidates: open.map(({ id, skill_id, level }) => ({ id, skill_id, difficulty: level })),
+                }),
                 signal: AbortSignal.timeout(12000),
             });
             if (!response.ok) throw new Error(`PAL-Net HTTP ${response.status}`);
-            const payload = await response.json() as { engine?: string; dataset_sha256?: string; scores?: Score[] };
-            if (payload.engine !== 'PALNET_SYNTHETIC_LOCAL_PILOT' ||
-                payload.dataset_sha256 !== PILOT_DATASET_SHA256 ||
-                !Array.isArray(payload.scores)) throw new Error('PAL-Net response invalid');
+            const payload = await response.json() as { engine?: string; language?: string; dataset_sha256?: string; scores?: Score[] };
+            if (!pilotResponseIsValid(language, payload)) throw new Error('PAL-Net response invalid');
             scores = payload.scores;
         } catch (err: any) {
-            console.error(`[modulePracticeRecommendation] Failed to fetch PAL-Net scores from ${aiUrl.origin}:`, err?.message || err);
+            console.error(`[modulePracticeRecommendation] Failed to fetch ${language} PAL-Net scores from ${aiUrl.origin}:`, err?.message || err);
             res.status(200).json({ mode: 'MANUAL', reason: 'LOCAL_MODEL_UNAVAILABLE' });
             return;
         }
@@ -176,7 +212,8 @@ export async function getModulePracticeRecommendation(req: AuthenticatedRequest,
             return;
         }
         res.status(200).json({
-            mode: 'PALNET_SYNTHETIC_LOCAL_PILOT',
+            mode: language === 'PYTHON' ? 'PALNET_SYNTHETIC_LOCAL_PILOT' : 'PALNET_SYNTHETIC_MULTILINGUAL_PILOT',
+            language,
             exerciseId: selected.candidate.id,
             title: selected.candidate.title,
             difficulty: selected.candidate.difficulty,

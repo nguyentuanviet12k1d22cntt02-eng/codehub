@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { authService } from '../../../services/authService';
 import { getInitialTheme } from '../../../utils/themeHelper';
 import { API_BASE_URL } from '../../../config/api';
-import { getModulePracticeRecommendation } from '../../lesson/services/modulePracticeRecommendation';
+import { getModulePracticeRecommendation, isPilotRecommendation } from '../../lesson/services/modulePracticeRecommendation';
 
 import type { ExerciseMock, TestCaseMock, SubmitStats, SubmissionItem } from '../components/practice/types';
 import { PracticeHeader } from '../components/practice/PracticeHeader';
@@ -116,7 +116,7 @@ const Practice: React.FC = () => {
                                 setExercise(null);
                                 return;
                             }
-                            if (suggestion.mode !== 'PALNET_SYNTHETIC_LOCAL_PILOT') {
+                            if (!isPilotRecommendation(suggestion)) {
                                 setError('Chưa thể tải bài tập PAL-Net được đề xuất. Hãy kiểm tra AI service rồi thử lại.');
                                 return;
                             }
@@ -264,8 +264,8 @@ const Practice: React.FC = () => {
                 setAdaptiveComplete(true);
                 return;
             }
-            if (suggestion.mode !== 'PALNET_SYNTHETIC_LOCAL_PILOT') {
-                setConsoleOutput('Chưa thể chọn bài tiếp theo bằng PAL-Net trên local lúc này. Hãy kiểm tra AI service rồi thử lại.');
+            if (!isPilotRecommendation(suggestion)) {
+                setConsoleOutput('Chưa thể chọn bài tiếp theo bằng PAL-Net lúc này. Hãy kiểm tra AI service rồi thử lại.');
                 return;
             }
             if (suggestion.exerciseId === exercise?.id) {
