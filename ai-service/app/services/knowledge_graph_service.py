@@ -6,6 +6,12 @@ from typing import Dict, List, Any, Optional
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_DIR = os.path.join(BASE_DIR, "data")
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+LESSON_CONTENT_DIRS = {
+    "python": os.path.join(PROJECT_ROOT, "docs", "Dữ liệu nội dung bài học", "Python"),
+    "javascript": os.path.join(PROJECT_ROOT, "docs", "Dữ liệu nội dung bài học", "JS"),
+    "cpp": os.path.join(PROJECT_ROOT, "docs", "Dữ liệu nội dung bài học", "C++"),
+}
 
 
 TOPIC_ALIASES = {
@@ -57,6 +63,8 @@ TOPIC_ALIASES = {
         "bien": "PY-BASICS-01",
     },
     "javascript": {
+        "foreach": "JS-ARRAY-HOF-01",
+        "for each": "JS-ARRAY-HOF-01",
         "higher order array": "JS-ARRAY-HOF-01",
         "map filter reduce": "JS-ARRAY-HOF-01",
         "destructuring": "JS-DESTRUCT-01",
@@ -191,6 +199,8 @@ class KnowledgeGraphService:
         self.prereq_graph: Dict[str, Dict[str, List[str]]] = {}
         self.downstream_graph: Dict[str, Dict[str, List[str]]] = {}
         self.topic_index: Dict[str, Dict[str, str]] = {}
+        self.lesson_code_index: Dict[str, Dict[str, str]] = {}
+        self.lesson_title_index: Dict[str, Dict[str, str]] = {}
         
         self._load_graphs()
         self._initialized = True
@@ -233,6 +243,8 @@ class KnowledgeGraphService:
         self.prereq_graph[lang] = {}
         self.downstream_graph[lang] = {}
         self.topic_index[lang] = {}
+        self.lesson_code_index[lang] = {}
+        self.lesson_title_index[lang] = {}
 
         # 1. Index skills
         for skill in gdata.get("skills", []):
@@ -268,6 +280,64 @@ class KnowledgeGraphService:
                     self.prereq_graph[lang][tgt].append(src)
                 if src in self.downstream_graph[lang] and tgt not in self.downstream_graph[lang][src]:
                     self.downstream_graph[lang][src].append(tgt)
+
+        # Every published course lesson is a first-class Tutor entry point.
+        # Graph-owned title mappings cover Python; JavaScript and C++ titles
+        # are loaded from their versioned lesson front matter so adding a new
+        # lesson does not require maintaining a second, incomplete keyword
+        # list in the router.
+        lesson_mappings = {
+            str(code): str(concept_id)
+            for code, concept_id in gdata.get("lesson_mappings", {}).items()
+            if str(concept_id) in self.concept_index[lang]
+        }
+        self.lesson_code_index[lang] = {
+            code.upper(): concept_id for code, concept_id in lesson_mappings.items()
+        }
+
+        def register_title(title: Any, concept_id: str) -> None:
+            normalized = _fold_topic(str(title))
+            if not normalized or concept_id not in self.concept_index[lang]:
+                return
+            existing = self.lesson_title_index[lang].get(normalized)
+            # A repeated C++ lesson document is valid only when it resolves
+            # to the same graph skill. Keep the first stable match otherwise.
+            if existing is None or existing == concept_id:
+                self.lesson_title_index[lang][normalized] = concept_id
+
+        for title, concept_id in gdata.get("lesson_title_mappings", {}).items():
+            register_title(title, str(concept_id))
+        for lesson_code, title in self._lesson_titles_from_content(lang):
+            concept_id = lesson_mappings.get(lesson_code)
+            if concept_id:
+                register_title(title, concept_id)
+
+    @staticmethod
+    def _lesson_titles_from_content(language: str) -> List[tuple[str, str]]:
+        """Read only lesson IDs/titles from local, versioned course content."""
+        root = LESSON_CONTENT_DIRS.get(language)
+        if not root or not os.path.isdir(root):
+            return []
+        titles: List[tuple[str, str]] = []
+        for directory, _, filenames in os.walk(root):
+            for filename in filenames:
+                if not filename.lower().endswith((".md", ".txt")):
+                    continue
+                path = os.path.join(directory, filename)
+                try:
+                    with open(path, "r", encoding="utf-8-sig") as source:
+                        content = source.read()
+                except OSError:
+                    continue
+                lesson_match = re.search(r'^lessonId:\s*["\']?([^"\'\r\n]+)', content, re.MULTILINE)
+                title_match = re.search(r'^title:\s*(.+)$', content, re.MULTILINE)
+                if not lesson_match or not title_match:
+                    continue
+                title = title_match.group(1).strip()
+                if len(title) >= 2 and title[0] == title[-1] and title[0] in {'"', "'"}:
+                    title = title[1:-1]
+                titles.append((lesson_match.group(1).strip(), title))
+        return titles
 
     def list_all_concepts(self, language: str) -> List[Dict[str, Any]]:
         lang = self._normalize_lang(language)
@@ -324,7 +394,13 @@ class KnowledgeGraphService:
         direct_id = topic_raw.upper()
         if direct_id in self.concept_index.get(lang, {}):
             return direct_id
+        lesson_concept = self.lesson_code_index.get(lang, {}).get(direct_id)
+        if lesson_concept:
+            return lesson_concept
         topic_clean = _fold_topic(topic_raw)
+        titled_concept = self.lesson_title_index.get(lang, {}).get(topic_clean)
+        if titled_concept:
+            return titled_concept
 
         # Resolve the course's compound List lesson before applying generic
         # matching.  This also canonicalizes an LLM response such as
@@ -373,6 +449,25 @@ class KnowledgeGraphService:
         if scored:
             return sorted(scored, reverse=True)[0][2]
 
+        return None
+
+    def resolve_concept_from_text(self, language: str, user_text: Optional[str]) -> Optional[str]:
+        """Resolve an exact course title embedded in a natural-language request.
+
+        Exact title matches have precedence over broad aliases such as
+        ``function`` or ``array``. This lets the Tutor support every versioned
+        lesson in the three course languages without making the LLM invent a
+        graph ID.
+        """
+        lang = self._normalize_lang(language)
+        if not user_text:
+            return None
+        normalized_text = _fold_topic(user_text)
+        for title, concept_id in sorted(
+            self.lesson_title_index.get(lang, {}).items(), key=lambda item: len(item[0]), reverse=True,
+        ):
+            if len(title) >= 4 and re.search(rf"(?<![a-z0-9]){re.escape(title)}(?![a-z0-9])", normalized_text):
+                return concept_id
         return None
 
     def get_remediation_candidates(self, language: str, concept_id: str, failed_sub_skills: Optional[List[str]] = None) -> List[str]:

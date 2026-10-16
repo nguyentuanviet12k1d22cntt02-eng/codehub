@@ -43,6 +43,18 @@ class NeverCalledClient:
         raise AssertionError("Yêu cầu làm rõ chế độ học không được gọi LLM")
 
 
+class UnknownTopicClient:
+    def __init__(self):
+        self.calls = []
+
+    def json(self, *args, **kwargs):
+        return {
+            "intent": "CLARIFY_LEARNING_MODE",
+            "language": "javascript",
+            "topic": "chu de khong ton tai",
+        }
+
+
 class RouterConceptConsistencyTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -73,6 +85,32 @@ class RouterConceptConsistencyTests(unittest.TestCase):
         self.assertEqual(result["status"], "AWAITING_CONFIRMATION")
         self.assertEqual(result["suggested_options"], ["Học lý thuyết", "Làm bài thực hành"])
         self.assertEqual(result["pending_confirmation"]["target_concept_id"], "PY-DICT-01")
+
+    def test_foreach_resolves_to_the_javascript_higher_order_array_lesson(self):
+        router = IntentRouterAgent(FailingClient(), self.kg)
+        routing = router.route("Tôi muốn học forEach trong JavaScript")
+        self.assertEqual(routing.intent, "CLARIFY_LEARNING_MODE")
+        self.assertEqual(routing.topic, "JS-ARRAY-HOF-01")
+
+        result = AdaptiveLearningOrchestrator(client_factory=NeverCalledClient).process_turn(
+            "test-user",
+            [{"sender": "USER", "content": "Tôi muốn học forEach trong JavaScript"}],
+            learner_context={"states": {}},
+        )
+        self.assertEqual(result["status"], "AWAITING_CONFIRMATION")
+        self.assertEqual(result["pending_confirmation"]["target_concept_id"], "JS-ARRAY-HOF-01")
+
+    def test_unknown_learning_topic_requests_clarification_instead_of_failing_pipeline(self):
+        result = AdaptiveLearningOrchestrator(client_factory=UnknownTopicClient).process_turn(
+            "test-user",
+            [{"sender": "USER", "content": "Tôi muốn học quuxzz trong JavaScript"}],
+            language="javascript",
+            learner_context={"states": {}},
+        )
+        self.assertEqual(result["status"], "AWAITING_CONFIRMATION")
+        self.assertIsNone(result.get("error"))
+        self.assertIn("chưa ghép được tên chủ đề", result["reply"])
+        self.assertTrue(result["suggested_options"])
 
     def test_learning_mode_buttons_preserve_the_selected_concept(self):
         pending = {
@@ -201,6 +239,32 @@ class RouterConceptConsistencyTests(unittest.TestCase):
                         graph["lesson_title_mappings"].get(title),
                         f"{language}: {lesson_id} và tiêu đề đang trỏ tới hai concept khác nhau",
                     )
+
+    def test_every_mapped_lesson_code_and_title_is_routable_in_three_languages(self):
+        router = IntentRouterAgent(FailingClient(), self.kg)
+        display_names = {"python": "Python", "javascript": "JavaScript", "cpp": "C++"}
+        for language in ("python", "javascript", "cpp"):
+            graph = json.loads(GRAPH_FILES[language].read_text(encoding="utf-8"))
+            for lesson_code, concept_id in graph["lesson_mappings"].items():
+                with self.subTest(language=language, lesson_code=lesson_code):
+                    self.assertEqual(self.kg.resolve_concept_by_topic(language, lesson_code), concept_id)
+
+            for path in CONTENT_DIRS[language].rglob("*"):
+                if path.suffix.lower() not in {".md", ".txt"}:
+                    continue
+                text = path.read_text(encoding="utf-8-sig")
+                lesson_match = re.search(r'^lessonId:\s*["\']?([^"\'\r\n]+)', text, re.MULTILINE)
+                title_match = re.search(r'^title:\s*(.+)$', text, re.MULTILINE)
+                if not lesson_match or not title_match:
+                    continue
+                lesson_code = lesson_match.group(1).strip()
+                title = title_match.group(1).strip()
+                if len(title) >= 2 and title[0] == title[-1] and title[0] in {'"', "'"}:
+                    title = title[1:-1]
+                expected = graph["lesson_mappings"][lesson_code]
+                with self.subTest(language=language, title=title):
+                    routing = router.route(f"Tôi muốn học {title} trong {display_names[language]}")
+                    self.assertEqual(routing.topic, expected)
 
 
 if __name__ == "__main__":

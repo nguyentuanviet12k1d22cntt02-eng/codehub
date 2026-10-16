@@ -153,6 +153,14 @@ class IntentRouterAgent:
         ):
             return "PY-LIST-02"
 
+        # Course-title matching is data-driven from the lesson front matter.
+        # It covers every mapped Python, JavaScript and C++ lesson before a
+        # broad keyword (for example "hàm" or "mảng") can collapse it into a
+        # less specific concept.
+        resolved_lesson = self.kg.resolve_concept_from_text(language, text)
+        if resolved_lesson:
+            return resolved_lesson
+
         topics_by_language = {
             "python": [
                 ("keyerror", r"\bkeyerror\b|truy xuat.*an toan"),
@@ -166,6 +174,7 @@ class IntentRouterAgent:
                 ("exception", r"ngoai le|try[ -]?except|\bexception\b"),
             ],
             "javascript": [
+                ("foreach", r"\bfor\s*each\b|\bforeach\b"),
                 ("map filter reduce", r"\bmap\b.*\bfilter\b|\bfilter\b.*\breduce\b"),
                 ("destructuring", r"\bdestructuring\b"),
                 ("spread rest", r"\bspread\b|\brest\b"),

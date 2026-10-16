@@ -9,7 +9,7 @@ export interface AgentEvidence {
     output?: unknown; error?: {code?: string; message?: string};
     model_calls?: {provider?: string; model?: string; status?: string; duration_ms?: number; response_id?: string; usage?: unknown; error_code?: string}[];
 }
-export interface PipelineSummary {trace_id: string; status: string; schema_version?: string; error?: {code?: string}}
+export interface PipelineSummary {trace_id: string; status: string; schema_version?: string; error?: {code?: string; message?: string}}
 const labels:Record<string,string>={IntentRouterAgent:'Hiểu yêu cầu',AdaptiveExercisePlanner:'Chọn mục tiêu và độ khó',
     PrerequisiteAdvisorAgent:'Đánh giá điều kiện tiên quyết',
     KnowledgeRetrievalService:'Tra cứu học liệu',ExplanationTutorAgent:'Biên soạn lý thuyết',ExerciseGeneratorAgent:'Sinh đề và bộ test',
@@ -80,7 +80,7 @@ export function AgentEvidencePanel({records,pipeline}:{records:AgentEvidence[];p
                 <button type="button" disabled={downloading} onClick={()=>download(true)} className="min-h-9 rounded-lg px-2 text-xs text-blue-700 underline focus-visible:outline-2 focus-visible:outline-blue-600">Báo cáo quản trị</button>
             </div>
         </div>
-        {activePipeline?.error?.code && <p role="status" className={'mx-3 mb-3 rounded-lg p-2 text-xs '+(activePipeline.status==='WAITING_PROVIDER'?'bg-amber-50 text-amber-800':'bg-rose-50 text-rose-800')}>Mã lỗi: {activePipeline.error.code}. {activePipeline.status==='WAITING_PROVIDER'?'Yêu cầu được lưu và sẽ tự thử lại; bài chưa được phát hành.':'Bài chưa được phát hành.'}</p>}
+        {activePipeline?.error?.code && <p role={activePipeline.status==='WAITING_PROVIDER'?'status':'alert'} className={'mx-3 mb-3 rounded-lg p-2 text-xs '+(activePipeline.status==='WAITING_PROVIDER'?'bg-amber-50 text-amber-800':'bg-rose-50 text-rose-800')}>Mã lỗi: {activePipeline.error.code}. {activePipeline.error.message || (activePipeline.status==='WAITING_PROVIDER'?'Yêu cầu được lưu và sẽ tự thử lại.':'AI Tutor chưa hoàn thành yêu cầu này; hãy xem bước dừng để thử lại.')}</p>}
         {error && <p role="alert" className="px-3 pb-3 text-xs text-rose-700">{error}</p>}
         <ol className="divide-y divide-slate-200">
             {sorted.map((record,index)=>{

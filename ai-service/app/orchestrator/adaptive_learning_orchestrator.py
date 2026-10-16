@@ -49,18 +49,29 @@ class AdaptiveLearningOrchestrator:
                 lambda: IntentRouterAgent(client).route(user_text, {**context, "language": language or context.get("language", "python")}, trace_id))
             intent = routing.intent
             if intent == "CLARIFY_LEARNING_MODE":
-                concept = self.kg.get_concept(routing.language, routing.topic)
+                concept_id = self.kg.resolve_concept_by_topic(routing.language, routing.topic)
+                concept = self.kg.get_concept(routing.language, concept_id)
                 if not concept:
-                    raise ValueError("Chưa xác định được chủ đề cần học trong đồ thị tri thức")
+                    examples = [
+                        f"Tôi muốn học {item.get('name', item['id'])}"
+                        for item in self.kg.list_all_concepts(routing.language)
+                        if item.get("content_status", "PUBLISHED") == "PUBLISHED"
+                    ][:3]
+                    return result(
+                        "AWAITING_CONFIRMATION",
+                        "Mình chưa ghép được tên chủ đề này với một bài học đã phát hành. "
+                        "Bạn hãy nhập tên bài học hoặc mã kỹ năng trong lộ trình; có thể chọn một gợi ý bên dưới.",
+                        suggested_options=examples,
+                    )
                 pending_confirmation = {
                     "type": "LEARNING_MODE_SELECTION",
-                    "target_concept_id": routing.topic,
-                    "target_concept_name": concept.get("name", routing.topic),
+                    "target_concept_id": concept_id,
+                    "target_concept_name": concept.get("name", concept_id),
                     "language": routing.language,
                 }
                 return result(
                     "AWAITING_CONFIRMATION",
-                    f"Bạn muốn bắt đầu chủ đề **{concept.get('name', routing.topic)}** theo cách nào?",
+                    f"Bạn muốn bắt đầu chủ đề **{concept.get('name', concept_id)}** theo cách nào?",
                     pending_confirmation=pending_confirmation,
                     suggested_options=["Học lý thuyết", "Làm bài thực hành"],
                 )

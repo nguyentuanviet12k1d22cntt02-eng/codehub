@@ -471,9 +471,9 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(r.language,"javascript")
 
     def test_explanation_followup_preserves_concept(self):
-        route=IntentRouterAgent().route('Giải thích thêm lý thuyết',{'language':'python','last_concept_id':'PY-LOOP-01'})
+        route=IntentRouterAgent().route('Giải thích thêm lý thuyết',{'language':'python','last_concept_id':'PY-FLOW-03'})
         self.assertEqual(route.intent,'EXPLAIN_CONCEPT')
-        self.assertEqual(route.topic,'PY-LOOP-01')
+        self.assertEqual(route.topic,'PY-FLOW-03')
 
     def test_spec_keeps_constraints(self):
         r=IntentRouterAgent().route("Tạo bài tập Python dùng while, không dùng for và không dùng sum")
@@ -586,8 +586,11 @@ class PipelineTests(unittest.TestCase):
         self.assertFalse(SchemaValidator.validate(draft)[0])
 
     def test_schema_feedback_identifies_invalid_nested_json(self):
-        spec=AdaptiveExercisePlanner().plan_exercise(IntentRouterAgent().route('Tạo bài SQL SELECT ORDER BY'),'u')
-        self.assertTrue(spec.execution['ordered'])
+        # SQL-SORT-01 is intentionally not published.  Use a published
+        # Python lesson because this test verifies JSON output validation,
+        # not SQL curriculum availability.
+        spec=AdaptiveExercisePlanner().plan_exercise(IntentRouterAgent().route('Tạo bài Python về dictionary'),'u')
+        self.assertEqual(spec.execution['comparator'], 'json')
         draft=copy.deepcopy(DRAFT)
         for index,tc in enumerate(draft['test_cases']):
             tc['fixture_sql']=f'CREATE TABLE t(x); INSERT INTO t VALUES ({index});'

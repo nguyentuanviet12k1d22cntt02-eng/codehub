@@ -69,6 +69,13 @@ test('student reports hide reference solutions and hidden outputs',()=>{
  assert.ok(!JSON.stringify(report).includes('SECRET'));
  assert.deepEqual(publicCase({is_hidden:true,passed:true}).passed,true);
 });
+test('student reports show safe curriculum-routing guidance without leaking internals',()=>{
+ const unresolved=publicReport({error:{code:'PIPELINE_FAILED',message:'Chưa xác định được chủ đề cần học trong đồ thị tri thức'}});
+ assert.equal(unresolved.error.message,'Chưa xác định được chủ đề cần học trong đồ thị tri thức');
+ const infrastructure=publicReport({error:{code:'PIPELINE_FAILED',message:'postgres://private-host:5432 failed'}});
+ assert.equal(infrastructure.error.message,'AI Tutor chưa hoàn thành yêu cầu này. Hãy xem bước dừng và thử diễn đạt lại chủ đề.');
+ assert.ok(!JSON.stringify(infrastructure).includes('private-host'));
+});
 test('reloaded history preserves dates and hidden execution receipts without answers',()=>{
  const value=sanitizeLegacy({date:new Date('2026-09-18T00:00:00Z'),records:[{is_hidden:true,executed:true,passed:true,actual:'SECRET',expected:'SECRET'}]});
  assert.equal(value.date,'2026-09-18T00:00:00.000Z');

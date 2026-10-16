@@ -93,10 +93,27 @@ export function publicRecord(record: any): any {
     return {...metadata, output:safeOutput, model_calls:(model_calls||[]).map(({input,output,private_response_excerpt,...receipt}:any)=>receipt),
         error:record.error ? {code:record.error.code,message:'Bước này thất bại; mã lỗi được lưu cùng báo cáo.'}:undefined};
 }
+
+function publicPipelineError(error: any): {code?: string; message: string}|undefined {
+    if (!error) return undefined;
+    const code=typeof error.code==='string'?error.code:undefined;
+    const detail=typeof error.message==='string'?error.message.trim():'';
+    // Only forward a short, known learner-facing diagnosis. Infrastructure,
+    // provider and database details remain in the administrator-only report.
+    const safeMessages=new Set([
+        'Chưa xác định được chủ đề cần học trong đồ thị tri thức',
+        'Chủ đề đã có trong đồ thị nhưng học liệu kiểm định chưa được phát hành',
+        'Chưa ánh xạ được yêu cầu vào mã concept đã phát hành; cần làm rõ chủ đề',
+    ]);
+    return {code,message:safeMessages.has(detail)
+        ? detail
+        : 'AI Tutor chưa hoàn thành yêu cầu này. Hãy xem bước dừng và thử diễn đạt lại chủ đề.'};
+}
+
 export function publicReport(report: any): any {
     if (!report) return null;
     return {...report,exercise:publicExercise(report.exercise),agent_traces:(report.agent_traces||[]).map(publicRecord),
-        error:report.error ? {code:report.error.code,message:'Pipeline chưa đạt; xem trạng thái từng bước.'}:undefined};
+        error:publicPipelineError(report.error)};
 }
 export function sanitizeLegacy(value: any): any {
     if (value instanceof Date) return value.toISOString();
