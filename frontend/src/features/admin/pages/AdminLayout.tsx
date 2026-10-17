@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
     BarChart3,
+    Bot,
     BookCopy,
     BookOpenCheck,
     ChevronDown,
@@ -85,6 +86,12 @@ const operationsNavigation: NavigationItem[] = [
         matches: (pathname) => pathname.startsWith('/admin/submissions'),
     },
     {
+        to: '/admin/ai-tutor',
+        label: 'Điều khiển AI Tutor',
+        icon: Bot,
+        matches: (pathname) => pathname.startsWith('/admin/ai-tutor'),
+    },
+    {
         to: '/admin/ai-keys',
         label: 'Hồ chứa AI Keys',
         icon: KeyRound,
@@ -101,6 +108,7 @@ const pageMeta = [
     { match: (path: string) => path === '/admin/courses', title: 'Danh mục khóa học', eyebrow: 'Course catalog' },
     { match: (path: string) => path === '/admin/practice-problems', title: 'Ngân hàng câu hỏi', eyebrow: 'Practice library' },
     { match: (path: string) => path.startsWith('/admin/submissions'), title: 'Duyệt bài nộp', eyebrow: 'Submission review' },
+    { match: (path: string) => path.startsWith('/admin/ai-tutor'), title: 'Điều khiển AI Tutor', eyebrow: 'AI operations' },
     { match: (path: string) => path.startsWith('/admin/ai-keys'), title: 'Hồ chứa AI Keys', eyebrow: 'AI infrastructure' },
 ];
 
@@ -158,7 +166,7 @@ export default function AdminLayout() {
 
     const filteredOperationsNavigation = useMemo(() => {
         if (isTeacher) {
-            return operationsNavigation.filter((item) => item.to !== '/admin/ai-keys');
+            return operationsNavigation.filter((item) => item.to !== '/admin/ai-keys' && item.to !== '/admin/ai-tutor');
         }
         return operationsNavigation;
     }, [isTeacher]);

@@ -3,10 +3,12 @@ import { authenticateToken } from '../../shared/middleware/auth';
 import { getMyPaths, getPathById, submitQuizAnswer, getChatSessions, deleteChatSession } from './learningPath.controller';
 import { startChat,replyChat,startChatStream,replyChatStream,startExercise,submitExercise,
     retiredMastery,generatePath,confirmPath,reportRun,getSession } from '../adaptive/adaptive.controller';
+import { getLearnerTutorAvailability } from '../ai-tutor/tutorAvailability.controller';
 
 const router=Router();
 router.use(authenticateToken);
 router.post('/generate',generatePath);
+router.get('/ai-tutor/availability', getLearnerTutorAvailability);
 router.get('/my-paths',getMyPaths);
 router.get('/:pathId',getPathById);
 router.post('/submit-quiz',submitQuizAnswer);

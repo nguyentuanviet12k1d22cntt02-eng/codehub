@@ -33,6 +33,7 @@ import SubmissionManagement from "./pages/admin/SubmissionManagement";
 import PracticeProblemManagement from "./pages/admin/PracticeProblemManagement";
 import Analytics from "./pages/admin/Analytics";
 import AIKeyManagement from "./pages/admin/AIKeyManagement";
+import AITutorControl from "./pages/admin/AITutorControl";
 import { getInitialTheme, applyTheme } from "./utils/themeHelper";
 import { setupAuthInterceptor } from "./utils/authHelper";
 
@@ -93,6 +94,7 @@ function App() {
             <Route path="curriculum" element={<CurriculumManagement />} />
             <Route path="submissions" element={<SubmissionManagement />} />
             <Route path="practice-problems" element={<PracticeProblemManagement />} />
+            <Route path="ai-tutor" element={<AITutorControl />} />
             <Route path="ai-keys" element={<AIKeyManagement />} />
           </Route>
         </Routes>

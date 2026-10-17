@@ -16,7 +16,8 @@ import {
     BookOpen,
     AlertTriangle,
     Code2,
-    CheckCircle2
+    CheckCircle2,
+    LockKeyhole
 } from 'lucide-react';
 import { RobotAvatar, UserAvatar, RobotStandingMascot } from './AITutorIllustrations';
 
@@ -73,6 +74,8 @@ interface AITutorChatProps {
         icon?: string;
         step?: string;
     } | null;
+    isTutorLocked?: boolean;
+    lockMessage?: string;
 }
 
 export const cleanLatexAndArtifacts = (text: any): any => {
@@ -217,7 +220,9 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
     onBack,
     onNewChat,
     loading,
-    currentAgentStep
+    currentAgentStep,
+    isTutorLocked = false,
+    lockMessage = 'AI Tutor đang được quản trị viên tạm khóa. Vui lòng quay lại sau.'
 }) => {
     const [inputText, setInputText] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -228,7 +233,7 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
     }, [messages, loading, currentAgentStep]);
 
     const handleSend = () => {
-        if (!inputText.trim() || loading) return;
+        if (!inputText.trim() || loading || isTutorLocked) return;
         onSendMessage(inputText.trim());
         setInputText('');
     };
@@ -247,7 +252,12 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
     };
 
     return (
-        <div className="bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-sm flex flex-col h-full transition-all">
+        <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm transition-all">
+            <div
+                className={`flex h-full min-h-0 flex-col ${isTutorLocked ? 'pointer-events-none scale-[0.995] select-none opacity-55 blur-[2px]' : ''}`}
+                aria-hidden={isTutorLocked || undefined}
+                inert={isTutorLocked}
+            >
             {/* Header Bar */}
             <div className="px-5 py-3.5 bg-white border-b border-slate-100 flex items-center justify-between z-10 shrink-0">
                 <div className="flex items-center gap-3">
@@ -721,6 +731,19 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                     </button>
                 </div>
             </div>
+            </div>
+            {isTutorLocked && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/10 p-5 backdrop-blur-[1px] sm:p-8">
+                    <section role="status" aria-live="polite" className="max-w-sm rounded-3xl border border-white/80 bg-white/95 p-6 text-center shadow-2xl shadow-slate-950/15 dark:border-white/15 dark:bg-slate-900/95">
+                        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-700 dark:bg-amber-400/15 dark:text-amber-200">
+                            <LockKeyhole className="h-7 w-7" aria-hidden="true" />
+                        </span>
+                        <h3 className="mt-4 text-lg font-black text-slate-950 dark:text-white">AI Tutor đang tạm khóa</h3>
+                        <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{lockMessage}</p>
+                        <p className="mt-3 text-xs font-semibold text-slate-500 dark:text-slate-400">Bạn vẫn có thể tiếp tục học các bài học và bài tập khác.</p>
+                    </section>
+                </div>
+            )}
         </div>
     );
 };

@@ -61,6 +61,11 @@ interface ChatSessionItem {
     };
 }
 
+interface TutorAvailabilityState {
+    status: 'loading' | 'ready' | 'unavailable';
+    enabled: boolean;
+}
+
 const PersonalizedPath: React.FC = () => {
     const navigate = useNavigate();
     const [token, setToken] = useState<string>('');
@@ -81,6 +86,30 @@ const PersonalizedPath: React.FC = () => {
     // Chat History States
     const [chatSessions, setChatSessions] = useState<ChatSessionItem[]>([]);
     const [historyLoading, setHistoryLoading] = useState<boolean>(false);
+    const [tutorAvailability, setTutorAvailability] = useState<TutorAvailabilityState>({ status: 'loading', enabled: false });
+
+    const fetchTutorAvailability = async (authToken?: string) => {
+        const currentToken = authToken || token;
+        if (!currentToken) return;
+        try {
+            const response = await axios.get(`${API_BASE_URL}/api/learning-path/ai-tutor/availability`, {
+                headers: { Authorization: `Bearer ${currentToken}` }
+            });
+            setTutorAvailability({ status: 'ready', enabled: response.data.enabled === true });
+        } catch (error) {
+            console.error('Fetch AI Tutor availability error:', error);
+            // Fail closed so an unavailable status API never accidentally
+            // exposes a tutor that an administrator has locked.
+            setTutorAvailability({ status: 'unavailable', enabled: false });
+        }
+    };
+
+    const isTutorLocked = tutorAvailability.status !== 'ready' || !tutorAvailability.enabled;
+    const tutorLockMessage = tutorAvailability.status === 'loading'
+        ? 'Đang kiểm tra trạng thái AI Tutor…'
+        : tutorAvailability.status === 'unavailable'
+        ? 'AI Tutor hiện không thể xác minh trạng thái hoạt động. Vui lòng thử lại sau.'
+        : 'AI Tutor đang được quản trị viên tạm khóa. Vui lòng quay lại sau.';
 
     const handleNewChat = () => {
         setActiveSessionId(null);
@@ -155,11 +184,12 @@ const PersonalizedPath: React.FC = () => {
         }
         setToken(storedToken);
         fetchChatSessions(storedToken);
+        void fetchTutorAvailability(storedToken);
     }, [navigate]);
 
     // Send or Start Interactive Chat Session (Real-Time SSE Streaming from AI Multi-Agent Pipeline)
     const handleSendMessage = async (msgText: string) => {
-        if (!msgText.trim() || chatLoading) return;
+        if (!msgText.trim() || chatLoading || isTutorLocked) return;
 
         const currentSession = activeSessionId;
         const authToken = token || localStorage.getItem('token');
@@ -287,7 +317,7 @@ const PersonalizedPath: React.FC = () => {
 
     // Confirm and Build Final Path -> Redirect to Workspace Page
     const handleConfirmPath = async () => {
-        if (!activeSessionId || chatLoading) return;
+        if (!activeSessionId || chatLoading || isTutorLocked) return;
 
         setChatLoading(true);
         try {
@@ -310,7 +340,7 @@ const PersonalizedPath: React.FC = () => {
 
     // Start Adaptive Exercise Directly in Code Editor
     const handleStartExercise = async (exercise: any) => {
-        if (!exercise) return;
+        if (!exercise || isTutorLocked) return;
         setChatLoading(true);
         try {
             const res = await axios.post(
@@ -511,6 +541,8 @@ const PersonalizedPath: React.FC = () => {
                         onNewChat={handleNewChat}
                         loading={chatLoading}
                         currentAgentStep={currentAgentStep}
+                        isTutorLocked={isTutorLocked}
+                        lockMessage={tutorLockMessage}
                     />
                 </main>
 

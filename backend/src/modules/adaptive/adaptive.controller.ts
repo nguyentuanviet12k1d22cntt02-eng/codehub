@@ -8,6 +8,7 @@ import { createRun, deferRun, finishRun, getRun, getRunForExercise, learnerConte
 import { runExercise } from './adaptiveRunner';
 import { consumeSse } from './sse';
 import { getEvidenceBasedUserMastery } from '../recommendations/recommendationController';
+import { AI_TUTOR_LOCKED_MESSAGE, getTutorAvailability } from '../ai-tutor/tutorAvailability';
 
 const idSchema=z.string().uuid();
 const sessionsRunning=new Set<string>();
@@ -28,6 +29,11 @@ async function chat(req:AuthenticatedRequest,res:Response,isStart:boolean,stream
     const send=(value:any)=>{if(!res.destroyed)res.write('data: '+JSON.stringify(value)+'\n\n');};
     const abort=new AbortController();
     try {
+        const availability = await getTutorAvailability();
+        if (!availability.enabled) {
+            res.status(423).json({ success: false, error: 'AI_TUTOR_LOCKED', message: AI_TUTOR_LOCKED_MESSAGE });
+            return;
+        }
         const content=z.string().trim().min(1).max(6000).parse(isStart ? req.body.goal : req.body.content);
         if(isStart) session=await prisma.pathChatSession.create({data:{userId,initialGoal:content},include:{messages:true}});
         else {

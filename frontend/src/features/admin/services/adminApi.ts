@@ -24,6 +24,21 @@ export const adminApi = {
         return response.data;
     },
 
+    // AI Tutor availability
+    getTutorAvailability: async () => {
+        const response = await axios.get(`${API_URL}/ai-tutor/availability`, {
+            headers: getAuthHeader()
+        });
+        return response.data;
+    },
+
+    updateTutorAvailability: async (enabled: boolean) => {
+        const response = await axios.put(`${API_URL}/ai-tutor/availability`, { enabled }, {
+            headers: getAuthHeader()
+        });
+        return response.data;
+    },
+
     // Users
     getAllUsers: async (params?: { page?: number; limit?: number; role?: string; search?: string }) => {
         const response = await axios.get(`${API_URL}/users`, {

@@ -40,6 +40,7 @@ import {
     getSystemHealth
 } from './adminAnalyticsController';
 import { authenticateAdmin } from '../../shared/middleware/adminAuth';
+import { getAdminTutorAvailability, updateAdminTutorAvailability } from '../ai-tutor/tutorAvailability.controller';
 
 const router = Router();
 
@@ -49,6 +50,10 @@ router.use(authenticateAdmin);
 // ============ DASHBOARD ============
 router.get('/dashboard/stats', getDashboardStats);
 router.get('/dashboard/activity', getSystemActivity);
+
+// ============ AI TUTOR AVAILABILITY ============
+router.get('/ai-tutor/availability', getAdminTutorAvailability);
+router.put('/ai-tutor/availability', updateAdminTutorAvailability);
 
 // ============ ANALYTICS ============
 router.get('/analytics/user-growth', getUserGrowthStats);

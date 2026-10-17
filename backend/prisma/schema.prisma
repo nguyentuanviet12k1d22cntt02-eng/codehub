@@ -555,6 +555,16 @@ model AICallLog {
   @@map("ai_call_logs")
 }
 
+model PlatformFeatureSetting {
+  key       String   @id
+  isEnabled Boolean  @default(true) @map("is_enabled")
+  updatedBy String?  @map("updated_by") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("platform_feature_settings")
+}
+
 enum SurveyVerificationStatus {
   VERIFIED_COURSE_COMPLETION
   VERIFIED_ACTIVITY
