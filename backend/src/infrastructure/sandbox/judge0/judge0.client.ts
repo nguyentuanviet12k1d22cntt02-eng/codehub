@@ -29,6 +29,17 @@ async function jsonRequest(url: string, init: RequestInit, deadline: number): Pr
     return response.json();
 }
 
+function decodeOutput(val: any): string {
+    if (!val || typeof val !== 'string') return '';
+    try {
+        const buf = Buffer.from(val, 'base64');
+        if (buf.toString('base64') === val.trim()) {
+            return buf.toString('utf8');
+        }
+    } catch {}
+    return String(val);
+}
+
 /** One independent Judge0 submission per testcase; no source is executed by the backend. */
 export async function executeJudge0(
     sourceCode: string, language: SupportedLanguage, stdin: string, timeoutMs: number,
@@ -56,14 +67,14 @@ export async function executeJudge0(
     let result: any;
     do {
         await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL_MS));
-        result = await jsonRequest(base + '/submissions/' + submitted.token + '?base64_encoded=false', {
+        result = await jsonRequest(base + '/submissions/' + submitted.token + '?base64_encoded=true', {
             method: 'GET', headers: headers()
         }, deadline);
     } while ([1, 2].includes(result?.status?.id));
     const statusId = Number(result?.status?.id);
     if (!Number.isInteger(statusId) || statusId >= 13) throw new Error('JUDGE0_RUNNER_UNAVAILABLE');
-    const stdout = String(result.stdout || '').slice(0, MAX_OUTPUT);
-    const stderr = String(result.stderr || result.compile_output || result.message || '').slice(0, MAX_OUTPUT);
+    const stdout = decodeOutput(result.stdout).slice(0, MAX_OUTPUT);
+    const stderr = (decodeOutput(result.stderr) || decodeOutput(result.compile_output) || decodeOutput(result.message)).slice(0, MAX_OUTPUT);
     const time = Number(result.time);
     return {
         stdout,
