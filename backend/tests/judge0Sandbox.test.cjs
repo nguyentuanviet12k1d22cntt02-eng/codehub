@@ -104,6 +104,55 @@ test('AWS Docker provider refuses plaintext traffic to a remote host', async () 
     }
 });
 
+test('AI Multi-Agent reference solution is verified by AWS Docker', async () => {
+    const previous = {
+        fetch: global.fetch,
+        provider: process.env.SANDBOX_PROVIDER,
+        url: process.env.AWS_DOCKER_GRADER_URL,
+        token: process.env.AWS_DOCKER_GRADER_TOKEN,
+    };
+    process.env.SANDBOX_PROVIDER = 'AWS_DOCKER';
+    process.env.AWS_DOCKER_GRADER_URL = 'https://47.128.81.75';
+    process.env.AWS_DOCKER_GRADER_TOKEN = 't'.repeat(48);
+    const sent = [];
+    global.fetch = async (url, init) => {
+        assert.equal(url, 'https://47.128.81.75/v1/execute');
+        const payload = JSON.parse(init.body);
+        sent.push(payload);
+        return {
+            ok: true,
+            json: async () => ({
+                requestId: init.headers['X-Request-ID'],
+                provider: 'aws-docker',
+                language: payload.language,
+                results: payload.inputs.map(() => ({
+                    stdout: '2\n', stderr: '', status: 'SUCCESS', runtimeMs: 4,
+                })),
+            }),
+        };
+    };
+    try {
+        const spec = {language: 'python', target_concept: 'PY-DICT-01', difficulty: 'EASY',
+            execution: {mode: 'function', entrypoint: 'solution', comparator: 'json', call_style_required: true},
+            required_constructs: [], forbidden_constructs: []};
+        const draft = {reference_solution: 'def solution(n): return n', starter_code: '',
+            test_cases: Array.from({length: 4}, () => ({arguments: [2], call_style: 'spread',
+                expected_output: '2', is_hidden: true, category: 'normal', explanation: 'test'}))};
+        const result = await runExercise(draft, spec);
+        assert.equal(result.passed, true);
+        assert.equal(result.test_results.length, 4);
+        assert.ok(result.test_results.every(item => item.executed && item.image === 'aws-docker'));
+        assert.equal(sent.length, 4);
+        assert.ok(sent.every(item => item.language === 'PYTHON'));
+        assert.ok(sent.every(item => !JSON.stringify(item).includes('expected_output')));
+    } finally {
+        global.fetch = previous.fetch;
+        for (const [key, value] of [['SANDBOX_PROVIDER', previous.provider], ['AWS_DOCKER_GRADER_URL', previous.url], ['AWS_DOCKER_GRADER_TOKEN', previous.token]]) {
+            if (value === undefined) delete process.env[key]; else process.env[key] = value;
+        }
+    }
+});
+
 test('AI reference solution is verified remotely without sending hidden answers', async () => {
     await withJudge0Mock('2\n', async sent => {
         const spec = {language: 'python', target_concept: 'PY-DICT-01', difficulty: 'EASY',

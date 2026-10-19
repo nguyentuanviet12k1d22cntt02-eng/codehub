@@ -20,7 +20,7 @@ def backend_base_url():
 
 
 class SandboxValidator:
-    """Delegate to the backend's isolated Judge0 harness."""
+    """Delegate generated-code verification to the backend's configured isolated sandbox."""
     @classmethod
     def validate(cls, exercise_data, spec=None, timeout=40):
         if spec is None:

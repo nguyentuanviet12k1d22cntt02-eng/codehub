@@ -754,7 +754,7 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                                         <div className="py-8 text-center text-slate-400 dark:text-gray-500 space-y-2">
                                             <Terminal className="w-8 h-8 mx-auto opacity-50" />
                                             <p className="text-xs font-medium">
-                                                Nhấn nút <strong className="text-emerald-600 dark:text-emerald-400">"Nộp Bài & Chấm Điểm"</strong> để chạy mã trong môi trường Judge0 cách ly.
+                                                Nhấn nút <strong className="text-emerald-600 dark:text-emerald-400">"Nộp Bài & Chấm Điểm"</strong> để chạy mã trong Docker sandbox cách ly trên AWS.
                                             </p>
                                         </div>
                                     ) : (

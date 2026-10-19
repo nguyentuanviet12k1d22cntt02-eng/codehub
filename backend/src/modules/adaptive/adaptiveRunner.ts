@@ -128,7 +128,7 @@ export function staticConstraints(code: string, spec: Specification): string[] {
             if (!/^[A-Za-z_]\w*$/.test(name)) return ['UNSUPPORTED_CONSTRAINT'];
             if (new RegExp('\\b' + name + '\\b').test(stripped)) found.add(name);
         }
-    } else if (spec.language === 'python') return []; // Enforced on AST inside the Judge0 wrapper.
+    } else if (spec.language === 'python') return []; // Enforced on AST inside the isolated Python harness.
     else if (spec.required_constructs.length || spec.forbidden_constructs.length) return ['SQL_CONSTRAINT_REQUIRES_SQL_POLICY'];
     return [...spec.required_constructs.filter(c => !found.has(c)).map(c => 'CONSTRAINT_REQUIRED:' + c),
         ...spec.forbidden_constructs.filter(c => found.has(c)).map(c => 'CONSTRAINT_FORBIDDEN:' + c)];
@@ -141,7 +141,7 @@ export function sandboxInput(code: string, draft: Draft, spec: Specification, in
 }
 
 export function executionTimeoutMs(language: string): number {
-    // Judge0 includes queueing and sandbox startup in the wall-clock envelope.
+    // The wall-clock envelope includes provider queueing and sandbox startup.
     return language === 'cpp' ? 12000 : 8000;
 }
 
