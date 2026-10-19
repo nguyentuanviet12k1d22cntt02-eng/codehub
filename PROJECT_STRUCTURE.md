@@ -145,21 +145,24 @@ Hệ thống được chia thành 5 tầng độc lập với ranh giới trách
 
 ---
 
-### 3.4. Tầng Hạ Tầng & Cách Ly: Code Execution Sandbox (Judge0 / Docker)
-* **Công nghệ:** Judge0 CE (Public/Self-hosted API) hoặc Docker Container Isolation.
+### 3.4. Tầng Hạ Tầng & Cách Ly: Code Execution Sandbox (Judge0 / AWS Docker Grader)
+* **Hai provider thực thi từ xa:**
+  * `JUDGE0`: provider mặc định và runner SQL hiện hữu.
+  * `AWS_DOCKER`: môi trường chấm do dự án tự xây dựng, triển khai trên EC2 Ubuntu tại `ap-southeast-1`; hỗ trợ Python, JavaScript, C và C++.
+* **Luồng AWS Docker:** Backend Render gửi `sourceCode + stdin` qua HTTPS có Bearer token; EC2 chọn image cố định, biên dịch một lần, chạy tuần tự các test trong container tạm và trả stdout/stderr/status/runtime. Expected output và hidden answer không rời backend.
 * **Nguyên tắc bảo mật:** Chế độ **Fail-Closed** và **Zero-Trust** với mã nguồn người dùng:
   * **Cách ly mạng tuyệt đối (`--network none`):** Mã nguồn thực thi không thể mở socket, không thể gửi dữ liệu ra ngoài Internet hoặc kết nối vào cơ sở dữ liệu nội bộ.
   * **Giới hạn tài nguyên cứng (Hard Resource Limits):**
-    * Giới hạn bộ nhớ: Tối đa 128MB RAM (64MB đối với C/C++).
+    * Giới hạn bộ nhớ tiến trình: Mặc định 128MB; container compiler C/C++ có biên cgroup cao hơn để phục vụ giai đoạn biên dịch.
     * Giới hạn thời gian CPU: Tối đa 3.0 giây (ngăn chặn vòng lặp vô hạn `while True`).
     * Giới hạn tiến trình (`--pids-limit 64`): Ngăn chặn triệt để tấn công Fork-bomb.
   * **Quyền hạn tối thiểu (Least Privilege):** Chạy dưới người dùng không đặc quyền (`nobody / 65534`), tước bỏ toàn bộ Linux Kernel Capabilities (`--cap-drop ALL`), hệ thống tệp chỉ đọc (`--read-only`) và chỉ cho phép ghi tạm tại phân vùng bộ nhớ đệm `/tmp`.
 * **Hỗ trợ đa môi trường:**
-  * Python 3.11 (Judge0 ID: `92`)
-  * JavaScript Node 18 (Judge0 ID: `93`)
-  * C++ GCC 14 (Judge0 ID: `105`)
-  * C GCC 14 (Judge0 ID: `104`)
-  * SQL SQLite (Judge0 ID: `82`)
+  * Python 3.11 (`AWS_DOCKER` và Judge0 ID `92`)
+  * JavaScript Node 20 (`AWS_DOCKER`; Judge0 ID `93` cho provider cũ)
+  * C++17 GCC 14 (`AWS_DOCKER`; Judge0 ID `105` cho provider cũ)
+  * C17 GCC 14 (`AWS_DOCKER`; Judge0 ID `50` cho provider cũ)
+  * SQL SQLite (Judge0/Python wrapper trong giai đoạn hiện tại)
 
 ---
 
@@ -303,7 +306,7 @@ graph TB
     end
 
     subgraph SandboxLayer["🛡️ TẦNG THỰC THI AN TOÀN (Isolated Sandbox Execution)"]
-        SB["🐳 Sandbox Engine (Judge0 CE / Docker)<br>• Python 3.11, GCC 14, Node 18, SQLite<br>• Network None (Cô lập Internet hoàn toàn)<br>• Resource Limits: 128MB RAM, 1 CPU, 3s Timeout<br>• Non-root User (nobody), Read-only Rootfs"]
+        SB["🐳 Remote Sandbox Providers<br>• Judge0: provider mặc định + SQL<br>• AWS Docker Grader: Python 3.11, GCC 14, Node 20<br>• Network None, 1 CPU, timeout cứng<br>• Non-root UID 10001, Read-only Rootfs"]
     end
 
     subgraph DataLayer["🗄️ TẦNG DỮ LIỆU & LƯU TRỮ (Data Persistence)"]

@@ -2,6 +2,7 @@ import { createHash } from 'crypto';
 import { parse } from 'acorn';
 import { Draft, Specification, CaseResult, draftSchema, specificationSchema } from './adaptive.contracts';
 import { executeJudge0 } from '../../infrastructure/sandbox/judge0/judge0.client';
+import { sandboxService } from '../../infrastructure/sandbox/sandbox.service';
 
 const VERSION = 'adaptive_harness_v4';
 const MAX_CONCURRENT_RUNS = 2;
@@ -160,16 +161,22 @@ function testContractErrors(draft: Draft, spec: Specification): string[] {
     return errors;
 }
 
-async function executeJudge0Case(code: string, draft: Draft, spec: Specification, index: number): Promise<CaseResult> {
+async function executeSandboxCase(code: string, draft: Draft, spec: Specification, index: number): Promise<CaseResult> {
     const tc = draft.test_cases[index];
     const start = performance.now();
     const source = spec.language === 'cpp' ? code : spec.language === 'javascript' ? JAVASCRIPT : PYTHON;
     const language = spec.language === 'cpp' ? 'CPP' : spec.language === 'javascript' ? 'JAVASCRIPT' : 'PYTHON';
     const stdin = spec.language === 'cpp' ? tc.input || '' : JSON.stringify(sandboxInput(code, draft, spec, index));
     try {
-        const output = await executeJudge0(source, language, stdin, executionTimeoutMs(spec.language), {
-            memoryKb: spec.language === 'cpp' ? 256000 : 128000
-        });
+        // SQL keeps its explicit Judge0/SQLite wrapper in this phase. All
+        // project-owned runner languages use the configured sandbox provider.
+        const output = spec.language === 'sql'
+            ? await executeJudge0(source, language, stdin, executionTimeoutMs(spec.language), { memoryKb: 128000 })
+            : await sandboxService.execute(source, language, {
+                inputData: stdin,
+                timeoutMs: executionTimeoutMs(spec.language),
+                memoryKb: spec.language === 'cpp' ? 256000 : 128000,
+            });
         const state = output.status === 'SUCCESS' ? 'SUCCESS' : output.status === 'TIMEOUT' ? 'TIMEOUT' : 'RUNTIME_ERROR';
         return {
             case_index: index + 1, is_hidden: tc.is_hidden, category: tc.category,
@@ -177,15 +184,15 @@ async function executeJudge0Case(code: string, draft: Draft, spec: Specification
             actual: output.stdout.trimEnd(), stderr: output.stderr,
             passed: state === 'SUCCESS' && equalOutput(output.stdout.trimEnd(), tc.expected_output, spec),
             executed: true, status: state, runtime_ms: output.runtimeMs,
-            image: 'judge0', harness_version: VERSION
+            image: output.provider || 'judge0', harness_version: VERSION
         };
     } catch (error) {
         return {
             case_index: index + 1, is_hidden: tc.is_hidden, category: tc.category,
             input: tc.input ?? JSON.stringify(tc.arguments), expected: tc.expected_output,
-            actual: '', stderr: error instanceof Error ? error.message : 'JUDGE0_UNAVAILABLE',
+            actual: '', stderr: error instanceof Error ? error.message : 'SANDBOX_UNAVAILABLE',
             passed: false, executed: false, status: 'INFRA_ERROR',
-            runtime_ms: Math.round(performance.now() - start), image: 'judge0', harness_version: VERSION
+            runtime_ms: Math.round(performance.now() - start), image: process.env.SANDBOX_PROVIDER || 'JUDGE0', harness_version: VERSION
         };
     }
 }
@@ -203,7 +210,7 @@ export async function runExercise(rawDraft: unknown, rawSpec: unknown, code?: st
     return slot(async () => {
         const test_results: CaseResult[] = [];
         for (let i=0;i<draft.test_cases.length;i++) {
-            const result = await executeJudge0Case(source,draft,spec,i);
+            const result = await executeSandboxCase(source,draft,spec,i);
             test_results.push(result);
             if (result.status === 'INFRA_ERROR') return {passed:false,status:'INFRA_ERROR',error:'Isolated sandbox unavailable',errors:['SANDBOX_UNAVAILABLE'],test_results,harness_version:VERSION};
         }

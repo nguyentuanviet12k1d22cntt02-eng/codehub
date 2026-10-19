@@ -9,6 +9,8 @@ export interface ExecuteResult {
     stderr: string;
     status: 'SUCCESS' | 'TIMEOUT' | 'ERROR';
     runtimeMs: number;
+    failureType?: 'COMPILE_ERROR' | 'RUNTIME_ERROR' | 'OUTPUT_LIMIT_EXCEEDED' | 'INTERNAL_ERROR';
+    provider?: 'judge0' | 'aws-docker';
 }
 
 export interface ExecutionOptions {

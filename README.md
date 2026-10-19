@@ -8,7 +8,7 @@ Welcome to **VIBECODE AI**, a modern, state-of-the-art Adaptive Online Programmi
 
 *   **Adaptive Recommendation Engine (PAL-Net / BKT / DKT):** Automatically personalizes learning paths. Exercises are proposed within the user's *Zone of Proximal Development (ZPD)*—not too easy to cause boredom, nor too hard to cause discouragement.
 *   **User Profiling & Clustering:** Group learners into 4 behavioral archetypes (*Optimizer, Persister, Rusher, and Stuck*) using Machine Learning (K-Means/DBSCAN).
-*   **Isolated Code Execution:** Every submission and AI-generated solution is sent to Judge0. The backend never executes learner code locally or through its own Docker daemon.
+*   **Isolated Code Execution:** Submissions are delegated to a remote provider. `JUDGE0` remains the default; the project-owned `AWS_DOCKER` provider runs Python, JavaScript, C, and C++ in ephemeral Docker sandboxes on a dedicated EC2 host. The backend never executes learner code locally or through its own Docker daemon.
 *   **Comprehensive Student Tracking & Practice Arena:** Analyze submissions, active timelines, logic attempts, and algorithm problems with live leaderboards.
 
 ---
@@ -122,6 +122,10 @@ npm install
 # Judge0 endpoint used in every environment:
 # JUDGE0_BASE_URL=https://ce.judge0.com
 # JUDGE0_API_KEY=optional-token-for-your-Judge0-instance
+# Optional project-owned AWS Docker grader:
+# SANDBOX_PROVIDER=AWS_DOCKER
+# AWS_DOCKER_GRADER_URL=https://47.128.81.75
+# AWS_DOCKER_GRADER_TOKEN=use-the-same-random-token-configured-on-ec2
 
 npx prisma generate
 npx prisma db seed
@@ -164,7 +168,9 @@ pip install torch --extra-index-url https://download.pytorch.org/whl/cpu
 - **`Address already in use` Error (Port Conflict)**:
   - Check if another terminal is already running `npm run dev` or `uvicorn`. Close redundant terminal processes before restarting.
 - **Code Execution Editor Fails**:
-  - Verify `JUDGE0_BASE_URL`, the optional `JUDGE0_API_KEY`, and Judge0 availability. If Judge0 is unavailable, execution fails closed; the backend never falls back to running student code locally. Judge0 public is a third-party service with no project-controlled uptime or isolation guarantee, so do not send secrets in submitted code.
+  - With `SANDBOX_PROVIDER=JUDGE0`, verify `JUDGE0_BASE_URL`, the optional `JUDGE0_API_KEY`, and Judge0 availability.
+  - With `SANDBOX_PROVIDER=AWS_DOCKER`, verify `AWS_DOCKER_GRADER_URL`, `AWS_DOCKER_GRADER_TOKEN`, the EC2 `/health/ready` endpoint, and the runner images documented in `grader-service/README.md`.
+  - Both providers fail closed. The backend never falls back to running learner code on the Render process or its local Docker daemon.
 
 ---
 

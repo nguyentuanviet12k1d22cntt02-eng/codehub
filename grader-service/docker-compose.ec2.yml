@@ -1,0 +1,76 @@
+services:
+  grader-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: learnpython-grader-api:1.0.0
+    env_file:
+      - .env
+    environment:
+      GRADER_MAX_CONCURRENCY: "1"
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/learnpython-grader/jobs:/var/lib/learnpython-grader/jobs
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    mem_limit: 192m
+    cpus: 0.50
+    pids_limit: 128
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    depends_on:
+      grader-api:
+        condition: service_healthy
+    environment:
+      GRADER_PUBLIC_HOST: ${GRADER_PUBLIC_HOST}
+      NGINX_ENVSUBST_FILTER: GRADER_PUBLIC_HOST
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./data/letsencrypt:/etc/letsencrypt:ro
+      - ./data/certbot:/var/www/certbot:ro
+    mem_limit: 64m
+    pids_limit: 64
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+  certbot:
+    profiles: ["tools"]
+    image: certbot/certbot:v5.4.0
+    volumes:
+      - ./data/letsencrypt:/etc/letsencrypt
+      - ./data/certbot:/var/www/certbot
+
+  runner-python:
+    profiles: ["runners"]
+    build:
+      context: .
+      dockerfile: runners/python/Dockerfile
+    image: learnpython-grader-python:3.11
+    entrypoint: ["/bin/true"]
+
+  runner-javascript:
+    profiles: ["runners"]
+    build:
+      context: .
+      dockerfile: runners/javascript/Dockerfile
+    image: learnpython-grader-node:20
+    entrypoint: ["/bin/true"]
+
+  runner-gcc:
+    profiles: ["runners"]
+    build:
+      context: .
+      dockerfile: runners/gcc/Dockerfile
+    image: learnpython-grader-gcc:14
+    entrypoint: ["/bin/true"]

@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily renewal check for the LearnPython grader IP certificate
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=2h
+Persistent=true
+Unit=learnpython-grader-renew.service
+
+[Install]
+WantedBy=timers.target
+

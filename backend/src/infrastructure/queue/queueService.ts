@@ -106,5 +106,6 @@ class CodeExecutionQueue {
 }
 
 // Export một instance duy nhất (Singleton) cho toàn hệ thống
-// maxConcurrency=4: tối đa bốn lượt chấm Judge0 đồng thời.
+// The remote AWS grader has its own stricter semaphore (1 on t3.micro).
+// This queue also protects the legacy Judge0 provider and backend request load.
 export const codeExecutionQueue = new CodeExecutionQueue(4);

@@ -1,0 +1,13 @@
+[Unit]
+Description=Renew the LearnPython grader IP certificate
+Wants=network-online.target
+After=network-online.target docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/grader-service
+ExecStart=/home/ubuntu/grader-service/deploy/renew-certificate.sh
+

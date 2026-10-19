@@ -2,11 +2,14 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+process.env.NODE_ENV = 'test';
 const { SandboxService } = require('../dist/infrastructure/sandbox/sandbox.service');
 const { runExercise } = require('../dist/modules/adaptive/adaptiveRunner');
 
 function withJudge0Mock(output, action) {
     const previousFetch = global.fetch;
+    const previousProvider = process.env.SANDBOX_PROVIDER;
+    process.env.SANDBOX_PROVIDER = 'JUDGE0';
     const sent = [];
     global.fetch = async (_url, init) => {
         if (init.method === 'POST') {
@@ -17,10 +20,12 @@ function withJudge0Mock(output, action) {
     };
     return Promise.resolve().then(() => action(sent)).finally(() => {
         global.fetch = previousFetch;
+        if (previousProvider === undefined) delete process.env.SANDBOX_PROVIDER;
+        else process.env.SANDBOX_PROVIDER = previousProvider;
     });
 }
 
-test('all supported submissions use Judge0 without a provider switch', async () => {
+test('Judge0 remains the default provider for existing deployments', async () => {
     await withJudge0Mock('ok\n', async sent => {
         const service = new SandboxService();
         for (const [language, id] of [['PYTHON', 92], ['JAVASCRIPT', 93], ['CPP', 105], ['C', 50], ['SQL', 92]]) {
@@ -36,6 +41,67 @@ test('all supported submissions use Judge0 without a provider switch', async () 
         }
         assert.equal(sent.length, 5);
     });
+});
+
+test('AWS Docker provider sends source and stdin but never hidden expected output', async () => {
+    const previous = {
+        fetch: global.fetch,
+        provider: process.env.SANDBOX_PROVIDER,
+        url: process.env.AWS_DOCKER_GRADER_URL,
+        token: process.env.AWS_DOCKER_GRADER_TOKEN,
+    };
+    process.env.SANDBOX_PROVIDER = 'AWS_DOCKER';
+    process.env.AWS_DOCKER_GRADER_URL = 'https://47.128.81.75';
+    process.env.AWS_DOCKER_GRADER_TOKEN = 't'.repeat(48);
+    let sent;
+    global.fetch = async (url, init) => {
+        assert.equal(url, 'https://47.128.81.75/v1/execute');
+        assert.equal(init.headers.Authorization, `Bearer ${'t'.repeat(48)}`);
+        sent = JSON.parse(init.body);
+        return {
+            ok: true,
+            json: async () => ({
+                requestId: init.headers['X-Request-ID'], provider: 'aws-docker', language: 'PYTHON',
+                results: sent.inputs.map((_input, index) => ({
+                    stdout: `${index}\n`, stderr: '', status: 'SUCCESS', runtimeMs: 4,
+                })),
+            }),
+        };
+    };
+    try {
+        const service = new SandboxService();
+        const results = await service.executeBatch('print(input())', 'PYTHON', ['a', 'b'], {timeoutMs: 1500});
+        assert.equal(results.length, 2);
+        assert.ok(results.every(result => result.provider === 'aws-docker'));
+        assert.deepEqual(sent.inputs, ['a', 'b']);
+        assert.equal(sent.sourceCode, 'print(input())');
+        assert.equal(JSON.stringify(sent).includes('expectedOutput'), false);
+        assert.equal(JSON.stringify(sent).includes('expected_output'), false);
+    } finally {
+        global.fetch = previous.fetch;
+        for (const [key, value] of [['SANDBOX_PROVIDER', previous.provider], ['AWS_DOCKER_GRADER_URL', previous.url], ['AWS_DOCKER_GRADER_TOKEN', previous.token]]) {
+            if (value === undefined) delete process.env[key]; else process.env[key] = value;
+        }
+    }
+});
+
+test('AWS Docker provider refuses plaintext traffic to a remote host', async () => {
+    const previousProvider = process.env.SANDBOX_PROVIDER;
+    const previousUrl = process.env.AWS_DOCKER_GRADER_URL;
+    const previousToken = process.env.AWS_DOCKER_GRADER_TOKEN;
+    process.env.SANDBOX_PROVIDER = 'AWS_DOCKER';
+    process.env.AWS_DOCKER_GRADER_URL = 'http://47.128.81.75:8080';
+    process.env.AWS_DOCKER_GRADER_TOKEN = 't'.repeat(48);
+    try {
+        await assert.rejects(
+            () => new SandboxService().execute('print(1)', 'PYTHON'),
+            /AWS_DOCKER_GRADER_URL_INVALID/,
+        );
+    } finally {
+        if (previousProvider === undefined) delete process.env.SANDBOX_PROVIDER; else process.env.SANDBOX_PROVIDER = previousProvider;
+        if (previousUrl === undefined) delete process.env.AWS_DOCKER_GRADER_URL; else process.env.AWS_DOCKER_GRADER_URL = previousUrl;
+        if (previousToken === undefined) delete process.env.AWS_DOCKER_GRADER_TOKEN; else process.env.AWS_DOCKER_GRADER_TOKEN = previousToken;
+    }
 });
 
 test('AI reference solution is verified remotely without sending hidden answers', async () => {
@@ -66,6 +132,7 @@ test('local Docker and process runners are absent from the execution path', () =
     const backendRoot = path.resolve(__dirname, '..');
     const activeSources = [
         'src/infrastructure/sandbox/sandbox.service.ts',
+        'src/infrastructure/sandbox/aws-docker/docker-grader.client.ts',
         'src/infrastructure/queue/queueService.ts',
         'src/modules/adaptive/adaptiveRunner.ts',
     ].map(file => fs.readFileSync(path.join(backendRoot, file), 'utf8')).join('\n');

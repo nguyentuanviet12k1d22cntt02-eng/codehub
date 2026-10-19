@@ -4,7 +4,7 @@ const LANGUAGE_IDS: Partial<Record<SupportedLanguage, number>> = {
     PYTHON: 92, JAVASCRIPT: 93, CPP: 105, C: 50
 };
 const MAX_OUTPUT = 128000;
-const POLL_INTERVAL_MS = 450;
+const POLL_INTERVAL_MS = process.env.NODE_ENV === 'test' ? 1 : 450;
 
 function baseUrl(): string {
     const url = new URL(process.env.JUDGE0_BASE_URL || 'https://ce.judge0.com');
@@ -80,6 +80,7 @@ export async function executeJudge0(
         stdout,
         stderr,
         status: statusId === 5 ? 'TIMEOUT' : statusId === 3 ? 'SUCCESS' : 'ERROR',
-        runtimeMs: Number.isFinite(time) && time >= 0 ? Math.round(time * 1000) : 0
+        runtimeMs: Number.isFinite(time) && time >= 0 ? Math.round(time * 1000) : 0,
+        provider: 'judge0'
     };
 }

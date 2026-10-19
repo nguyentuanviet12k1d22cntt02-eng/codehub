@@ -6,6 +6,8 @@ build/
 # Environment
 .env
 .env.local
+grader-service/.env
+grader-service/data/
 *.pem
 key.txt
 keys.txt
