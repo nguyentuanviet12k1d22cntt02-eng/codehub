@@ -44,6 +44,18 @@ interface AICallLogItem {
     createdAt: string;
 }
 
+const providerBadgeClasses: Record<string, string> = {
+    GEMINI: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20',
+    GROQ: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
+    OPENROUTER: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20',
+    INCEPTION: 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/25',
+    OPENAI: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+};
+
+const getProviderBadgeClass = (provider: string) => (
+    providerBadgeClasses[provider] || 'bg-slate-500/10 text-slate-600 dark:text-slate-300 border border-slate-500/20'
+);
+
 export default function AIKeyManagement() {
     const [keys, setKeys] = useState<AIKeyItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -226,7 +238,7 @@ export default function AIKeyManagement() {
                                 Hồ Chứa API Keys (AI Key Pool)
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                Quản lý & tự động xoay vòng API Keys trực tiếp với Google Gemini, loại bỏ hoàn toàn proxy trung gian.
+                                Lưu, kiểm tra và tự động xoay vòng key của Gemini, Groq, OpenRouter, Inception AI và OpenAI.
                             </p>
                         </div>
                     </div>
@@ -304,27 +316,30 @@ export default function AIKeyManagement() {
                 <form onSubmit={handleCreateBulk} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                            <label htmlFor="ai-key-provider" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                                 Nhà cung cấp AI (Provider)
                             </label>
                             <select
+                                id="ai-key-provider"
                                 value={provider}
                                 onChange={e => setProvider(e.target.value)}
                                 className="w-full bg-bg-primary border border-border-custom rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:border-sky-500 transition-colors font-medium"
                             >
-                                <option value="AUTO">⚡ Tự Động Nhận Diện (AIza, gsk_, sk-or-, sk-...)</option>
+                                <option value="AUTO">Tự động nhận diện (AIza, gsk_, sk-or-, sk_, sk-...)</option>
                                 <option value="GEMINI">Google Gemini (Khuyên dùng - gemini-2.5-flash)</option>
                                 <option value="GROQ">Groq Cloud (Siêu tốc - Llama 3.3 70B)</option>
                                 <option value="OPENROUTER">OpenRouter (Đa model - Gemini, Llama, DeepSeek)</option>
+                                <option value="INCEPTION">Inception AI (Mercury 2 - key sk_)</option>
                                 <option value="OPENAI">OpenAI (GPT-4o Mini)</option>
                             </select>
                         </div>
 
                         <div>
-                            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                            <label htmlFor="ai-key-label" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                                 Nhãn gợi nhớ (Tùy chọn)
                             </label>
                             <input
+                                id="ai-key-label"
                                 type="text"
                                 value={label}
                                 onChange={e => setLabel(e.target.value)}
@@ -334,23 +349,55 @@ export default function AIKeyManagement() {
                         </div>
                     </div>
 
+                    {provider === 'INCEPTION' && (
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-cyan-500/25 bg-cyan-500/5 px-4 py-3">
+                            <div className="flex items-center gap-4 min-w-0">
+                                <div className="w-32 shrink-0 rounded-lg border border-slate-200/80 dark:border-white/10 bg-white px-3 py-2">
+                                    <img
+                                        src="/brands/inception-ai-logotype.png"
+                                        alt="Inception AI"
+                                        className="block w-full h-6 object-contain"
+                                    />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-xs font-bold text-slate-900 dark:text-white">Inception AI · Mercury</p>
+                                    <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
+                                        Key bắt đầu bằng <code className="font-mono text-cyan-700 dark:text-cyan-300">sk_</code>, được kiểm tra trực tiếp qua API tương thích OpenAI.
+                                    </p>
+                                </div>
+                            </div>
+                            <a
+                                href="https://platform.inceptionlabs.ai/dashboard/api-keys"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="shrink-0 inline-flex min-h-10 items-center justify-center rounded-lg border border-cyan-500/30 px-3 text-[11px] font-bold text-cyan-700 dark:text-cyan-300 hover:bg-cyan-500/10 transition-colors"
+                            >
+                                Mở trang tạo key
+                            </a>
+                        </div>
+                    )}
+
                     <div>
-                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                        <label htmlFor="ai-key-values" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                             Danh sách API Keys (Mỗi dòng một key, hoặc ngăn cách bằng dấu phẩy)
                         </label>
                         <textarea
+                            id="ai-key-values"
                             rows={3}
                             value={rawKeys}
                             onChange={e => setRawKeys(e.target.value)}
-                            placeholder="Dán các API Key vào đây:&#10;AIzaSyDFiGZYf...&#10;AIzaSyB8x7kLm..."
+                            placeholder={provider === 'INCEPTION'
+                                ? 'Dán Inception API Key vào đây:\nsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+                                : 'Dán các API Key vào đây:\nAIzaSyDFiGZYf...\ngsk_xxxxxxxxxx...'}
                             className="w-full bg-bg-primary border border-border-custom rounded-xl p-3.5 text-xs font-mono text-slate-900 dark:text-white outline-none focus:border-sky-500 transition-colors placeholder-slate-400"
                             required
                         />
                     </div>
 
                     <div className="flex items-center justify-between pt-1">
-                        <p className="text-[11px] text-slate-400">
-                            💡 Khi một key chạm ngưỡng Quota limit (429), AI Service sẽ tự động chuyển sang key tiếp theo trong hồ chứa này.
+                        <p className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                            <ShieldCheck className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                            <span>Khi một key chạm ngưỡng quota (429), AI Service sẽ tự động chuyển sang key tiếp theo.</span>
                         </p>
                         <button
                             type="submit"
@@ -420,15 +467,7 @@ export default function AIKeyManagement() {
                                 {keys.map(k => (
                                     <tr key={k.id} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                                         <td className="py-3.5 px-3">
-                                            <span className={`inline-block px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${
-                                                k.provider === 'GEMINI'
-                                                    ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20'
-                                                    : k.provider === 'GROQ'
-                                                    ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
-                                                    : k.provider === 'OPENROUTER'
-                                                    ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20'
-                                                    : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                                            }`}>
+                                            <span className={`inline-block px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${getProviderBadgeClass(k.provider)}`}>
                                                 {k.provider}
                                             </span>
                                         </td>
@@ -577,15 +616,7 @@ export default function AIKeyManagement() {
                                         </td>
 
                                         <td className="py-3 px-3">
-                                            <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
-                                                log.provider === 'GEMINI'
-                                                    ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20'
-                                                    : log.provider === 'GROQ'
-                                                    ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
-                                                    : log.provider === 'OPENROUTER'
-                                                    ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20'
-                                                    : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                                            }`}>
+                                            <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${getProviderBadgeClass(log.provider)}`}>
                                                 {log.provider}
                                             </span>
                                         </td>

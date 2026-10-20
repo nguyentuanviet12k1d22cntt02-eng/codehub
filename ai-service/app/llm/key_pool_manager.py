@@ -20,10 +20,10 @@ BACKEND_INTERNAL_URL = os.getenv("BACKEND_INTERNAL_URL", "http://localhost:3000/
 class AIKeyPoolManager:
     """
     Quản lý Hồ chứa API Key Đa Nhà Cung Cấp & Tự động xoay vòng (Multi-Provider Key Pool)
-    - Hỗ trợ: Google Gemini, Groq Cloud, OpenRouter, OpenAI
+    - Hỗ trợ: Google Gemini, Groq Cloud, OpenRouter, OpenAI, Inception AI
     - Tự động phân loại và đồng bộ từ database backend
     - Xoay vòng round-robin thông minh theo từng provider
-    - Cơ chế Auto-Failover: Gemini -> Groq -> OpenRouter -> OpenAI
+    - Cơ chế Auto-Failover: Gemini -> Groq -> OpenRouter -> Inception -> OpenAI
     - Tự động cách ly tạm thời từng key bị lỗi quota hoặc lỗi provider có thể hồi phục
     """
     
@@ -32,6 +32,7 @@ class AIKeyPoolManager:
             "GEMINI": [],
             "GROQ": [],
             "OPENROUTER": [],
+            "INCEPTION": [],
             "OPENAI": []
         }
         self._last_fetch_time: float = 0.0
@@ -53,6 +54,7 @@ class AIKeyPoolManager:
                 self._provider_pools["GEMINI"] = data.get("geminiKeys", [])
                 self._provider_pools["GROQ"] = data.get("groqKeys", [])
                 self._provider_pools["OPENROUTER"] = data.get("openrouterKeys", [])
+                self._provider_pools["INCEPTION"] = data.get("inceptionKeys", [])
                 self._provider_pools["OPENAI"] = data.get("openaiKeys", [])
                 self._last_fetch_time = now
                 return self._provider_pools
@@ -63,6 +65,7 @@ class AIKeyPoolManager:
         env_gemini = os.getenv("GEMINI_API_KEY", os.getenv("GOOGLE_API_KEY", "")).strip()
         env_groq = os.getenv("GROQ_API_KEY", "").strip()
         env_openrouter = os.getenv("OPENROUTER_API_KEY", "").strip()
+        env_inception = os.getenv("INCEPTION_API_KEY", "").strip()
         env_openai = os.getenv("OPENAI_API_KEY", "").strip()
 
         if env_gemini and env_gemini not in self._provider_pools["GEMINI"]:
@@ -71,6 +74,8 @@ class AIKeyPoolManager:
             self._provider_pools["GROQ"].append(env_groq)
         if env_openrouter and env_openrouter not in self._provider_pools["OPENROUTER"]:
             self._provider_pools["OPENROUTER"].append(env_openrouter)
+        if env_inception and env_inception not in self._provider_pools["INCEPTION"]:
+            self._provider_pools["INCEPTION"].append(env_inception)
         if env_openai and env_openai not in self._provider_pools["OPENAI"]:
             self._provider_pools["OPENAI"].append(env_openai)
 
@@ -362,6 +367,49 @@ class AIKeyPoolManager:
                 continue
         return None
 
+    def _call_inception(self, key: str, prompt: str, system_prompt: str = None) -> Optional[str]:
+        model_name = os.getenv("INCEPTION_MODEL", "mercury-2")
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
+        headers = {
+            "Authorization": f"Bearer {key}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": model_name,
+            "messages": messages,
+            "temperature": 0.7,
+            "max_tokens": 4096
+        }
+        t0 = time.time()
+        try:
+            res = requests.post(
+                "https://api.inceptionlabs.ai/v1/chat/completions",
+                json=payload,
+                headers=headers,
+                timeout=14.0
+            )
+            lat = int((time.time() - t0) * 1000)
+            if res.status_code == 200:
+                result = res.json()
+                content = result["choices"][0]["message"]["content"]
+                print(f"\n[AI-POOL] [SUCCESS] INCEPTION ({model_name}) SUCCESS in {lat}ms!", flush=True)
+                self.log_call("INCEPTION", model_name, key, "SUCCESS", 200, lat, prompt, content)
+                return content
+            if res.status_code in (429, 403):
+                self.mark_key_exhausted(key, "INCEPTION", 60.0, f"HTTP {res.status_code} Quota/Rate Limit")
+                self.log_call("INCEPTION", model_name, key, "FAILED", res.status_code, lat, prompt, None, f"HTTP {res.status_code} Quota")
+                return None
+            print(f"[Inception API Error] Model {model_name} Status {res.status_code}: {res.text[:100]}")
+            self.log_call("INCEPTION", model_name, key, "FAILED", res.status_code, lat, prompt, None, res.text[:100])
+        except Exception as e:
+            lat = int((time.time() - t0) * 1000)
+            print(f"[Inception Exception] {e}")
+            self.log_call("INCEPTION", model_name, key, "FAILED", 500, lat, prompt, None, str(e)[:100])
+        return None
+
     # ==================== MAIN DISPATCHER ====================
 
     def call_multi_provider_pool(self, prompt: str, system_prompt: str = None) -> Optional[str]:
@@ -371,9 +419,10 @@ class AIKeyPoolManager:
         1. Google Gemini (nhanh, phản hồi tiếng Việt tự nhiên)
         2. Groq Cloud (siêu tốc với Llama 3.3 70B)
         3. OpenRouter (tổng hợp nhiều model)
-        4. OpenAI (GPT-4o Mini)
+        4. Inception AI (Mercury 2)
+        5. OpenAI (GPT-4o Mini)
         """
-        providers_order = ["GEMINI", "GROQ", "OPENROUTER", "OPENAI"]
+        providers_order = ["GEMINI", "GROQ", "OPENROUTER", "INCEPTION", "OPENAI"]
 
         for prov in providers_order:
             keys = self.get_available_keys_for_provider(prov)
@@ -388,6 +437,8 @@ class AIKeyPoolManager:
                     res_content = self._call_groq(key, prompt, system_prompt)
                 elif prov == "OPENROUTER":
                     res_content = self._call_openrouter(key, prompt, system_prompt)
+                elif prov == "INCEPTION":
+                    res_content = self._call_inception(key, prompt, system_prompt)
                 elif prov == "OPENAI":
                     res_content = self._call_openai(key, prompt, system_prompt)
 
@@ -395,7 +446,7 @@ class AIKeyPoolManager:
                     self.report_key_success(key)
                     return res_content
 
-        print("[AIKeyPool] Tất cả các nhà cung cấp (Gemini, Groq, OpenRouter, OpenAI) đều không khả dụng.")
+        print("[AIKeyPool] Tất cả các nhà cung cấp (Gemini, Groq, OpenRouter, Inception, OpenAI) đều không khả dụng.")
         return None
 
     def call_gemini_with_pool(self, prompt: str, system_prompt: str = None) -> Optional[str]:

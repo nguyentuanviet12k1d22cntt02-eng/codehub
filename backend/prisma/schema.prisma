@@ -525,7 +525,7 @@ model PathChatMessage {
 
 model AIProviderKey {
   id         String    @id @default(uuid()) @db.Uuid
-  provider   String    @default("GEMINI") // "GEMINI" | "GROQ" | "OPENAI"
+  provider   String    @default("GEMINI") // GEMINI | GROQ | OPENROUTER | OPENAI | INCEPTION
   apiKey     String    @map("api_key") @db.Text
   label      String? // Ghi chú hoặc tên tài khoản
   isActive   Boolean   @default(true) @map("is_active")
@@ -541,7 +541,7 @@ model AIProviderKey {
 
 model AICallLog {
   id             String   @id @default(uuid()) @db.Uuid
-  provider       String // GEMINI, GROQ, OPENROUTER, OPENAI
+  provider       String // GEMINI, GROQ, OPENROUTER, OPENAI, INCEPTION
   model          String
   apiKeyMasked   String   @map("api_key_masked")
   status         String // SUCCESS, FAILED

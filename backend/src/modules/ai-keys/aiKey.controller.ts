@@ -54,7 +54,7 @@ export const getAllKeys = async (req: Request, res: Response) => {
 };
 
 // Helper tự động nhận diện provider dựa theo tiền tố của API Key
-function detectProvider(key: string, selectedProvider: string = 'AUTO'): string {
+export function detectProvider(key: string, selectedProvider: string = 'AUTO'): string {
     const trimmed = key.trim();
     if (selectedProvider && selectedProvider !== 'AUTO') {
         return selectedProvider.toUpperCase();
@@ -63,6 +63,7 @@ function detectProvider(key: string, selectedProvider: string = 'AUTO'): string 
     if (trimmed.startsWith('gsk_')) return 'GROQ';
     if (trimmed.startsWith('sk-or-')) return 'OPENROUTER';
     if (trimmed.startsWith('sk-ant-')) return 'ANTHROPIC';
+    if (trimmed.startsWith('sk_')) return 'INCEPTION';
     if (trimmed.startsWith('sk-')) return 'OPENAI';
     return 'GEMINI';
 }
@@ -236,6 +237,28 @@ export const testKey = async (req: Request, res: Response) => {
                 const errText = await testRes.text();
                 responseMessage = `OpenAI từ chối (HTTP ${statusCode}): ${errText.slice(0, 120)}`;
             }
+        } else if (provider === 'INCEPTION') {
+            const testRes = await fetch('https://api.inceptionlabs.ai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${trimmedKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: process.env.INCEPTION_MODEL || 'mercury-2',
+                    messages: [{ role: 'user', content: 'Reply with OK.' }],
+                    max_tokens: 8,
+                    temperature: 0
+                })
+            });
+            statusCode = testRes.status;
+            if (testRes.ok) {
+                isSuccess = true;
+                responseMessage = 'Inception AI (Mercury) xác thực thành công!';
+            } else {
+                const errText = await testRes.text();
+                responseMessage = `Inception AI từ chối (HTTP ${statusCode}): ${errText.slice(0, 120)}`;
+            }
         } else {
             // Default check
             isSuccess = true;
@@ -286,6 +309,7 @@ export const getActiveKeysInternal = async (req: Request, res: Response) => {
         const groqKeys = activeKeys.filter(k => k.provider === 'GROQ').map(k => k.apiKey);
         const openrouterKeys = activeKeys.filter(k => k.provider === 'OPENROUTER').map(k => k.apiKey);
         const openaiKeys = activeKeys.filter(k => k.provider === 'OPENAI').map(k => k.apiKey);
+        const inceptionKeys = activeKeys.filter(k => k.provider === 'INCEPTION').map(k => k.apiKey);
 
         // Fallback từ .env nếu bảng trống
         if (geminiKeys.length === 0 && process.env.GEMINI_API_KEY) {
@@ -300,6 +324,9 @@ export const getActiveKeysInternal = async (req: Request, res: Response) => {
         if (openaiKeys.length === 0 && process.env.OPENAI_API_KEY) {
             openaiKeys.push(process.env.OPENAI_API_KEY.trim());
         }
+        if (inceptionKeys.length === 0 && process.env.INCEPTION_API_KEY) {
+            inceptionKeys.push(process.env.INCEPTION_API_KEY.trim());
+        }
 
         return res.json({
             success: true,
@@ -307,6 +334,7 @@ export const getActiveKeysInternal = async (req: Request, res: Response) => {
             groqKeys,
             openrouterKeys,
             openaiKeys,
+            inceptionKeys,
             allKeys: activeKeys
         });
     } catch (error: any) {
@@ -316,7 +344,8 @@ export const getActiveKeysInternal = async (req: Request, res: Response) => {
             geminiKeys: process.env.GEMINI_API_KEY ? [process.env.GEMINI_API_KEY.trim()] : [],
             groqKeys: [],
             openrouterKeys: [],
-            openaiKeys: []
+            openaiKeys: [],
+            inceptionKeys: process.env.INCEPTION_API_KEY ? [process.env.INCEPTION_API_KEY.trim()] : []
         });
     }
 };

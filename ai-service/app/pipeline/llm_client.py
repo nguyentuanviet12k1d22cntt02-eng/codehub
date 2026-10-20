@@ -308,7 +308,7 @@ class PipelineLLMClient:
     def _fallback_provider_count(self, providers, position):
         count = 0
         for provider in providers[position + 1:]:
-            if provider not in ("GEMINI", "GROQ", "OPENROUTER", "OPENAI"):
+            if provider not in ("GEMINI", "GROQ", "OPENROUTER", "INCEPTION", "OPENAI"):
                 continue
             if provider in self._run_provider_outages or not _provider_available(provider):
                 continue
@@ -332,6 +332,10 @@ class PipelineLLMClient:
     def _model(self, provider, key, timeout_seconds=4):
         configured = os.getenv(f"ADAPTIVE_{provider}_MODEL") or os.getenv("ADAPTIVE_MODEL")
         key_model = (provider, key)
+        if provider == "INCEPTION":
+            model = configured or os.getenv("INCEPTION_MODEL", "mercury-2")
+            self.models[provider] = model
+            return model
         if provider == "GROQ" and key_model in self.key_models:
             return self.key_models[key_model]
         if provider != "GROQ" and configured:
@@ -379,13 +383,13 @@ class PipelineLLMClient:
     def json(self, stage, system, data):
         prompt = json.dumps(data, ensure_ascii=False, default=str)
         configured_provider = os.getenv("ADAPTIVE_PROVIDER", "").upper()
-        providers = [configured_provider] if configured_provider else ["GEMINI", "GROQ", "OPENROUTER", "OPENAI"]
+        providers = [configured_provider] if configured_provider else ["GEMINI", "GROQ", "OPENROUTER", "INCEPTION", "OPENAI"]
         last_error = "PROVIDER_UNAVAILABLE"
         attempted_any = False
         retry_after = None
         stage_deadline = min(time.monotonic() + stage_budget_seconds(stage), self.deadline)
         for provider_position, provider in enumerate(providers):
-            if provider not in ("GEMINI", "GROQ", "OPENROUTER", "OPENAI"):
+            if provider not in ("GEMINI", "GROQ", "OPENROUTER", "INCEPTION", "OPENAI"):
                 continue
             if provider in self._run_provider_outages:
                 last_error = "PROVIDER_FULL_POOL_OUTAGE"
@@ -451,8 +455,10 @@ class PipelineLLMClient:
                         payload = {"system_instruction": {"parts": [{"text": system}]}, "contents": [{"role": "user", "parts": [{"text": prompt}]}], "generationConfig": {"temperature": .25, "maxOutputTokens": output_limit, "responseMimeType": "application/json"}}
                         response = requests.post(f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent", headers={"x-goog-api-key": key}, json=payload, timeout=(min(4, read_timeout), read_timeout), stream=True)
                     else:
-                        base = {"GROQ": "https://api.groq.com/openai/v1", "OPENROUTER": "https://openrouter.ai/api/v1", "OPENAI": "https://api.openai.com/v1"}[provider]
-                        payload = {"model": model, "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt}], "temperature": .25, "max_tokens": output_limit, "response_format": {"type": "json_object"}}
+                        base = {"GROQ": "https://api.groq.com/openai/v1", "OPENROUTER": "https://openrouter.ai/api/v1", "INCEPTION": "https://api.inceptionlabs.ai/v1", "OPENAI": "https://api.openai.com/v1"}[provider]
+                        payload = {"model": model, "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt}], "temperature": .25, "max_tokens": output_limit}
+                        if provider != "INCEPTION":
+                            payload["response_format"] = {"type": "json_object"}
                         response = requests.post(base + "/chat/completions", headers={"Authorization": "Bearer " + key}, json=payload, timeout=(min(4, read_timeout), read_timeout), stream=True)
                     receipt["http_status"] = response.status_code
                     response.raise_for_status()

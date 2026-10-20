@@ -228,6 +228,41 @@ class PipelineTests(unittest.TestCase):
         self.assertTrue(all(item["prompt_sample"].startswith("[IntentRouterAgent]") for item in admin_logs))
         self.assertTrue(llm_client_module._provider_available("GEMINI"))
 
+    def test_inception_provider_uses_mercury_openai_compatible_endpoint(self):
+        pool = AIKeyPoolManager()
+        pool._provider_pools["INCEPTION"] = ["sk_inception-test"]
+        pool._last_fetch_time = time.time()
+        succeeded, admin_logs, sent = [], [], []
+        pool.report_key_success = lambda key: succeeded.append(key)
+        pool.log_call_async = lambda **kwargs: admin_logs.append(kwargs)
+
+        response = FakeProviderResponse(200, {
+            "id": "inception-response",
+            "model": "mercury-2",
+            "usage": {"total_tokens": 12},
+            "choices": [{"message": {"content": '{"intent":"EXPLAIN_CONCEPT","language":"python","topic":"list"}'}}],
+        })
+
+        def post(url, *args, **kwargs):
+            sent.append((url, kwargs["headers"].get("Authorization"), kwargs["json"]))
+            return response
+
+        with patch.dict(os.environ, {"ADAPTIVE_PROVIDER": "INCEPTION", "INCEPTION_MODEL": "mercury-2"}, clear=False), \
+             patch.object(llm_client_module, "key_pool", pool), \
+             patch.object(llm_client_module.requests, "post", side_effect=post):
+            result = PipelineLLMClient(timeout_seconds=30).json(
+                "IntentRouterAgent", "router", {"request": "list"}
+            )
+
+        self.assertEqual(result["topic"], "list")
+        self.assertEqual(sent[0][0], "https://api.inceptionlabs.ai/v1/chat/completions")
+        self.assertEqual(sent[0][1], "Bearer sk_inception-test")
+        self.assertEqual(sent[0][2]["model"], "mercury-2")
+        self.assertNotIn("response_format", sent[0][2])
+        self.assertEqual(succeeded, ["sk_inception-test"])
+        self.assertEqual(admin_logs[0]["provider"], "INCEPTION")
+        self.assertEqual(admin_logs[0]["status"], "SUCCESS")
+
     def test_all_transient_gemini_keys_are_tried_before_groq(self):
         pool = AIKeyPoolManager()
         pool._provider_pools["GEMINI"] = ["gemini-key-a", "gemini-key-b"]
