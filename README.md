@@ -8,7 +8,7 @@ Welcome to **VIBECODE AI**, a modern, state-of-the-art Adaptive Online Programmi
 
 *   **Adaptive Recommendation Engine (PAL-Net / BKT / DKT):** Automatically personalizes learning paths. Exercises are proposed within the user's *Zone of Proximal Development (ZPD)*—not too easy to cause boredom, nor too hard to cause discouragement.
 *   **User Profiling & Clustering:** Group learners into 4 behavioral archetypes (*Optimizer, Persister, Rusher, and Stuck*) using Machine Learning (K-Means/DBSCAN).
-*   **Isolated Code Execution:** Submissions are delegated to a remote provider. `JUDGE0` remains the default; the project-owned `AWS_DOCKER` provider runs Python, JavaScript, C, and C++ in ephemeral Docker sandboxes on a dedicated EC2 host. The backend never executes learner code locally or through its own Docker daemon.
+*   **Isolated Code Execution:** Python, JavaScript, C, C++, and SQL run in ephemeral Docker sandboxes on the dedicated EC2 host. SQL uses a Python/SQLite wrapper inside the sandbox. The backend never executes learner code locally or through its own Docker daemon.
 *   **Comprehensive Student Tracking & Practice Arena:** Analyze submissions, active timelines, logic attempts, and algorithm problems with live leaderboards.
 
 ---
@@ -58,7 +58,7 @@ uvicorn main:app --reload --port 8000
 | **Frontend** | ![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB) ![Vite](https://img.shields.io/badge/Vite-B73BFE?style=flat-square&logo=vite&logoColor=FFD627) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white) |
 | **Backend** | ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=flat-square&logo=node.js&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-3982CC?style=flat-square&logo=prisma&logoColor=white) |
 | **Database** | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white) (Supabase / Local) |
-| **Sandbox** | Judge0 CE for every environment |
+| **Sandbox** | AWS EC2 Docker for Python, JavaScript, C, C++, and SQL |
 | **AI/ML Engine** | ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white) ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white) ![Pandas](https://img.shields.io/badge/Pandas-150458?style=flat-square&logo=pandas&logoColor=white) ![Scikit-Learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white) |
 
 ---
@@ -71,7 +71,7 @@ LearnPython/
 │   ├── prisma/               # Schema (schema.prisma), Migrations & Seed data
 │   ├── src/
 │   │   ├── modules/          # Domain features (auth, courses, practice, learning-path, admin...)
-│   │   ├── infrastructure/   # Judge0 client, database, email, queue
+│   │   ├── infrastructure/   # EC2 Docker sandbox client, database, email, queue
 │   │   ├── shared/           # Common middleware (auth, adminAuth), types
 │   │   └── app.ts            # Express entrypoint
 │   ├── scripts/              # Helper admin & database scripts
@@ -119,11 +119,8 @@ npm install
 # PORT=3000
 # DATABASE_URL="postgresql://postgres:password@localhost:5432/learnpython_db?schema=public"
 # AI_SERVICE_URL="http://localhost:8000"
-# Judge0 endpoint used in every environment:
-# JUDGE0_BASE_URL=https://ce.judge0.com
-# JUDGE0_API_KEY=optional-token-for-your-Judge0-instance
-# Optional project-owned AWS Docker grader:
-# SANDBOX_PROVIDER=AWS_DOCKER
+# Required for Python, JavaScript, C, C++, and SQL execution:
+# SANDBOX_PROVIDER=AWS_DOCKER  # default for all languages
 # AWS_DOCKER_GRADER_URL=https://47.128.81.75
 # AWS_DOCKER_GRADER_TOKEN=use-the-same-random-token-configured-on-ec2
 
@@ -168,9 +165,9 @@ pip install torch --extra-index-url https://download.pytorch.org/whl/cpu
 - **`Address already in use` Error (Port Conflict)**:
   - Check if another terminal is already running `npm run dev` or `uvicorn`. Close redundant terminal processes before restarting.
 - **Code Execution Editor Fails**:
-  - With `SANDBOX_PROVIDER=JUDGE0`, verify `JUDGE0_BASE_URL`, the optional `JUDGE0_API_KEY`, and Judge0 availability.
-  - With `SANDBOX_PROVIDER=AWS_DOCKER`, verify `AWS_DOCKER_GRADER_URL`, `AWS_DOCKER_GRADER_TOKEN`, the EC2 `/health/ready` endpoint, and the runner images documented in `grader-service/README.md`.
-  - Both providers fail closed. The backend never falls back to running learner code on the Render process or its local Docker daemon.
+  - For Python, JavaScript, C, C++, and SQL, verify `AWS_DOCKER_GRADER_URL`, `AWS_DOCKER_GRADER_TOKEN`, the EC2 `/health/ready` endpoint, and the runner images documented in `grader-service/README.md`. Restart the backend after changing environment variables.
+  - To verify the exercise-validation path, run `PROBE_LANGUAGE=javascript node scripts/probeProductionAdaptive.cjs` from `backend/` (PowerShell: `$env:PROBE_LANGUAGE='javascript'; node scripts/probeProductionAdaptive.cjs`). Use `PROBE_LANGUAGE=sql` for SQLite. The probe fails unless all four cases report `image=aws-docker`; set `PROBE_BACKEND_URL=http://127.0.0.1:3000` to check the local backend.
+  - The EC2 provider fails closed. The backend never falls back to Judge0, the Render process, or its local Docker daemon.
 
 ---
 

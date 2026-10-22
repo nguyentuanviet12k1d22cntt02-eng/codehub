@@ -2,7 +2,7 @@
  * Định nghĩa kiểu dữ liệu cho Sandbox Execution Engine
  */
 
-export type SupportedLanguage = 'PYTHON' | 'JAVASCRIPT' | 'CPP' | 'C' | 'SQL' | 'JAVA';
+export type SupportedLanguage = 'PYTHON' | 'JAVASCRIPT' | 'CPP' | 'C' | 'SQL';
 
 export interface ExecuteResult {
     stdout: string;

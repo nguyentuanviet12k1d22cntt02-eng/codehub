@@ -57,6 +57,24 @@ class SandboxBackendUrlTests(unittest.TestCase):
                     SandboxValidator.validate({"test_cases": [{}]}, StubSpec(), timeout=5)
                 self.assertEqual(caught.exception.code, "SANDBOX_BACKEND_UNREACHABLE")
 
+    def test_infrastructure_failure_keeps_provider_diagnostics_in_admin_details(self):
+        with patch.dict(os.environ, {
+            "ADAPTIVE_BACKEND_URL": "https://backend.example.com",
+            "ADAPTIVE_INTERNAL_SECRET": "test-secret",
+        }):
+            with patch("app.validation.sandbox_validator.requests.post") as post:
+                post.return_value.json.return_value = {
+                    "status": "INFRA_ERROR", "error": "Isolated sandbox unavailable",
+                    "test_results": [{"status": "INFRA_ERROR", "image": "AWS_DOCKER",
+                                      "stderr": "AWS_DOCKER_HTTP_503"}],
+                }
+                with self.assertRaises(PipelineError) as caught:
+                    SandboxValidator.validate({"test_cases": [{}]}, StubSpec(), timeout=5)
+                self.assertEqual(caught.exception.code, "SANDBOX_UNAVAILABLE")
+                self.assertEqual(caught.exception.details, {
+                    "provider": "AWS_DOCKER", "provider_error": "AWS_DOCKER_HTTP_503",
+                })
+
 
 if __name__ == "__main__":
     unittest.main()

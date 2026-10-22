@@ -94,8 +94,8 @@ EC2 Security Group rules:
 
 ## Render backend configuration
 
-Set these environment variables to switch the four supported languages to the
-AWS Docker provider:
+Set these environment variables to run all five supported exercise languages
+through the AWS Docker provider:
 
 ```text
 SANDBOX_PROVIDER=AWS_DOCKER
@@ -103,9 +103,9 @@ AWS_DOCKER_GRADER_URL=https://47.128.81.75
 AWS_DOCKER_GRADER_TOKEN=<same random token as GRADER_API_TOKEN on EC2>
 ```
 
-Redeploy the Render backend after changing the environment. `JUDGE0` remains the
-default provider until `SANDBOX_PROVIDER` is explicitly set. SQL intentionally
-continues to use Judge0 during this phase.
+Redeploy the Render backend after changing the environment. `AWS_DOCKER` is the
+default for Python, JavaScript, C, C++, and SQL; the URL and token must be configured.
+SQL runs through the Python image with an SQLite wrapper inside the Docker sandbox.
 
 ## API example
 

@@ -32,7 +32,12 @@ class SandboxValidator:
             response.raise_for_status()
             result = response.json()
             if result.get("status") == "INFRA_ERROR":
-                raise PipelineError("SANDBOX_UNAVAILABLE", result.get("error", "Sandbox unavailable"))
+                failed_case = next((case for case in result.get("test_results", [])
+                                    if case.get("status") == "INFRA_ERROR"), {})
+                raise PipelineError("SANDBOX_UNAVAILABLE", result.get("error", "Sandbox unavailable"), {
+                    "provider": failed_case.get("image"),
+                    "provider_error": str(failed_case.get("stderr", ""))[:300],
+                })
             cases = result.get("test_results", [])
             passed = result.get("passed") is True and len(cases) == len(exercise_data["test_cases"]) and all(t.get("passed") is True and t.get("executed") is True for t in cases)
             return passed, result.get("errors", []), cases

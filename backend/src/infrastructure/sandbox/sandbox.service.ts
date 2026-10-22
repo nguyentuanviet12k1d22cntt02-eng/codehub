@@ -1,6 +1,5 @@
 import { existsSync, readFileSync } from 'fs';
 import path from 'path';
-import { executeJudge0 } from './judge0/judge0.client';
 import { executeAwsDockerBatch } from './aws-docker/docker-grader.client';
 import {
     SupportedLanguage,
@@ -14,13 +13,15 @@ import {
  * The Render backend never starts local processes or owns a Docker daemon.
  */
 export class SandboxService {
-    private provider(language: SupportedLanguage): 'JUDGE0' | 'AWS_DOCKER' {
-        // The project SQL exercises use a dedicated Judge0 Python wrapper. The
-        // AWS Docker service intentionally has no SQL runner in this phase.
-        if (language === 'SQL') return 'JUDGE0';
-        const selected = (process.env.SANDBOX_PROVIDER || 'JUDGE0').trim().toUpperCase();
-        if (selected !== 'JUDGE0' && selected !== 'AWS_DOCKER') throw new Error('SANDBOX_PROVIDER_INVALID');
-        return selected;
+    private assertAwsDocker(): void {
+        const selected = (process.env.SANDBOX_PROVIDER || 'AWS_DOCKER').trim().toUpperCase();
+        if (selected !== 'AWS_DOCKER') throw new Error('SANDBOX_PROVIDER_MUST_BE_AWS_DOCKER');
+    }
+
+    private sqlWrapper(): string {
+        const deployed = path.join(__dirname, 'sql', 'sql.runner.py');
+        const source = path.join(__dirname, '..', '..', '..', 'src', 'infrastructure', 'sandbox', 'sql', 'sql.runner.py');
+        return readFileSync(existsSync(deployed) ? deployed : source, 'utf8');
     }
 
     public async execute(
@@ -28,42 +29,26 @@ export class SandboxService {
         language: SupportedLanguage = 'PYTHON',
         options?: ExecutionOptions
     ): Promise<ExecuteResult> {
-        if (language === 'SQL') {
-            const deployed = path.join(__dirname, 'sql', 'sql.runner.py');
-            const source = path.join(__dirname, '..', '..', '..', 'src', 'infrastructure', 'sandbox', 'sql', 'sql.runner.py');
-            const wrapper = readFileSync(existsSync(deployed) ? deployed : source, 'utf8');
-            return executeJudge0(wrapper, 'PYTHON', code, options?.timeoutMs || 5000, {
-                memoryKb: options?.memoryKb
-            });
-        }
-        if (this.provider(language) === 'AWS_DOCKER') {
-            const results = await executeAwsDockerBatch(code, language, [options?.inputData || ''], options?.timeoutMs || 5000, {
-                memoryKb: options?.memoryKb,
-            });
-            return results[0];
-        }
-        return executeJudge0(code, language, options?.inputData || '', options?.timeoutMs || 5000, {
+        this.assertAwsDocker();
+        const results = await executeAwsDockerBatch(language === 'SQL' ? this.sqlWrapper() : code,
+            language === 'SQL' ? 'PYTHON' : language, [language === 'SQL' ? code : options?.inputData || ''],
+            options?.timeoutMs || 5000, {
             memoryKb: options?.memoryKb
         });
+        return results[0];
     }
 
-    /** One independent Judge0 submission is created for every testcase. */
+    /** SQL runs through a Python/SQLite wrapper inside the same EC2 Docker sandbox. */
     public async executeBatch(
         code: string,
         language: SupportedLanguage,
         inputData: string[],
         options?: BatchExecutionOptions
     ): Promise<ExecuteResult[]> {
-        if (language !== 'SQL' && this.provider(language) === 'AWS_DOCKER') {
-            return executeAwsDockerBatch(code, language, inputData, options?.timeoutMs || 5000, {
-                memoryKb: options?.memoryKb,
-            });
-        }
-        const results: ExecuteResult[] = [];
-        for (const input of inputData) {
-            results.push(await this.execute(code, language, { ...options, inputData: input }));
-        }
-        return results;
+        this.assertAwsDocker();
+        return executeAwsDockerBatch(language === 'SQL' ? this.sqlWrapper() : code,
+            language === 'SQL' ? 'PYTHON' : language, language === 'SQL' ? inputData.map(() => code) : inputData,
+            options?.timeoutMs || 5000, { memoryKb: options?.memoryKb });
     }
 }
 
