@@ -258,7 +258,7 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
             }
         }
 
-        // 3. Gửi từng testcase thành một submission Judge0 độc lập.
+        // 3. Gửi các testcase trong một batch đến sandbox Docker EC2.
         let totalRuntime = 0;
         let hasSystemError = false;
         const testCases = exercise.testCases || [];

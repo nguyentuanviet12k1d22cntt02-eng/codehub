@@ -4,7 +4,7 @@ import { authenticateToken } from "../../shared/middleware/auth";
 
 const router = Router();
 
-// Chạy code động trong Judge0
+// Chạy code động trong sandbox Docker EC2
 router.post('/compiler/run', runCodeDynamic);
 
 // Nộp bài tập trong bài học

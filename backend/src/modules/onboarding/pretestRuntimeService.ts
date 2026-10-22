@@ -397,7 +397,7 @@ export class PretestRuntimeService {
             testPassRatio = score;
             gradingMethod = 'RUNNER_VERIFIED';
             details = {
-              runner: 'Judge0/isolated', total: cases.length, passed: passedCount,
+              runner: 'aws-docker', total: cases.length, passed: passedCount,
               cases: results.map((result, index) => ({
                 index, hidden: cases[index].isHidden, passed: passed[index],
                 status: result.status, runtimeMs: result.runtimeMs,
@@ -496,7 +496,7 @@ export class PretestRuntimeService {
       });
       await prisma.idempotencyRecord.deleteMany({ where: { userId, scope, key, responseBody: { equals: Prisma.DbNull } } });
       if (/RUNNER_UNAVAILABLE/.test(error?.message ?? '')) {
-        throw new Error('RUNNER_UNAVAILABLE: Judge0 hiện không khả dụng; bài làm chưa bị tính sai.');
+        throw new Error('RUNNER_UNAVAILABLE: Sandbox Docker EC2 hiện không khả dụng; bài làm chưa bị tính sai.');
       }
       throw error;
     }

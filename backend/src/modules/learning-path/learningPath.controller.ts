@@ -293,7 +293,7 @@ export const submitExerciseCode = async (req: AuthenticatedRequest, res: Respons
             return;
         }
 
-        // Chấm mã qua hàng đợi Judge0.
+        // Chấm mã qua hàng đợi sandbox Docker EC2.
         let passedCases = 0;
         const totalCases = exercise.testCases.length;
         const results = [];

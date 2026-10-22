@@ -39,7 +39,7 @@ class CodeExecutionQueue {
 
     /**
      * Một job batch chiếm đúng một slot trong queue, dù nó có nhiều testcase.
-     * Nhờ vậy một lượt nộp không chiếm nhiều slot Judge0 cạnh tranh với chính nó.
+     * Nhờ vậy một lượt nộp không chiếm nhiều slot sandbox EC2 cạnh tranh với chính nó.
      */
     public pushBatchJob(
         userCode: string,
@@ -107,5 +107,5 @@ class CodeExecutionQueue {
 
 // Export một instance duy nhất (Singleton) cho toàn hệ thống
 // The remote AWS grader has its own stricter semaphore (1 on t3.micro).
-// This queue also protects the legacy Judge0 provider and backend request load.
+// This queue also protects the EC2 Docker grader and backend request load.
 export const codeExecutionQueue = new CodeExecutionQueue(4);
