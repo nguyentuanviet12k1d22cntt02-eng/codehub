@@ -49,4 +49,5 @@ ai-service/artifacts/knowledge_tracing/
 
 # Scratch & temporary test scripts
 scratch/
+.tmp/
 

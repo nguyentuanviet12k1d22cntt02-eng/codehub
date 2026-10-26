@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { AgentEvidencePanel, type PipelineSummary } from './AgentEvidencePanel';
+import { AgentEvidencePanel, type AdaptiveRunReport, type PipelineSummary } from './AgentEvidencePanel';
+import { TutorProcessing, isPendingPipeline } from './TutorProcessing';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {
@@ -32,6 +33,9 @@ export interface ChatMessage {
         intent?: string;
         agentTraces?: any[];
         pipeline?: PipelineSummary;
+        pendingConfirmation?: AdaptiveRunReport['pending_confirmation'];
+        practiceBatch?: {status:'GENERATING'|'READY'|'FAILED';expectedCount:number;completedCount:number;
+            rootTraceId:string;pathId?:string;titles?:string[]};
         exercise?: {
             title: string;
             exercise_id?: string;
@@ -63,7 +67,9 @@ interface AITutorChatProps {
     messages: ChatMessage[];
     onSendMessage: (text: string) => void;
     onConfirmPath: () => void;
+    onOpenPath?: (pathId: string) => void;
     onStartExercise?: (exercise: any) => void;
+    onRetrySettled?: (traceId: string, report: AdaptiveRunReport) => void;
     onBack?: () => void;
     onNewChat?: () => void;
     loading: boolean;
@@ -168,47 +174,42 @@ const CodeBlock: React.FC<{ language: string; value: string }> = ({ language, va
     );
 };
 
-const AGENT_THEMES: Record<string, { bg: string; badge: string; border: string }> = {
-    IntentRouterAgent: {
-        bg: 'from-blue-50/90 to-indigo-50/90',
-        badge: 'bg-blue-100 text-blue-800 border-blue-300',
-        border: 'border-blue-300'
-    },
-    KnowledgeRetrievalAgent: {
-        bg: 'from-emerald-50/90 to-teal-50/90',
-        badge: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-        border: 'border-emerald-300'
-    },
-    AdaptiveExercisePlanner: {
-        bg: 'from-purple-50/90 to-indigo-50/90',
-        badge: 'bg-purple-100 text-purple-800 border-purple-300',
-        border: 'border-purple-300'
-    },
-    ExplanationTutorAgent: {
-        bg: 'from-amber-50/90 to-orange-50/90',
-        badge: 'bg-amber-100 text-amber-800 border-amber-300',
-        border: 'border-amber-300'
-    },
-    ExerciseGeneratorAgent: {
-        bg: 'from-cyan-50/90 to-sky-50/90',
-        badge: 'bg-cyan-100 text-cyan-800 border-cyan-300',
-        border: 'border-cyan-300'
-    },
-    DeterministicValidators: {
-        bg: 'from-slate-50/90 to-zinc-50/90',
-        badge: 'bg-slate-100 text-slate-800 border-slate-300',
-        border: 'border-slate-300'
-    },
-    CriticEvaluatorAgent: {
-        bg: 'from-rose-50/90 to-pink-50/90',
-        badge: 'bg-rose-100 text-rose-800 border-rose-300',
-        border: 'border-rose-300'
-    },
-    DeliveryAgent: {
-        bg: 'from-teal-50/90 to-emerald-50/90',
-        badge: 'bg-teal-100 text-teal-800 border-teal-300',
-        border: 'border-teal-300'
+
+const PracticeBatchCard: React.FC<{
+    batch: NonNullable<NonNullable<ChatMessage['metadata']>['practiceBatch']>;
+    loading: boolean;
+    onOpen: () => void;
+}> = ({ batch, loading, onOpen }) => {
+    const total = Math.max(1, batch.expectedCount || 1);
+    const completed = Math.min(total, Math.max(0, batch.completedCount || 0));
+
+    if (batch.status === 'GENERATING') {
+        return <TutorProcessing total={total} completed={completed} />;
     }
+
+    return (
+        <div className={`rounded-2xl border p-4 text-sm ${
+            batch.status === 'READY' ? 'border-emerald-200 bg-emerald-50/70' : 'border-rose-200 bg-rose-50/70'
+        }`} aria-live="polite">
+            <div className={`flex items-center gap-2 font-bold ${batch.status === 'READY' ? 'text-emerald-800' : 'text-rose-800'}`}>
+                <Layers className="h-4 w-4" aria-hidden="true" />
+                {batch.status === 'READY' ? `Đã tạo đủ ${total} bài thực hành` : 'Chưa thể hoàn tất bộ bài'}
+            </div>
+            {batch.status === 'READY' ? (
+                <>
+                    <ol className="mt-3 list-decimal space-y-1 pl-5 text-xs text-slate-700">
+                        {(batch.titles || []).map((title, index) => <li key={`${index}-${title}`}>{title}</li>)}
+                    </ol>
+                    <button type="button" onClick={onOpen} disabled={loading}
+                        className="mt-3 min-h-11 w-full rounded-xl bg-emerald-600 px-4 py-2 font-bold text-white hover:bg-emerald-700 disabled:opacity-50">
+                        Mở {total} bài trong Thực hành lập trình
+                    </button>
+                </>
+            ) : (
+                <p className="mt-2 text-xs text-slate-600">Bộ bài chưa đủ số lượng nên không có bài riêng lẻ nào được phát hành. Bạn có thể gửi lại yêu cầu để thử tạo bộ mới.</p>
+            )}
+        </div>
+    );
 };
 
 export const AITutorChat: React.FC<AITutorChatProps> = ({
@@ -216,7 +217,9 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
     messages,
     onSendMessage,
     onConfirmPath,
+    onOpenPath,
     onStartExercise,
+    onRetrySettled,
     onBack,
     onNewChat,
     loading,
@@ -226,6 +229,8 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
 }) => {
     const [inputText, setInputText] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const latestTutorMessage = [...messages].reverse().find(message => message.sender === 'AI_TUTOR');
+    const resumingLegacyRun = latestTutorMessage?.metadata?.pipeline?.status === 'AWAITING_AGENT_APPROVAL';
 
     // Auto scroll to latest message
     useEffect(() => {
@@ -233,7 +238,7 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
     }, [messages, loading, currentAgentStep]);
 
     const handleSend = () => {
-        if (!inputText.trim() || loading || isTutorLocked) return;
+        if (!inputText.trim() || loading || isTutorLocked || resumingLegacyRun) return;
         onSendMessage(inputText.trim());
         setInputText('');
     };
@@ -330,6 +335,9 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                     {messages.map((msg, index) => {
                         const isUser = msg.sender === 'USER';
                         const meta = msg.metadata;
+                        const practiceBatch = meta?.practiceBatch;
+                        const processing = !isUser && !practiceBatch && (
+                            (loading && index === messages.length - 1) || isPendingPipeline(meta?.pipeline?.status));
                         const timeStr = getFormattedTime(msg.timestamp);
 
                         return (
@@ -354,7 +362,9 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                         }`}
                                     >
                                         {/* Markdown Body */}
-                                        <div className="markdown-content prose prose-sm max-w-none text-slate-800">
+                                        {processing && <TutorProcessing title={currentAgentStep?.title}
+                                            pipeline={meta?.pipeline} polling={!loading} onSettled={onRetrySettled} />}
+                                        {!processing && !practiceBatch && <div className="markdown-content prose prose-sm max-w-none text-slate-800">
                                             <ReactMarkdown
                                                 remarkPlugins={[remarkGfm]}
                                                 components={{
@@ -400,14 +410,19 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                             >
                                                 {cleanLatexAndArtifacts(msg.content)}
                                             </ReactMarkdown>
-                                        </div>
+                                        </div>}
 
-                                        {!isUser && meta?.agentTraces && meta.agentTraces.length > 0 && (
-                                            <AgentEvidencePanel records={meta.agentTraces} pipeline={meta.pipeline} />
+                                        {!processing && !practiceBatch && !isUser && meta?.agentTraces && meta.agentTraces.length > 0 && (
+                                            <AgentEvidencePanel records={meta.agentTraces} pipeline={meta.pipeline}
+                                                onRetrySettled={onRetrySettled} />
                                         )}
 
+                                        {practiceBatch && <PracticeBatchCard batch={practiceBatch} loading={loading}
+                                            onOpen={() => practiceBatch.pathId && onOpenPath
+                                                ? onOpenPath(practiceBatch.pathId) : onConfirmPath()} />}
+
                                         {/* Embedded Adaptive Exercise Card */}
-                                        {meta?.exercise && (
+                                        {!processing && !practiceBatch && meta?.exercise && (
                                             <div className="mt-4 p-4 bg-[#F8FAFC] border-2 border-emerald-500/30 rounded-2xl space-y-3.5 shadow-xs">
                                                 {/* Header Badges */}
                                                 <div className="flex items-center justify-between">
@@ -443,7 +458,7 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                                 </div>
 
                                                 {/* Section 1: Nội dung cơ sở tri thức trọng tâm (Knowledge Base) */}
-                                                {meta.exercise.quick_theory && (
+                                                {meta.exercise.quick_theory && !meta.exercise.problem_statement?.trimStart().startsWith('## Mô tả') && (
                                                     <div className="text-xs text-slate-700 bg-white p-3 rounded-xl border border-slate-200/90 shadow-xs space-y-1">
                                                         <div className="flex items-center gap-1.5 font-bold text-emerald-700 text-xs">
                                                             <BookOpen className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -456,7 +471,7 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                                 )}
 
                                                 {/* Pitfall Warning */}
-                                                {meta.exercise.common_pitfall_warning && (
+                                                {meta.exercise.common_pitfall_warning && !meta.exercise.problem_statement?.trimStart().startsWith('## Mô tả') && (
                                                     <div className="text-xs text-amber-900 bg-amber-50/90 p-2.5 rounded-xl border border-amber-200/80 flex items-start gap-2">
                                                         <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                                                         <div className="leading-relaxed">
@@ -473,12 +488,26 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                                             <Code2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                                                             <span>Yêu cầu thử thách đã tạo:</span>
                                                         </div>
-                                                        <div className="leading-relaxed text-slate-700 whitespace-pre-line pl-5">
-                                                            {cleanLatexAndArtifacts(meta.exercise.problem_statement)}
-                                                        </div>
+                                                        {meta.exercise.problem_statement.trimStart().startsWith('## Mô tả') ? (
+                                                            <div className="pl-5 text-slate-700 space-y-1">
+                                                                <ReactMarkdown remarkPlugins={[remarkGfm]} components={{
+                                                                    h2: ({ ...props }) => <h5 className="font-bold text-slate-900 mt-3 first:mt-0" {...props} />,
+                                                                    p: ({ ...props }) => <p className="leading-relaxed" {...props} />,
+                                                                    pre: ({ ...props }) => <pre className="rounded-lg bg-slate-900 text-emerald-300 p-2.5 overflow-x-auto whitespace-pre-wrap font-mono" {...props} />,
+                                                                    code: ({ className, children, ...props }) => <code className={className || 'font-mono text-blue-700'} {...props}>{children}</code>,
+                                                                    ul: ({ ...props }) => <ul className="list-disc pl-5" {...props} />
+                                                                }}>
+                                                                    {cleanLatexAndArtifacts(meta.exercise.problem_statement)}
+                                                                </ReactMarkdown>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="leading-relaxed text-slate-700 whitespace-pre-line pl-5">
+                                                                {cleanLatexAndArtifacts(meta.exercise.problem_statement)}
+                                                            </div>
+                                                        )}
 
                                                         {/* Sample Input & Output if provided */}
-                                                        {(meta.exercise.sample_input || meta.exercise.sample_output) && (
+                                                        {!meta.exercise.problem_statement.trimStart().startsWith('## Mô tả') && (meta.exercise.sample_input || meta.exercise.sample_output) && (
                                                             <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono pl-5">
                                                                 {meta.exercise.sample_input && (
                                                                     <div className="bg-white p-2 rounded-lg border border-slate-200">
@@ -523,7 +552,7 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                         )}
 
                                         {/* Embedded Learning Path Pipeline Card */}
-                                        {meta?.previewData && (
+                                        {!processing && !practiceBatch && meta?.previewData && (
                                             <div className="mt-4 p-4 bg-white border-2 border-blue-500/30 rounded-2xl space-y-3 shadow-xs">
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full border border-blue-200">
@@ -583,13 +612,14 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                     </div>
 
                                     {/* Quick Option Chips from AI */}
-                                    {meta?.suggestedOptions && meta.suggestedOptions.length > 0 && (
+                                    {!processing && !practiceBatch && meta?.suggestedOptions && meta.suggestedOptions.length > 0 && (
                                         <div className="flex flex-wrap gap-1.5 pt-2">
                                             {meta.suggestedOptions.map((opt: string, oIdx: number) => {
                                                 const isStartExerciseChip = /bắt đầu làm bài|code editor/i.test(opt);
                                                 const isConfirmChip = /chốt lộ trình|bắt đầu học/i.test(opt);
                                                 return (
                                                     <button
+                                                        disabled={loading}
                                                         key={oIdx}
                                                         onClick={() => {
                                                             if (isStartExerciseChip && meta?.exercise && onStartExercise) {
@@ -626,63 +656,11 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                         );
                     })}
 
-                    {/* Dynamic Real-Time Multi-Agent Execution Telemetry */}
-                    {loading && (
-                        <div className="flex items-start gap-3 animate-fade-in">
-                            <div className="mt-1 shrink-0">
-                                <RobotAvatar size={34} />
-                            </div>
-                            <div className="bg-white border border-slate-200/90 rounded-2xl rounded-tl-none p-4 shadow-sm max-w-[85%] space-y-3">
-                                {/* Header with Real-Time Pipeline Status */}
-                                <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-2.5">
-                                    <div className="flex items-center gap-2">
-                                        <span className="relative flex h-2.5 w-2.5">
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
-                                        </span>
-                                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                                            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                                            Tác Tử Đang Xử Lý Thời Gian Thực
-                                        </span>
-                                    </div>
-                                    {currentAgentStep?.step && (
-                                        <span className="text-[10px] font-mono font-bold text-blue-600 bg-blue-50 border border-blue-200/60 px-2 py-0.5 rounded-full">
-                                            {currentAgentStep.step}
-                                        </span>
-                                    )}
-                                </div>
-
-                                {/* Active Agent Card (Live from Python backend) */}
-                                {(() => {
-                                    const agentName = currentAgentStep?.agent || 'AdaptiveOrchestrator';
-                                    const theme = AGENT_THEMES[agentName] || {
-                                        bg: 'from-blue-50/80 to-indigo-50/80',
-                                        badge: 'bg-blue-100 text-blue-800 border-blue-200',
-                                        border: 'border-blue-200'
-                                    };
-                                    const icon = currentAgentStep?.icon || '⚡';
-                                    const title = currentAgentStep?.title || (loading ? 'Đang kết nối tới Hệ thống Đa Tác Tử...' : 'Đang xử lý...');
-                                    const desc = currentAgentStep?.desc || 'Đang điều phối các tác tử chuyên biệt để phân tích và chuẩn bị câu trả lời...';
-
-                                    return (
-                                        <div className={`p-3.5 rounded-xl border ${theme.border} bg-gradient-to-r ${theme.bg} transition-all duration-300 shadow-xs`}>
-                                            <div className="flex items-center justify-between gap-2 mb-2">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-lg">{icon}</span>
-                                                    <span className="text-xs font-bold text-slate-900">
-                                                        {title}
-                                                    </span>
-                                                </div>
-                                                <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border ${theme.badge}`}>
-                                                    {agentName}
-                                                </span>
-                                            </div>
-                                            <p className="text-[12px] text-slate-600 leading-relaxed font-normal">
-                                                {desc}
-                                            </p>
-                                        </div>
-                                    );
-                                })()}
+                    {loading && messages.at(-1)?.sender !== 'AI_TUTOR' && (
+                        <div className="flex items-start gap-3">
+                            <div className="mt-0.5 shrink-0"><RobotAvatar size={34} /></div>
+                            <div className="min-w-0 max-w-[85%] rounded-2xl rounded-tl-none border border-slate-200/80 bg-white p-4 shadow-xs">
+                                <TutorProcessing title={currentAgentStep?.title} />
                             </div>
                         </div>
                     )}
@@ -714,8 +692,8 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                                 handleSend();
                             }
                         }}
-                        disabled={loading}
-                        placeholder="Nhập câu hỏi của bạn..."
+                        disabled={loading || resumingLegacyRun}
+                        placeholder={resumingLegacyRun?'Đang tiếp tục yêu cầu trước…':'Nhập câu hỏi của bạn...'}
                         className="flex-1 bg-transparent py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none disabled:opacity-60"
                     />
 
@@ -723,7 +701,7 @@ export const AITutorChat: React.FC<AITutorChatProps> = ({
                     <button
                         type="button"
                         onClick={handleSend}
-                        disabled={!inputText.trim() || loading}
+                        disabled={!inputText.trim() || loading || resumingLegacyRun}
                         className="w-9 h-9 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-40 text-white flex items-center justify-center transition-all shadow-sm cursor-pointer shrink-0"
                         title="Gửi câu hỏi"
                     >

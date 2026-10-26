@@ -1,0 +1,85 @@
+{
+  "status": "PASSED",
+  "directions": [
+    {
+      "body": [
+        602,
+        252,
+        76,
+        84
+      ],
+      "direction": "n",
+      "loaded": true
+    },
+    {
+      "body": [
+        602,
+        252,
+        76,
+        84
+      ],
+      "direction": "ne",
+      "loaded": true
+    },
+    {
+      "body": [
+        602,
+        252,
+        76,
+        84
+      ],
+      "direction": "e",
+      "loaded": true
+    },
+    {
+      "body": [
+        602,
+        252,
+        76,
+        84
+      ],
+      "direction": "se",
+      "loaded": true
+    },
+    {
+      "body": [
+        602,
+        252,
+        76,
+        84
+      ],
+      "direction": "s",
+      "loaded": true
+    },
+    {
+      "body": [
+        602,
+        252,
+        76,
+        84
+      ],
+      "direction": "sw",
+      "loaded": true
+    },
+    {
+      "body": [
+        602,
+        252,
+        76,
+        84
+      ],
+      "direction": "w",
+      "loaded": true
+    },
+    {
+      "body": [
+        602,
+        252,
+        76,
+        84
+      ],
+      "direction": "nw",
+      "loaded": true
+    }
+  ]
+}

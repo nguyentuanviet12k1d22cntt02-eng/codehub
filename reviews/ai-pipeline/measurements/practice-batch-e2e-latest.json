@@ -1,0 +1,59 @@
+{
+  "kind": "AUTHENTICATED_REAL_BATCH",
+  "expected": 4,
+  "started_at": "2026-10-23T09:19:46.327Z",
+  "runs": [
+    {
+      "index": 1,
+      "trace_id": "trace_9d4b96e17aab4e949bacf7a0789be79b",
+      "status": "SUCCEEDED",
+      "title": "Luyện tập Set: Tính hợp của hai tập hợp từ"
+    },
+    {
+      "index": 2,
+      "trace_id": "trace_871e631f5bd84418bcac590a5fb2cb0b",
+      "status": "SUCCEEDED",
+      "title": "Luyện tập Set: Tìm các từ xuất hiện ở cả hai dòng"
+    },
+    {
+      "index": 3,
+      "trace_id": "trace_7829037ca6d344779a6868fd579e91ad",
+      "status": "SUCCEEDED",
+      "title": "Luyện tập Set: Tìm các từ chỉ xuất hiện ở một trong hai dòng"
+    },
+    {
+      "index": 4,
+      "trace_id": "trace_b0613449c66349728f5e5cae98c799d4",
+      "status": "SUCCEEDED",
+      "title": "Luyện tập Set: Tìm các từ chỉ có trong danh sách thứ nhất"
+    }
+  ],
+  "fixture_user_id": "12343053-e37d-4d05-a3cd-0f497c73f8e4",
+  "session_id": "8e6e1298-f2a9-4495-9eb2-662bf79bfaa9",
+  "path_id": "f04bb2d5-bec9-4416-b2da-6347611520bd",
+  "exercise_count": 4,
+  "sandbox": [
+    {
+      "trace_id": "trace_9d4b96e17aab4e949bacf7a0789be79b",
+      "passed": 5,
+      "provider": "aws-docker"
+    },
+    {
+      "trace_id": "trace_871e631f5bd84418bcac590a5fb2cb0b",
+      "passed": 5,
+      "provider": "aws-docker"
+    },
+    {
+      "trace_id": "trace_7829037ca6d344779a6868fd579e91ad",
+      "passed": 5,
+      "provider": "aws-docker"
+    },
+    {
+      "trace_id": "trace_b0613449c66349728f5e5cae98c799d4",
+      "passed": 5,
+      "provider": "aws-docker"
+    }
+  ],
+  "status": "PASSED",
+  "ended_at": "2026-10-23T09:33:23.435Z"
+}

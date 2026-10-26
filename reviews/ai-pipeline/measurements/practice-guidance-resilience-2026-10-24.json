@@ -1,0 +1,702 @@
+{
+  "kind": "PRACTICE_GUIDANCE_RESILIENCE_QA",
+  "fixture_user_id": "4121279f-e0db-4f92-ad1d-514a02242063",
+  "path_id": "cedd192c-eb51-422d-b3c5-9c299702f9c0",
+  "exercise_id": "5565edbc-cbb5-42c7-8048-21b1e8c6a8cb",
+  "started_at": "2026-10-24T09:19:20.472Z",
+  "offline": [
+    {
+      "kind": "wrong",
+      "submission_id": "0c3882f4-62ab-484c-8a61-0099ab078714",
+      "grade": {
+        "data": {
+          "success": true,
+          "isPassed": false,
+          "passedCases": 1,
+          "totalCases": 6,
+          "score": 17,
+          "results": [
+            {
+              "case_index": 1,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "abc",
+              "expected": "a\nb\nc",
+              "actual": "",
+              "stderr": "",
+              "passed": false,
+              "executed": true,
+              "status": "SUCCESS",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "1",
+              "expectedOutput": "a\nb\nc",
+              "actualOutput": "",
+              "errorMessage": ""
+            },
+            {
+              "case_index": 2,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "a b c",
+              "expected": "a\n \nb\n \nc",
+              "actual": "",
+              "stderr": "",
+              "passed": false,
+              "executed": true,
+              "status": "SUCCESS",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "2",
+              "expectedOutput": "a\n \nb\n \nc",
+              "actualOutput": "",
+              "errorMessage": ""
+            },
+            {
+              "case_index": 3,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "12345",
+              "expected": "1\n2\n3\n4\n5",
+              "actual": "",
+              "stderr": "",
+              "passed": false,
+              "executed": true,
+              "status": "SUCCESS",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "3",
+              "expectedOutput": "1\n2\n3\n4\n5",
+              "actualOutput": "",
+              "errorMessage": ""
+            },
+            {
+              "case_index": 4,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "a!b@c#d",
+              "expected": "a\n!\nb\n@\nc\n#\nd",
+              "actual": "",
+              "stderr": "",
+              "passed": false,
+              "executed": true,
+              "status": "SUCCESS",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "4",
+              "expectedOutput": "a\n!\nb\n@\nc\n#\nd",
+              "actualOutput": "",
+              "errorMessage": ""
+            },
+            {
+              "case_index": 5,
+              "is_hidden": true,
+              "category": "boundary",
+              "passed": true,
+              "executed": true,
+              "status": "SUCCESS",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "5",
+              "input": "Hidden",
+              "expectedOutput": "Hidden",
+              "actualOutput": "Passed"
+            },
+            {
+              "case_index": 6,
+              "is_hidden": true,
+              "category": "boundary",
+              "passed": false,
+              "executed": true,
+              "status": "SUCCESS",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "6",
+              "input": "Hidden",
+              "expectedOutput": "Hidden",
+              "actualOutput": "Mismatch"
+            }
+          ],
+          "status": "EXECUTED",
+          "adaptiveFeedback": {
+            "submission_id": "0c3882f4-62ab-484c-8a61-0099ab078714",
+            "concept_id": "PY-FLOW-03",
+            "previous_mastery": 0.4075,
+            "new_mastery": 0.3972,
+            "delta": -0.0103,
+            "policy_version": "evidence_policy_v4",
+            "reason": "REPEATED_VERIFIED_PARTIAL_OR_FAILED_ATTEMPT",
+            "evidence": {
+              "trace_id": "trace_b54beecadf8440219cbb66ae460de501",
+              "harness_version": "adaptive_harness_v4",
+              "passed_cases": 1,
+              "total_cases": 6,
+              "observed_score": 0.16666666666666666,
+              "observation_weight": 0.27999999999999997,
+              "confidence_before": 0.8256458435870166,
+              "confidence_after": 0.8411825738930794
+            }
+          },
+          "submission_id": "0c3882f4-62ab-484c-8a61-0099ab078714",
+          "guidance": {
+            "source": "EVIDENCE",
+            "tone": "thinking",
+            "title": "Chưa có kết quả đầu ra",
+            "reason": "Test công khai #1 cần đầu ra nhưng mã vừa nộp chưa tạo ra kết quả.",
+            "hint": "Kiểm tra lệnh xuất kết quả có được thực thi với dữ liệu của test này hay không."
+          }
+        },
+        "elapsed_ms": 8929
+      },
+      "feedback": {
+        "data": {
+          "success": true,
+          "submissionId": "0c3882f4-62ab-484c-8a61-0099ab078714",
+          "guidance": {
+            "source": "EVIDENCE",
+            "tone": "thinking",
+            "title": "Chưa có kết quả đầu ra",
+            "reason": "Test công khai #1 cần đầu ra nhưng mã vừa nộp chưa tạo ra kết quả.",
+            "hint": "Kiểm tra lệnh xuất kết quả có được thực thi với dữ liệu của test này hay không."
+          }
+        },
+        "elapsed_ms": 680
+      }
+    },
+    {
+      "kind": "missing-for",
+      "submission_id": "fd763674-8ccc-44ff-81f0-915ff8d7783f",
+      "grade": {
+        "data": {
+          "success": true,
+          "isPassed": false,
+          "passedCases": 0,
+          "totalCases": 6,
+          "score": 0,
+          "results": [
+            {
+              "case_index": 1,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "abc",
+              "expected": "a\nb\nc",
+              "actual": "",
+              "stderr": "Traceback (most recent call last):\n  File \"/work/main.py\", line 24, in <module>\n    if required not in found: raise ValueError(\"CONSTRAINT_REQUIRED:\"+required)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: CONSTRAINT_REQUIRED:for\n",
+              "passed": false,
+              "executed": true,
+              "status": "RUNTIME_ERROR",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "1",
+              "expectedOutput": "a\nb\nc",
+              "actualOutput": "",
+              "errorMessage": "Traceback (most recent call last):\n  File \"/work/main.py\", line 24, in <module>\n    if required not in found: raise ValueError(\"CONSTRAINT_REQUIRED:\"+required)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: CONSTRAINT_REQUIRED:for\n"
+            },
+            {
+              "case_index": 2,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "a b c",
+              "expected": "a\n \nb\n \nc",
+              "actual": "",
+              "stderr": "Traceback (most recent call last):\n  File \"/work/main.py\", line 24, in <module>\n    if required not in found: raise ValueError(\"CONSTRAINT_REQUIRED:\"+required)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: CONSTRAINT_REQUIRED:for\n",
+              "passed": false,
+              "executed": true,
+              "status": "RUNTIME_ERROR",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "2",
+              "expectedOutput": "a\n \nb\n \nc",
+              "actualOutput": "",
+              "errorMessage": "Traceback (most recent call last):\n  File \"/work/main.py\", line 24, in <module>\n    if required not in found: raise ValueError(\"CONSTRAINT_REQUIRED:\"+required)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: CONSTRAINT_REQUIRED:for\n"
+            },
+            {
+              "case_index": 3,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "12345",
+              "expected": "1\n2\n3\n4\n5",
+              "actual": "",
+              "stderr": "Traceback (most recent call last):\n  File \"/work/main.py\", line 24, in <module>\n    if required not in found: raise ValueError(\"CONSTRAINT_REQUIRED:\"+required)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: CONSTRAINT_REQUIRED:for\n",
+              "passed": false,
+              "executed": true,
+              "status": "RUNTIME_ERROR",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "3",
+              "expectedOutput": "1\n2\n3\n4\n5",
+              "actualOutput": "",
+              "errorMessage": "Traceback (most recent call last):\n  File \"/work/main.py\", line 24, in <module>\n    if required not in found: raise ValueError(\"CONSTRAINT_REQUIRED:\"+required)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: CONSTRAINT_REQUIRED:for\n"
+            },
+            {
+              "case_index": 4,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "a!b@c#d",
+              "expected": "a\n!\nb\n@\nc\n#\nd",
+              "actual": "",
+              "stderr": "Traceback (most recent call last):\n  File \"/work/main.py\", line 24, in <module>\n    if required not in found: raise ValueError(\"CONSTRAINT_REQUIRED:\"+required)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: CONSTRAINT_REQUIRED:for\n",
+              "passed": false,
+              "executed": true,
+              "status": "RUNTIME_ERROR",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "4",
+              "expectedOutput": "a\n!\nb\n@\nc\n#\nd",
+              "actualOutput": "",
+              "errorMessage": "Traceback (most recent call last):\n  File \"/work/main.py\", line 24, in <module>\n    if required not in found: raise ValueError(\"CONSTRAINT_REQUIRED:\"+required)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: CONSTRAINT_REQUIRED:for\n"
+            },
+            {
+              "case_index": 5,
+              "is_hidden": true,
+              "category": "boundary",
+              "passed": false,
+              "executed": true,
+              "status": "RUNTIME_ERROR",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "5",
+              "input": "Hidden",
+              "expectedOutput": "Hidden",
+              "actualOutput": "Mismatch"
+            },
+            {
+              "case_index": 6,
+              "is_hidden": true,
+              "category": "boundary",
+              "passed": false,
+              "executed": true,
+              "status": "RUNTIME_ERROR",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "6",
+              "input": "Hidden",
+              "expectedOutput": "Hidden",
+              "actualOutput": "Mismatch"
+            }
+          ],
+          "status": "EXECUTED",
+          "adaptiveFeedback": {
+            "submission_id": "fd763674-8ccc-44ff-81f0-915ff8d7783f",
+            "concept_id": "PY-FLOW-03",
+            "previous_mastery": 0.3972,
+            "new_mastery": 0.3806,
+            "delta": -0.0166,
+            "policy_version": "evidence_policy_v4",
+            "reason": "REPEATED_VERIFIED_PARTIAL_OR_FAILED_ATTEMPT",
+            "evidence": {
+              "trace_id": "trace_b54beecadf8440219cbb66ae460de501",
+              "harness_version": "adaptive_harness_v4",
+              "passed_cases": 0,
+              "total_cases": 6,
+              "observed_score": 0,
+              "observation_weight": 0.27999999999999997,
+              "confidence_before": 0.8411825738930793,
+              "confidence_after": 0.855334823361005
+            }
+          },
+          "submission_id": "fd763674-8ccc-44ff-81f0-915ff8d7783f",
+          "guidance": {
+            "source": "EVIDENCE",
+            "tone": "thinking",
+            "title": "Cần sử dụng for",
+            "reason": "Bộ kiểm tra chưa tìm thấy cấu trúc for mà bài hiện tại yêu cầu.",
+            "hint": "Kiểm tra phần xử lý chính và tự triển khai bằng for; chỉ ghi trong chú thích không được tính."
+          }
+        },
+        "elapsed_ms": 6348
+      },
+      "feedback": {
+        "data": {
+          "success": true,
+          "submissionId": "fd763674-8ccc-44ff-81f0-915ff8d7783f",
+          "guidance": {
+            "source": "EVIDENCE",
+            "tone": "thinking",
+            "title": "Cần sử dụng for",
+            "reason": "Bộ kiểm tra chưa tìm thấy cấu trúc for mà bài hiện tại yêu cầu.",
+            "hint": "Kiểm tra phần xử lý chính và tự triển khai bằng for; chỉ ghi trong chú thích không được tính."
+          }
+        },
+        "elapsed_ms": 684
+      }
+    },
+    {
+      "kind": "syntax",
+      "submission_id": "eb38794a-8cc0-43af-8519-9f6cdc4f80b3",
+      "grade": {
+        "data": {
+          "success": true,
+          "isPassed": false,
+          "passedCases": 0,
+          "totalCases": 6,
+          "score": 0,
+          "results": [
+            {
+              "case_index": 1,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "abc",
+              "expected": "a\nb\nc",
+              "actual": "",
+              "stderr": "Traceback (most recent call last):\n  File \"/work/main.py\", line 11, in <module>\n    tree=ast.parse(code)\n         ^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/ast.py\", line 50, in parse\n    return compile(source, filename, mode, flags,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<unknown>\", line 1\n    for ch in input()\n                     ^\nSyntaxError: expected ':'\n",
+              "passed": false,
+              "executed": true,
+              "status": "RUNTIME_ERROR",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "1",
+              "expectedOutput": "a\nb\nc",
+              "actualOutput": "",
+              "errorMessage": "Traceback (most recent call last):\n  File \"/work/main.py\", line 11, in <module>\n    tree=ast.parse(code)\n         ^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/ast.py\", line 50, in parse\n    return compile(source, filename, mode, flags,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<unknown>\", line 1\n    for ch in input()\n                     ^\nSyntaxError: expected ':'\n"
+            },
+            {
+              "case_index": 2,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "a b c",
+              "expected": "a\n \nb\n \nc",
+              "actual": "",
+              "stderr": "Traceback (most recent call last):\n  File \"/work/main.py\", line 11, in <module>\n    tree=ast.parse(code)\n         ^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/ast.py\", line 50, in parse\n    return compile(source, filename, mode, flags,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<unknown>\", line 1\n    for ch in input()\n                     ^\nSyntaxError: expected ':'\n",
+              "passed": false,
+              "executed": true,
+              "status": "RUNTIME_ERROR",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "2",
+              "expectedOutput": "a\n \nb\n \nc",
+              "actualOutput": "",
+              "errorMessage": "Traceback (most recent call last):\n  File \"/work/main.py\", line 11, in <module>\n    tree=ast.parse(code)\n         ^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/ast.py\", line 50, in parse\n    return compile(source, filename, mode, flags,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<unknown>\", line 1\n    for ch in input()\n                     ^\nSyntaxError: expected ':'\n"
+            },
+            {
+              "case_index": 3,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "12345",
+              "expected": "1\n2\n3\n4\n5",
+              "actual": "",
+              "stderr": "Traceback (most recent call last):\n  File \"/work/main.py\", line 11, in <module>\n    tree=ast.parse(code)\n         ^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/ast.py\", line 50, in parse\n    return compile(source, filename, mode, flags,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<unknown>\", line 1\n    for ch in input()\n                     ^\nSyntaxError: expected ':'\n",
+              "passed": false,
+              "executed": true,
+              "status": "RUNTIME_ERROR",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "3",
+              "expectedOutput": "1\n2\n3\n4\n5",
+              "actualOutput": "",
+              "errorMessage": "Traceback (most recent call last):\n  File \"/work/main.py\", line 11, in <module>\n    tree=ast.parse(code)\n         ^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/ast.py\", line 50, in parse\n    return compile(source, filename, mode, flags,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<unknown>\", line 1\n    for ch in input()\n                     ^\nSyntaxError: expected ':'\n"
+            },
+            {
+              "case_index": 4,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "a!b@c#d",
+              "expected": "a\n!\nb\n@\nc\n#\nd",
+              "actual": "",
+              "stderr": "Traceback (most recent call last):\n  File \"/work/main.py\", line 11, in <module>\n    tree=ast.parse(code)\n         ^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/ast.py\", line 50, in parse\n    return compile(source, filename, mode, flags,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<unknown>\", line 1\n    for ch in input()\n                     ^\nSyntaxError: expected ':'\n",
+              "passed": false,
+              "executed": true,
+              "status": "RUNTIME_ERROR",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "4",
+              "expectedOutput": "a\n!\nb\n@\nc\n#\nd",
+              "actualOutput": "",
+              "errorMessage": "Traceback (most recent call last):\n  File \"/work/main.py\", line 11, in <module>\n    tree=ast.parse(code)\n         ^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/ast.py\", line 50, in parse\n    return compile(source, filename, mode, flags,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<unknown>\", line 1\n    for ch in input()\n                     ^\nSyntaxError: expected ':'\n"
+            },
+            {
+              "case_index": 5,
+              "is_hidden": true,
+              "category": "boundary",
+              "passed": false,
+              "executed": true,
+              "status": "RUNTIME_ERROR",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "5",
+              "input": "Hidden",
+              "expectedOutput": "Hidden",
+              "actualOutput": "Mismatch"
+            },
+            {
+              "case_index": 6,
+              "is_hidden": true,
+              "category": "boundary",
+              "passed": false,
+              "executed": true,
+              "status": "RUNTIME_ERROR",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "6",
+              "input": "Hidden",
+              "expectedOutput": "Hidden",
+              "actualOutput": "Mismatch"
+            }
+          ],
+          "status": "EXECUTED",
+          "adaptiveFeedback": {
+            "submission_id": "eb38794a-8cc0-43af-8519-9f6cdc4f80b3",
+            "concept_id": "PY-FLOW-03",
+            "previous_mastery": 0.3806,
+            "new_mastery": 0.365,
+            "delta": -0.0156,
+            "policy_version": "evidence_policy_v4",
+            "reason": "REPEATED_VERIFIED_PARTIAL_OR_FAILED_ATTEMPT",
+            "evidence": {
+              "trace_id": "trace_b54beecadf8440219cbb66ae460de501",
+              "harness_version": "adaptive_harness_v4",
+              "passed_cases": 0,
+              "total_cases": 6,
+              "observed_score": 0,
+              "observation_weight": 0.27999999999999997,
+              "confidence_before": 0.855334823361005,
+              "confidence_after": 0.8682259633278386
+            }
+          },
+          "submission_id": "eb38794a-8cc0-43af-8519-9f6cdc4f80b3",
+          "guidance": {
+            "source": "EVIDENCE",
+            "tone": "thinking",
+            "title": "Cần sửa cú pháp trước",
+            "reason": "Test công khai #1 chưa thực thi thành công (SyntaxError). Mã chưa đúng cú pháp nên chương trình chưa chạy được.",
+            "hint": "Đối chiếu dòng 1 với thông báo lỗi và kiểm tra biểu thức ở đó trước.",
+            "location": "Dòng 1"
+          }
+        },
+        "elapsed_ms": 6369
+      },
+      "feedback": {
+        "data": {
+          "success": true,
+          "submissionId": "eb38794a-8cc0-43af-8519-9f6cdc4f80b3",
+          "guidance": {
+            "source": "EVIDENCE",
+            "tone": "thinking",
+            "title": "Cần sửa cú pháp trước",
+            "reason": "Test công khai #1 chưa thực thi thành công (SyntaxError). Mã chưa đúng cú pháp nên chương trình chưa chạy được.",
+            "hint": "Đối chiếu dòng 1 với thông báo lỗi và kiểm tra biểu thức ở đó trước.",
+            "location": "Dòng 1"
+          }
+        },
+        "elapsed_ms": 665
+      }
+    },
+    {
+      "kind": "correct",
+      "submission_id": "7d79db94-cdfe-4e34-91a8-8c44cae3622a",
+      "grade": {
+        "data": {
+          "success": true,
+          "isPassed": true,
+          "passedCases": 6,
+          "totalCases": 6,
+          "score": 100,
+          "results": [
+            {
+              "case_index": 1,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "abc",
+              "expected": "a\nb\nc",
+              "actual": "a\nb\nc",
+              "stderr": "",
+              "passed": true,
+              "executed": true,
+              "status": "SUCCESS",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "1",
+              "expectedOutput": "a\nb\nc",
+              "actualOutput": "a\nb\nc",
+              "errorMessage": ""
+            },
+            {
+              "case_index": 2,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "a b c",
+              "expected": "a\n \nb\n \nc",
+              "actual": "a\n \nb\n \nc",
+              "stderr": "",
+              "passed": true,
+              "executed": true,
+              "status": "SUCCESS",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "2",
+              "expectedOutput": "a\n \nb\n \nc",
+              "actualOutput": "a\n \nb\n \nc",
+              "errorMessage": ""
+            },
+            {
+              "case_index": 3,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "12345",
+              "expected": "1\n2\n3\n4\n5",
+              "actual": "1\n2\n3\n4\n5",
+              "stderr": "",
+              "passed": true,
+              "executed": true,
+              "status": "SUCCESS",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "3",
+              "expectedOutput": "1\n2\n3\n4\n5",
+              "actualOutput": "1\n2\n3\n4\n5",
+              "errorMessage": ""
+            },
+            {
+              "case_index": 4,
+              "is_hidden": false,
+              "category": "normal",
+              "input": "a!b@c#d",
+              "expected": "a\n!\nb\n@\nc\n#\nd",
+              "actual": "a\n!\nb\n@\nc\n#\nd",
+              "stderr": "",
+              "passed": true,
+              "executed": true,
+              "status": "SUCCESS",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "4",
+              "expectedOutput": "a\n!\nb\n@\nc\n#\nd",
+              "actualOutput": "a\n!\nb\n@\nc\n#\nd",
+              "errorMessage": ""
+            },
+            {
+              "case_index": 5,
+              "is_hidden": true,
+              "category": "boundary",
+              "passed": true,
+              "executed": true,
+              "status": "SUCCESS",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "5",
+              "input": "Hidden",
+              "expectedOutput": "Hidden",
+              "actualOutput": "Passed"
+            },
+            {
+              "case_index": 6,
+              "is_hidden": true,
+              "category": "boundary",
+              "passed": true,
+              "executed": true,
+              "status": "SUCCESS",
+              "runtime_ms": 167,
+              "image": "aws-docker",
+              "harness_version": "adaptive_harness_v4",
+              "testCaseId": "6",
+              "input": "Hidden",
+              "expectedOutput": "Hidden",
+              "actualOutput": "Passed"
+            }
+          ],
+          "status": "EXECUTED",
+          "adaptiveFeedback": {
+            "submission_id": "7d79db94-cdfe-4e34-91a8-8c44cae3622a",
+            "concept_id": "PY-FLOW-03",
+            "previous_mastery": 0.365,
+            "new_mastery": 0.3907,
+            "delta": 0.0257,
+            "policy_version": "evidence_policy_v4",
+            "reason": "REPEATED_VERIFIED_PASS",
+            "evidence": {
+              "trace_id": "trace_b54beecadf8440219cbb66ae460de501",
+              "harness_version": "adaptive_harness_v4",
+              "passed_cases": 6,
+              "total_cases": 6,
+              "observed_score": 1,
+              "observation_weight": 0.27999999999999997,
+              "confidence_before": 0.8682259633278386,
+              "confidence_after": 0.8799683714885432
+            }
+          },
+          "submission_id": "7d79db94-cdfe-4e34-91a8-8c44cae3622a",
+          "guidance": {
+            "source": "EVIDENCE",
+            "tone": "success",
+            "title": "Bạn đã hoàn thành bài này!",
+            "reason": "Mã vừa nộp đã vượt qua 6 testcase của bài hiện tại.",
+            "hint": "Bạn có thể tự giải thích lại cách xử lý đầu vào và kết quả để củng cố kiến thức."
+          }
+        },
+        "elapsed_ms": 6413
+      },
+      "feedback": {
+        "data": {
+          "success": true,
+          "submissionId": "7d79db94-cdfe-4e34-91a8-8c44cae3622a",
+          "guidance": {
+            "source": "EVIDENCE",
+            "tone": "success",
+            "title": "Bạn đã hoàn thành bài này!",
+            "reason": "Mã vừa nộp đã vượt qua 6 testcase của bài hiện tại.",
+            "hint": "Bạn có thể tự giải thích lại cách xử lý đầu vào và kết quả để củng cố kiến thức."
+          }
+        },
+        "elapsed_ms": 671
+      }
+    }
+  ],
+  "ended_at": "2026-10-24T09:23:46.364Z",
+  "status": "PASSED",
+  "online": [
+    {
+      "kind": "wrong",
+      "data": {
+        "success": true,
+        "submissionId": "0c3882f4-62ab-484c-8a61-0099ab078714",
+        "guidance": {
+          "tone": "thinking",
+          "source": "AI",
+          "title": "In từng ký tự của chuỗi",
+          "reason": "Chương trình đã đọc chuỗi đầu vào nhưng trong vòng lặp không thực hiện gì, vì vậy không in ra ký tự nào. Đó là lỗi logic vì thiếu câu lệnh in ký tự. Đầu ra hiện tại rỗng gây không khớp với kết quả mong đợi.",
+          "hint": "Thay đổi câu lệnh trong vòng lặp để in ký tự hiện tại.",
+          "location": "Dòng 3"
+        }
+      },
+      "elapsed_ms": 23507
+    },
+    {
+      "kind": "correct",
+      "data": {
+        "success": true,
+        "submissionId": "7d79db94-cdfe-4e34-91a8-8c44cae3622a",
+        "guidance": {
+          "tone": "success",
+          "source": "AI",
+          "title": "Chính xác",
+          "reason": "Chương trình của bạn đã giải quyết chính xác yêu cầu bài toán.",
+          "hint": "Mã nguồn đã sử dụng vòng lặp for để duyệt trực tiếp từng ký tự trong chuỗi s và in mỗi ký tự trên một dòng rất ngắn gọn."
+        }
+      },
+      "elapsed_ms": 6676
+    }
+  ]
+}

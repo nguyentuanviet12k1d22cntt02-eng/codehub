@@ -1,0 +1,20 @@
+{
+  "kind": "AUTHENTICATED_REAL_BATCH",
+  "expected": 4,
+  "started_at": "2026-10-23T17:32:11.722Z",
+  "runs": [
+    {
+      "index": 1,
+      "trace_id": "trace_6a1c64c7474d4bb8be2d720c299bad69",
+      "status": "FAILED",
+      "error": {
+        "code": "REPAIR_LIMIT_REACHED",
+        "message": "AI Tutor chưa hoàn thành yêu cầu này. Bạn có thể xem bước lỗi và thử lại sau."
+      }
+    }
+  ],
+  "fixture_user_id": "a702e3e9-c8a5-4216-9e45-84f12c4f01be",
+  "session_id": "d52d18fa-d7fd-4668-a971-36ea53053e32",
+  "status": "FAILED",
+  "error": "{\"code\":\"REPAIR_LIMIT_REACHED\",\"message\":\"AI Tutor chưa hoàn thành yêu cầu này. Bạn có thể xem bước lỗi và thử lại sau.\"}\n+ actual - expected\n\n+ 'FAILED'\n- 'SUCCEEDED'\n"
+}

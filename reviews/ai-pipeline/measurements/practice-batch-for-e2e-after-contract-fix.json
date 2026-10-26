@@ -1,0 +1,59 @@
+{
+  "kind": "AUTHENTICATED_REAL_BATCH",
+  "expected": 4,
+  "started_at": "2026-10-23T17:37:57.389Z",
+  "runs": [
+    {
+      "index": 1,
+      "trace_id": "trace_0b608d858d084a22b70afb1f1c1bde26",
+      "status": "SUCCEEDED",
+      "title": "Đếm chữ cái trong chuỗi bằng for item in sequence"
+    },
+    {
+      "index": 2,
+      "trace_id": "trace_57022bfb40f24bf2bba30854a1c5f3dc",
+      "status": "SUCCEEDED",
+      "title": "In dãy số theo quy luật bằng for và range()"
+    },
+    {
+      "index": 3,
+      "trace_id": "trace_0cddcc216c0e40c5a93fb80fe6b91328",
+      "status": "SUCCEEDED",
+      "title": "Tổng điểm tích lũy trong tuần lễ"
+    },
+    {
+      "index": 4,
+      "trace_id": "trace_326a6e81d34d497b95d78374d01c3ee3",
+      "status": "SUCCEEDED",
+      "title": "Đảo ngược mật khẩu bằng vòng lặp for và range()"
+    }
+  ],
+  "fixture_user_id": "a0c02437-02e8-454a-8c77-60b36adaad03",
+  "session_id": "9cc6e29a-d555-4c3b-b1da-2977cd6a2083",
+  "path_id": "b8c26fa0-ec78-452a-943f-4602f3806ead",
+  "exercise_count": 4,
+  "sandbox": [
+    {
+      "trace_id": "trace_0b608d858d084a22b70afb1f1c1bde26",
+      "passed": 5,
+      "provider": "aws-docker"
+    },
+    {
+      "trace_id": "trace_57022bfb40f24bf2bba30854a1c5f3dc",
+      "passed": 6,
+      "provider": "aws-docker"
+    },
+    {
+      "trace_id": "trace_0cddcc216c0e40c5a93fb80fe6b91328",
+      "passed": 5,
+      "provider": "aws-docker"
+    },
+    {
+      "trace_id": "trace_326a6e81d34d497b95d78374d01c3ee3",
+      "passed": 5,
+      "provider": "aws-docker"
+    }
+  ],
+  "status": "PASSED",
+  "ended_at": "2026-10-23T17:46:54.900Z"
+}

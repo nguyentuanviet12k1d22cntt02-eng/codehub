@@ -1,0 +1,307 @@
+{
+  "measurement_version": "1.0",
+  "measured_at_utc": "2026-10-19T08:43:41.480019+00:00",
+  "request": {
+    "language": "python",
+    "target_concept_id": "PY-FLOW-03",
+    "scenario": "Python function returns sum of even integers",
+    "trace_id": "trace_report_measure_2ea591413e01421799e216abc0bd121a"
+  },
+  "transport": {
+    "ai_service_http_status": 200,
+    "wall_clock_ms": 120687
+  },
+  "pipeline": {
+    "status": "SUCCEEDED",
+    "trace_id": "trace_report_measure_2ea591413e01421799e216abc0bd121a",
+    "fallback_used": false,
+    "agent_stage_count": 11,
+    "successful_llm_call_count": 3,
+    "successful_llm_tokens": 12430,
+    "exercise_qc_status": "VERIFIED",
+    "exercise_title": "Tổng các số chẵn trong danh sách",
+    "exercise_language": "python"
+  },
+  "agent_stages": [
+    {
+      "sequence": 1,
+      "agent": "IntentRouterAgent",
+      "status": "SUCCEEDED",
+      "duration_ms": 0,
+      "attempt": 1,
+      "model_calls": []
+    },
+    {
+      "sequence": 2,
+      "agent": "PrerequisiteAdvisorAgent",
+      "status": "SUCCEEDED",
+      "duration_ms": 0,
+      "attempt": 1,
+      "model_calls": []
+    },
+    {
+      "sequence": 3,
+      "agent": "AdaptiveExercisePlanner",
+      "status": "SUCCEEDED",
+      "duration_ms": 3,
+      "attempt": 1,
+      "model_calls": []
+    },
+    {
+      "sequence": 4,
+      "agent": "KnowledgeRetrievalService",
+      "status": "SUCCEEDED",
+      "duration_ms": 300,
+      "attempt": 1,
+      "model_calls": []
+    },
+    {
+      "sequence": 5,
+      "agent": "ExerciseGeneratorAgent",
+      "status": "SUCCEEDED",
+      "duration_ms": 46542,
+      "attempt": 1,
+      "model_calls": [
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "http_status": null,
+          "error_code": "PROVIDER_TIMEOUT",
+          "duration_ms": 15864,
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null,
+            "total_tokens": 0
+          }
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "http_status": null,
+          "error_code": "PROVIDER_TIMEOUT",
+          "duration_ms": 14137,
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null,
+            "total_tokens": 0
+          }
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "http_status": null,
+          "error_code": "PROVIDER_TIMEOUT",
+          "duration_ms": 12458,
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null,
+            "total_tokens": 0
+          }
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GEMINI",
+          "model": null,
+          "status": "SKIPPED",
+          "http_status": null,
+          "error_code": "PROVIDER_ATTEMPT_LIMIT_REACHED",
+          "duration_ms": 0,
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null,
+            "total_tokens": 0
+          }
+        },
+        {
+          "stage": "ExerciseGeneratorAgent",
+          "provider": "GROQ",
+          "model": "qwen/qwen3.8-27b",
+          "status": "SUCCEEDED",
+          "http_status": 200,
+          "error_code": null,
+          "duration_ms": 3091,
+          "usage": {
+            "prompt_tokens": 2118,
+            "completion_tokens": 1264,
+            "total_tokens": 3382
+          }
+        }
+      ]
+    },
+    {
+      "sequence": 6,
+      "agent": "SchemaValidator",
+      "status": "SUCCEEDED",
+      "duration_ms": 0,
+      "attempt": 1,
+      "model_calls": []
+    },
+    {
+      "sequence": 7,
+      "agent": "ConstraintValidator",
+      "status": "SUCCEEDED",
+      "duration_ms": 0,
+      "attempt": 1,
+      "model_calls": []
+    },
+    {
+      "sequence": 8,
+      "agent": "SandboxValidator",
+      "status": "SUCCEEDED",
+      "duration_ms": 6063,
+      "attempt": 1,
+      "model_calls": [],
+      "sandbox": {
+        "status": null,
+        "passed": true,
+        "case_count": 5,
+        "passed_case_count": 5,
+        "runtimes_ms": [
+          167,
+          167,
+          167,
+          167,
+          167
+        ],
+        "images": [
+          "aws-docker"
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "agent": "ExplanationTutorAgent",
+      "status": "SUCCEEDED",
+      "duration_ms": 33815,
+      "attempt": 1,
+      "model_calls": [
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "http_status": null,
+          "error_code": "PROVIDER_TIMEOUT",
+          "duration_ms": 10328,
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null,
+            "total_tokens": 0
+          }
+        },
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "http_status": null,
+          "error_code": "PROVIDER_TIMEOUT",
+          "duration_ms": 10187,
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null,
+            "total_tokens": 0
+          }
+        },
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "http_status": null,
+          "error_code": "PROVIDER_TIMEOUT",
+          "duration_ms": 10154,
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null,
+            "total_tokens": 0
+          }
+        },
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GEMINI",
+          "model": null,
+          "status": "SKIPPED",
+          "http_status": null,
+          "error_code": "PROVIDER_ATTEMPT_LIMIT_REACHED",
+          "duration_ms": 0,
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null,
+            "total_tokens": 0
+          }
+        },
+        {
+          "stage": "ExplanationTutorAgent",
+          "provider": "GROQ",
+          "model": "qwen/qwen3.8-27b",
+          "status": "SUCCEEDED",
+          "http_status": 200,
+          "error_code": null,
+          "duration_ms": 2563,
+          "usage": {
+            "prompt_tokens": 3618,
+            "completion_tokens": 971,
+            "total_tokens": 4589
+          }
+        }
+      ]
+    },
+    {
+      "sequence": 10,
+      "agent": "CriticEvaluatorAgent",
+      "status": "SUCCEEDED",
+      "duration_ms": 32691,
+      "attempt": 1,
+      "model_calls": [
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "http_status": null,
+          "error_code": "PROVIDER_TIMEOUT",
+          "duration_ms": 20330,
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null,
+            "total_tokens": 0
+          }
+        },
+        {
+          "stage": "CriticEvaluatorAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "SUCCEEDED",
+          "http_status": 200,
+          "error_code": null,
+          "duration_ms": 12188,
+          "usage": {
+            "prompt_tokens": 3574,
+            "completion_tokens": 302,
+            "total_tokens": 4459
+          }
+        }
+      ]
+    },
+    {
+      "sequence": 11,
+      "agent": "PublicationGate",
+      "status": "SUCCEEDED",
+      "duration_ms": 0,
+      "attempt": 1,
+      "model_calls": [],
+      "publication": {
+        "approved": true,
+        "critic_score": 1.0
+      }
+    }
+  ],
+  "error": null
+}

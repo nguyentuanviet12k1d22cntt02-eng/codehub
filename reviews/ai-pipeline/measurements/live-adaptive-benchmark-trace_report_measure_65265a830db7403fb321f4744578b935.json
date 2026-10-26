@@ -1,0 +1,101 @@
+{
+  "measurement_version": "1.0",
+  "measured_at_utc": "2026-10-19T08:40:04.775474+00:00",
+  "request": {
+    "language": "python",
+    "target_concept_id": "PY-FLOW-03",
+    "scenario": "Python function returns sum of even integers",
+    "trace_id": "trace_report_measure_65265a830db7403fb321f4744578b935"
+  },
+  "transport": {
+    "ai_service_http_status": 200,
+    "wall_clock_ms": 13765
+  },
+  "pipeline": {
+    "status": "AWAITING_CONFIRMATION",
+    "trace_id": "trace_report_measure_65265a830db7403fb321f4744578b935",
+    "fallback_used": false,
+    "agent_stage_count": 2,
+    "successful_llm_call_count": 1,
+    "successful_llm_tokens": 616,
+    "exercise_qc_status": null,
+    "exercise_title": null,
+    "exercise_language": null
+  },
+  "agent_stages": [
+    {
+      "sequence": 1,
+      "agent": "IntentRouterAgent",
+      "status": "SUCCEEDED",
+      "duration_ms": 11795,
+      "attempt": 1,
+      "model_calls": [
+        {
+          "stage": "IntentRouterAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "http_status": null,
+          "error_code": "PROVIDER_TIMEOUT",
+          "duration_ms": 5533,
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null,
+            "total_tokens": 0
+          }
+        },
+        {
+          "stage": "IntentRouterAgent",
+          "provider": "GEMINI",
+          "model": "gemini-3.8-flash",
+          "status": "FAILED",
+          "http_status": null,
+          "error_code": "PROVIDER_TIMEOUT",
+          "duration_ms": 5337,
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null,
+            "total_tokens": 0
+          }
+        },
+        {
+          "stage": "IntentRouterAgent",
+          "provider": "GEMINI",
+          "model": null,
+          "status": "SKIPPED",
+          "http_status": null,
+          "error_code": "PROVIDER_ATTEMPT_LIMIT_REACHED",
+          "duration_ms": 0,
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null,
+            "total_tokens": 0
+          }
+        },
+        {
+          "stage": "IntentRouterAgent",
+          "provider": "GROQ",
+          "model": "qwen/qwen3.8-27b",
+          "status": "SUCCEEDED",
+          "http_status": 200,
+          "error_code": null,
+          "duration_ms": 589,
+          "usage": {
+            "prompt_tokens": 582,
+            "completion_tokens": 34,
+            "total_tokens": 616
+          }
+        }
+      ]
+    },
+    {
+      "sequence": 2,
+      "agent": "PrerequisiteAdvisorAgent",
+      "status": "SUCCEEDED",
+      "duration_ms": 0,
+      "attempt": 1,
+      "model_calls": []
+    }
+  ],
+  "error": null
+}

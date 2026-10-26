@@ -132,15 +132,22 @@ def generate_learner(
     history: list[dict] = []
     exposure: Counter[str] = Counter()
     last_seen: dict[str, datetime] = {}
-    current = datetime(2026, 1, 5, 8, 0) + timedelta(days=rng.randrange(0, 30), hours=rng.randrange(0, 9))
+    # Trải dài trong 3 - 6 tháng gần nhất (từ đầu tháng 3/2026 đến tháng 10/2026)
+    current = datetime(2026, 3, 1, 9, 0) + timedelta(
+        days=rng.randrange(0, 110), hours=rng.randrange(0, 12), minutes=rng.randrange(0, 60)
+    )
     session_length = rng.randrange(6, 12)
-    # Python's graph has 35 skills; the smaller JS/C++ graphs need fewer steps.
-    total_steps = rng.randrange(92, 121) if language == "python" else rng.randrange(48, 71)
+    # Python có 35 kỹ năng; JS/C++ có ~21-23 kỹ năng
+    total_steps = rng.randrange(95, 125) if language == "python" else rng.randrange(52, 76)
     retry_item: tuple[str, dict, int] | None = None
 
     for step in range(1, total_steps + 1):
         if step > 1 and (step - 1) % session_length == 0:
-            current += timedelta(days=rng.choice((1, 1, 2, 3, 5, 8)), hours=rng.randrange(0, 5))
+            current += timedelta(days=rng.choice((1, 1, 2, 2, 3, 4, 7)), hours=rng.randrange(0, 6))
+            if current.hour < 8:
+                current = current.replace(hour=8 + rng.randrange(0, 4))
+            elif current.hour >= 23:
+                current = (current + timedelta(days=1)).replace(hour=9 + rng.randrange(0, 3))
             session_length = rng.randrange(6, 12)
 
         if retry_item is not None:
@@ -149,7 +156,12 @@ def generate_learner(
         else:
             seen = [skill for skill in order if exposure[skill] > 0]
             frontier = [skill for skill in order if exposure[skill] == 0 and all(exposure[parent] > 0 for parent in parents[skill])]
-            if seen and (not frontier or rng.random() < 0.27):
+
+            # 4% cơ hội tò mò nhảy cóc (curiosity / skip-ahead)
+            if rng.random() < 0.04 and len(order) > len(seen) + 2:
+                candidates = order[min(len(order) - 1, len(seen) + 1):min(len(order), len(seen) + 5)]
+                skill = rng.choice(candidates) if candidates else order[0]
+            elif seen and (not frontier or rng.random() < 0.27):
                 skill = rng.choice(seen[-min(9, len(seen)):])
             elif frontier:
                 skill = rng.choice(frontier[:min(4, len(frontier))])
@@ -172,6 +184,14 @@ def generate_learner(
             - forgetting - misconception.get(skill, 0.0)
         )
         probability = min(0.89, max(0.12, 0.08 + 0.84 / (1 + math.exp(-score))))
+
+        # Bổ sung 5 - 10% hành vi bất thường / nhiễu thực tế (đoán mò hoặc sơ suất)
+        anomaly_roll = rng.random()
+        if anomaly_roll < 0.04:
+            probability = min(0.92, probability + 0.38)  # Đoán mò trúng bài khó
+        elif anomaly_roll < 0.08:
+            probability = max(0.08, probability - 0.42)  # Sơ suất/lỗi gõ ở bài dễ
+
         correct = int(rng.random() < probability)
         if correct:
             error = "NONE"
@@ -180,13 +200,29 @@ def generate_learner(
                 (LANGUAGE_MISTAKES[language].get(skill, "WRONG_ANSWER"), "WRONG_ANSWER", "SYNTAX_ERROR"),
                 weights=(5, 3, 2), k=1,
             )[0]
-        base_seconds = 32 + 28 * difficulty + 16 * (exposure[skill] == 0)
-        seconds = max(8, round(rng.lognormvariate(math.log(base_seconds), 0.38), 1))
-        if persona == "STEADY":
-            seconds = round(seconds * 1.18, 1)
-        if persona == "FAST":
-            seconds = round(seconds * 0.78, 1)
-        current += timedelta(seconds=seconds + rng.randrange(15, 85))
+
+        # Cân chỉnh thời gian làm bài thực tế:
+        # Dễ (d=1): 90s - 180s | TB (d=2): 240s - 480s | Khó (d=3): 500s - 900s+
+        if difficulty == 1:
+            base_seconds = 115.0 + (45.0 if exposure[skill] == 0 else 0.0)
+        elif difficulty == 2:
+            base_seconds = 285.0 + (65.0 if exposure[skill] == 0 else 0.0)
+        else:
+            base_seconds = 580.0 + (110.0 if exposure[skill] == 0 else 0.0)
+
+        # 3% cơ hội nộp spam liên tục khi sai ở học viên nôn nóng
+        if attempt_index > 1 and persona in ("TRIAL_ERROR", "NEW") and rng.random() < 0.05:
+            seconds = max(10.0, round(rng.uniform(12.0, 35.0), 1))
+        else:
+            seconds = max(30.0, round(rng.lognormvariate(math.log(base_seconds), 0.35), 1))
+            if persona == "STEADY":
+                seconds = round(seconds * 1.25, 1)
+            elif persona == "FAST":
+                seconds = round(seconds * 0.75, 1)
+            elif persona == "NEW":
+                seconds = round(seconds * 1.15, 1)
+
+        current += timedelta(seconds=seconds + rng.randrange(25, 115))
         row = {
             "user_id": user_id, "persona_group": persona, "step_index": step,
             "timestamp": current.isoformat(), "language": language, "skill_id": skill,
@@ -205,7 +241,7 @@ def generate_learner(
 
 
 def generate(
-    language: str, seed: int = 20261013, learners_per_persona: int = 12,
+    language: str, seed: int = 20261013, learners_per_persona: int = 60,
     output_root: Path = OUTPUT,
 ) -> tuple[Path, Path]:
     if learners_per_persona < 4:
@@ -260,6 +296,8 @@ def generate(
             "error_type": "Simulated mistake category; not inferred from source code or actual submissions",
             "prereq_mastery_proxy": "Pre-attempt estimate from earlier rows only; not true mastery",
             "attempt_index": "Simulated repeated attempt on the same real catalog item",
+            "time_calibrated": "Calibrated to realistic human coding response times (90-900s+)",
+            "anomalies_included": "Includes 5-10% natural stochastic noise (guesses, slips, rapid spams)",
         },
         "limitations": [
             "Learner identities, histories, outcomes, time and error types are simulated",
@@ -278,10 +316,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--language", choices=(*GRAPHS, "all"), default="all")
     parser.add_argument("--seed", type=int, default=20261013)
+    parser.add_argument("--learners-per-persona", type=int, default=60)
     parser.add_argument("--output-root", type=Path, default=OUTPUT)
     args = parser.parse_args()
     for language in GRAPHS if args.language == "all" else (args.language,):
-        csv_path, metadata_path = generate(language, seed=args.seed, output_root=args.output_root)
+        csv_path, metadata_path = generate(
+            language, seed=args.seed, learners_per_persona=args.learners_per_persona,
+            output_root=args.output_root
+        )
         print(f"{language}: {csv_path} | {metadata_path}")
 
 

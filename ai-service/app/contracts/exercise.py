@@ -33,7 +33,7 @@ class AdaptiveExerciseModel(BaseModel):
     difficulty: str = Field(default="MEDIUM", description="Độ khó: EASY, MEDIUM, HARD, CHALLENGE")
     difficulty_stars: int = Field(default=2, ge=1, le=4)
     mode: str = Field(default="progression")
-    problem_statement: str = Field(..., description="Mô tả đề bài chi tiết kèm ví dụ I/O cụ thể")
+    problem_statement: str = Field(..., description="Đề ngắn gọn: Mô tả, Input, Output, một Ví dụ và Ràng buộc khi cần")
     quick_theory: str = Field(..., description="Lý thuyết cốt lõi ngắn gọn (2-3 câu)")
     starter_code: str = Field(..., description="Mã nguồn khởi tạo cho học viên viết tiếp")
     reference_solution: str = Field(..., description="Nghiệm mẫu tham chiếu chuẩn xác tuyệt đối")

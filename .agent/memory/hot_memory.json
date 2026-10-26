@@ -46,6 +46,42 @@
   "installed_dynamic_skills": [
     "fetch-skill"
   ],
+  "latest_practice_guidance_checkpoint": {
+    "date": "2026-10-24",
+    "status": "VERIFIED_LOCAL",
+    "report": "reviews/ai-pipeline/practice-guidance-resilience-2026-10-24.md",
+    "result": "Immediate grading-evidence feedback; bounded optional AI enrichment; offline and online API/UI verified on isolated QA account; local backend restarted; no remote deployment.",
+    "tests": "13 guidance backend + 35 adaptive/sandbox + 2 UI + 4 mascot + 10 AI passed; backend tsc and frontend build passed."
+  },
+  "latest_inline_diagnostics_checkpoint": {
+    "date": "2026-10-24",
+    "status": "VERIFIED_LOCAL",
+    "report": "reviews/ai-pipeline/inline-diagnostics-2026-10-24.md",
+    "result": "Sandbox syntax coordinates + Vietnamese Monaco markers/view zones; AI logic only after successful execution; safe uncertain-line handling and cleanup verified in actual UI.",
+    "tests": "54 backend + 4 frontend diagnostic/card + 4 mascot + 12 AI passed; backend tsc/frontend build/lint passed; real EC2 Python/JS/C++ and live AI logic verified."
+  },
+  "latest_set_topic_routing_checkpoint": {
+    "date": "2026-10-25",
+    "status": "VERIFIED_LOCAL",
+    "result": "Recover complete exact published study subjects when LLM omits the topic; Set maps to PY-SET-01 and asks theory/practice. Generic Python requests ask for a subject, including subsequent Set clarification.",
+    "tests": "114 passed: 11 missing-topic regression + 20 concept consistency + 24 catalog routing + 59 pipeline v3; each command under 5 seconds.",
+    "runtime": "Local AI port 8000 and backend port 3000 are not listening; no live UI/provider verification or deployment."
+  },
+  "latest_set_topic_routing_checkpoint": {
+    "date": "2026-10-25",
+    "status": "VERIFIED_LOCAL",
+    "result": "Recover complete exact published study subjects when LLM omits the topic; Set maps to PY-SET-01 and asks theory/practice. Generic Python requests ask for a subject, including subsequent Set clarification.",
+    "tests": "114 passed: 11 missing-topic regression + 20 concept consistency + 24 catalog routing + 59 pipeline v3; each command under 5 seconds.",
+    "runtime": "Local AI port 8000 and backend port 3000 are not listening; no live UI/provider verification or deployment."
+  },
+  "latest_floating_practice_guidance_checkpoint": {
+    "date": "2026-10-25",
+    "status": "VERIFIED_LOCAL",
+    "result": "Non-modal body portal, minimize/close/reopen, stale feedback retained while editing with diagnostics cleared, responsive light/dark and keyboard handling.",
+    "tests": "8 focused frontend tests + scoped ESLint + production build passed; browser verified at 1280x900, 375x812 and 812x375 without console errors.",
+    "documentation": "docs/LUONG_HOAT_DONG_VA_MA_NGUON_CUSTOM_CAC_AGENT.md section 20.1; 108-file source appendix verified.",
+    "deployment": "No server deployment; browser checks used a local component QA harness."
+  },
   "token_telemetry": {
     "last_command_tokens": 0,
     "total_task_tokens": 0,

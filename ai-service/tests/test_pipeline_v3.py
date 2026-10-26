@@ -2,6 +2,7 @@
 import copy
 import json
 import os
+import re
 import sys
 import time
 import unittest
@@ -11,7 +12,7 @@ from pathlib import Path
 from pydantic import ValidationError
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import app.pipeline.llm_client as llm_client_module
-from app.agents.intent_router_agent import IntentRouterAgent, ROUTER_SYSTEM_PROMPT
+from app.agents.intent_router_agent import IntentRouterAgent as LiveIntentRouterAgent, ROUTER_SYSTEM_PROMPT
 from app.agents.adaptive_exercise_planner import AdaptiveExercisePlanner
 from app.agents.critic_evaluator_agent import CriticEvaluatorAgent
 from app.agents.explanation_tutor_agent import MAX_EXPLANATION_INPUT_CHARS, compact_explanation_request
@@ -26,14 +27,84 @@ from app.validation.sandbox_validator import SandboxValidator
 from app.pipeline.runtime import digest
 
 DRAFT = dict(title="Tính gấp đôi một số nguyên",
-    problem_statement="Viết hàm solution(n) nhận một số nguyên và trả về giá trị gấp đôi. Ví dụ n=2 thì kết quả là 4. Giữ nguyên kết quả cho số âm và số không.",
+    problem_statement=("## Mô tả\nViết hàm solution(n) để tính giá trị gấp đôi của n. "
+                       "Hàm trả về kết quả cho cả số âm và số không.\n\n"
+                       "## Input\nMột số nguyên n truyền vào hàm.\n\n"
+                       "## Output\nSố nguyên bằng hai lần n."),
     quick_theory="Phép nhân một số nguyên với hai tạo ra giá trị gấp đôi.",
     starter_code="def solution(n):\n    pass", reference_solution="def solution(n):\n    return n * 2",
     test_cases=[dict(arguments=[n], call_style="spread", expected_output=str(n*2), is_hidden=i>=2,category="boundary" if n<=0 else "normal",explanation="Kiểm tra phép nhân với số nguyên.") for i,n in enumerate([1,2,0,-1])],
     hints=dict(scaffold_1_conceptual="Dùng phép nhân để tính kết quả.",scaffold_2_syntax="Hàm dùng return để trả kết quả.",scaffold_3_pseudocode="Nhận n, nhân với hai, trả về."),
     constraints=["n là số nguyên"],common_pitfall_warning="Không in kết quả thay vì return.")
+STDIO_DRAFT = {**DRAFT,
+    "problem_statement": ("## Mô tả\nĐọc một số nguyên n từ đầu vào chuẩn. "
+                          "In giá trị gấp đôi của n, kể cả khi n âm hoặc bằng không.\n\n"
+                          "## Input\nMột số nguyên n.\n\n## Output\nMột số nguyên bằng hai lần n."),
+    "starter_code": "n = int(input())\n# TODO: in giá trị gấp đôi",
+    "reference_solution": "n = int(input())\nprint(n * 2)",
+    "test_cases": [dict(input=str(n), expected_output=str(n*2), is_hidden=i>=2,
+                       category="boundary" if n<=0 else "normal", explanation="Kiểm tra phép nhân với số nguyên.")
+                   for i,n in enumerate([1,2,0,-1])],
+    "hints": dict(scaffold_1_conceptual="Dùng phép nhân để tính kết quả.",
+                  scaffold_2_syntax="Đọc bằng input và in bằng print.",
+                  scaffold_3_pseudocode="Đọc n, nhân với hai, in kết quả."),
+    "common_pitfall_warning": "Đừng quên in kết quả ra stdout."}
 REVIEW=dict(is_approved=True,theory_approved=True,exercise_approved=True,compatibility_approved=True,score=.9,
     feedback_target="NONE",feedback="Ví dụ và mục tiêu của bài phù hợp với đặc tả.",evidence=["Ví dụ 2 trả về 4"],theory_feedback=None,exercise_feedback=None)
+
+
+def fixture_route(data):
+    """Recorded router decisions for offline pipeline tests; production always calls an LLM."""
+    request = re.sub(r"Tạo \d+ bài Python\b", "Tạo bài Python", data["request"])
+    request = request.replace("Tạo 1 bài tập vector trong C++", "Tạo bài tập vector trong C++")
+    request = request.replace("Vẫn tạo 1 bài vector cho tôi", "Vẫn tạo bài vector cho tôi")
+    context = data.get("context", {})
+    cases = {
+        "Hãy tạo nội dung Def trong Python cho tôi": ("EXPLAIN_CONCEPT", "python", "PY-FUNC-01", "Def"),
+        "Tôi muốn học vòng lặp while trong python": ("CLARIFY_LEARNING_MODE", "python", "PY-FLOW-02", "while"),
+        "Hãy tạo cho tôi nội dung bài tập về vector trong C++ đi": ("REQUEST_ADAPTIVE_EXERCISE", "cpp", "CPP-VECTOR-01", "vector"),
+        "Hãy tạo cho tôi bài tập về Slicing trên List & Tính Mutable trong Python": ("REQUEST_ADAPTIVE_EXERCISE", "python", "PY-LIST-02", "Slicing trên List & Tính Mutable"),
+        "Tạo bài Python về array": ("REQUEST_ADAPTIVE_EXERCISE", "python", "PY-LIST-01", "array"),
+        "Tạo bài tập về while trong Python": ("REQUEST_ADAPTIVE_EXERCISE", "python", "PY-FLOW-02", "while"),
+        "Xin chào, tạo bài tập Python": ("REQUEST_ADAPTIVE_EXERCISE", "python", None, None),
+        "Cho bài SQL về SELECT": ("REQUEST_ADAPTIVE_EXERCISE", "sql", "SQL-DQL-01", "SELECT"),
+        "Tạo bài SQL về SELECT": ("REQUEST_ADAPTIVE_EXERCISE", "sql", "SQL-DQL-01", "SELECT"),
+        "Bài dễ hơn": ("REQUEST_ADAPTIVE_EXERCISE", "javascript", "JS-FUNC-01", None),
+        "Giải thích thêm lý thuyết": ("EXPLAIN_CONCEPT", "python", "PY-FLOW-03", None),
+        "Tạo bài tập Python dùng while, không dùng for và không dùng sum": ("REQUEST_ADAPTIVE_EXERCISE", "python", "PY-FLOW-02", "while"),
+        "Tạo bài C++ dùng while": ("REQUEST_ADAPTIVE_EXERCISE", "cpp", "CPP-LOOP-01", "while"),
+        "Tạo bài Python": ("REQUEST_ADAPTIVE_EXERCISE", "python", None, None),
+        "Tạo bài Python về dictionary": ("REQUEST_ADAPTIVE_EXERCISE", "python", "PY-DICT-01", "dictionary"),
+        "Tạo bài tập vector trong C++": ("REQUEST_ADAPTIVE_EXERCISE", "cpp", "CPP-VECTOR-01", "vector"),
+        "Vẫn tạo bài vector cho tôi": ("REQUEST_ADAPTIVE_EXERCISE", "cpp", "CPP-VECTOR-01", "vector"),
+        "Tiếp tục": ("REQUEST_ADAPTIVE_EXERCISE", "cpp", "CPP-VECTOR-01", None),
+    }
+    intent, language, topic, evidence = cases[request]
+    return {
+        "intent": intent, "language": language, "topic": topic,
+        "topic_match": "matched" if topic else "unspecified",
+        "requested_topic": evidence,
+        "topic_evidence": [evidence] if evidence else [],
+        "difficulty_request": "easier" if request == "Bài dễ hơn" else "auto",
+        "required_constructs": ["while"] if "dùng while" in request else [],
+        "forbidden_constructs": ["for", "sum"] if "không dùng for" in request else [],
+        "ordered_output": False,
+        "confirm_prerequisite_override": request in ("Tiếp tục", "Vẫn tạo bài vector cho tôi")
+            and context.get("pending_confirmation", {}).get("type") == "PREREQUISITE_OVERRIDE",
+    }
+
+
+class RouterFixtureClient:
+    def __init__(self):
+        self.calls = []
+
+    def json(self, stage, system, data):
+        return fixture_route(data)
+
+
+class IntentRouterAgent(LiveIntentRouterAgent):
+    def __init__(self, client=None, kg_service=None):
+        super().__init__(client or RouterFixtureClient(), kg_service)
 
 
 class FakeProviderResponse:
@@ -60,13 +131,14 @@ class FakeProviderResponse:
 
 class Client:
     def __init__(self): self.calls=[];self.exercise_calls=0
-    def remaining(self): return 60
+    def remaining(self): return 300
     def json(self,stage,system,data):
         self.calls.append(dict(stage=stage,provider="TEST_DOUBLE",status="SUCCEEDED"))
+        if stage=="IntentRouterAgent": return fixture_route(data)
         if stage=="ExerciseGeneratorAgent":
             self.exercise_calls+=1
-            return copy.deepcopy(DRAFT)
-        if stage=="ExplanationTutorAgent": return {"reply":"Giải thích phép nhân và cách trả kết quả trong hàm. "*10,"source_ids":[]}
+            return copy.deepcopy(DRAFT if data["specification"]["execution"]["mode"] == "function" else STDIO_DRAFT)
+        if stage=="ExplanationTutorAgent": return {"reply":"Đọc số bằng input, nhân đôi rồi in kết quả bằng print. "*10,"source_ids":[]}
         if stage=="CriticEvaluatorAgent": return copy.deepcopy(REVIEW)
         return {"reply":"Xin chào."}
 
@@ -76,18 +148,33 @@ class Sandbox:
         return True,[],[{"passed":True,"executed":True,"image":"TEST_DOUBLE","is_hidden":t["is_hidden"]} for t in draft["test_cases"]]
 
 class PipelineTests(unittest.TestCase):
+    def test_agents_run_to_completion_without_manual_review_and_legacy_checkpoint_resumes(self):
+        history = [{"sender": "USER", "content": "Hãy tạo nội dung Def trong Python cho tôi"}]
+        expected = ["IntentRouterAgent", "AdaptiveExercisePlanner", "KnowledgeRetrievalService", "ExplanationTutorAgent"]
+        completed = AdaptiveLearningOrchestrator(Client, Sandbox).process_turn(
+            "review-user", history, learner_context={"states": {}},
+            trace_id="trace_auto_run",
+        )
+        self.assertEqual(completed["status"], "SUCCEEDED")
+        self.assertEqual([item["agent"] for item in completed["agent_traces"]], expected)
+        checkpoint = {"trace_id": "trace_legacy_review", "intent": completed["intent"],
+                      "started_at": completed["started_at"], "agent_traces": completed["agent_traces"][:2]}
+        resumed = AdaptiveLearningOrchestrator(Client, Sandbox).process_turn(
+            "review-user", history, learner_context={"states": {}},
+            trace_id="trace_legacy_review", resume_report=checkpoint,
+            review_mode=True, sequence_offset=2,
+        )
+        self.assertEqual(resumed["status"], "SUCCEEDED")
+        self.assertEqual([item["agent"] for item in resumed["agent_traces"]], expected)
+
     def test_def_content_is_an_explanation_with_a_resolvable_topic(self):
         route = IntentRouterAgent().route("Hãy tạo nội dung Def trong Python cho tôi")
         self.assertEqual(route.intent, "EXPLAIN_CONCEPT")
         self.assertEqual(route.language, "python")
         self.assertEqual(route.topic, "PY-FUNC-01")
 
-    def test_explicit_learning_request_routes_without_an_llm_call(self):
-        class FailingClient:
-            def json(self, *args):
-                raise AssertionError("An explicit topic must not use the LLM router")
-
-        route = IntentRouterAgent(FailingClient()).route("Tôi muốn học vòng lặp while trong python")
+    def test_explicit_learning_request_uses_catalog_llm_route(self):
+        route = IntentRouterAgent(RouterFixtureClient()).route("Tôi muốn học vòng lặp while trong python")
         self.assertEqual(route.intent, "CLARIFY_LEARNING_MODE")
         self.assertEqual(route.language, "python")
         self.assertEqual(route.topic, "PY-FLOW-02")
@@ -183,7 +270,7 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(error.exception.code, "ROUTING_SCHEMA_INVALID")
 
     def test_router_prompt_defines_every_intent_and_required_json_fields(self):
-        for value in ("GENERAL_CHAT", "CLARIFY_LEARNING_MODE", "EXPLAIN_CONCEPT", "ASK_KNOWLEDGE", "REQUEST_ADAPTIVE_EXERCISE", "CREATE_LEARNING_PATH", "CHECK_WEAKNESS", '"intent"', '"language"', '"topic"'):
+        for value in ("GENERAL_CHAT", "OUT_OF_SCOPE", "CLARIFY_LEARNING_MODE", "EXPLAIN_CONCEPT", "ASK_KNOWLEDGE", "REQUEST_ADAPTIVE_EXERCISE", "CREATE_LEARNING_PATH", "CHECK_WEAKNESS", '"intent"', '"language"', '"topic"'):
             self.assertIn(value, ROUTER_SYSTEM_PROMPT)
 
     def test_transient_failure_rotates_to_the_next_key_before_provider_failover(self):
@@ -514,7 +601,8 @@ class PipelineTests(unittest.TestCase):
         r=IntentRouterAgent().route("Tạo bài tập Python dùng while, không dùng for và không dùng sum")
         spec=AdaptiveExercisePlanner().plan_exercise(r,"u")
         self.assertIn("while",spec.required_constructs)
-        self.assertEqual(set(spec.forbidden_constructs),{"for","sum"})
+        self.assertTrue({"for", "sum"}.issubset(spec.forbidden_constructs))
+        self.assertTrue({"function", "class"}.issubset(spec.forbidden_constructs))
         self.assertIn("không dùng",spec.user_request)
 
     def test_cold_start_explicit_is_diagnostic(self):
@@ -533,7 +621,7 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(len(spec.target_sub_skills),1)
 
     def test_function_contract_distinguishes_a_list_argument_from_many_arguments(self):
-        spec=AdaptiveExercisePlanner().plan_exercise(IntentRouterAgent().route('Tạo bài Python'),'u')
+        spec=AdaptiveExercisePlanner().plan_exercise(RoutingDecision(intent="REQUEST_ADAPTIVE_EXERCISE", language="python", topic="PY-FUNC-01", user_text="Tạo bài hàm Python"),'u')
         draft=copy.deepcopy(DRAFT)
         draft['reference_solution']='def solution(lines):\n    return len(lines)'
         draft['starter_code']='def solution(lines):\n    # TODO\n    pass'
@@ -545,7 +633,7 @@ class PipelineTests(unittest.TestCase):
         self.assertTrue(SchemaValidator.validate(draft,spec)[0])
 
     def test_function_contract_rejects_ambiguous_legacy_input(self):
-        spec=AdaptiveExercisePlanner().plan_exercise(IntentRouterAgent().route('Tạo bài Python'),'u')
+        spec=AdaptiveExercisePlanner().plan_exercise(RoutingDecision(intent="REQUEST_ADAPTIVE_EXERCISE", language="python", topic="PY-FUNC-01", user_text="Tạo bài hàm Python"),'u')
         draft=copy.deepcopy(DRAFT)
         draft['test_cases'][0].pop('arguments')
         draft['test_cases'][0].pop('call_style')
@@ -555,7 +643,7 @@ class PipelineTests(unittest.TestCase):
         self.assertTrue(any('input không được dùng' in error for error in errors))
 
     def test_preflight_detects_the_trace_signature_mismatch(self):
-        spec=AdaptiveExercisePlanner().plan_exercise(IntentRouterAgent().route('Tạo bài Python'),'u')
+        spec=AdaptiveExercisePlanner().plan_exercise(RoutingDecision(intent="REQUEST_ADAPTIVE_EXERCISE", language="python", topic="PY-FUNC-01", user_text="Tạo bài hàm Python"),'u')
         draft=copy.deepcopy(DRAFT)
         draft['reference_solution']='def solution(lines):\n    return len(lines)'
         for tc in draft['test_cases']:
@@ -624,7 +712,8 @@ class PipelineTests(unittest.TestCase):
         # SQL-SORT-01 is intentionally not published.  Use a published
         # Python lesson because this test verifies JSON output validation,
         # not SQL curriculum availability.
-        spec=AdaptiveExercisePlanner().plan_exercise(IntentRouterAgent().route('Tạo bài Python về dictionary'),'u')
+        spec=AdaptiveExercisePlanner().plan_exercise(IntentRouterAgent().route('Tạo bài Python về dictionary'),'u',
+            learner_context={"states":{"PY-FUNC-01":{"mastery":.8,"attempts":4,"confidence":.7}}})
         self.assertEqual(spec.execution['comparator'], 'json')
         draft=copy.deepcopy(DRAFT)
         for index,tc in enumerate(draft['test_cases']):
@@ -668,7 +757,7 @@ class PipelineTests(unittest.TestCase):
 
         client = RechecksContract()
         result = AdaptiveLearningOrchestrator(lambda: client, CountingSandbox).process_turn(
-            "u", [{"sender": "USER", "content": "Tạo bài Python"}])
+            "u", [{"sender": "USER", "content": "Tạo 1 bài Python"}])
         self.assertEqual(result["status"], "SUCCEEDED")
         self.assertEqual(client.critic_calls, 2)
         self.assertEqual(client.exercise_calls, 1)
@@ -729,19 +818,19 @@ class PipelineTests(unittest.TestCase):
 
         client=RepairsTheory()
         result=AdaptiveLearningOrchestrator(lambda:client,CountingSandbox).process_turn(
-            "u",[{"sender":"USER","content":"Tạo bài Python"}])
+            "u",[{"sender":"USER","content":"Tạo 1 bài Python"}])
 
         self.assertEqual(result["status"],"SUCCEEDED")
         self.assertEqual(client.exercise_calls,1)
         self.assertEqual(CountingSandbox.calls,1)
         self.assertEqual([call["stage"] for call in client.calls],[
-            "ExerciseGeneratorAgent","ExplanationTutorAgent","CriticEvaluatorAgent",
+            "IntentRouterAgent","ExerciseGeneratorAgent","ExplanationTutorAgent","CriticEvaluatorAgent",
             "ExplanationTutorAgent","CriticEvaluatorAgent",
         ])
 
     def test_success_has_stage_evidence(self):
         events=[]
-        result=AdaptiveLearningOrchestrator(Client,Sandbox).process_turn("u",[{"sender":"USER","content":"Tạo bài Python"}],event_callback=events.append)
+        result=AdaptiveLearningOrchestrator(Client,Sandbox).process_turn("u",[{"sender":"USER","content":"Tạo 1 bài Python"}],event_callback=events.append)
         self.assertEqual(result["status"],"SUCCEEDED")
         self.assertFalse(result["fallback_used"])
         self.assertTrue(all(r.get("ended_at") and r.get("input_hash") for r in result["agent_traces"]))
@@ -750,7 +839,7 @@ class PipelineTests(unittest.TestCase):
 
     def test_explicit_vector_request_waits_for_prerequisite_confirmation(self):
         result=AdaptiveLearningOrchestrator(Client,Sandbox).process_turn(
-            "u",[{"sender":"USER","content":"Tạo bài tập vector trong C++"}],learner_context={"states":{},"language":"cpp"})
+            "u",[{"sender":"USER","content":"Tạo 1 bài tập vector trong C++"}],learner_context={"states":{},"language":"cpp"})
 
         self.assertEqual(result["status"],"AWAITING_CONFIRMATION")
         self.assertIsNone(result["exercise"])
@@ -765,8 +854,9 @@ class PipelineTests(unittest.TestCase):
         vector_draft=copy.deepcopy(DRAFT)
         vector_draft.update(
             title="Tính tổng phần tử trong vector",
-            problem_statement=("Đọc số nguyên n và n phần tử, lưu toàn bộ dữ liệu bằng std::vector<int>, "
-                "sau đó tính tổng và in kết quả. Bài tập bắt buộc sử dụng vector thay cho mảng tĩnh."),
+            problem_statement=("## Mô tả\nĐọc n số nguyên và lưu chúng bằng std::vector<int>. "
+                "Tính tổng các phần tử rồi in kết quả.\n\n## Input\nSố nguyên n, tiếp theo là n số nguyên.\n\n"
+                "## Output\nMột số nguyên là tổng các phần tử."),
             quick_theory="std::vector quản lý dãy động; push_back thêm phần tử và range-for giúp duyệt an toàn.",
             starter_code="#include <iostream>\n#include <vector>\nint main() { /* TODO */ return 0; }",
             reference_solution=("#include <iostream>\n#include <vector>\nusing namespace std;\n"
@@ -789,7 +879,7 @@ class PipelineTests(unittest.TestCase):
             "target_concept_name":"std::vector và dữ liệu hai chiều động","language":"cpp"}
         client=VectorClient()
         result=AdaptiveLearningOrchestrator(lambda:client,Sandbox).process_turn(
-            "u",[{"sender":"USER","content":"Vẫn tạo bài vector cho tôi"}],
+            "u",[{"sender":"USER","content":"Vẫn tạo 1 bài vector cho tôi"}],
             learner_context={"states":{},"language":"cpp","pending_confirmation":pending})
 
         self.assertEqual(result["status"],"SUCCEEDED")
@@ -799,10 +889,10 @@ class PipelineTests(unittest.TestCase):
         self.assertIn("vector",result["exercise"]["spec_snapshot"]["required_constructs"])
 
     def test_verified_checkpoint_retries_only_critic(self):
-        original=AdaptiveLearningOrchestrator(Client,Sandbox).process_turn("u",[{"sender":"USER","content":"Tạo bài Python"}],trace_id="trace_checkpoint")
+        original=AdaptiveLearningOrchestrator(Client,Sandbox).process_turn("u",[{"sender":"USER","content":"Tạo 1 bài Python"}],trace_id="trace_checkpoint")
         client=Client()
         sequence_offset=max(record["sequence"] for record in original["agent_traces"])
-        resumed=AdaptiveLearningOrchestrator(lambda:client,Sandbox).process_turn("u",[{"sender":"USER","content":"Tạo bài Python"}],
+        resumed=AdaptiveLearningOrchestrator(lambda:client,Sandbox).process_turn("u",[{"sender":"USER","content":"Tạo 1 bài Python"}],
             trace_id="trace_checkpoint",resume_report=original,run_attempt=2,sequence_offset=sequence_offset)
         agents=[record["agent"] for record in resumed["agent_traces"]]
         self.assertEqual(resumed["status"],"SUCCEEDED")
@@ -818,16 +908,16 @@ class PipelineTests(unittest.TestCase):
                 cls.calls+=1
                 return (cls.calls>1,[] if cls.calls>1 else ["first candidate failed"],[])
         client=Client()
-        result=AdaptiveLearningOrchestrator(lambda:client,FailsOnce).process_turn("u",[{"sender":"USER","content":"Tạo bài Python"}])
+        result=AdaptiveLearningOrchestrator(lambda:client,FailsOnce).process_turn("u",[{"sender":"USER","content":"Tạo 1 bài Python"}])
         self.assertEqual(result["status"],"SUCCEEDED")
-        self.assertEqual([call["stage"] for call in client.calls],["ExerciseGeneratorAgent","ExerciseGeneratorAgent","ExplanationTutorAgent","CriticEvaluatorAgent"])
+        self.assertEqual([call["stage"] for call in client.calls],["IntentRouterAgent","ExerciseGeneratorAgent","ExerciseGeneratorAgent","ExplanationTutorAgent","CriticEvaluatorAgent"])
 
     def test_verified_candidate_with_missing_theory_resumes_without_regenerating_exercise(self):
-        original=AdaptiveLearningOrchestrator(Client,Sandbox).process_turn("u",[{"sender":"USER","content":"Tạo bài Python"}],trace_id="trace_missing_theory")
+        original=AdaptiveLearningOrchestrator(Client,Sandbox).process_turn("u",[{"sender":"USER","content":"Tạo 1 bài Python"}],trace_id="trace_missing_theory")
         checkpoint=copy.deepcopy(original)
         checkpoint["agent_traces"]=[record for record in checkpoint["agent_traces"] if record["agent"]!="ExplanationTutorAgent"]
         client=Client()
-        resumed=AdaptiveLearningOrchestrator(lambda:client,Sandbox).process_turn("u",[{"sender":"USER","content":"Tạo bài Python"}],
+        resumed=AdaptiveLearningOrchestrator(lambda:client,Sandbox).process_turn("u",[{"sender":"USER","content":"Tạo 1 bài Python"}],
             trace_id="trace_missing_theory",resume_report=checkpoint,run_attempt=2,
             sequence_offset=max(record["sequence"] for record in checkpoint["agent_traces"]))
         self.assertEqual(resumed["status"],"SUCCEEDED")
@@ -836,7 +926,7 @@ class PipelineTests(unittest.TestCase):
 
     def test_resume_repairs_theory_against_verified_exercise(self):
         original=AdaptiveLearningOrchestrator(Client,Sandbox).process_turn(
-            "u",[{"sender":"USER","content":"Tạo bài Python"}],trace_id="trace_resume_theory_repair")
+            "u",[{"sender":"USER","content":"Tạo 1 bài Python"}],trace_id="trace_resume_theory_repair")
         class ResumeRepairClient(Client):
             def __init__(self):
                 super().__init__()
@@ -853,7 +943,7 @@ class PipelineTests(unittest.TestCase):
 
         client=ResumeRepairClient()
         resumed=AdaptiveLearningOrchestrator(lambda:client,Sandbox).process_turn(
-            "u",[{"sender":"USER","content":"Tạo bài Python"}],trace_id="trace_resume_theory_repair",
+            "u",[{"sender":"USER","content":"Tạo 1 bài Python"}],trace_id="trace_resume_theory_repair",
             resume_report=original,run_attempt=2,
             sequence_offset=max(record["sequence"] for record in original["agent_traces"]))
 
@@ -867,7 +957,7 @@ class PipelineTests(unittest.TestCase):
         class Broken:
             @staticmethod
             def validate(*args): raise PipelineError("SANDBOX_UNAVAILABLE")
-        result=AdaptiveLearningOrchestrator(Client,Broken).process_turn("u",[{"sender":"USER","content":"Tạo bài Python"}])
+        result=AdaptiveLearningOrchestrator(Client,Broken).process_turn("u",[{"sender":"USER","content":"Tạo 1 bài Python"}])
         self.assertEqual(result["status"],"FAILED")
         self.assertIsNone(result["exercise"])
         self.assertTrue(any(r["agent"]=="SandboxValidator" and r["status"]=="FAILED" for r in result["agent_traces"]))
@@ -877,7 +967,7 @@ class PipelineTests(unittest.TestCase):
             @staticmethod
             def validate(*args):return False,["mismatch"],[]
         client=Client()
-        result=AdaptiveLearningOrchestrator(lambda:client,Reject).process_turn("u",[{"sender":"USER","content":"Tạo bài Python"}])
+        result=AdaptiveLearningOrchestrator(lambda:client,Reject).process_turn("u",[{"sender":"USER","content":"Tạo 1 bài Python"}])
         self.assertEqual(client.exercise_calls,3)
         self.assertEqual(result["error"]["code"],"REPAIR_LIMIT_REACHED")
         self.assertIsNone(result["exercise"])
@@ -887,7 +977,7 @@ class PipelineTests(unittest.TestCase):
     def test_provider_failure_is_retained(self):
         class Broken(Client):
             def json(self,*args):raise PipelineError("NO_PROVIDER_KEY")
-        result=AdaptiveLearningOrchestrator(Broken,Sandbox).process_turn("u",[{"sender":"USER","content":"Tạo bài Python"}])
+        result=AdaptiveLearningOrchestrator(Broken,Sandbox).process_turn("u",[{"sender":"USER","content":"Tạo 1 bài Python"}])
         self.assertEqual(result["status"],"FAILED")
         self.assertTrue(any(r["status"]=="FAILED" for r in result["agent_traces"]))
 

@@ -1,0 +1,32 @@
+[
+  {
+    "index": 1,
+    "trace_id": "trace_qa_a82efeeb426040df8686da53d8acf360",
+    "status": "SUCCEEDED",
+    "count": 1,
+    "title": "Giao tập hợp từ",
+    "passed_cases": 6,
+    "total_cases": 6,
+    "providers": [
+      "aws-docker"
+    ],
+    "publication_gate": true,
+    "critic": [
+      {
+        "is_approved": true,
+        "theory_approved": true,
+        "exercise_approved": true,
+        "compatibility_approved": true,
+        "score": 0.9,
+        "feedback_target": "NONE",
+        "feedback": "Bài tập và lý thuyết đều đúng và phù hợp với yêu cầu đề ra. Bài tập thực hiện đúng yêu cầu về tập hợp và phép giao, lý thuyết cung cấp thông tin đầy đủ và chính xác về chủ đề.",
+        "theory_feedback": null,
+        "exercise_feedback": null,
+        "evidence": [
+          "Bài tập thực hiện đúng yêu cầu về tập hợp và phép giao.",
+          "Lý thuyết cung cấp thông tin đầy đủ và chính xác về chủ đề."
+        ]
+      }
+    ]
+  }
+]

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import AppNavbar from '../../../components/AppNavbar';
@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { API_BASE_URL } from '../../../config/api';
 import { AITutorChat, type ChatMessage } from '../../ai-tutor/components/AITutorChat';
+import type { AdaptiveRunReport } from '../../ai-tutor/components/AgentEvidencePanel';
 import {
     RobotAvatar,
     RobotHelpCardIllustration,
@@ -72,6 +73,8 @@ const PersonalizedPath: React.FC = () => {
 
     // Interactive Chat States: Always start clean with Mascot standing in the center
     const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+    const sessionChoiceVersion = useRef(0);
+    const resumedLegacyTraces = useRef(new Set<string>());
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
     const [chatLoading, setChatLoading] = useState<boolean>(false);
     const [currentAgentStep, setCurrentAgentStep] = useState<{
@@ -112,6 +115,8 @@ const PersonalizedPath: React.FC = () => {
         : 'AI Tutor đang được quản trị viên tạm khóa. Vui lòng quay lại sau.';
 
     const handleNewChat = () => {
+        sessionChoiceVersion.current += 1;
+        setChatLoading(false);
         setActiveSessionId(null);
         setChatMessages([]);
         setCurrentAgentStep(null);
@@ -138,12 +143,13 @@ const PersonalizedPath: React.FC = () => {
 
     const handleSelectSession = async (sessionId: string) => {
         if (sessionId === activeSessionId && chatMessages.length > 0) return;
+        const choiceVersion = ++sessionChoiceVersion.current;
         setChatLoading(true);
         try {
             const res = await axios.get(`${API_BASE_URL}/api/learning-path/chat/session/${sessionId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            if (res.data.success && res.data.session) {
+            if (choiceVersion === sessionChoiceVersion.current && res.data.success && res.data.session) {
                 setActiveSessionId(sessionId);
                 sessionStorage.setItem('vibecode_ai_tutor_session', sessionId);
                 setChatMessages(res.data.session.messages || []);
@@ -185,133 +191,321 @@ const PersonalizedPath: React.FC = () => {
         setToken(storedToken);
         fetchChatSessions(storedToken);
         void fetchTutorAvailability(storedToken);
+        const savedSessionId = sessionStorage.getItem('vibecode_ai_tutor_session');
+        if (savedSessionId) {
+            const choiceVersion = sessionChoiceVersion.current;
+            axios.get(`${API_BASE_URL}/api/learning-path/chat/session/${savedSessionId}`,
+                { headers: { Authorization: `Bearer ${storedToken}` } })
+                .then(res => {
+                    if (choiceVersion === sessionChoiceVersion.current &&
+                        sessionStorage.getItem('vibecode_ai_tutor_session') === savedSessionId &&
+                        res.data.success && res.data.session) {
+                        setActiveSessionId(savedSessionId);
+                        setChatMessages(res.data.session.messages || []);
+                    }
+                })
+                .catch(() => {
+                    if (choiceVersion === sessionChoiceVersion.current) sessionStorage.removeItem('vibecode_ai_tutor_session');
+                });
+        }
     }, [navigate]);
+
+    const handleRetrySettled = useCallback((traceId: string, report: AdaptiveRunReport) => {
+        const isBatch=report.status==='SUCCEEDED'&&report.exercise&&Number(report.exercise_count)>1;
+        setChatMessages(prev => prev.map(message =>
+            message.metadata?.pipeline?.trace_id !== traceId || message.metadata?.practiceBatch?.status==='READY' ? message : {
+                ...message,
+                content: isBatch?`Đang tạo ${report.exercise_count} bài thực hành. Đã kiểm định bài 1/${report.exercise_count}; hệ thống tiếp tục tự tạo các bài còn lại.`:report.reply || message.content,
+                metadata: {
+                    ...message.metadata,
+                    intent: report.intent,
+                    pipeline: { trace_id: traceId, status: report.status,
+                        schema_version: report.schema_version, error: report.error },
+                    agentTraces: report.agent_traces || [],
+                    exercise: isBatch?undefined:report.exercise || undefined,
+                    suggestedOptions: isBatch?[]:report.suggested_options || [],
+                    practiceBatch: isBatch?{status:'GENERATING',expectedCount:Number(report.exercise_count),
+                        completedCount:1,rootTraceId:traceId}:message.metadata?.practiceBatch,
+                    pendingConfirmation: report.pending_confirmation || null,
+                    step: report.exercise ? 'EXERCISE_READY' : 'CHAT'
+                }
+            }));
+    }, []);
+
+    const handleContinueAgent = useCallback(async (traceId: string) => {
+        if (!traceId || chatLoading || isTutorLocked) return;
+        setChatLoading(true);
+        setCurrentAgentStep(null);
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/learning-path/chat/continue-agent-stream`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token || localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ traceId })
+            });
+            if (response.status === 409) {
+                const current = await fetch(`${API_BASE_URL}/api/learning-path/adaptive/runs/${encodeURIComponent(traceId)}`, {
+                    headers: { Authorization: `Bearer ${token || localStorage.getItem('token')}` }
+                });
+                if (current.ok) {
+                    const report = (await current.json()).data as AdaptiveRunReport;
+                    if (report && report.status !== 'AWAITING_AGENT_APPROVAL') {
+                        handleRetrySettled(traceId, report);
+                        return;
+                    }
+                }
+            }
+            if (!response.ok || !response.body) {
+                const payload = await response.json().catch(() => ({}));
+                throw new Error(payload.message || payload.error || `Máy chủ phản hồi lỗi ${response.status}`);
+            }
+            const reader=response.body.getReader(),decoder=new TextDecoder();
+            let buffer='',completed=false;
+            const accept=(data:any)=>{
+                if(data.type==='agent_step') {
+                    setCurrentAgentStep({agent:data.agent,title:data.title,desc:data.desc,icon:data.icon,step:data.step});
+                } else if(data.type==='complete') {
+                    completed=true;
+                    if(data.aiMessage) {
+                        setChatMessages(prev=>prev.map(message=>
+                            message.metadata?.pipeline?.trace_id===traceId?data.aiMessage:message));
+                    } else if(data.pipeline) {
+                        handleRetrySettled(traceId,data.pipeline as AdaptiveRunReport);
+                    }
+                    setCurrentAgentStep(null);
+                } else if(data.type==='error') throw new Error(data.error||'Không tiếp tục được phiên cũ');
+            };
+            while(true) {
+                const {done,value}=await reader.read();
+                if(done) break;
+                buffer+=decoder.decode(value,{stream:true});
+                const parts=buffer.split('\n\n');buffer=parts.pop()||'';
+                for(const part of parts) {
+                    const trimmed=part.trim();
+                    if(trimmed.startsWith('data: ')) accept(JSON.parse(trimmed.slice(6)));
+                }
+            }
+            if(buffer.trim().startsWith('data: ')) accept(JSON.parse(buffer.trim().slice(6)));
+            if(!completed) throw new Error('Luồng kết thúc trước khi trả kết quả');
+        } catch(e:any) {
+            console.error('Continue agent error:',e);
+            alert('Không thể tự tiếp tục phiên cũ: '+(e.message||'Lỗi không xác định'));
+        } finally {
+            setCurrentAgentStep(null);
+            setChatLoading(false);
+        }
+    }, [chatLoading, isTutorLocked, token, handleRetrySettled]);
+
+    useEffect(() => {
+        if (!activeSessionId || chatLoading || isTutorLocked) return;
+        const latestTutor = [...chatMessages].reverse().find(message => message.sender === 'AI_TUTOR');
+        const traceId = latestTutor?.metadata?.pipeline?.trace_id;
+        if (latestTutor?.metadata?.pipeline?.status !== 'AWAITING_AGENT_APPROVAL' || !traceId
+            || resumedLegacyTraces.current.has(traceId)) return;
+        resumedLegacyTraces.current.add(traceId);
+        void handleContinueAgent(traceId);
+    }, [activeSessionId, chatMessages, chatLoading, isTutorLocked, handleContinueAgent]);
 
     // Send or Start Interactive Chat Session (Real-Time SSE Streaming from AI Multi-Agent Pipeline)
     const handleSendMessage = async (msgText: string) => {
         if (!msgText.trim() || chatLoading || isTutorLocked) return;
 
-        const currentSession = activeSessionId;
+        let sessionId = activeSessionId;
+        if (!sessionId) sessionChoiceVersion.current += 1;
+        const choiceVersion = sessionChoiceVersion.current;
         const authToken = token || localStorage.getItem('token');
-
-        // Optimistically append user message
-        const optimisticUserMsg: ChatMessage = {
-            sender: 'USER',
-            content: msgText,
-            timestamp: new Date().toISOString()
-        };
-        setChatMessages(prev => [...prev, optimisticUserMsg]);
         setChatLoading(true);
         setCurrentAgentStep(null);
 
+        let batchRootTraceId: string | null = null;
         try {
-            const url = !currentSession
-                ? `${API_BASE_URL}/api/learning-path/chat/start-stream`
-                : `${API_BASE_URL}/api/learning-path/chat/reply-stream`;
+            const sendOne = async (text: string, batch?: { parentTraceId: string; index: number; conceptId: string; language: string; total: number }) => {
+                if (choiceVersion !== sessionChoiceVersion.current) return null;
+                const optimisticUserMsg: ChatMessage | null = batch ? null : { sender: 'USER', content: text, timestamp: new Date().toISOString() };
+                if (optimisticUserMsg) setChatMessages(prev => [...prev, optimisticUserMsg]);
+                const starting = !sessionId;
+                const url = `${API_BASE_URL}/api/learning-path/chat/${starting ? 'start-stream' : 'reply-stream'}`;
+                const body = starting ? { goal: text } : {
+                    sessionId, content: text,
+                    ...(batch ? { batchParentTraceId: batch.parentTraceId, batchIndex: batch.index,
+                        target_concept_id: batch.conceptId, language: batch.language } : {})
+                };
+                const response = await fetch(url, { method: 'POST', headers: {
+                    'Content-Type': 'application/json', Authorization: `Bearer ${authToken}`
+                }, body: JSON.stringify(body) });
+                if (!response.ok || !response.body) throw new Error(`Máy chủ phản hồi lỗi (${response.status}): ${response.statusText}`);
 
-            const body = !currentSession
-                ? JSON.stringify({ goal: msgText })
-                : JSON.stringify({ sessionId: currentSession, content: msgText });
-
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${authToken}`
-                },
-                body
-            });
-
-            if (!response.ok || !response.body) {
-                throw new Error(`Máy chủ phản hồi lỗi (${response.status}): ${response.statusText}`);
-            }
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let buffer = '';
-            let completed = false;
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                buffer += decoder.decode(value, { stream: true });
-                const parts = buffer.split('\n\n');
-                buffer = parts.pop() || '';
-
-                for (const part of parts) {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                let completedReport: any = null;
+                const handleEvent = (part: string) => {
                     const trimmed = part.trim();
-                    if (!trimmed.startsWith('data: ')) continue;
-                    try {
-                        const data = JSON.parse(trimmed.slice(6));
-                        if (data.type === 'session_created' && data.sessionId) {
+                    if (!trimmed.startsWith('data: ')) return;
+                    const data = JSON.parse(trimmed.slice(6));
+                    if (data.type === 'session_created' && data.sessionId) {
+                        sessionId = data.sessionId;
+                        if (choiceVersion === sessionChoiceVersion.current) {
                             setActiveSessionId(data.sessionId);
                             sessionStorage.setItem('vibecode_ai_tutor_session', data.sessionId);
-                        } else if (data.type === 'agent_step') {
-                            setCurrentAgentStep({
-                                agent: data.agent,
-                                title: data.title,
-                                desc: data.desc,
-                                icon: data.icon,
-                                step: data.step
-                            });
-                        } else if (data.type === 'complete') {
-                            completed = true;
-                            if (data.messages) {
-                                setChatMessages(data.messages);
-                            } else if (data.aiMessage) {
-                                setChatMessages(prev => [
-                                    ...prev.filter(m => m !== optimisticUserMsg),
-                                    data.userMessage,
-                                    data.aiMessage
-                                ]);
-                            }
-                            setCurrentAgentStep(null);
-                            fetchChatSessions(authToken || undefined);
-                        } else if (data.type === 'error') {
-                            throw new Error(data.error || 'Lỗi xử lý luồng AI');
                         }
-                    } catch (pe) {
-                        throw pe;
-                    }
+                    } else if (data.type === 'agent_step') {
+                        if (choiceVersion === sessionChoiceVersion.current) setCurrentAgentStep({ agent: data.agent, title: data.title, desc: data.desc,
+                            icon: data.icon, step: batch ? `Bài ${batch.index}/${batch.total} · ${data.step || ''}` : data.step });
+                    } else if (data.type === 'complete') {
+                        completedReport = data.pipeline;
+                        if (choiceVersion === sessionChoiceVersion.current && data.messages) setChatMessages(data.messages);
+                        else if (choiceVersion === sessionChoiceVersion.current && data.aiMessage && optimisticUserMsg) setChatMessages(prev => [
+                            ...prev.filter(m => m !== optimisticUserMsg), data.userMessage, data.aiMessage
+                        ]);
+                        if (!batch) fetchChatSessions(authToken || undefined);
+                    } else if (data.type === 'error') throw new Error(data.error || 'Lỗi xử lý luồng AI');
+                };
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+                    const parts = buffer.split('\n\n');
+                    buffer = parts.pop() || '';
+                    parts.forEach(handleEvent);
                 }
-            }
+                if (buffer.trim()) handleEvent(buffer);
+                if (!completedReport) throw new Error('Luồng kết thúc trước khi nhận được báo cáo hoàn chỉnh');
+                return completedReport;
+            };
 
-            // Flush remaining buffer if any
-            if (buffer.trim().startsWith('data: ')) {
-                try {
-                    const data = JSON.parse(buffer.trim().slice(6));
-                    if (data.type === 'error') throw new Error(data.error || 'Lỗi xử lý luồng AI');
-                    if (data.type === 'complete') {
-                        completed = true;
-                        if (data.messages) {
-                            setChatMessages(data.messages);
-                        } else if (data.aiMessage) {
-                            setChatMessages(prev => [
-                                ...prev.filter(m => m !== optimisticUserMsg),
-                                data.userMessage,
-                                data.aiMessage
-                            ]);
+            const settleReport = async (initial: any, index: number): Promise<any> => {
+                let report=initial;
+                const deadline=Date.now()+20*60*1000;
+                while (report && ['WAITING_PROVIDER','RUNNING','AWAITING_AGENT_APPROVAL'].includes(report.status)
+                    && Date.now()<deadline && choiceVersion===sessionChoiceVersion.current) {
+                    setCurrentAgentStep({step:`Bài ${index}`,title:'Đang tự thử lại bước tạo bài; không cần gửi yêu cầu mới'});
+                    if (report.status==='AWAITING_AGENT_APPROVAL') {
+                        const continued=await fetch(`${API_BASE_URL}/api/learning-path/chat/continue-agent-stream`,{
+                            method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${authToken}`},
+                            body:JSON.stringify({traceId:report.trace_id})});
+                        if (continued.ok && continued.body) {
+                            const reader=continued.body.getReader(),decoder=new TextDecoder();
+                            let buffer='';
+                            while (true) {
+                                const {done,value}=await reader.read();
+                                if (done) break;
+                                buffer+=decoder.decode(value,{stream:true});
+                                const parts=buffer.split('\n\n');buffer=parts.pop()||'';
+                                for (const part of parts) {
+                                    if (!part.trim().startsWith('data: ')) continue;
+                                    const event=JSON.parse(part.trim().slice(6));
+                                    if (event.type==='complete'&&event.pipeline) report=event.pipeline;
+                                }
+                            }
                         }
-                        setCurrentAgentStep(null);
-                        fetchChatSessions(authToken || undefined);
                     }
-                } catch (error) {
-                    throw error;
+                    if (!['WAITING_PROVIDER','RUNNING','AWAITING_AGENT_APPROVAL'].includes(report.status)) break;
+                    await new Promise(resolve=>setTimeout(resolve,5000));
+                    const response=await axios.get(`${API_BASE_URL}/api/learning-path/adaptive/runs/${report.trace_id}`,
+                        {headers:{Authorization:`Bearer ${authToken}`}});
+                    report=response.data.data;
+                }
+                if (report && ['WAITING_PROVIDER','RUNNING','AWAITING_AGENT_APPROVAL'].includes(report.status)) throw new Error('Bài đang chờ thử lại quá lâu');
+                return report;
+            };
+
+            const refreshMessages = async () => {
+                if (!sessionId || choiceVersion!==sessionChoiceVersion.current) return;
+                const response=await axios.get(`${API_BASE_URL}/api/learning-path/chat/session/${sessionId}`,
+                    {headers:{Authorization:`Bearer ${authToken}`}});
+                if (response.data.success && choiceVersion===sessionChoiceVersion.current)
+                    setChatMessages(response.data.session.messages || []);
+            };
+
+            const updateBatchProgress = (rootTraceId: string, completedCount: number, expectedCount: number) => {
+                if (choiceVersion !== sessionChoiceVersion.current) return;
+                setChatMessages(previous => previous.map(message =>
+                    message.metadata?.practiceBatch?.rootTraceId !== rootTraceId ? message : {
+                        ...message,
+                        metadata: {
+                            ...message.metadata,
+                            practiceBatch: {
+                                ...message.metadata.practiceBatch,
+                                status: 'GENERATING',
+                                completedCount,
+                                expectedCount
+                            }
+                        }
+                    }
+                ));
+            };
+
+            const first = await settleReport(await sendOne(msgText),1);
+            // Replace the waiting response even when the durable retry ends in
+            // failure or clarification. A stale WAITING_PROVIDER card must not linger.
+            if (first) await refreshMessages();
+            if (first?.status === 'SUCCEEDED' && first.exercise && first.exercise_count > 1
+                && choiceVersion === sessionChoiceVersion.current) {
+                batchRootTraceId=first.trace_id;
+                const total = Math.min(5, Math.max(1, Number(first.exercise_count) || 1));
+                const titles = [String(first.exercise.title || '')];
+                let completed = 1;
+                updateBatchProgress(first.trace_id, completed, total);
+                for (let index = 2; index <= total; index++) {
+                    if (choiceVersion !== sessionChoiceVersion.current) break;
+                    setCurrentAgentStep({ step: `Bài ${index}/${total}`, title: 'Đang tạo bài thực hành tiếp theo' });
+                    const topic = String(first.exercise.concept_name || first.exercise.concept_id);
+                    const prompt = `Tạo 1 bài thực hành khác về ${topic} bằng ${first.exercise.language}. Tránh trùng các bài đã tạo: ${titles.join('; ')}.`;
+                    const next = await settleReport(await sendOne(prompt, { parentTraceId: first.trace_id, index,
+                        conceptId: first.exercise.concept_id, language: first.exercise.language, total }),index);
+                    if (next?.status !== 'SUCCEEDED' || !next.exercise) break;
+                    titles.push(String(next.exercise.title || ''));
+                    completed += 1;
+                    updateBatchProgress(first.trace_id, completed, total);
+                }
+                if (choiceVersion === sessionChoiceVersion.current && completed === total) {
+                    const published = await axios.post(`${API_BASE_URL}/api/learning-path/adaptive/start-exercise`,
+                        { exercise_id: first.exercise.exercise_id },
+                        { headers: { Authorization: `Bearer ${authToken}` } });
+                    if (published.data.success && published.data.pathId && Number(published.data.exerciseCount) === total) {
+                        batchRootTraceId=null;
+                        navigate(`/personalized-path/${published.data.pathId}`);
+                    } else {
+                        throw new Error(`Bộ bài phát hành không đủ ${total} bài theo yêu cầu`);
+                    }
+                } else if (choiceVersion === sessionChoiceVersion.current) {
+                    await axios.post(`${API_BASE_URL}/api/learning-path/adaptive/batch-failed`,
+                        {parentTraceId:first.trace_id,completedCount:completed},
+                        {headers:{Authorization:`Bearer ${authToken}`}});
+                    batchRootTraceId=null;
+                    await refreshMessages();
                 }
             }
-            if (!completed) throw new Error('Luồng kết thúc trước khi nhận được báo cáo hoàn chỉnh');
         } catch (e: any) {
             console.error('Chat stream error:', e);
+            if (batchRootTraceId) await axios.post(`${API_BASE_URL}/api/learning-path/adaptive/batch-failed`,
+                {parentTraceId:batchRootTraceId},
+                {headers:{Authorization:`Bearer ${authToken}`}}).catch(()=>{});
+            if (batchRootTraceId) setChatMessages(prev=>prev.map(message=>
+                message.metadata?.practiceBatch?.rootTraceId===batchRootTraceId?{
+                    ...message,content:'Bộ bài chưa đủ số lượng yêu cầu nên chưa được phát hành.',
+                    metadata:{...message.metadata,practiceBatch:{...message.metadata.practiceBatch!,status:'FAILED'}}
+                }:message));
             const errorMsg: ChatMessage = {
                 sender: 'AI_TUTOR',
                 content: `Xin lỗi bạn, kết nối tới AI Tutor tạm thời gián đoạn: ${e.message || 'Không có phản hồi'}. Bạn vui lòng thử lại nhé!`,
                 timestamp: new Date().toISOString()
             };
-            setChatMessages(prev => [...prev, errorMsg]);
+            if (choiceVersion === sessionChoiceVersion.current && !batchRootTraceId) setChatMessages(prev => {
+                const last = prev.at(-1);
+                if (last?.sender !== 'AI_TUTOR') return [...prev, errorMsg];
+                return [...prev.slice(0, -1), { ...last, content: errorMsg.content,
+                    metadata: { ...last.metadata, exercise: undefined, suggestedOptions: [],
+                        pipeline: last.metadata?.pipeline ? { ...last.metadata.pipeline, status: 'FAILED' } : undefined } }];
+            });
         } finally {
-            setCurrentAgentStep(null);
-            setChatLoading(false);
+            if (choiceVersion === sessionChoiceVersion.current) {
+                setCurrentAgentStep(null);
+                setChatLoading(false);
+            }
         }
     };
 
@@ -364,7 +558,7 @@ const PersonalizedPath: React.FC = () => {
     const handleToolClick = (toolName: string) => {
         switch (toolName) {
             case 'exercise':
-                handleSendMessage('Hãy tạo cho tôi 1 bài tập thực hành Python thích ứng theo năng lực của tôi.');
+                handleSendMessage('Hãy tạo bài tập thực hành thích ứng theo năng lực của tôi.');
                 break;
             case 'check_code':
                 handleSendMessage('Hãy giúp tôi kiểm tra đoạn code sau đây, tìm lỗi và tối ưu hiệu năng:');
@@ -536,7 +730,9 @@ const PersonalizedPath: React.FC = () => {
                         messages={chatMessages}
                         onSendMessage={handleSendMessage}
                         onConfirmPath={handleConfirmPath}
+                        onOpenPath={(pathId) => navigate(`/personalized-path/${pathId}`)}
                         onStartExercise={handleStartExercise}
+                        onRetrySettled={handleRetrySettled}
                         onBack={() => navigate('/dashboard')}
                         onNewChat={handleNewChat}
                         loading={chatLoading}

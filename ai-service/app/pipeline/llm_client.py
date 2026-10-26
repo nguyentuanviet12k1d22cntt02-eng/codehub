@@ -1,6 +1,5 @@
 import json
 import os
-import re
 import threading
 import time
 from datetime import datetime, timezone
@@ -88,10 +87,12 @@ def _block_provider(provider, error_code):
 def stage_output_limit(stage):
     """Keep calls within provider quota; these are ceilings, not fallback content."""
     defaults = {
-        "ExerciseGeneratorAgent": 2800,
+        "ExerciseGeneratorAgent": 4000,
         "ExplanationTutorAgent": 2200,
         "CriticEvaluatorAgent": 900,
         "GeneralChatAgent": 900,
+        "ClarificationAgent": 700,
+        "PracticeFeedbackAgent": 650,
     }
     configured = os.getenv("ADAPTIVE_" + stage.upper() + "_MAX_TOKENS")
     try:
@@ -108,6 +109,9 @@ def stage_call_timeout(stage):
         "ExplanationTutorAgent": 28,
         "CriticEvaluatorAgent": 28,
         "GeneralChatAgent": 20,
+        "ClarificationAgent": 20,
+        "PracticeFeedbackAgent": 14,
+        "IntentRouterAgent": 10,
     }
     configured = os.getenv("ADAPTIVE_" + stage.upper() + "_CALL_TIMEOUT_SECONDS") or os.getenv("ADAPTIVE_PROVIDER_CALL_TIMEOUT_SECONDS")
     try:
@@ -124,7 +128,9 @@ def stage_budget_seconds(stage):
         "ExplanationTutorAgent": 90,
         "CriticEvaluatorAgent": 110,
         "GeneralChatAgent": 40,
-        "IntentRouterAgent": 25,
+        "IntentRouterAgent": 45,
+        "ClarificationAgent": 30,
+        "PracticeFeedbackAgent": 25,
     }
     configured = os.getenv("ADAPTIVE_" + stage.upper() + "_STAGE_BUDGET_SECONDS")
     try:
@@ -177,6 +183,8 @@ def provider_attempt_limit(stage):
         "CriticEvaluatorAgent": 3,
         "GeneralChatAgent": 2,
         "IntentRouterAgent": 2,
+        "ClarificationAgent": 2,
+        "PracticeFeedbackAgent": 2,
     }
     configured = os.getenv("ADAPTIVE_" + stage.upper() + "_MAX_ATTEMPTS_PER_PROVIDER")
     try:
@@ -353,8 +361,11 @@ class PipelineLLMClient:
             response.raise_for_status()
             names = [m["name"].removeprefix("models/") for m in response.json().get("models", []) if "generateContent" in m.get("supportedGenerationMethods", []) and "flash" in m["name"] and not any(x in m["name"] for x in ("image", "audio", "tts", "live", "vision"))]
             def rank(name):
-                version = re.search(r'gemini-(\d+)(?:\.(\d+))?', name)
-                number = tuple(-int(v or 0) for v in version.groups()) if version else (0, 0)
+                version_text = name.partition("gemini-")[2].split("-", 1)[0]
+                version_parts = version_text.split(".")
+                number = tuple(-int(part) for part in version_parts[:2]) if version_parts and all(
+                    part.isdigit() for part in version_parts[:2]) else (0, 0)
+                number = (number + (0, 0))[:2]
                 return ('preview' in name or 'experimental' in name, 'lite' in name, number, name)
             names.sort(key=rank)
         else:
@@ -380,7 +391,7 @@ class PipelineLLMClient:
             self.key_models[key_model] = names[0]
         return names[0]
 
-    def json(self, stage, system, data):
+    def json(self, stage, system, data, *, validate_response=None):
         prompt = json.dumps(data, ensure_ascii=False, default=str)
         configured_provider = os.getenv("ADAPTIVE_PROVIDER", "").upper()
         providers = [configured_provider] if configured_provider else ["GEMINI", "GROQ", "OPENROUTER", "INCEPTION", "OPENAI"]
@@ -401,7 +412,13 @@ class PipelineLLMClient:
             provider_failure_codes = []
             provider_exhausted = False
             provider_attempts = 0
+            provider_deadline = None
             while _provider_available(provider):
+                if provider_deadline is not None and provider_deadline - time.monotonic() < minimum_real_attempt_seconds(stage):
+                    self._scheduler_receipt(stage, provider, "PROVIDER_WINDOW_EXHAUSTED", {
+                        "attempted_key_count": provider_attempts,
+                    })
+                    break
                 if provider_attempts >= provider_attempt_limit(stage):
                     if self._candidate_count(provider, attempted_keys) == 0:
                         provider_exhausted = True
@@ -436,10 +453,15 @@ class PipelineLLMClient:
                             "stage_budget_ms": round(stage_budget_seconds(stage) * 1000),
                             "stage_remaining_ms": max(0, round(stage_remaining * 1000)),
                         })
-                    candidate_count = self._candidate_count(provider, attempted_keys[:-1])
                     fallback_count = self._fallback_provider_count(providers, provider_position)
+                    if provider_deadline is None:
+                        # A pool with 12 keys still owns ONE provider window.
+                        # Fast quota/5xx failures may try sibling keys within it;
+                        # a slow provider cannot consume every fallback's window.
+                        provider_deadline = time.monotonic() + stage_remaining / (fallback_count + 1)
+                    provider_remaining = min(stage_remaining, provider_deadline - time.monotonic())
                     stage_timeout = min(global_remaining, fair_attempt_timeout(
-                        stage, stage_remaining, candidate_count, fallback_count,
+                        stage, provider_remaining, 1, 0,
                         preferred=key in self._preferred_keys(provider),
                     ))
                     receipt["deadline_ms"] = round(stage_timeout * 1000)
@@ -487,6 +509,14 @@ class PipelineLLMClient:
                     with self.lock:
                         self.tokens += token_count
                     parsed = parse_provider_json(raw)
+                    if validate_response is not None:
+                        try:
+                            parsed = validate_response(parsed)
+                        except (ValueError, TypeError) as exc:
+                            # Valid JSON is not yet valid agent output. Keep the
+                            # same stage deadline and try another model/provider,
+                            # not another key for the identical rejected content.
+                            raise PipelineError("PROVIDER_CONTRACT_INVALID", str(exc)[:500]) from exc
                     receipt.update(status="SUCCEEDED", output=parsed)
                     self._remember_successful_key(provider, key)
                     key_pool.report_key_success(key)
@@ -497,7 +527,7 @@ class PipelineLLMClient:
                     if isinstance(exc, requests.HTTPError) and exc.response is not None:
                         receipt["http_status"] = exc.response.status_code
                     receipt.update(error_code=last_error, error_type=type(exc).__name__, error_message=str(exc)[:500])
-                    if last_error == "PROVIDER_RESPONSE_INVALID" and raw is not None:
+                    if last_error in ("PROVIDER_RESPONSE_INVALID", "PROVIDER_CONTRACT_INVALID") and raw is not None:
                         receipt["private_response_excerpt"] = raw[:1200]
                     if last_error == "PROVIDER_RATE_LIMITED":
                         seconds = retry_after_seconds(http_response)
@@ -517,7 +547,7 @@ class PipelineLLMClient:
                             error_msg=f"{last_error} from adaptive pipeline",
                         )
                         provider_failure_codes.append(last_error)
-                    elif is_request_scoped_provider_failure(last_error):
+                    elif last_error == "PROVIDER_CONTRACT_INVALID" or is_request_scoped_provider_failure(last_error):
                         # The payload and model are identical for sibling keys.
                         # Preserve the receipt, leave key health unchanged and
                         # give the next provider the remaining stage budget.

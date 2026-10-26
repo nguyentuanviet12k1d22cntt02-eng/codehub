@@ -26,6 +26,7 @@ class Hints(BaseModel):
 class ExerciseDraft(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     title: str = Field(min_length=5, max_length=200)
+    statement_format_version: int = Field(default=1, ge=1, le=2)
     problem_statement: str = Field(min_length=80, max_length=14000)
     quick_theory: str = Field(min_length=20)
     starter_code: str = Field(min_length=1, max_length=20000)

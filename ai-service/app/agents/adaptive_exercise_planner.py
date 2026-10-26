@@ -1,6 +1,5 @@
 import math
 import re
-from app.agents.intent_router_agent import folded
 from app.contracts.specification import ExerciseSpecification
 from app.services.knowledge_graph_service import KnowledgeGraphService
 
@@ -69,26 +68,73 @@ class AdaptiveExercisePlanner:
             levels = ["EASY", "MEDIUM", "HARD", "CHALLENGE"]
             previous = ctx.get("last_difficulty", difficulty)
             difficulty = levels[min(3, levels.index(previous) + 1)] if previous in levels else "HARD"
-        text = folded(routing.user_text)
-        required, forbidden = [], []
-        for construct in ["while", "for", "sum", "lambda", "class", "recursion", "sort", "sorted", "vector"]:
-            if re.search(r"(?:khong|cam|tranh)(?:\s+duoc)?(?:\s+su dung|\s+dung)?\s+`?" + construct + r"\b", text):
+        required = list(routing.required_constructs)
+        forbidden = list(routing.forbidden_constructs)
+        # The graph groups several loop syntaxes into one C++/JS concept. A
+        # learner naming one syntax is still asking to practise that syntax,
+        # even when the router only returns the broader concept ID.
+        loop_concepts = {"python": {"PY-FLOW-02", "PY-FLOW-03"},
+                         "javascript": {"JS-LOOP-01"}, "cpp": {"CPP-LOOP-01"}}
+        if cid in loop_concepts.get(routing.language, set()):
+            evidence = " ".join([routing.user_text, *routing.topic_evidence]).casefold()
+            named_for = bool(re.search(r"\bfor\b", evidence)) or cid == "PY-FLOW-03"
+            named_while = bool(re.search(r"\bwhile\b", evidence)) or cid == "PY-FLOW-02"
+            if named_for and not named_while and "for" not in forbidden:
+                required.append("for")
+                forbidden.append("while")
+            elif named_while and not named_for and "while" not in forbidden:
+                required.append("while")
+                forbidden.append("for")
+        if cid == "CPP-VECTOR-01" and "vector" not in forbidden:
+            required.append("vector")
+        function_concept = {"python": "PY-FUNC-01", "javascript": "JS-FUNC-01"}.get(routing.language)
+        function_ready = bool(function_concept and prerequisite_is_ready(function_concept))
+        function_lesson = bool(function_concept and (
+            cid.startswith(function_concept.split("-01")[0])
+            or cid in {"JS-ARROW-01", "JS-CLOSURE-01", "JS-ARRAY-HOF-01"}))
+        construct_lessons = {
+            "python": {"for": "PY-FLOW-03", "while": "PY-FLOW-02",
+                       "function": "PY-FUNC-01", "class": "PY-OOP-01"},
+            "javascript": {"for": "JS-LOOP-01", "while": "JS-LOOP-01",
+                           "function": "JS-FUNC-01", "class": "JS-CLASS-01"},
+        }.get(routing.language, {})
+        for construct, lesson_id in construct_lessons.items():
+            is_target = cid == lesson_id or (construct == "function" and function_lesson)
+            if not is_target and not prerequisite_is_ready(lesson_id) and construct not in required:
                 forbidden.append(construct)
-            elif re.search(r"(?:dung|su dung|bat buoc|ve)\s+`?" + construct + r"\b", text):
-                required.append(construct)
-        topic_construct = "vector" if cid == "CPP-VECTOR-01" else routing.topic
-        if topic_construct in ("while", "for", "vector") and topic_construct not in forbidden:
-            required.append(topic_construct)
-        execution = {"mode": "stdio" if routing.language == "cpp" else "sql" if routing.language == "sql" else "function", "entrypoint": "main" if routing.language == "cpp" else "query" if routing.language == "sql" else "solution", "comparator": "text" if routing.language == "cpp" else "json"}
-        if routing.language in ("python", "javascript"):
+        forbidden = list(dict.fromkeys(forbidden))
+        # A function-shaped grading API is not a learning objective. Until the
+        # learner has evidence for functions, only a function lesson itself may
+        # require them; earlier concepts use the already-supported stdio runner.
+        use_function = routing.language in ("python", "javascript") and (function_ready or function_lesson)
+        execution_mode = "sql" if routing.language == "sql" else "function" if use_function else "stdio"
+        execution = {"mode": execution_mode,
+                     "entrypoint": "query" if execution_mode == "sql" else "solution" if use_function else "main",
+                     "comparator": "json" if execution_mode in ("sql", "function") else "text"}
+        if use_function:
             # The generator chooses this explicitly on every test case.  The
             # value here declares that a call style is mandatory, not a
             # default the runner may silently infer.
             execution["call_style_required"] = True
         if routing.language == "sql":
-            execution.update(dialect="sqlite", ordered=bool(re.search(r'order\s+by|sap xep|thu tu', text)))
+            execution.update(dialect="sqlite", ordered=routing.ordered_output)
         focus = [f'Áp dụng {c} đúng yêu cầu và xử lý trường hợp biên.' for c in dict.fromkeys(required)]
         sub_skills = focus or self.kg.get_sub_skills(routing.language, cid)[:1 if difficulty == 'EASY' else 2]
+        if cid == "PY-FLOW-03" and isinstance(ctx.get("batch_index"), int):
+            batch_focus = {
+                1: "Duyệt trực tiếp từng ký tự trong chuỗi bằng for item in sequence; xử lý cả chuỗi rỗng.",
+                2: "Dùng for với range(start, stop, step) để tạo dãy số có bước nhảy.",
+                3: "Dùng for với range() và biến tích lũy để tính tổng một dãy số.",
+                4: "Dùng for với range() chỉ số giảm dần để duyệt chuỗi ngược và tạo chuỗi đảo ngược.",
+                5: "Dùng for với range() và biến tích lũy phép nhân để tính tích một dãy số.",
+            }
+            if ctx["batch_index"] in batch_focus:
+                sub_skills = [batch_focus[ctx["batch_index"]]]
+        if cid == "PY-SET-01" and {"for", "while"} <= set(forbidden):
+            sub_skills = [
+                "Chuyển danh sách từ do input().split() tạo ra thành set để loại trùng, "
+                "rồi dùng ít nhất một phép giao (&), hợp (|) hoặc hiệu (-) trên hai tập hợp từ."
+            ]
         if forced_override and readiness.get("prerequisite_gaps"):
             reasoning = (
                 f"Học viên xác nhận tiếp tục chủ đề yêu cầu dù mức sẵn sàng tiên quyết hiện tại là "
@@ -104,7 +150,13 @@ class AdaptiveExercisePlanner:
             "prerequisite_gaps": readiness.get("prerequisite_gaps", gaps), "policy": "evidence_policy_v4",
             "prerequisite_readiness": prerequisite_score,
             "prerequisite_evidence_coverage": readiness.get("evidence_coverage"),
-            "forced_prerequisite_override": forced_override}
+            "forced_prerequisite_override": forced_override,
+            "function_ready": function_ready,
+            "function_is_target": function_lesson,
+            "avoid_function_syntax": bool(function_concept and not function_ready and not function_lesson),
+            "unlearned_constructs": [name for name in construct_lessons if name in forbidden],
+            "batch_index": ctx.get("batch_index"),
+            "batch_total": ctx.get("batch_total")}
         return ExerciseSpecification(target_concept=cid, concept_title=concept.get("name", cid),
             language=routing.language, difficulty=difficulty, mode=mode, selection_mode=selection,
             user_request=routing.user_text, execution=execution, prerequisites=prereqs,

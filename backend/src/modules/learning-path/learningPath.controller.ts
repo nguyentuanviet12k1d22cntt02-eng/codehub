@@ -202,7 +202,13 @@ export const getPathById = async (req: AuthenticatedRequest, res: Response): Pro
             return;
         }
 
-        res.status(200).json({ success: true, data: sanitizeLegacy(path) });
+        const completed=await prisma.$queryRawUnsafe<any[]>(
+            "SELECT DISTINCT r.exercise_id FROM adaptive_generation_runs r JOIN adaptive_submissions s ON s.trace_id=r.trace_id AND s.user_id=r.user_id WHERE r.path_id=$1::uuid AND r.user_id=$2::uuid AND s.status='PASSED'",
+            pathIdStr,userId).catch(()=>[] as any[]);
+        const completedIds=completed.map(row=>String(row.exercise_id));
+        const safePath=sanitizeLegacy(path);
+        for(const lesson of safePath.lessons||[]) lesson.completedExerciseIds=completedIds;
+        res.status(200).json({ success: true, data: safePath });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
     }

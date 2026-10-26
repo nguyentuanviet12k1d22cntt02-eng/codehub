@@ -100,7 +100,7 @@ async function main() {
     if (renderedNodes !== graph.skills.length) {
       throw new Error(`${spec.language}: rendered ${renderedNodes}/${graph.skills.length} nodes`);
     }
-    const target = path.join(root, "docs/bao_cao", `do_thi_tri_thuc_${spec.language}.png`);
+    const target = path.join(root, "assets/bao_cao", `do_thi_tri_thuc_${spec.language}.png`);
     await sharp(Buffer.from(svg), { density: 240 }).resize({ width: 2400, withoutEnlargement: true }).png().toFile(target);
     console.log(`${spec.language}: ${graph.skills.length} nodes, ${graph.edges.length} edges, ${rows.length} display rows -> ${target}`);
   }

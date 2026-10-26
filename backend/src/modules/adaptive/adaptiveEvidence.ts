@@ -20,8 +20,8 @@ export function verifyInternal(body: Buffer, timestamp: string, signature: strin
     return timingSafeEqual(expected,Buffer.from(signature,'hex'));
 }
 
-const resumeCoreAgents=['AdaptiveExercisePlanner','ExerciseGeneratorAgent','SchemaValidator','ConstraintValidator','SandboxValidator'];
-const resumeOptionalAgents=['ExplanationTutorAgent','KnowledgeRetrievalService'];
+const resumeCoreAgents=['AdaptiveExercisePlanner','ExerciseGeneratorAgent','SchemaValidator','ConstraintValidator'];
+const resumeOptionalAgents=['SandboxValidator','ExplanationTutorAgent','KnowledgeRetrievalService'];
 const conceptIdPattern=/^(?:PY|JS|CPP|SQL)-[A-Z0-9-]+$/;
 
 /**
@@ -48,25 +48,67 @@ export function verifiedTargetConcept(report: any): string|undefined {
  */
 export function resumeCheckpoint(report: any): any {
     const latest=new Map<string,any>();
+    let repairFeedback:any;
+    let lastGeneratorSequence=0,lastRejectedSequence=0;
     for(const record of Array.isArray(report?.agent_traces)?report.agent_traces:[]) {
+        if(record?.agent==='ExerciseGeneratorAgent' && record.status==='SUCCEEDED')
+            lastGeneratorSequence=Number(record.sequence)||lastGeneratorSequence;
+        if(record?.agent==='CriticEvaluatorAgent' && record.status==='REJECTED'
+            && record.output?.is_approved===false
+            && ['EXERCISE','BOTH'].includes(record.output?.feedback_target)) {
+            repairFeedback=record.output;
+            lastRejectedSequence=Number(record.sequence)||lastRejectedSequence;
+        }
+        // A new draft must never inherit an older draft's passing receipts.
+        if(record?.agent==='AdaptiveExercisePlanner' && record.status==='SUCCEEDED') latest.clear();
+        if(record?.agent==='ExerciseGeneratorAgent' && record.status==='SUCCEEDED') {
+            for(const agent of ['SchemaValidator','ConstraintValidator','SandboxValidator','ExplanationTutorAgent','CriticEvaluatorAgent']) latest.delete(agent);
+        }
+        if(['SchemaValidator','ConstraintValidator','SandboxValidator'].includes(record?.agent)) latest.delete(record.agent);
         if(record?.status==='SUCCEEDED' && [...resumeCoreAgents,...resumeOptionalAgents].includes(record.agent)) latest.set(record.agent,record);
     }
     const coreReady=resumeCoreAgents.every(agent=>latest.has(agent))
         && latest.get('SchemaValidator')?.output?.passed===true
-        && latest.get('ConstraintValidator')?.output?.passed===true
-        && latest.get('SandboxValidator')?.output?.passed===true;
-    if(!coreReady) return {trace_id:report?.trace_id,intent:report?.intent,agent_traces:[]};
+        && latest.get('ConstraintValidator')?.output?.passed===true;
+    if(!coreReady) return {trace_id:report?.trace_id,intent:report?.intent,exercise_count:report?.exercise_count,agent_traces:[]};
     const selected=[...resumeCoreAgents];
+    if(latest.get('SandboxValidator')?.output?.passed===true) selected.push('SandboxValidator');
     if(latest.has('ExplanationTutorAgent')) selected.push('ExplanationTutorAgent');
-    else if(latest.has('KnowledgeRetrievalService')) selected.push('KnowledgeRetrievalService');
+    if(latest.has('KnowledgeRetrievalService')) selected.push('KnowledgeRetrievalService');
     return {
         trace_id:report?.trace_id,
         intent:report?.intent,
+        exercise_count:report?.exercise_count,
+        ...(repairFeedback?{repair_feedback:repairFeedback}:{}),
+        rejected_current_candidate:lastRejectedSequence>0&&lastRejectedSequence>lastGeneratorSequence,
         agent_traces:selected.map(agent=>{
             const record=latest.get(agent);
             return {agent:record.agent,status:record.status,output:record.output};
         }),
     };
+}
+export function reviewCheckpoint(report:any):any {
+    return {
+        trace_id:report?.trace_id,
+        intent:report?.intent,
+        exercise_count:report?.exercise_count,
+        started_at:report?.started_at,
+        agent_traces:(Array.isArray(report?.agent_traces)?report.agent_traces:[])
+            .filter((record:any)=>['SUCCEEDED','REJECTED'].includes(record?.status)&&record?.output!==undefined)
+            .map((record:any)=>({
+                id:record.id,sequence:record.sequence,agent:record.agent,method:record.method,
+                status:record.status,attempt:record.attempt,stage_attempt:record.stage_attempt,
+                run_attempt:record.run_attempt,started_at:record.started_at,ended_at:record.ended_at,
+                duration_ms:record.duration_ms,output:record.output,output_hash:record.output_hash,
+            })),
+    };
+}
+export function mergeReviewReport(previous:any,next:any):any {
+    const oldRecords=Array.isArray(previous?.agent_traces)?previous.agent_traces:[];
+    const oldIds=new Set(oldRecords.map((record:any)=>record?.id).filter(Boolean));
+    const appended=(Array.isArray(next?.agent_traces)?next.agent_traces:[])
+        .filter((record:any)=>!record?.id||!oldIds.has(record.id));
+    return {...next,agent_traces:[...oldRecords,...appended]};
 }
 export function publicExercise(exercise: any): any {
     if (!exercise || typeof exercise !== 'object') return null;
@@ -88,7 +130,9 @@ export function publicRecord(record: any): any {
     else if (record.agent==='CriticEvaluatorAgent') safeOutput=output && {is_approved:output.is_approved,score:output.score,feedback_target:output.feedback_target,
         theory_approved:output.theory_approved,exercise_approved:output.exercise_approved,compatibility_approved:output.compatibility_approved,
         note:'Nhận xét chi tiết được lưu trong báo cáo quản trị.'};
-    else if (['IntentRouterAgent','PrerequisiteAdvisorAgent','AdaptiveExercisePlanner','KnowledgeRetrievalService','ExplanationTutorAgent','PublicationGate','LearnerStateService'].includes(record.agent)) safeOutput=output;
+    else if (['IntentRouterAgent','ClarificationAgent','GeneralChatAgent','PrerequisiteAdvisorAgent',
+        'AdaptiveExercisePlanner','KnowledgeRetrievalService','ExplanationTutorAgent','SchemaValidator',
+        'ConstraintValidator','PublicationGate','LearnerStateService'].includes(record.agent)) safeOutput=output;
     else safeOutput=output && {passed:output.passed,approved:output.approved};
     return {...metadata, output:safeOutput, model_calls:(model_calls||[]).map(({input,output,private_response_excerpt,...receipt}:any)=>receipt),
         error:record.error ? {code:record.error.code,message:'Bước này thất bại; mã lỗi được lưu cùng báo cáo.'}:undefined};
@@ -107,13 +151,26 @@ function publicPipelineError(error: any): {code?: string; message: string}|undef
     ]);
     return {code,message:safeMessages.has(detail)
         ? detail
-        : 'AI Tutor chưa hoàn thành yêu cầu này. Hãy xem bước dừng và thử diễn đạt lại chủ đề.'};
+        : 'AI Tutor chưa hoàn thành yêu cầu này. Bạn có thể xem bước lỗi và thử lại sau.'};
 }
 
 export function publicReport(report: any): any {
     if (!report) return null;
     return {...report,exercise:publicExercise(report.exercise),agent_traces:(report.agent_traces||[]).map(publicRecord),
         error:publicPipelineError(report.error)};
+}
+export function publicTutorMessageData(report:any,previousMetadata:any={}) {
+    const safe=publicReport(report);
+    const previous=previousMetadata && typeof previousMetadata==='object' && !Array.isArray(previousMetadata)?previousMetadata:{};
+    const batchParent=safe.status==='SUCCEEDED'&&safe.exercise&&Number(safe.exercise_count)>1;
+    return {content:batchParent?`Đang tạo ${safe.exercise_count} bài thực hành. Đã kiểm định bài 1/${safe.exercise_count}; hệ thống tiếp tục tự tạo các bài còn lại.`:safe.reply,
+        metadata:{...previous,intent:safe.intent,
+        pipeline:{trace_id:safe.trace_id,status:safe.status,schema_version:safe.schema_version,error:safe.error},
+        agentTraces:safe.agent_traces,exercise:batchParent?null:safe.exercise,
+        suggestedOptions:batchParent?[]:safe.suggested_options||[],
+        practiceBatch:batchParent?{status:'GENERATING',expectedCount:Number(safe.exercise_count),completedCount:1,rootTraceId:safe.trace_id}
+            :safe.status==='FAILED'&&previous.practiceBatch?{...previous.practiceBatch,status:'FAILED'}:previous.practiceBatch,
+        pendingConfirmation:safe.pending_confirmation||null,step:batchParent?'PRACTICE_BATCH':safe.exercise?'EXERCISE_READY':'CHAT'}};
 }
 export function sanitizeLegacy(value: any): any {
     if (value instanceof Date) return value.toISOString();

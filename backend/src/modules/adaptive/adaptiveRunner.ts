@@ -2,6 +2,7 @@ import { createHash } from 'crypto';
 import { parse } from 'acorn';
 import { Draft, Specification, CaseResult, draftSchema, specificationSchema } from './adaptive.contracts';
 import { sandboxService } from '../../infrastructure/sandbox/sandbox.service';
+import { sandboxSyntax } from './practiceDiagnostics';
 
 const VERSION = 'adaptive_harness_v4';
 const MAX_CONCURRENT_RUNS = 2;
@@ -43,7 +44,11 @@ if spec["language"]=="sql":
     rows=db.execute(code).fetchall()
     print(json.dumps(rows,ensure_ascii=False,allow_nan=False))
 else:
-    tree=ast.parse(code)
+    try:
+        tree=ast.parse(code,filename="<submission>")
+    except SyntaxError as error:
+        print("__LEARNER_SYNTAX__"+json.dumps({"message":error.msg,"line":error.lineno,"column":error.offset,"end_line":error.end_lineno,"end_column":error.end_offset},ensure_ascii=False),file=sys.stderr)
+        raise
     found=set()
     kinds={ast.For:"for",ast.AsyncFor:"for",ast.While:"while",ast.ClassDef:"class",ast.Lambda:"lambda",ast.FunctionDef:"function",ast.AsyncFunctionDef:"function"}
     for node in ast.walk(tree):
@@ -81,6 +86,7 @@ else:
 
 const JAVASCRIPT = `const fs = require('fs'), vm = require('vm');
 const p = JSON.parse(fs.readFileSync(0, 'utf8'));
+new vm.Script(p.code, {filename:'submission.js'}); // Syntax is checked by the isolated runtime before constraints/logic.
 if (p.specification.execution.mode === 'function') {
     const args = p.test.arguments;
     const style = p.test.call_style;
@@ -88,7 +94,7 @@ if (p.specification.execution.mode === 'function') {
     if (!['spread', 'single'].includes(style)) throw Error('CALL_STYLE_REQUIRED');
     if (style === 'single' && args.length !== 1) throw Error('SINGLE_CALL_REQUIRES_ONE_ARGUMENT');
     const context = vm.createContext({console: {log() {}, error() {}}, args});
-    vm.runInContext(p.code, context, {timeout: 2000});
+    vm.runInContext(p.code, context, {timeout: 2000, filename:'submission.js'});
     const fn = vm.runInContext(p.specification.execution.entrypoint, context);
     if (typeof fn !== 'function') throw Error('ENTRYPOINT_NOT_FOUND');
     Promise.resolve(style === 'spread' ? fn(...args) : fn(args[0])).then(value => {
@@ -120,7 +126,7 @@ export function staticConstraints(code: string, spec: Specification): string[] {
                 Object.values(node).forEach(v => Array.isArray(v) ? v.forEach(visit) : visit(v));
             };
             visit(tree);
-        } catch { return ['JAVASCRIPT_SYNTAX_ERROR']; }
+        } catch { return []; } // The sandbox reports the real syntax location; do not erase it here.
     } else if (spec.language === 'cpp') {
         const stripped = code.replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g, ' ');
         for (const name of [...spec.required_constructs, ...spec.forbidden_constructs]) {
@@ -202,13 +208,15 @@ export async function runExercise(rawDraft: unknown, rawSpec: unknown, code?: st
     const contractErrors = testContractErrors(draft, spec);
     if (contractErrors.length) return {passed:false,status:'CONTRACT_VIOLATION',errors:contractErrors,test_results:[],harness_version:VERSION};
     const errors = staticConstraints(source, spec);
-    if (errors.length) return {passed:false,status:'CONSTRAINT_VIOLATION',errors,test_results:[],harness_version:VERSION};
+    if (errors.length && spec.language !== 'cpp') return {passed:false,status:'CONSTRAINT_VIOLATION',errors,test_results:[],harness_version:VERSION};
     return slot(async () => {
         const test_results: CaseResult[] = [];
         for (let i=0;i<draft.test_cases.length;i++) {
             const result = await executeSandboxCase(source,draft,spec,i);
             test_results.push(result);
             if (result.status === 'INFRA_ERROR') return {passed:false,status:'INFRA_ERROR',error:'Isolated sandbox unavailable',errors:['SANDBOX_UNAVAILABLE'],test_results,harness_version:VERSION};
+            if (errors.length && !sandboxSyntax(source,{test_results:[{...result,is_hidden:false}]}))
+                return {passed:false,status:'CONSTRAINT_VIOLATION',errors,test_results:[],harness_version:VERSION};
         }
         return {passed:test_results.every(t=>t.passed),status:'EXECUTED',test_results,
             errors:test_results.filter(t=>!t.passed).map(t=>'Test #'+t.case_index+': '+t.status+(t.status==='SUCCESS' ? ' OUTPUT_MISMATCH' : '')),

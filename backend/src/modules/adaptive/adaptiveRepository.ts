@@ -1,5 +1,7 @@
 import { prisma } from '../../infrastructure/database/prisma';
 import { calculateMasteryUpdate } from './masteryPolicy';
+import { isGraderFailure } from './practiceGuidance';
+import { publicTutorMessageData } from './adaptiveEvidence';
 
 // Additive schema only. All value-bearing queries below are parameterized.
 export const schemaStatements = [
@@ -45,6 +47,18 @@ export async function finishRun(traceId:string,report:any) {
     await prisma.$executeRawUnsafe('UPDATE adaptive_generation_runs SET status=$2,report=$3::jsonb,artifact=$4::jsonb,exercise_id=$5::uuid,updated_at=now() WHERE trace_id=$1',
         traceId,report.status,JSON.stringify(report),report.exercise?JSON.stringify(report.exercise):null,report.exercise?.exercise_id||null);
 }
+export async function finishRetryRun(traceId:string,sessionId:string,report:any) {
+    return prisma.$transaction(async tx=>{
+        await tx.$executeRawUnsafe('UPDATE adaptive_generation_runs SET status=$2,report=$3::jsonb,artifact=$4::jsonb,exercise_id=$5::uuid,updated_at=now() WHERE trace_id=$1',
+            traceId,report.status,JSON.stringify(report),report.exercise?JSON.stringify(report.exercise):null,report.exercise?.exercise_id||null);
+        const messages:any[]=await tx.$queryRawUnsafe(
+            "SELECT id,metadata FROM path_chat_messages WHERE session_id=$1::uuid AND sender='AI_TUTOR' AND metadata->'pipeline'->>'trace_id'=$2 ORDER BY created_at DESC LIMIT 1",
+            sessionId,traceId);
+        if(!messages.length) return null;
+        const message=messages[0];
+        return tx.pathChatMessage.update({where:{id:message.id},data:publicTutorMessageData(report,message.metadata)});
+    });
+}
 export async function deferRun(traceId:string,report:any,delaySeconds=30) {
     await prisma.$executeRawUnsafe("UPDATE adaptive_generation_runs SET status='WAITING_PROVIDER',report=$2::jsonb,retry_count=retry_count+1,next_attempt_at=now()+($3::text||' seconds')::interval,updated_at=now() WHERE trace_id=$1",traceId,JSON.stringify(report),String(delaySeconds));
 }
@@ -55,6 +69,10 @@ export async function dueRetries(limit=2) {
 export async function claimRetry(traceId:string) {
     return (await rows("UPDATE adaptive_generation_runs SET status='RUNNING',updated_at=now() WHERE trace_id=$1 AND status='WAITING_PROVIDER' AND next_attempt_at<=now() RETURNING *",traceId))[0];
 }
+export async function claimReviewRun(traceId:string,userId:string) {
+    await ensureStorage();
+    return (await rows("UPDATE adaptive_generation_runs SET status='RUNNING',updated_at=now() WHERE trace_id=$1 AND user_id=$2::uuid AND status='AWAITING_AGENT_APPROVAL' RETURNING *",traceId,userId))[0];
+}
 export async function getRun(traceId:string,userId:string) {
     await ensureStorage();
     return (await rows('SELECT * FROM adaptive_generation_runs WHERE trace_id=$1 AND user_id=$2::uuid',traceId,userId))[0];
@@ -63,17 +81,23 @@ export async function getRunForExercise(exerciseId:string,userId:string) {
     await ensureStorage();
     return (await rows('SELECT * FROM adaptive_generation_runs WHERE exercise_id=$1::uuid AND user_id=$2::uuid',exerciseId,userId))[0];
 }
+export async function getSubmissionForGuidance(submissionId:string,userId:string) {
+    await ensureStorage();
+    return (await rows('SELECT * FROM adaptive_submissions WHERE submission_id=$1::uuid AND user_id=$2::uuid',submissionId,userId))[0];
+}
 export async function learnerContext(userId:string,sessionId:string,requestedLanguage?:string) {
     await ensureStorage();
     const recent=await rows('SELECT artifact FROM adaptive_generation_runs WHERE user_id=$1::uuid AND artifact IS NOT NULL ORDER BY created_at DESC LIMIT 8',userId);
     const sessionRecent=await rows('SELECT artifact FROM adaptive_generation_runs WHERE user_id=$1::uuid AND session_id=$2::uuid AND artifact IS NOT NULL ORDER BY created_at DESC LIMIT 1',userId,sessionId);
     const last=sessionRecent[0]?.artifact;
+    const languageSource=requestedLanguage?'explicit':last?.language?'previous':'default';
     const language=(requestedLanguage||last?.language||'python').toLowerCase();
     const snapshot=await getAdaptiveMasterySnapshot(userId,language);
     return {states:snapshot.states,
         recent_exercises:recent.filter(r=>(r.artifact.language||'').toLowerCase()===language).map(r=>r.artifact.concept_id),
         last_concept_id:last?.language?.toLowerCase()===language?last?.concept_id:undefined,
-        last_difficulty:last?.language?.toLowerCase()===language?last?.difficulty:undefined,language};
+        last_difficulty:last?.language?.toLowerCase()===language?last?.difficulty:undefined,
+        language,language_source:languageSource};
 }
 
 export async function getAdaptiveMasterySnapshot(userId:string,language:string) {
@@ -138,7 +162,7 @@ export async function storeGrading(id:string,userId:string,run:any,result:any) {
         if(locked[0]?.status!=='RUNNING') return locked[0]?.result;
         const artifact=run.artifact, passed=result.passed===true;
         let event:any=null;
-        if(result.status!=='INFRA_ERROR') {
+        if(!isGraderFailure(result)) {
             await tx.$executeRawUnsafe('INSERT INTO adaptive_learner_states(user_id,language,concept_id) VALUES($1::uuid,$2,$3) ON CONFLICT DO NOTHING',userId,artifact.language,artifact.concept_id);
             const states:any[]=await tx.$queryRawUnsafe('SELECT * FROM adaptive_learner_states WHERE user_id=$1::uuid AND language=$2 AND concept_id=$3 FOR UPDATE',userId,artifact.language,artifact.concept_id);
             const state=states[0];
@@ -161,7 +185,7 @@ export async function storeGrading(id:string,userId:string,run:any,result:any) {
             await tx.$executeRawUnsafe("INSERT INTO adaptive_mastery_events(submission_id,user_id,concept_id,previous_mastery,new_mastery,delta,policy_version,evidence) VALUES($1::uuid,$2::uuid,$3,$4,$5,$6,'evidence_policy_v4',$7::jsonb)",id,userId,artifact.concept_id,state.mastery,next,delta,JSON.stringify(event));
         }
         const stored={...result,mastery_event:event};
-        await tx.$executeRawUnsafe('UPDATE adaptive_submissions SET status=$2,result=$3::jsonb WHERE submission_id=$1::uuid',id,result.status==='INFRA_ERROR'?'INFRA_ERROR':passed?'PASSED':'FAILED',JSON.stringify(stored));
+        await tx.$executeRawUnsafe('UPDATE adaptive_submissions SET status=$2,result=$3::jsonb WHERE submission_id=$1::uuid',id,isGraderFailure(result)?'INFRA_ERROR':passed?'PASSED':'FAILED',JSON.stringify(stored));
         return stored;
     });
 }

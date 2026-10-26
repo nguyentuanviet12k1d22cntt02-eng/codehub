@@ -19,6 +19,11 @@ function token(): string {
     return value;
 }
 
+export function awsDockerConfigurationReady(): boolean {
+    try { baseUrl(); token(); return true; }
+    catch { return false; }
+}
+
 function parseResult(value: unknown): ExecuteResult {
     if (!value || typeof value !== 'object') throw new Error('AWS_DOCKER_RESPONSE_INVALID');
     const item = value as Record<string, unknown>;

@@ -1,15 +1,14 @@
 import hashlib
-import re
 from pathlib import Path
-from app.agents.intent_router_agent import folded
 from app.pipeline.runtime import ROOT, digest
+from app.services.knowledge_graph_service import _fold_topic, lesson_frontmatter_value
 
 
 class GroundingService:
     def retrieve(self, spec, kg):
         concept = kg.get_concept(spec.language, spec.target_concept)
         folder = ROOT.parent / "docs" / "Dữ liệu nội dung bài học" / {"python": "Python", "javascript": "JS", "cpp": "C++", "sql": "SQL"}[spec.language]
-        keywords = [k for k in re.split(r"\W+", folded(spec.concept_title or "")) if len(k) > 3]
+        keywords = [k for k in _fold_topic(spec.concept_title or "").split() if len(k) > 3]
         lesson_mappings = kg.graphs.get(spec.language, {}).get("lesson_mappings", {})
         mapped_lesson_ids = {
             lesson_id for lesson_id, concept_id in lesson_mappings.items()
@@ -25,9 +24,8 @@ class GroundingService:
             paths = list(folder.rglob("*.md")) + list(folder.rglob("*.txt"))
         for path in paths:
             content = path.read_text(encoding="utf-8-sig")
-            head = folded(content[:5000])
-            lesson_match = re.search(r'(?im)^lessonId:\s*["\']?([^"\'\r\n]+)', content[:1200])
-            lesson_id = lesson_match.group(1).strip() if lesson_match else None
+            head = _fold_topic(content[:5000])
+            lesson_id = lesson_frontmatter_value(content, "lessonId")
             if lesson_id in mapped_lesson_ids:
                 candidate = (100 + sum(1 for k in keywords if k in head), path, content, lesson_id)
                 previous = exact_sources.get(lesson_id)

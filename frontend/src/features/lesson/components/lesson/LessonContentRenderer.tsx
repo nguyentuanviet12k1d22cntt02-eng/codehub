@@ -48,17 +48,18 @@ const cleanAlertPrefix = (node: any): any => {
 // Student View Code Block with dark matte terminal theme, copy button, line numbers and syntax highlighting
 const StudentCodeBlockView: React.FC<{ code: string; language: string }> = ({ code, language }) => {
     const [copied, setCopied] = useState(false);
-    const lines = (code || '').replace(/\n$/, '').split('\n');
+    const visibleCode = (code || '').trimEnd();
+    const lines = visibleCode.split('\n');
     const lineCount = Math.max(1, lines.length);
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(code);
+        navigator.clipboard.writeText(visibleCode);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
 
     return (
-        <div className="not-prose my-7 rounded-2xl bg-[#0B1020] border border-slate-700/70 shadow-[0_18px_45px_-24px_rgba(15,23,42,0.9)] overflow-hidden text-slate-200 text-xs font-mono select-text transition-all">
+        <div className="not-prose my-4 rounded-2xl bg-[#0B1020] border border-slate-700/70 shadow-[0_18px_45px_-24px_rgba(15,23,42,0.9)] overflow-hidden text-slate-200 text-xs font-mono select-text transition-all">
             <div className="flex items-center justify-between px-4 sm:px-5 py-3 bg-[#11182A] border-b border-slate-700/70 select-none">
                 <span className="text-slate-300 text-[11px] font-bold uppercase tracking-[0.16em] font-mono">
                     {language || 'Python'}
@@ -86,7 +87,7 @@ const StudentCodeBlockView: React.FC<{ code: string; language: string }> = ({ co
                 {/* Right: Code Area with Syntax Highlighting */}
                 <div className="flex-1 pl-3 pr-5 overflow-x-auto">
                     <pre
-                        dangerouslySetInnerHTML={{ __html: tokenizeAndHighlight(code, language) }}
+                        dangerouslySetInnerHTML={{ __html: tokenizeAndHighlight(visibleCode, language) }}
                         style={{
                             padding: '0 !important',
                             margin: '0 !important',
@@ -131,20 +132,20 @@ export const LessonContentRenderer: React.FC<LessonContentRendererProps> = ({ co
     const cleanedContent = sanitizeMathAndFormatting(stripQuizSectionFromMarkdown(stripFrontmatter(content || '')));
 
     return (
-        <div className="select-text prose prose-slate dark:prose-invert max-w-none text-[16px] leading-8">
+        <div className="select-text prose prose-slate dark:prose-invert max-w-none text-[16px] leading-7">
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
                 components={{
-                    h1: ({ ...props }) => <h1 className="text-3xl sm:text-4xl font-black text-slate-950 dark:text-white mt-10 mb-6 tracking-[-0.03em] leading-tight" {...props} />,
-                    h2: ({ ...props }) => <h2 className="text-2xl sm:text-[28px] font-extrabold text-slate-950 dark:text-white mt-12 mb-5 pb-3 border-b border-slate-200 dark:border-white/10 tracking-[-0.025em]" {...props} />,
-                    h3: ({ ...props }) => <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mt-9 mb-3 tracking-tight" {...props} />,
-                    p: ({ ...props }) => <p className="text-[15px] sm:text-base text-slate-700 dark:text-slate-300 mb-5 leading-7 sm:leading-8" {...props} />,
+                    h1: ({ ...props }) => <h1 className="text-3xl sm:text-4xl font-black text-slate-950 dark:text-white mt-7 mb-4 tracking-[-0.03em] leading-tight" {...props} />,
+                    h2: ({ ...props }) => <h2 className="text-2xl sm:text-[28px] font-extrabold text-slate-950 dark:text-white mt-8 mb-3 pb-2 border-b border-slate-200 dark:border-white/10 tracking-[-0.025em]" {...props} />,
+                    h3: ({ ...props }) => <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mt-6 mb-2 tracking-tight" {...props} />,
+                    p: ({ ...props }) => <p className="text-[15px] sm:text-base text-slate-700 dark:text-slate-300 mb-3 leading-7" {...props} />,
                     ul: ({ ...props }) => <ul className="list-disc pl-6 mb-6 text-[15px] sm:text-base text-slate-700 dark:text-slate-300 flex flex-col gap-2 marker:text-blue-500" {...props} />,
                     ol: ({ ...props }) => <ol className="list-decimal pl-6 mb-6 text-[15px] sm:text-base text-slate-700 dark:text-slate-300 flex flex-col gap-2 marker:font-bold marker:text-blue-600" {...props} />,
                     li: ({ ...props }) => <li className="text-[15px] sm:text-base text-slate-700 dark:text-slate-300 pl-1 leading-7" {...props} />,
                     strong: ({ ...props }) => <strong className="font-bold text-slate-950 dark:text-white" {...props} />,
-                    hr: ({ ...props }) => <hr className="my-10 border-slate-200 dark:border-white/10" {...props} />,
+                    hr: ({ ...props }) => <hr className="my-6 border-slate-200 dark:border-white/10" {...props} />,
                     blockquote: ({ children }) => {
                         const textContent = getReactTextContent(children);
                         const isNote = textContent.includes('[!NOTE]');
@@ -191,6 +192,7 @@ export const LessonContentRenderer: React.FC<LessonContentRendererProps> = ({ co
                             </blockquote>
                         );
                     },
+                    pre: ({ children }) => <>{children}</>,
                     code: ({ className, children, ...props }) => {
                         const contentStr = String(children || '');
                         const hasNewline = contentStr.includes('\n');

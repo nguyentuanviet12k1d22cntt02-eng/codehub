@@ -1,0 +1,20 @@
+{
+  "kind": "AUTHENTICATED_REAL_BATCH",
+  "expected": 4,
+  "started_at": "2026-10-23T16:55:37.115Z",
+  "runs": [
+    {
+      "index": 1,
+      "trace_id": "trace_6b4f937e27174543b4d92008f0c6670f",
+      "status": "FAILED",
+      "error": {
+        "code": "SANDBOX_UNAVAILABLE",
+        "message": "AI Tutor chưa hoàn thành yêu cầu này. Bạn có thể xem bước lỗi và thử lại sau."
+      }
+    }
+  ],
+  "fixture_user_id": "47835a7e-7c43-448e-a545-29edef09a9be",
+  "session_id": "107534be-2bb4-4ac1-b1be-1961a21c100e",
+  "status": "FAILED",
+  "error": "{\"code\":\"SANDBOX_UNAVAILABLE\",\"message\":\"AI Tutor chưa hoàn thành yêu cầu này. Bạn có thể xem bước lỗi và thử lại sau.\"}\n+ actual - expected\n\n+ 'FAILED'\n- 'SUCCEEDED'\n"
+}

@@ -6,6 +6,24 @@ const path = require('node:path');
 process.env.NODE_ENV = 'test';
 const { SandboxService } = require('../dist/infrastructure/sandbox/sandbox.service');
 const { runExercise } = require('../dist/modules/adaptive/adaptiveRunner');
+const { awsDockerConfigurationReady } = require('../dist/infrastructure/sandbox/aws-docker/docker-grader.client');
+
+test('practice preflight requires a valid EC2 Docker URL and token',()=>{
+    const oldUrl=process.env.AWS_DOCKER_GRADER_URL,oldToken=process.env.AWS_DOCKER_GRADER_TOKEN;
+    try {
+        delete process.env.AWS_DOCKER_GRADER_URL;
+        delete process.env.AWS_DOCKER_GRADER_TOKEN;
+        assert.equal(awsDockerConfigurationReady(),false);
+        process.env.AWS_DOCKER_GRADER_URL='https://47.128.81.75';
+        process.env.AWS_DOCKER_GRADER_TOKEN='t'.repeat(48);
+        assert.equal(awsDockerConfigurationReady(),true);
+    } finally {
+        if(oldUrl===undefined) delete process.env.AWS_DOCKER_GRADER_URL;
+        else process.env.AWS_DOCKER_GRADER_URL=oldUrl;
+        if(oldToken===undefined) delete process.env.AWS_DOCKER_GRADER_TOKEN;
+        else process.env.AWS_DOCKER_GRADER_TOKEN=oldToken;
+    }
+});
 
 function withAwsDockerMock(output, action) {
     const previous = {fetch: global.fetch, provider: process.env.SANDBOX_PROVIDER,

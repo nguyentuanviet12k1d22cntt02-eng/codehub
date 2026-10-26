@@ -6,10 +6,12 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from app.pipeline.runtime import verify_signature
+from app.pipeline.practice_feedback import PracticeFeedbackRequest, generate_practice_feedback
 from app.orchestrator.adaptive_learning_orchestrator import AdaptiveLearningOrchestrator
 
 router = APIRouter()
 slots = threading.BoundedSemaphore(4)
+feedback_slots = threading.BoundedSemaphore(4)
 MAX_ADAPTIVE_REQUEST_BYTES = 150000
 
 
@@ -27,6 +29,7 @@ class AdaptiveRequest(BaseModel):
     resume_report: dict[str, Any] | None = None
     run_attempt: int = Field(default=1, ge=1, le=3)
     sequence_offset: int = Field(default=0, ge=0, le=500)
+    review_mode: bool = False
 
 
 async def parse_request(request):
@@ -42,7 +45,27 @@ def run(payload, callback=None):
     return AdaptiveLearningOrchestrator().process_turn(user_id=payload.user_id, history=payload.messages,
         language=payload.language, target_concept_id=payload.target_concept_id, learner_context=payload.learner_context,
         trace_id=payload.trace_id, event_callback=callback, resume_report=payload.resume_report,
-        run_attempt=payload.run_attempt, sequence_offset=payload.sequence_offset)
+        run_attempt=payload.run_attempt, sequence_offset=payload.sequence_offset, review_mode=payload.review_mode)
+
+
+@router.post("/pal-net/practice-feedback")
+async def practice_feedback(request: Request):
+    raw = await request.body()
+    if len(raw) > 36000:
+        raise HTTPException(413, "Practice feedback payload is too large")
+    if not verify_signature(raw, request.headers.get("X-Adaptive-Time"), request.headers.get("X-Adaptive-Signature")):
+        raise HTTPException(401, "Invalid internal request signature")
+    payload = PracticeFeedbackRequest.model_validate_json(raw)
+    if not feedback_slots.acquire(blocking=False):
+        raise HTTPException(429, "Practice feedback capacity reached")
+    try:
+        from starlette.concurrency import run_in_threadpool
+        guidance = await run_in_threadpool(generate_practice_feedback, payload)
+        return {"success": True, "guidance": guidance}
+    except Exception:
+        raise HTTPException(503, "Practice feedback provider unavailable")
+    finally:
+        feedback_slots.release()
 
 
 @router.post("/pal-net/adaptive-tutor-agent")

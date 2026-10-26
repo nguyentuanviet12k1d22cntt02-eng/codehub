@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Download, CheckCircle2, AlertCircle, Clock3, ChevronDown } from 'lucide-react';
 import { API_BASE_URL } from '../../../config/api';
 
@@ -10,21 +10,35 @@ export interface AgentEvidence {
     model_calls?: {provider?: string; model?: string; status?: string; duration_ms?: number; response_id?: string; usage?: unknown; error_code?: string}[];
 }
 export interface PipelineSummary {trace_id: string; status: string; schema_version?: string; error?: {code?: string; message?: string}}
+export interface AdaptiveRunReport extends PipelineSummary {
+    reply?: string; intent?: string; agent_traces?: AgentEvidence[];
+    exercise_count?: number;
+    exercise?: {title:string;[key:string]:unknown}|null;
+    suggested_options?: string[];
+    pending_confirmation?: {type?:string;[key:string]:unknown}|null;
+}
 const labels:Record<string,string>={IntentRouterAgent:'Hiểu yêu cầu',AdaptiveExercisePlanner:'Chọn mục tiêu và độ khó',
-    PrerequisiteAdvisorAgent:'Đánh giá điều kiện tiên quyết',
+    ClarificationAgent:'Soạn câu hỏi làm rõ',PrerequisiteAdvisorAgent:'Đánh giá điều kiện tiên quyết',
     KnowledgeRetrievalService:'Tra cứu học liệu',ExplanationTutorAgent:'Biên soạn lý thuyết',ExerciseGeneratorAgent:'Sinh đề và bộ test',
     SchemaValidator:'Kiểm tra cấu trúc',ConstraintValidator:'Kiểm tra ràng buộc',SandboxValidator:'Chạy nghiệm mẫu',
     ResumeCheckpointAgent:'Dùng lại candidate đã kiểm định',CriticEvaluatorAgent:'Thẩm định nội dung',PublicationGate:'Kiểm tra điều kiện phát hành',GeneralChatAgent:'Trả lời hội thoại',LearnerStateService:'Đọc bằng chứng học tập'};
 const statuses:Record<string,string>={RUNNING:'Đang chạy',WAITING_PROVIDER:'Đang chờ provider để thử lại',
-    AWAITING_CONFIRMATION:'Chờ học viên xác nhận',SUCCEEDED:'Hoàn thành',REJECTED:'Chưa đạt',FAILED:'Lỗi'};
+    AWAITING_CONFIRMATION:'Chờ học viên xác nhận',AWAITING_AGENT_APPROVAL:'Đang tiếp tục phiên cũ',
+    SUCCEEDED:'Hoàn thành',REJECTED:'Chưa đạt',FAILED:'Lỗi'};
 
-export function AgentEvidencePanel({records,pipeline}:{records:AgentEvidence[];pipeline?:PipelineSummary}) {
+const isPendingRun=(status?:string)=>status==='WAITING_PROVIDER'||status==='RUNNING'||status==='AWAITING_AGENT_APPROVAL';
+
+export function AgentEvidencePanel({records,pipeline,onRetrySettled}:{
+    records:AgentEvidence[];pipeline?:PipelineSummary;
+    onRetrySettled?:(traceId:string,report:AdaptiveRunReport)=>void;
+}) {
     const [error,setError]=useState('');
     const [downloading,setDownloading]=useState(false);
     const [latest,setLatest]=useState<{records:AgentEvidence[];pipeline:PipelineSummary}|null>(null);
+    const onRetrySettledRef=useRef(onRetrySettled);
+    useEffect(()=>{onRetrySettledRef.current=onRetrySettled;},[onRetrySettled]);
     useEffect(()=>{
-        setLatest(null);
-        if(!pipeline?.trace_id||pipeline.status!=='WAITING_PROVIDER') return;
+        if(!pipeline?.trace_id||!isPendingRun(pipeline.status)) return;
         let cancelled=false;
         let timer:number|undefined;
         const refresh=async()=>{
@@ -32,10 +46,11 @@ export function AgentEvidencePanel({records,pipeline}:{records:AgentEvidence[];p
                 const response=await fetch(API_BASE_URL+'/api/learning-path/adaptive/runs/'+encodeURIComponent(pipeline.trace_id),
                     {headers:{Authorization:'Bearer '+localStorage.getItem('token')}});
                 if(!response.ok||cancelled) return;
-                const report=(await response.json()).data;
+                const report=(await response.json()).data as AdaptiveRunReport;
                 if(cancelled||!report) return;
                 setLatest({records:Array.isArray(report.agent_traces)?report.agent_traces:[],pipeline:{trace_id:report.trace_id,status:report.status,error:report.error,schema_version:report.schema_version}});
-                if(report.status==='WAITING_PROVIDER') timer=window.setTimeout(refresh,10000);
+                if(isPendingRun(report.status)) timer=window.setTimeout(refresh,10000);
+                else onRetrySettledRef.current?.(pipeline.trace_id,report);
             } catch {
                 if(!cancelled) timer=window.setTimeout(refresh,10000);
             }
@@ -43,11 +58,12 @@ export function AgentEvidencePanel({records,pipeline}:{records:AgentEvidence[];p
         void refresh();
         return ()=>{cancelled=true;if(timer!==undefined)window.clearTimeout(timer);};
     },[pipeline?.status,pipeline?.trace_id]);
-    const activePipeline=latest?.pipeline||pipeline;
-    const activeRecords=latest?.records||records;
+    const matchingLatest=latest?.pipeline.trace_id===pipeline?.trace_id&&isPendingRun(pipeline?.status)?latest:null;
+    const activePipeline=matchingLatest?.pipeline||pipeline;
+    const activeRecords=matchingLatest?.records||records;
     const sorted=[...activeRecords].sort((a,b)=>(a.sequence||0)-(b.sequence||0)||new Date(a.started_at||0).getTime()-new Date(b.started_at||0).getTime());
-    const calls=activeRecords.flatMap(r=>r.model_calls||[]);
     const completed=activeRecords.filter(r=>r.status==='SUCCEEDED').length;
+    const resumingLegacyRun=activePipeline?.status==='AWAITING_AGENT_APPROVAL';
     const download=async(full=false)=>{
         setDownloading(true);setError('');
         try {
@@ -66,11 +82,11 @@ export function AgentEvidencePanel({records,pipeline}:{records:AgentEvidence[];p
         } catch(e) {setError(e instanceof Error?e.message:'Không tải được báo cáo');}
         finally {setDownloading(false);}
     };
-    return <section aria-label="Dẫn chứng hoạt động pipeline" className="mt-4 w-full min-w-0 max-w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-50 text-slate-800">
+    return <section aria-label="Kết quả từng bước của pipeline" className="mt-4 w-full min-w-0 max-w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-50 text-slate-800">
         <div className="flex flex-wrap items-start justify-between gap-3 p-3">
             <div>
-                <p className="text-sm font-semibold">Dẫn chứng hoạt động</p>
-                <p className="mt-1 text-xs text-slate-600">{completed}/{activeRecords.length} bước hoàn thành · {calls.filter(c=>c.status==='SUCCEEDED').length} lời gọi mô hình thành công</p>
+                <p className="text-sm font-semibold">Tiến trình các agent</p>
+                <p role="status" aria-live="polite" aria-atomic="true" className="mt-1 text-xs text-slate-600">{completed}/{activeRecords.length} bước hoàn thành · Các bước chạy tự động</p>
                 {activePipeline && <p className="mt-1 break-all font-mono text-[10px] text-slate-500">{activePipeline.trace_id} · {statuses[activePipeline.status]||activePipeline.status}</p>}
             </div>
             <div className="flex flex-wrap gap-2">
@@ -80,13 +96,14 @@ export function AgentEvidencePanel({records,pipeline}:{records:AgentEvidence[];p
                 <button type="button" disabled={downloading} onClick={()=>download(true)} className="min-h-9 rounded-lg px-2 text-xs text-blue-700 underline focus-visible:outline-2 focus-visible:outline-blue-600">Báo cáo quản trị</button>
             </div>
         </div>
+        {resumingLegacyRun&&<p className="mx-3 mb-3 rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900">Phiên cũ đang được tiếp tục tự động; không cần duyệt từng bước.</p>}
         {activePipeline?.error?.code && <p role={activePipeline.status==='WAITING_PROVIDER'?'status':'alert'} className={'mx-3 mb-3 rounded-lg p-2 text-xs '+(activePipeline.status==='WAITING_PROVIDER'?'bg-amber-50 text-amber-800':'bg-rose-50 text-rose-800')}>Mã lỗi: {activePipeline.error.code}. {activePipeline.error.message || (activePipeline.status==='WAITING_PROVIDER'?'Yêu cầu được lưu và sẽ tự thử lại.':'AI Tutor chưa hoàn thành yêu cầu này; hãy xem bước dừng để thử lại.')}</p>}
         {error && <p role="alert" className="px-3 pb-3 text-xs text-rose-700">{error}</p>}
         <ol className="divide-y divide-slate-200">
             {sorted.map((record,index)=>{
                 const failed=record.status==='FAILED'||record.status==='REJECTED';
                 const Icon=failed?AlertCircle:record.status==='SUCCEEDED'?CheckCircle2:Clock3;
-                return <li key={record.id||index}>
+                return <li key={record.id||`${record.agent}-${record.sequence||index}`}>
                     <details className="group">
                         <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 p-3 focus-visible:outline-2 focus-visible:outline-blue-600">
                             <Icon aria-hidden="true" size={16} className={failed?'shrink-0 text-rose-600':record.status==='SUCCEEDED'?'shrink-0 text-emerald-700':'shrink-0 text-slate-500'}/>
@@ -106,7 +123,10 @@ export function AgentEvidencePanel({records,pipeline}:{records:AgentEvidence[];p
                                 {Boolean(call.usage)&&<pre className="overflow-auto whitespace-pre-wrap text-[10px]">{JSON.stringify(call.usage,null,2)}</pre>}
                             </div>)}
                             {record.error&&<p className="rounded bg-rose-50 p-2 text-rose-800">{record.error.code}: {record.error.message}</p>}
-                            {record.output!==undefined&&<pre className="max-h-80 max-w-full overflow-auto whitespace-pre-wrap [overflow-wrap:anywhere] rounded-lg border border-slate-200 bg-white p-3 font-mono text-[11px] leading-relaxed">{JSON.stringify(record.output,null,2)}</pre>}
+                            {record.output!==undefined&&<div>
+                                <p className="mb-1.5 font-semibold text-slate-700">Kết quả của bước này</p>
+                                <pre className="max-h-80 max-w-full overflow-auto whitespace-pre-wrap [overflow-wrap:anywhere] rounded-lg border border-slate-200 bg-white p-3 font-mono text-[11px] leading-relaxed">{JSON.stringify(record.output,null,2)}</pre>
+                            </div>}
                             {record.input_hash&&<p className="break-all font-mono text-[10px] text-slate-500">Input SHA-256: {record.input_hash}</p>}
                             {record.output_hash&&<p className="break-all font-mono text-[10px] text-slate-500">Output SHA-256: {record.output_hash}</p>}
                         </div>

@@ -1,0 +1,209 @@
+{
+  "kind": "GENERATION_RELIABILITY_QA",
+  "fixture_user_id": "4121279f-e0db-4f92-ad1d-514a02242063",
+  "fixture_email": "reliability_qa_mvlvtv44@example.invalid",
+  "turns": [
+    {
+      "index": "clarify-count",
+      "trace_id": "trace_5b2af59a3011459a98034d10a57c72b4",
+      "status": "AWAITING_CONFIRMATION",
+      "pending_type": "EXERCISE_COUNT_SELECTION"
+    },
+    {
+      "index": "confirm-count",
+      "trace_id": "trace_ce088bc34a8640c88b1d4c034c54114e",
+      "status": "AWAITING_CONFIRMATION",
+      "pending_type": "PREREQUISITE_OVERRIDE"
+    },
+    {
+      "index": 1,
+      "trace_id": "trace_b54beecadf8440219cbb66ae460de501",
+      "status": "SUCCEEDED",
+      "title": "In từng ký tự của chuỗi"
+    },
+    {
+      "index": 2,
+      "trace_id": "trace_efb71120642d441ebb572e241384462a",
+      "status": "SUCCEEDED",
+      "title": "In dãy số theo bước nhảy"
+    },
+    {
+      "index": 3,
+      "trace_id": "trace_1d7047c150684d66b3daff0c95e27b41",
+      "status": "SUCCEEDED",
+      "title": "Tổng các số chẵn trong dãy"
+    },
+    {
+      "index": 4,
+      "trace_id": "trace_d8c05b2189f34099856fe7bf3dd27872",
+      "status": "SUCCEEDED",
+      "title": "Đảo ngược chuỗi bằng vòng lặp for"
+    }
+  ],
+  "status": "PASSED",
+  "started_at": "2026-10-24T04:22:43.657Z",
+  "session_id": "a7f83da1-a7f6-406b-9e32-bc15d8f83658",
+  "previous_attempts": [
+    {
+      "started_at": "2026-10-24T04:12:27.224Z",
+      "turns": [
+        {
+          "index": "clarify-count",
+          "trace_id": "trace_00177cf5f4294140bd2bb653f7ad15dc",
+          "status": "AWAITING_CONFIRMATION",
+          "pending_type": "EXERCISE_COUNT_SELECTION"
+        },
+        {
+          "index": "confirm-count",
+          "trace_id": "trace_d5b0fb67b51c4a1689b89dec516ac28e",
+          "status": "AWAITING_CONFIRMATION",
+          "pending_type": "PREREQUISITE_OVERRIDE"
+        }
+      ],
+      "status": "FAILED",
+      "error": "fetch failed"
+    },
+    {
+      "started_at": "2026-10-24T04:15:29.162Z",
+      "turns": [
+        {
+          "index": "clarify-count",
+          "trace_id": "trace_71d0d1b9bd8e48eb829d0740cc3d89be",
+          "status": "AWAITING_CONFIRMATION",
+          "pending_type": "EXERCISE_COUNT_SELECTION"
+        },
+        {
+          "index": "confirm-count",
+          "trace_id": "trace_235cf88e4d644c329d5b06004c838d5f",
+          "status": "AWAITING_CONFIRMATION",
+          "pending_type": "PREREQUISITE_OVERRIDE"
+        },
+        {
+          "index": 1,
+          "trace_id": "trace_4f15c03e21cd4c8480f8c7716c544217",
+          "status": "SUCCEEDED",
+          "title": "In từng ký tự của chuỗi"
+        },
+        {
+          "index": 2,
+          "trace_id": "trace_c298c829663b4ca6865f4d77befebd2f",
+          "status": "SUCCEEDED",
+          "title": "In dãy số theo bước nhảy"
+        },
+        {
+          "index": 3,
+          "trace_id": "trace_9fcd56cd135440e09d64dc39ec418e1a",
+          "status": "SUCCEEDED",
+          "title": "Tổng các số từ 1 đến n"
+        },
+        {
+          "index": 4,
+          "trace_id": "trace_2829e9b0c5f04068ad145631cc2c1dfc",
+          "status": "SUCCEEDED",
+          "title": "Đảo ngược chuỗi bằng vòng lặp for"
+        }
+      ],
+      "status": "PASSED"
+    }
+  ],
+  "root_trace_id": "trace_b54beecadf8440219cbb66ae460de501",
+  "path_id": "cedd192c-eb51-422d-b3c5-9c299702f9c0",
+  "sandbox": [
+    {
+      "trace_id": "trace_b54beecadf8440219cbb66ae460de501",
+      "passed": 6,
+      "provider": "aws-docker",
+      "title": "In từng ký tự của chuỗi",
+      "generation_calls": 3
+    },
+    {
+      "trace_id": "trace_efb71120642d441ebb572e241384462a",
+      "passed": 4,
+      "provider": "aws-docker",
+      "title": "In dãy số theo bước nhảy",
+      "generation_calls": 2
+    },
+    {
+      "trace_id": "trace_1d7047c150684d66b3daff0c95e27b41",
+      "passed": 4,
+      "provider": "aws-docker",
+      "title": "Tổng các số chẵn trong dãy",
+      "generation_calls": 1
+    },
+    {
+      "trace_id": "trace_d8c05b2189f34099856fe7bf3dd27872",
+      "passed": 5,
+      "provider": "aws-docker",
+      "title": "Đảo ngược chuỗi bằng vòng lặp for",
+      "generation_calls": 1
+    }
+  ],
+  "practice_feedback": {
+    "wrong": {
+      "tone": "thinking",
+      "source": "AI",
+      "title": "Lỗi thiếu lệnh in trong vòng lặp",
+      "reason": "Chương trình đã chạy thành công nhưng không có đầu ra nào được in ra màn hình. Nguyên nhân là bạn đã sử dụng lệnh pass trong vòng lặp for, khiến chương trình bỏ qua việc xử lý từng ký tự thay vì in chúng ra.",
+      "hint": "Hãy thay thế lệnh pass bằng lệnh in để hiển thị từng ký tự ch ra màn hình.",
+      "location": "Dòng 3"
+    },
+    "correct": {
+      "tone": "success",
+      "source": "AI",
+      "title": "Chính xác",
+      "reason": "Chúc mừng bạn, chương trình đã chạy đúng và xử lý tốt cả các trường hợp có khoảng trắng lẫn số.",
+      "hint": "Bạn đã sử dụng vòng lặp for để duyệt qua chuỗi một cách đơn giản và hiệu quả."
+    }
+  },
+  "exercise_count": 4,
+  "ended_at": "2026-10-24T07:10:39.368Z",
+  "continued_at": "2026-10-24T07:09:53.373Z",
+  "generation_status": "PASSED",
+  "feedback_status": "PASSED",
+  "final_verified_at": "2026-10-24T07:19:09.870Z",
+  "browser_verification": {
+    "status": "PASSED",
+    "base_url": "http://127.0.0.1:5174",
+    "isolated_qa_account": true,
+    "practice_exercise_count": 4,
+    "observed_states": ["grading", "analyzing", "wrong_feedback", "edit_clears_previous_feedback", "grading", "correct_feedback"],
+    "wrong": {
+      "provider": "INCEPTION",
+      "line": 3,
+      "reason": "Chương trình chỉ đọc chuỗi mà không in ký tự nào vì vòng lặp chỉ có lệnh pass, dẫn đến đầu ra rỗng.",
+      "hint": "Thêm lệnh in ký tự trong vòng lặp for.",
+      "screenshot": "practice-feedback-wrong-2026-10-24.png"
+    },
+    "correct": {
+      "provider": "GROQ",
+      "score": 100,
+      "reason": "Chúc mừng bạn, chương trình đã chạy đúng và xử lý tốt cả các trường hợp có khoảng trắng.",
+      "hint": "Cách dùng vòng lặp for để duyệt trực tiếp từng ký tự trong chuỗi rất rõ ràng và đúng trọng tâm bài học.",
+      "screenshot": "practice-feedback-correct-2026-10-24.png"
+    },
+    "content_failover_observed": {
+      "rejected_provider": "GROQ",
+      "rejection": "PROVIDER_CONTRACT_INVALID: PRACTICE_FEEDBACK_CODE_IN_HINT",
+      "next_provider": "OPENROUTER",
+      "next_error": "PROVIDER_DEADLINE_EXCEEDED",
+      "accepted_provider": "INCEPTION",
+      "same_stage_budget": true
+    },
+    "earlier_browser_failure": {
+      "provider": "OPENROUTER",
+      "cause": "Valid JSON with a replacement code line was accepted by transport, then rejected outside provider selection; fixed by validating the content before success."
+    }
+  },
+  "feedback_attempts": [
+    {
+      "at": "2026-10-24T05:27:08.195Z",
+      "status": "FAILED",
+      "error": "{\"success\":false,\"error\":\"PRACTICE_AI_UNAVAILABLE\"}\n\n503 !== 200\n"
+    },
+    {
+      "at": "2026-10-24T05:34:37.462Z",
+      "status": "FAILED",
+      "error": "{\"success\":false,\"error\":\"PRACTICE_AI_UNAVAILABLE\"}\n\n503 !== 200\n"
+    }
+  ]
+}

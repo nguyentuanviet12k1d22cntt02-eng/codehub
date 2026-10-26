@@ -6,26 +6,26 @@
   "real_exercise_data": true,
   "purpose": "Offline BKT/DKT/PAL-Net pipeline comparison; not evidence of learner benefit",
   "source_graph": "cppSkillGraph.json",
-  "graph_version": "4.0.0",
-  "graph_sha256": "335c8189dd542a035db343aac63a7654a367151bc062fe9ba131db62d4fe9795",
+  "graph_version": "4.1.0",
+  "graph_sha256": "2659628ca882d0c4fcd1f6de01388310c31c1a4e7409d3b95d5044120332843e",
   "source_catalog": "cpp_items.json",
   "catalog_schema_version": "real-exercise-catalog/1.0",
   "catalog_sha256": "674141ddaa289a0d3198bfda2b056cafef6905671c7a35da9c16b4b61f110fcf",
-  "dataset_sha256": "b707bbaf9aa39c45af5b81c1acfa599449b75df3686859a97105321101b62c44",
+  "dataset_sha256": "f4535e515dee4fba8c31ba40da50bd05093608331e7761c5478684e834cb74f9",
   "seed": 20261013,
-  "learners": 60,
-  "interactions": 3567,
+  "learners": 300,
+  "interactions": 19267,
   "skills_in_graph": 21,
   "skills_with_real_items": 21,
   "skills_observed": 21,
   "catalog_items": 48,
   "items_observed": 48,
   "persona_counts": {
-    "NEW": 12,
-    "STEADY": 12,
-    "TRIAL_ERROR": 12,
-    "FAST": 12,
-    "RETURNING": 12
+    "NEW": 60,
+    "STEADY": 60,
+    "TRIAL_ERROR": 60,
+    "FAST": 60,
+    "RETURNING": 60
   },
   "field_notes": {
     "item_id": "Actual CodingExercise UUID exported read-only from the product database",
@@ -34,7 +34,9 @@
     "item_source": "CODING_EXERCISE_DB means the item exists in the product database",
     "error_type": "Simulated mistake category; not inferred from source code or actual submissions",
     "prereq_mastery_proxy": "Pre-attempt estimate from earlier rows only; not true mastery",
-    "attempt_index": "Simulated repeated attempt on the same real catalog item"
+    "attempt_index": "Simulated repeated attempt on the same real catalog item",
+    "time_calibrated": "Calibrated to realistic human coding response times (90-900s+)",
+    "anomalies_included": "Includes 5-10% natural stochastic noise (guesses, slips, rapid spams)"
   },
   "limitations": [
     "Learner identities, histories, outcomes, time and error types are simulated",

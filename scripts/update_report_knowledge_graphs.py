@@ -110,7 +110,7 @@ def format_table(table):
 
 
 def add_figure(doc, anchor, spec, graph):
-    image = ROOT / f"docs/bao_cao/do_thi_tri_thuc_{spec['slug']}.png"
+    image = ROOT / f"assets/bao_cao/do_thi_tri_thuc_{spec['slug']}.png"
     picture = anchor.insert_paragraph_before(style="Normal")
     picture.alignment = WD_ALIGN_PARAGRAPH.CENTER
     picture.paragraph_format.keep_with_next = True

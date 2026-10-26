@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import Editor from '@monaco-editor/react';
+import React, { useState, useEffect, useRef } from 'react';
+import { PracticeCodeEditor } from './PracticeCodeEditor';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import axios from 'axios';
@@ -24,6 +24,8 @@ import {
 import { stripQuizSectionFromMarkdown } from '../../../utils/quizParser';
 import { LessonContentRenderer } from '../../lesson/components/lesson/LessonContentRenderer';
 import { API_BASE_URL } from '../../../config/api';
+import { PracticeGuidanceCard, type PracticeGuidance } from './PracticeGuidanceCard';
+import { isPracticeGuidance, matchingPracticeGuidance } from './practiceGuidanceResult';
 
 interface Quiz {
     id: string;
@@ -63,6 +65,8 @@ interface Lesson {
     isCompleted: boolean;
     quizzes: Quiz[];
     exercise?: Exercise;
+    practiceExercises?: Exercise[];
+    completedExerciseIds?: string[];
 }
 
 interface PersonalizedLessonViewerProps {
@@ -88,11 +92,16 @@ function getStandardizedTheory(lesson: Lesson): string {
 }
 
 export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> = ({
-    lesson,
+    lesson: sourceLesson,
     token,
     onLessonCompleted
 }) => {
-    const [activeTab, setActiveTab] = useState<'THEORY' | 'QUIZ' | 'PRACTICE'>('THEORY');
+    const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
+    const practiceExercises = Array.isArray(sourceLesson.practiceExercises) && sourceLesson.practiceExercises.length
+        ? sourceLesson.practiceExercises : sourceLesson.exercise ? [sourceLesson.exercise] : [];
+    const lesson = {...sourceLesson, exercise: practiceExercises.find(item => item.id === selectedExerciseId) || practiceExercises[0]};
+    const codeDrafts = useRef<Record<string,string>>({});
+    const [activeTab, setActiveTab] = useState<'THEORY' | 'QUIZ' | 'PRACTICE'>(practiceExercises.length > 1 ? 'PRACTICE' : 'THEORY');
     
     // Quiz States
     const [quizAnswers, setQuizAnswers] = useState<{ [quizId: string]: 'A' | 'B' | 'C' | 'D' }>({});
@@ -116,20 +125,51 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
     const [code, setCode] = useState<string>(lesson.exercise?.starterCode || defaultStarter);
     const [submittingCode, setSubmittingCode] = useState<boolean>(false);
     const [executionOutput, setExecutionOutput] = useState<any>(null);
+    const [guidance, setGuidance] = useState<PracticeGuidance | null>(null);
+    const [analyzingGuidance, setAnalyzingGuidance] = useState(false);
+    const [guidanceError, setGuidanceError] = useState(false);
+    const [guidanceMatchesCode, setGuidanceMatchesCode] = useState(true);
+    const [guidanceSession, setGuidanceSession] = useState(0);
+    const submissionSequence = useRef(0);
+    const guidanceRequest = useRef<AbortController | null>(null);
     const [activeTestCaseTab, setActiveTestCaseTab] = useState<number>(0);
 
+    const invalidateGuidance = (keepFeedback = false) => {
+        submissionSequence.current += 1;
+        guidanceRequest.current?.abort();
+        guidanceRequest.current = null;
+        if (!keepFeedback) setGuidance(null);
+        setGuidanceMatchesCode(!keepFeedback);
+        setGuidanceError(false);
+        setAnalyzingGuidance(false);
+        setSubmittingCode(false);
+    };
+
     useEffect(() => {
-        if (lesson.exercise?.starterCode) {
-            setCode(lesson.exercise.starterCode);
-        } else {
-            setCode(defaultStarter);
-        }
+        setSelectedExerciseId(null);
+        codeDrafts.current = {};
+        setActiveTab(practiceExercises.length > 1 ? 'PRACTICE' : 'THEORY');
+    }, [sourceLesson.id]);
+
+    useEffect(() => {
+        submissionSequence.current += 1;
+        guidanceRequest.current?.abort();
+        guidanceRequest.current = null;
+        setCode(lesson.exercise?.id ? codeDrafts.current[lesson.exercise.id] ?? lesson.exercise.starterCode ?? defaultStarter : defaultStarter);
         setExecutionOutput(null);
+        setSubmittingCode(false);
+        setGuidance(null);
+        setGuidanceMatchesCode(true);
+        setGuidanceError(false);
+        setAnalyzingGuidance(false);
         setActiveTestCaseTab(0);
     }, [lesson.exercise?.id, lesson.exercise?.starterCode, defaultStarter]);
 
+    useEffect(() => () => { submissionSequence.current += 1; guidanceRequest.current?.abort(); }, []);
+
     const handleResetCode = () => {
         if (window.confirm('Bạn có chắc muốn khôi phục lại mã nguồn ban đầu?')) {
+            invalidateGuidance();
             setCode(lesson.exercise?.starterCode || defaultStarter);
             setExecutionOutput(null);
         }
@@ -172,6 +212,11 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
 
     const handleSubmitExercise = async () => {
         if (!lesson.exercise) return;
+        invalidateGuidance();
+        setGuidanceSession(previous => previous + 1);
+        const requestId = submissionSequence.current;
+        const submittedCode = code;
+        const submissionId = crypto.randomUUID();
         setSubmittingCode(true);
         setExecutionOutput(null);
 
@@ -180,28 +225,61 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                 `${API_BASE_URL}/api/learning-path/submit-exercise`,
                 {
                     exerciseId: lesson.exercise.id,
-                    submissionId: crypto.randomUUID(),
-                    code
+                    submissionId,
+                    code: submittedCode
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
+            if (requestId !== submissionSequence.current) return;
+            // This feedback is delivered with grading, before any provider call.
+            if (isPracticeGuidance(res.data.guidance)) setGuidance(res.data.guidance);
             if (res.data.success) {
                 setExecutionOutput(res.data);
+                setSubmittingCode(false);
                 if (res.data.isPassed) {
                     if (onLessonCompleted) {
                         onLessonCompleted();
                     }
                 }
+                if (res.data.guidance?.analysisKind && res.data.guidance.analysisKind !== 'logic') return;
+                setAnalyzingGuidance(true);
+                const controller = new AbortController();
+                guidanceRequest.current = controller;
+                try {
+                    const feedback = await axios.post(
+                        `${API_BASE_URL}/api/learning-path/practice-guidance`,
+                        { submissionId },
+                        { headers: { Authorization: `Bearer ${token}` }, signal: controller.signal, timeout: 32000 }
+                    );
+                    if (requestId !== submissionSequence.current) return;
+                    const next = matchingPracticeGuidance(feedback.data, submissionId, requestId, submissionSequence.current);
+                    if (!next) {
+                        throw new Error('PRACTICE_AI_INVALID');
+                    }
+                    setGuidance(next);
+                } catch (feedbackError) {
+                    if (requestId === submissionSequence.current && !axios.isCancel(feedbackError)) setGuidanceError(true);
+                } finally {
+                    if (requestId === submissionSequence.current) {
+                        setAnalyzingGuidance(false);
+                        guidanceRequest.current = null;
+                    }
+                }
+            } else {
+                setExecutionOutput({ ...res.data, error: res.data.error || 'GRADER_UNAVAILABLE' });
             }
         } catch (e: any) {
+            if (requestId !== submissionSequence.current) return;
             console.error('Exercise submit error:', e);
+            if (isPracticeGuidance(e.response?.data?.guidance)) setGuidance(e.response.data.guidance);
             setExecutionOutput({
                 isPassed: false,
-                error: e.response?.data?.error || 'Lỗi khi nộp bài thực hành lên máy chủ chấm'
+                error: e.response?.data?.error || 'Lỗi khi nộp bài thực hành lên máy chủ chấm',
+                results: e.response?.data?.results,
             });
         } finally {
-            setSubmittingCode(false);
+            if (requestId === submissionSequence.current) setSubmittingCode(false);
         }
     };
 
@@ -256,7 +334,7 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                             }`}
                         >
                             <Code2 className="w-3.5 h-3.5" />
-                            <span>{Array.isArray(lesson.quizzes) && lesson.quizzes.length > 0 ? '3.' : '2.'} Thực Hành Lập Trình</span>
+                            <span>{Array.isArray(lesson.quizzes) && lesson.quizzes.length > 0 ? '3.' : '2.'} Thực Hành Lập Trình ({practiceExercises.length})</span>
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
                         </button>
                     )}
@@ -285,7 +363,7 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
             {/* TAB 1: Nội Dung Bài Học Chuẩn - High-Contrast Editorial Style */}
             {activeTab === 'THEORY' && (
                 <div role="tabpanel" className="p-4 sm:p-7 lg:p-10 xl:p-12 bg-white dark:bg-[#0B0F19] text-slate-800 dark:text-slate-100">
-                    <div className="w-full space-y-10">
+                    <div className="w-full space-y-6">
                         {/* Hero Header Card */}
                         <div className="relative overflow-hidden p-6 sm:p-8 lg:p-10 rounded-[28px] bg-[radial-gradient(circle_at_top_right,_rgba(14,165,233,0.18),_transparent_36%),linear-gradient(135deg,_#eff6ff_0%,_#f8fafc_48%,_#ecfeff_100%)] dark:bg-[radial-gradient(circle_at_top_right,_rgba(14,165,233,0.16),_transparent_35%),linear-gradient(135deg,_#0c1830_0%,_#0e1422_52%,_#082f36_100%)] border border-blue-100/90 dark:border-blue-400/15">
                             <div className="relative z-10 max-w-5xl space-y-5">
@@ -445,6 +523,34 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
             {/* TAB 3: Giao diện Thực Hành Lập Trình (Pro Coding Studio - Side-by-Side Split View) */}
             {activeTab === 'PRACTICE' && lesson.exercise && (
                 <div role="tabpanel" className="p-3 sm:p-5 lg:p-7 bg-slate-100/50 dark:bg-[#070A12]">
+                    {practiceExercises.length > 1 && (
+                        <div className="mb-5 rounded-2xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#0D121F]">
+                            <p className="mb-2 text-xs font-bold text-slate-700 dark:text-slate-200">
+                                Bài {practiceExercises.findIndex(item => item.id === lesson.exercise?.id) + 1}/{practiceExercises.length} · Chọn bài để thực hành
+                            </p>
+                            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                                {practiceExercises.map((item, index) => {
+                                    const selected = item.id === lesson.exercise?.id;
+                                    const completed = sourceLesson.completedExerciseIds?.includes(item.id);
+                                    return <button key={item.id} type="button" aria-current={selected ? 'step' : undefined}
+                                        onClick={() => {
+                                            if (item.id !== lesson.exercise?.id) invalidateGuidance();
+                                            if (lesson.exercise?.id) codeDrafts.current[lesson.exercise.id] = code;
+                                            setSelectedExerciseId(item.id);
+                                            setPracticeSubTab('SPEC');
+                                        }}
+                                        className={`min-h-14 rounded-xl border px-3 py-2 text-left text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${selected
+                                            ? 'border-blue-500 bg-blue-50 text-blue-900 dark:bg-blue-500/10 dark:text-blue-100'
+                                            : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-blue-300 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-200'}`}>
+                                        <span className="block text-[10px] uppercase tracking-wide text-blue-600 dark:text-blue-400">
+                                            {completed ? '✓ Hoàn thành' : `Bài ${index + 1}`}
+                                        </span>
+                                        <span className="line-clamp-2">{item.title}</span>
+                                    </button>;
+                                })}
+                            </div>
+                        </div>
+                    )}
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                         {/* LEFT COLUMN: Problem Specification & Testcases (5 Columns) */}
                         <div className="lg:col-span-5 space-y-4">
@@ -523,28 +629,19 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                                                     ul: ({ ...props }) => <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300 mb-3" {...props} />,
                                                     ol: ({ ...props }) => <ol className="list-decimal pl-5 space-y-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300 mb-3" {...props} />,
                                                     li: ({ ...props }) => <li className="leading-relaxed" {...props} />,
-                                                    code: ({ className, children, ...props }) => {
-                                                        const contentStr = String(children || '');
-                                                        const hasNewline = contentStr.includes('\n');
-                                                        return !hasNewline ? (
-                                                            <code className="bg-slate-100 dark:bg-white/[0.08] text-blue-700 dark:text-cyan-300 border border-slate-200/80 dark:border-white/10 px-1.5 py-0.5 rounded font-mono text-xs font-semibold" {...props}>
-                                                                {children}
-                                                            </code>
-                                                        ) : (
-                                                            <div className="my-2 rounded-xl bg-slate-900 border border-slate-800 p-3 text-emerald-400 font-mono text-xs overflow-x-auto">
-                                                                <code className={className} {...props}>
-                                                                    {children}
-                                                                </code>
-                                                            </div>
-                                                        );
-                                                    }
+                                                    pre: ({ ...props }) => <pre className="my-2 rounded-lg bg-slate-900 border border-slate-800 p-3 text-emerald-300 font-mono text-xs overflow-x-auto whitespace-pre-wrap" {...props} />,
+                                                    code: ({ className, children, ...props }) => className ? (
+                                                        <code className={className} {...props}>{children}</code>
+                                                    ) : (
+                                                        <code className="bg-slate-100 dark:bg-white/[0.08] text-blue-700 dark:text-cyan-300 border border-slate-200/80 dark:border-white/10 px-1.5 py-0.5 rounded font-mono text-xs font-semibold" {...props}>{children}</code>
+                                                    )
                                                 }}
                                             >
                                                 {cleanChineseArtifacts(lesson.exercise.problemDescription)}
                                             </ReactMarkdown>
 
                                             {/* Quick Examples Highlight Box */}
-                                            {lesson.exercise.testCases && lesson.exercise.testCases.length > 0 && (
+                                            {!lesson.exercise.problemDescription.trimStart().startsWith('## Mô tả') && lesson.exercise.testCases && lesson.exercise.testCases.length > 0 && (
                                                 <div className="mt-4 pt-4 border-t border-slate-200/80 dark:border-white/10 space-y-3">
                                                     <div className="flex items-center justify-between text-xs font-bold text-slate-900 dark:text-white">
                                                         <span className="flex items-center gap-1.5">
@@ -643,17 +740,7 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                                                     <span>Gợi ý phương pháp giải quyết</span>
                                                 </div>
                                                 <p className="text-amber-800 dark:text-amber-200/90 leading-relaxed">
-                                                    Đọc kỹ các ràng buộc đầu vào (ví dụ: n &le; 0). Đảm bảo chương trình xử lý đúng các trường hợp đặc biệt không in ra dữ liệu rác.
-                                                </p>
-                                            </div>
-
-                                            <div className="p-4 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-500/20 space-y-2 text-xs">
-                                                <div className="flex items-center gap-2 font-bold text-blue-900 dark:text-blue-300">
-                                                    <Target className="w-4 h-4 text-blue-600" />
-                                                    <span>Kỹ thuật trọng tâm</span>
-                                                </div>
-                                                <p className="text-blue-800 dark:text-blue-200/90 leading-relaxed">
-                                                    Vận dụng vòng lặp theo đúng cú pháp chuẩn đã học ở Tab 1. Kiểm tra kỹ bước tăng biến đếm để tránh lặp vô hạn.
+                                                    Đọc kỹ yêu cầu nhập, xuất và ví dụ của bài <strong>{lesson.exercise?.title}</strong>. Thử tự viết mã trước khi xem phản hồi chấm bài.
                                                 </p>
                                             </div>
                                         </div>
@@ -709,24 +796,29 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                                     </div>
                                 </div>
 
-                                <Editor
-                                    height="430px"
+                                <PracticeCodeEditor
                                     language={monacoLang}
-                                    theme="vs-dark"
-                                    value={code}
-                                    onChange={(val) => setCode(val || '')}
-                                    options={{
-                                        fontSize: 13.5,
-                                        fontFamily: "'Fira Code', 'Geist Mono', Consolas, monospace",
-                                        minimap: { enabled: false },
-                                        scrollBeyondLastLine: false,
-                                        automaticLayout: true,
-                                        padding: { top: 14, bottom: 14 },
-                                        lineNumbers: 'on',
-                                        renderLineHighlight: 'all'
+                                    code={code}
+                                    diagnostic={guidanceMatchesCode ? guidance?.diagnostic : undefined}
+                                    readOnly={submittingCode}
+                                    onChange={(val) => {
+                                        invalidateGuidance(true);
+                                        setCode(val || '');
+                                        if (executionOutput) setExecutionOutput(null);
                                     }}
                                 />
                             </div>
+
+                            <PracticeGuidanceCard
+                                key={`${lesson.exercise?.id || lesson.id}:${guidanceSession}`}
+                                exerciseTitle={lesson.exercise?.title || 'bài tập này'}
+                                submitting={submittingCode}
+                                analyzing={analyzingGuidance}
+                                guidance={guidance}
+                                analysisError={guidanceError}
+                                error={executionOutput?.error}
+                                stale={Boolean(guidance && !guidanceMatchesCode)}
+                            />
 
                             {/* Test Execution Output Console */}
                             <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0D121F] shadow-xs overflow-hidden">
@@ -738,7 +830,7 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                                         </span>
                                     </div>
 
-                                    {executionOutput && (
+                                    {executionOutput && !executionOutput.error && (
                                         <span className={`text-xs font-mono font-bold px-3 py-1 rounded-full border ${
                                             executionOutput.isPassed
                                                 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border-emerald-300 dark:border-emerald-500/30'
@@ -760,7 +852,7 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                                     ) : (
                                         <div className="space-y-4">
                                             {/* Top Banner Status */}
-                                            <div className={`p-4 rounded-xl border flex items-center justify-between ${
+                                            {!executionOutput.error && <div className={`p-4 rounded-xl border flex items-center justify-between ${
                                                 executionOutput.isPassed
                                                     ? 'bg-emerald-50/90 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-200'
                                                     : 'bg-rose-50/90 dark:bg-rose-950/30 border-rose-300 dark:border-rose-500/30 text-rose-800 dark:text-rose-200'
@@ -784,15 +876,13 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                                                         </p>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div>}
 
                                             {/* Execution Global Error (if compile error) */}
                                             {executionOutput.error && (
-                                                <div className="p-4 bg-rose-950/80 border border-rose-500/40 rounded-xl text-xs text-rose-200 font-mono whitespace-pre-wrap space-y-1">
-                                                    <span className="font-bold text-rose-400 flex items-center gap-1.5 font-sans">
-                                                        ⚠️ Thông báo lỗi biên dịch / thời gian chạy:
-                                                    </span>
-                                                    <div>{executionOutput.error}</div>
+                                                <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-500/40 rounded-xl text-xs text-amber-800 dark:text-amber-200 space-y-1">
+                                                    <span className="font-bold">Máy chấm chưa trả kết quả. Bạn chưa bị tính là làm sai.</span>
+                                                    <div className="font-mono text-[11px]">{executionOutput.error}</div>
                                                 </div>
                                             )}
 

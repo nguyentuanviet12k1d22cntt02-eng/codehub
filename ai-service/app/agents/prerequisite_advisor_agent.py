@@ -1,5 +1,4 @@
 import math
-import re
 
 
 class PrerequisiteAdvisorAgent:
@@ -10,19 +9,6 @@ class PrerequisiteAdvisorAgent:
 
     def __init__(self, knowledge_graph):
         self.kg = knowledge_graph
-
-    @staticmethod
-    def is_override_confirmation(user_text, pending_confirmation=None):
-        if not isinstance(pending_confirmation, dict) or not pending_confirmation.get("target_concept_id"):
-            return False
-        text = " ".join(str(user_text or "").lower().split())
-        patterns = (
-            r"\btoi van muon\b", r"\bmình vẫn muốn\b", r"\btôi vẫn muốn\b",
-            r"\bvan (?:tao|hoc|tiep tuc)\b", r"\bvẫn (?:tạo|học|tiếp tục)\b",
-            r"\bbo qua (?:de xuat|tien quyet)\b", r"\bbỏ qua (?:đề xuất|tiên quyết)\b",
-            r"^(?:van |vẫn )?tiep tuc(?: di)?$", r"^(?:vẫn )?tiếp tục(?: đi)?$",
-        )
-        return any(re.search(pattern, text) for pattern in patterns)
 
     def assess(self, language, target_concept_id, learner_context=None):
         context = learner_context or {}

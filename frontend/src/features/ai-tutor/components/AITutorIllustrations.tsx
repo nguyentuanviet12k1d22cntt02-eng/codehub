@@ -115,7 +115,7 @@ export const RobotStandingMascot: React.FC<{
                     <span>🐍 Viết hàm xử lý List</span>
                 </button>
                 <button
-                    onClick={() => onSelectStarter('Hãy tạo cho tôi 1 bài tập thực hành Python thích ứng theo năng lực của tôi.')}
+                    onClick={() => onSelectStarter('Hãy tạo bài tập thực hành thích ứng theo năng lực của tôi.')}
                     className="text-xs bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 px-3.5 py-2 rounded-xl transition-all shadow-xs flex items-center gap-1.5 font-medium cursor-pointer"
                 >
                     <span>🎯 Tạo bài tập thích ứng</span>

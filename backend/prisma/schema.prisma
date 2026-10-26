@@ -426,6 +426,7 @@ model PersonalizedLesson {
   title         String
   targetSkillId String   @map("target_skill_id")
   theoryContent String   @map("theory_content") @db.Text
+  practiceExercises Json? @map("practice_exercises")
   isCompleted   Boolean  @default(false) @map("is_completed")
   createdAt     DateTime @default(now()) @map("created_at")
 

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gợi ý nổi — kiểm tra tương tác</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f4f6f9; color: #172033; font: 14px/1.7 system-ui, sans-serif; }
+    main { max-width: 1040px; padding: 32px 20px 120px; margin: auto; }
+    h1 { margin: 0; font-size: 26px; } h2 { font-size: 17px; }
+    .workspace { margin-top: 24px; padding: 24px; background: white; border: 1px solid #dce3ec; border-radius: 20px; }
+    textarea { width: 100%; min-height: 240px; padding: 20px; resize: vertical; border: 1px solid #32415c; border-radius: 12px; background: #101827; color: #e2e8f0; font: 14px/1.8 monospace; }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+    .controls button { padding: 10px 16px; border: 1px solid #cbd5e1; border-radius: 10px; background: white; color: #172033; cursor: pointer; }
+    .controls button:first-child { background: #047857; color: white; border-color: #047857; }
+    .note { color: #536176; } .result { padding: 16px; border-radius: 12px; background: #fff7ed; }
+    .dark body { background: #090f1b; color: #f1f5f9; } .dark .workspace { background: #141e2e; border-color: #334155; }
+    .dark .note { color: #cbd5e1; } .dark .result { background: #30271c; }
+    @media(max-width:600px) { main { padding: 20px 14px 120px; } .workspace { padding: 16px; } h1 { font-size: 22px; } }
+  </style>
+</head>
+<body>
+  <main><h1>Bài thực hành Python</h1><p class="note">Kiểm tra popover trên component thật; trang này không gọi máy chấm hoặc provider.</p><div id="root"></div></main>
+  <script type="module">
+    import React, { useState } from 'react';
+    import { createRoot } from 'react-dom/client';
+    import { PracticeGuidanceCard } from '../src/features/adaptive-learning/components/PracticeGuidanceCard.tsx';
+    const initial = {source:'AI',tone:'thinking',title:'Xây dựng từ điển thông tin nhân viên',reason:'Mã hiện tại chưa tạo từ điển thông tin nhân viên theo yêu cầu.',hint:'Kiểm tra cách tổ chức tên và thông tin nhân viên thành các cặp khóa, giá trị.',location:'Dòng 2'};
+    function App() {
+      const [guidance,setGuidance] = useState(initial);
+      const [stale,setStale] = useState(false);
+      const [session,setSession] = useState(0);
+      const [analyzing,setAnalyzing] = useState(false);
+      const [code,setCode] = useState('# Nhập thông tin nhân viên\nprint("Xin chào")');
+      return React.createElement(React.Fragment,null,
+        React.createElement('section',{className:'workspace'},
+          React.createElement('h2',null,'Mã nguồn của bạn'),
+          React.createElement('label',{htmlFor:'code'},'Soạn mã Python'),
+          React.createElement('textarea',{id:'code',value:code,onChange:event=>{setCode(event.target.value);setStale(true);}}),
+          React.createElement('div',{className:'controls'},
+            React.createElement('button',{id:'btn-analyzing',onClick:()=>{setAnalyzing(true);setGuidance(null);setSession(value=>value+1);}},'Trạng thái 1: Đang phân tích'),
+            React.createElement('button',{id:'btn-ready',onClick:()=>{setAnalyzing(false);setGuidance(initial);setStale(false);setSession(value=>value+1);}},'Trạng thái 2: Hoàn tất phân tích'),
+            React.createElement('button',{onClick:()=>{setAnalyzing(false);setGuidance({...initial,tone:'success',title:'Bạn đã hoàn thành bài này!',reason:'Mã đã vượt qua tất cả các trường hợp kiểm thử.',hint:'Hãy tự giải thích cách tạo và truy cập từng cặp khóa, giá trị.'});setStale(false);setSession(value=>value+1);}},'Bài làm đúng'),
+            React.createElement('button',{id:'btn-theme',onClick:()=>document.documentElement.classList.toggle('dark')},'Đổi sáng / tối')),
+          React.createElement('div',{className:'result'},'Test công khai 1: chưa đạt — bạn có thể đọc gợi ý và sửa mã ngay trên trang này.')),
+        React.createElement(PracticeGuidanceCard,{key:session,guidance,stale,submitting:false,analyzing,analysisError:false,exerciseTitle:'Từ điển nhân viên'}));
+    }
+    createRoot(document.getElementById('root')).render(React.createElement(App));
+  </script>
+</body>
+</html>

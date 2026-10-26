@@ -1,0 +1,121 @@
+# TẠO CHARACTER HEAD ROTATION SPRITE SHEET – 8 HƯỚNG KIM ĐỒNG HỒ
+
+Hãy sử dụng hình ảnh chú thỏ Chibi 2.5D và logo Tin Học Sao Việt mà tôi cung cấp để tạo một Sprite Sheet gồm 8 trạng thái hướng nhìn của đầu.
+
+## 1. YÊU CẦU NHÂN VẬT
+
+- Giữ nguyên 100% thiết kế chú thỏ trong ảnh tham chiếu.
+- Chú thỏ trắng Chibi 2.5D, đầu to, thân nhỏ, tai dài, mắt tròn, má hồng.
+- Mặc áo thun xanh dương đậm.
+- Chính giữa ngực áo có logo Tin Học Sao Việt.
+- Không tự thiết kế lại, thay đổi màu sắc hoặc làm biến dạng logo.
+- Giữ nguyên tỷ lệ, màu sắc, trang phục và phong cách nhân vật.
+
+## 2. CỐ ĐỊNH TUYỆT ĐỐI PHẦN CƠ THỂ
+
+**Đây là yêu cầu bắt buộc.**
+
+Sử dụng một hình cơ thể chính diện duy nhất làm mẫu cho cả 8 trạng thái.
+
+Trong tất cả các hình:
+
+- Thân người luôn hướng thẳng về màn hình.
+- Hai vai, hai tay và hai chân giữ nguyên vị trí.
+- Áo và logo luôn chính diện, không xoay hoặc biến dạng.
+- Không thay đổi kích thước hoặc tư thế cơ thể.
+- Không thay đổi vị trí bàn chân.
+- Không thay đổi góc camera.
+
+**CHỈ ĐƯỢC PHÉP THAY ĐỔI PHẦN ĐẦU TỪ CỔ TRỞ LÊN.**
+
+Coi phần thân đã bị khóa cố định, đầu có thể chuyển động độc lập thông qua khớp cổ.
+
+## 3. TẠO 8 HƯỚNG NHÌN THEO KIM ĐỒNG HỒ
+
+**QUAN TRỌNG:**
+
+Tôi muốn đầu chú thỏ hướng theo 8 vị trí trên mặt đồng hồ, KHÔNG PHẢI xoay đầu 360° quanh trục dọc.
+
+Hãy tưởng tượng chú thỏ đang đứng đối diện người xem, phía trước có một mặt đồng hồ.
+
+Đầu chú thỏ phải hướng theo đúng 8 vị trí sau:
+
+| STT | Vị trí đồng hồ | Góc | Hướng nhìn |
+|---|---|---|---|
+| 1 | 12 giờ | 0° | Ngẩng đầu nhìn thẳng lên trên |
+| 2 | 1 giờ 30 | 45° | Ngẩng đầu nhìn chéo lên bên phải |
+| 3 | 3 giờ | 90° | Quay đầu nhìn ngang sang phải |
+| 4 | 4 giờ 30 | 135° | Cúi đầu nhìn chéo xuống bên phải |
+| 5 | 6 giờ | 180° | Cúi đầu nhìn thẳng xuống dưới |
+| 6 | 7 giờ 30 | 225° | Cúi đầu nhìn chéo xuống bên trái |
+| 7 | 9 giờ | 270° | Quay đầu nhìn ngang sang trái |
+| 8 | 10 giờ 30 | 315° | Ngẩng đầu nhìn chéo lên bên trái |
+
+### Quy tắc chuyển động đầu
+
+- 12h: Đầu ngẩng lên, mắt hướng lên trên.
+- 1h30: Đầu ngẩng và xoay chéo sang phải.
+- 3h: Đầu quay sang phải, mắt nhìn ngang.
+- 4h30: Đầu cúi và xoay chéo xuống phải.
+- 6h: Đầu cúi xuống, mắt nhìn xuống dưới.
+- 7h30: Đầu cúi và xoay chéo xuống trái.
+- 9h: Đầu quay sang trái, mắt nhìn ngang.
+- 10h30: Đầu ngẩng và xoay chéo lên trái.
+
+**Lưu ý đặc biệt:**
+
+- Đây là 8 hướng nhìn trong không gian phía trước nhân vật.
+- Không tạo góc nhìn từ phía sau đầu.
+- Không để chú thỏ quay lưng về phía người xem.
+- Đầu phải thực sự ngẩng, cúi hoặc quay theo hướng tương ứng, không chỉ di chuyển con ngươi.
+- Hai tai chuyển động tự nhiên theo góc nghiêng của đầu.
+- Cổ luôn kết nối tự nhiên với thân.
+- Giữ nguyên biểu cảm đáng yêu của nhân vật.
+- Không xoay nghiêng toàn bộ cơ thể theo hướng đầu.
+
+## 4. BỐ CỤC SPRITE SHEET
+
+- Tạo chính xác 8 hình nhân vật toàn thân.
+- Bố cục 2 hàng × 4 cột.
+- Sắp xếp theo thứ tự chiều kim đồng hồ, bắt đầu từ 12h.
+- Mỗi hình có cùng kích thước.
+- Phần thân của 8 hình phải giống hệt nhau.
+- Vị trí bàn chân phải thẳng hàng.
+- Khoảng cách giữa các hình đồng đều.
+- Nền PNG trong suốt (Transparent Background).
+- Không thêm chữ, số, khung viền hoặc vật thể trang trí.
+- Hình ảnh 2.5D sắc nét, chất lượng cao.
+
+## 5. KIỂM TRA TÍNH ĐỒNG NHẤT
+
+Trước khi xuất ảnh, hãy kiểm tra:
+
+1. Cả 8 hình sử dụng cùng một phần thân.
+2. Logo Tin Học Sao Việt không thay đổi.
+3. Tay, chân, vai và áo trùng khớp hoàn toàn.
+4. Chỉ đầu, tai và các chi tiết khuôn mặt thay đổi theo hướng nhìn.
+5. Mỗi hướng nhìn phải tương ứng chính xác với vị trí kim đồng hồ.
+6. Không nhầm chuyển động ngẩng/cúi đầu với xoay đầu ra phía sau.
+
+Nếu đặt chồng 8 hình lên nhau và căn chỉnh theo bàn chân, **toàn bộ phần thân phải trùng khớp 100%.**
+
+Nếu không thể vẽ lại 8 cơ thể giống hệt nhau, hãy sử dụng một phần thân gốc duy nhất và ghép 8 trạng thái đầu khác nhau.
+
+## 6. MỤC ĐÍCH SỬ DỤNG
+
+Sprite Sheet sẽ được sử dụng làm mascot AI tương tác trên website giáo dục.
+
+Khi người dùng di chuyển chuột, đầu chú thỏ sẽ thay đổi hướng nhìn tương ứng với vị trí con trỏ:
+
+- Chuột ở trên → Nhìn 12h.
+- Chuột ở trên bên phải → Nhìn 1h30.
+- Chuột ở bên phải → Nhìn 3h.
+- Chuột ở dưới bên phải → Nhìn 4h30.
+- Chuột ở dưới → Nhìn 6h.
+- Chuột ở dưới bên trái → Nhìn 7h30.
+- Chuột ở bên trái → Nhìn 9h.
+- Chuột ở trên bên trái → Nhìn 10h30.
+
+**ƯU TIÊN CAO NHẤT:**
+
+Giữ nguyên tuyệt đối phần thân và logo. Chỉ thay đổi hướng đầu theo 8 vị trí kim đồng hồ, tạo chuyển động tự nhiên, chính xác và phù hợp để lập trình animation theo con trỏ chuột.

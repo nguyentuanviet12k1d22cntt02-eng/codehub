@@ -1,6 +1,5 @@
 import os
 import json
-import re
 import unicodedata
 from typing import Dict, List, Any, Optional
 
@@ -67,6 +66,9 @@ TOPIC_ALIASES = {
         "for each": "JS-ARRAY-HOF-01",
         "higher order array": "JS-ARRAY-HOF-01",
         "map filter reduce": "JS-ARRAY-HOF-01",
+        "filter": "JS-ARRAY-HOF-01",
+        "reduce": "JS-ARRAY-HOF-01",
+        "map": "JS-ARRAY-HOF-01",
         "destructuring": "JS-DESTRUCT-01",
         "spread rest": "JS-SPREADREST-01",
         "prototype": "JS-PROTO-01",
@@ -172,7 +174,19 @@ TOPIC_ALIASES = {
 def _fold_topic(value: str) -> str:
     value = value.lower().replace("đ", "d")
     value = "".join(c for c in unicodedata.normalize("NFD", value) if unicodedata.category(c) != "Mn")
-    return re.sub(r"[^a-z0-9]+", " ", value).strip()
+    return " ".join("".join(c if c.isascii() and c.isalnum() else " " for c in value).split())
+
+
+def lesson_frontmatter_value(content: str, key: str) -> Optional[str]:
+    """Read one simple YAML frontmatter scalar without matching user text."""
+    for line in content[:1200].splitlines():
+        name, separator, value = line.partition(":")
+        if separator and name.strip() == key:
+            value = value.strip()
+            if len(value) >= 2 and value[0] == value[-1] and value[0] in ('"', "'"):
+                return value[1:-1]
+            return value
+    return None
 
 
 class KnowledgeGraphService:
@@ -201,6 +215,7 @@ class KnowledgeGraphService:
         self.topic_index: Dict[str, Dict[str, str]] = {}
         self.lesson_code_index: Dict[str, Dict[str, str]] = {}
         self.lesson_title_index: Dict[str, Dict[str, str]] = {}
+        self.lesson_catalog_index: Dict[str, Dict[str, Dict[str, List[str]]]] = {}
         
         self._load_graphs()
         self._initialized = True
@@ -245,6 +260,7 @@ class KnowledgeGraphService:
         self.topic_index[lang] = {}
         self.lesson_code_index[lang] = {}
         self.lesson_title_index[lang] = {}
+        self.lesson_catalog_index[lang] = {}
 
         # 1. Index skills
         for skill in gdata.get("skills", []):
@@ -257,18 +273,12 @@ class KnowledgeGraphService:
 
             # Index keywords and names to help resolve topic
             name_lower = _fold_topic(skill.get("name") or "")
-            scope_lower = _fold_topic(skill.get("scope") or "")
             topic_id = _fold_topic(skill.get("topic_id") or "")
             
             self.topic_index[lang][cid.lower()] = cid
             self.topic_index[lang][name_lower] = cid
             if topic_id:
                 self.topic_index[lang][topic_id] = cid
-
-            # Parse keywords in scope
-            for kw in scope_lower.split():
-                if len(kw) > 3:
-                    self.topic_index[lang][kw] = cid
 
         # 2. Build DAG edges
         for edge in gdata.get("edges", []):
@@ -294,6 +304,8 @@ class KnowledgeGraphService:
         self.lesson_code_index[lang] = {
             code.upper(): concept_id for code, concept_id in lesson_mappings.items()
         }
+        for lesson_code, concept_id in lesson_mappings.items():
+            self.lesson_catalog_index[lang].setdefault(concept_id, {"codes": [], "titles": []})["codes"].append(lesson_code)
 
         def register_title(title: Any, concept_id: str) -> None:
             normalized = _fold_topic(str(title))
@@ -304,6 +316,9 @@ class KnowledgeGraphService:
             # to the same graph skill. Keep the first stable match otherwise.
             if existing is None or existing == concept_id:
                 self.lesson_title_index[lang][normalized] = concept_id
+                titles = self.lesson_catalog_index[lang].setdefault(concept_id, {"codes": [], "titles": []})["titles"]
+                if str(title) not in titles:
+                    titles.append(str(title))
 
         for title, concept_id in gdata.get("lesson_title_mappings", {}).items():
             register_title(title, str(concept_id))
@@ -329,14 +344,11 @@ class KnowledgeGraphService:
                         content = source.read()
                 except OSError:
                     continue
-                lesson_match = re.search(r'^lessonId:\s*["\']?([^"\'\r\n]+)', content, re.MULTILINE)
-                title_match = re.search(r'^title:\s*(.+)$', content, re.MULTILINE)
-                if not lesson_match or not title_match:
+                lesson_id = lesson_frontmatter_value(content, "lessonId")
+                title = lesson_frontmatter_value(content, "title")
+                if not lesson_id or not title:
                     continue
-                title = title_match.group(1).strip()
-                if len(title) >= 2 and title[0] == title[-1] and title[0] in {'"', "'"}:
-                    title = title[1:-1]
-                titles.append((lesson_match.group(1).strip(), title))
+                titles.append((lesson_id, title))
         return titles
 
     def list_all_concepts(self, language: str) -> List[Dict[str, Any]]:
@@ -423,31 +435,9 @@ class KnowledgeGraphService:
         aliases = TOPIC_ALIASES.get(lang, {})
         if topic_clean in aliases and aliases[topic_clean] in self.concept_index.get(lang, {}):
             return aliases[topic_clean]
-        for alias in sorted(aliases, key=len, reverse=True):
-            if re.search(rf"(?<![a-z0-9]){re.escape(alias)}(?![a-z0-9])", topic_clean):
-                concept_id = aliases[alias]
-                if concept_id in self.concept_index.get(lang, {}):
-                    return concept_id
-
         # Direct normalized name/topic match in index.
         if topic_clean in self.topic_index.get(lang, {}):
             return self.topic_index[lang][topic_clean]
-
-        # Token overlap is only a final fallback. It cannot match a short
-        # topic against a concept ID (the old `dict` -> `PY-DICT-01` accident).
-        topic_tokens = set(topic_clean.split())
-        scored = []
-        for cid, skill in self.concept_index.get(lang, {}).items():
-            searchable = _fold_topic(" ".join([
-                skill.get("name") or "",
-                skill.get("scope") or "",
-                skill.get("topic_id") or "",
-            ]))
-            overlap = len(topic_tokens.intersection(searchable.split()))
-            if overlap:
-                scored.append((overlap, -int(skill.get("difficulty_level") or 0), cid))
-        if scored:
-            return sorted(scored, reverse=True)[0][2]
 
         return None
 
@@ -466,7 +456,7 @@ class KnowledgeGraphService:
         for title, concept_id in sorted(
             self.lesson_title_index.get(lang, {}).items(), key=lambda item: len(item[0]), reverse=True,
         ):
-            if len(title) >= 4 and re.search(rf"(?<![a-z0-9]){re.escape(title)}(?![a-z0-9])", normalized_text):
+            if len(title) >= 4 and f" {title} " in f" {normalized_text} ":
                 return concept_id
         return None
 

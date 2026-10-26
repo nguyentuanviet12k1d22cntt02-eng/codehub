@@ -1,5 +1,8 @@
+import ast
 import json
+import re
 from app.pipeline.contracts import ExerciseDraft
+from app.pipeline.problem_statement import validate_statement, validate_task_wording
 
 
 class SchemaValidator:
@@ -10,6 +13,8 @@ class SchemaValidator:
         except Exception as exc:
             return False, [str(exc)[:1600]]
         errors = []
+        if draft.statement_format_version == 2:
+            errors.extend(validate_statement(draft, spec.execution.get("mode", "stdio") if spec else "stdio"))
         tests = draft.test_cases
         if draft.starter_code.strip() == draft.reference_solution.strip():
             errors.append("starter_code trùng reference_solution. Starter phải là khung TODO, không chứa nghiệm mẫu.")
@@ -21,6 +26,22 @@ class SchemaValidator:
         if len(set(signatures)) != len(signatures):
             errors.append("Test bị lặp đầu vào/fixture")
         if spec:
+            errors.extend(validate_task_wording(draft, spec))
+            if spec.language == "python" and spec.learner_evidence.get("avoid_function_syntax"):
+                for field in ("starter_code", "reference_solution"):
+                    try:
+                        tree = ast.parse(getattr(draft, field))
+                    except SyntaxError:
+                        continue  # The syntax validator reports the exact location.
+                    if any(isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda))
+                           for node in ast.walk(tree)):
+                        errors.append(f"{field} đòi hỏi hàm khi học viên chưa học hàm; dùng chương trình stdin/stdout.")
+            if spec.learner_evidence.get("avoid_function_syntax"):
+                descriptions = [draft.problem_statement, draft.quick_theory, *draft.constraints,
+                                *draft.hints.model_dump().values()]
+                if any(re.search(r"\bsolution\s*\(|\bdef\s+\w+\s*\(|\bfunction\s+\w+\s*\(", text)
+                       for text in descriptions):
+                    errors.append("Đề hoặc gợi ý đòi hỏi khai báo hàm khi học viên chưa học hàm.")
             for index, tc in enumerate(tests):
                 if spec.execution.get("mode") == "function":
                     if tc.input is not None:

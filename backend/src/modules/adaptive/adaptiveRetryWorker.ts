@@ -1,6 +1,6 @@
 import { consumeSse } from './sse';
-import { internalHeaders, resumeCheckpoint, verifiedTargetConcept } from './adaptiveEvidence';
-import { claimRetry, deferRun, dueRetries, finishRun, saveStage } from './adaptiveRepository';
+import { internalHeaders, mergeReviewReport, resumeCheckpoint, reviewCheckpoint, verifiedTargetConcept } from './adaptiveEvidence';
+import { claimRetry, deferRun, dueRetries, finishRetryRun, saveStage } from './adaptiveRepository';
 import { isRetryableProviderFailure, providerRetryDelay, upstreamPipelineTimeoutMs } from './adaptive.controller';
 
 let active=false;
@@ -10,7 +10,8 @@ async function retryRun(row:any) {
     // when the stored schema, constraints and sandbox receipts are all valid.
     const priorRecords=Array.isArray(row.report?.agent_traces)?row.report.agent_traces:[];
     const sequenceOffset=priorRecords.reduce((highest:number,record:any)=>Math.max(highest,Number(record.sequence)||0),0);
-    const checkpoint=resumeCheckpoint(row.report);
+    const isReviewMode=row.request?.review_mode===true;
+    const checkpoint=isReviewMode?reviewCheckpoint(row.report):resumeCheckpoint(row.report);
     const targetConceptId=row.request?.target_concept_id || verifiedTargetConcept(row.report);
     const body=JSON.stringify({...row.request,
         ...(targetConceptId?{target_concept_id:targetConceptId}:{}),
@@ -32,15 +33,18 @@ async function retryRun(row:any) {
             else if(event.type==='error') throw Error(event.error||'AI_STREAM_FAILED');
         });
         if(!report||report.trace_id!==row.trace_id) throw Error('AI_STREAM_INCOMPLETE');
+        if(report.exercise && (report.status!=='SUCCEEDED'||!report.agent_traces?.some((step:any)=>
+            step.agent==='PublicationGate'&&step.status==='SUCCEEDED'&&step.output?.approved===true))) throw Error('PUBLICATION_GATE_MISSING');
     } catch(error:any) {
         const errorCode=error?.message==='RESUME_CHECKPOINT_TOO_LARGE'?'RESUME_CHECKPOINT_TOO_LARGE':error.name==='AbortError'?'RUN_DEADLINE_EXCEEDED':'TRANSPORT_OR_STORAGE_ERROR';
         report={trace_id:row.trace_id,schema_version:'4.0',status:'FAILED',exercise:null,agent_traces:[],fallback_used:false,
             reply:'Lần thử lại chưa hoàn thành; yêu cầu vẫn được lưu.',error:{code:errorCode,message:error.message}};
     } finally { clearTimeout(timer); }
-    const merged={...report,agent_traces:[...(row.report?.agent_traces||[]),...(report.agent_traces||[])]};
+    const merged=isReviewMode?mergeReviewReport(row.report,report):
+        {...report,agent_traces:[...(row.report?.agent_traces||[]),...(report.agent_traces||[])]};
     if(isRetryableProviderFailure(report.error?.code)&&row.retry_count<2) {
         await deferRun(row.trace_id,{...merged,status:'WAITING_PROVIDER',reply:'Provider chưa sẵn sàng; yêu cầu được xếp lịch thử lại.'},providerRetryDelay(report.error,row.retry_count));
-    } else await finishRun(row.trace_id,merged);
+    } else await finishRetryRun(row.trace_id,row.session_id,merged);
 }
 
 export async function retryAdaptiveRuns() {

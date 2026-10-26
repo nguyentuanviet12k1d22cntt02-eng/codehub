@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kiểm tra 8 hướng mascot thỏ</title>
+  <style>
+    body { margin: 0; padding: 24px; background: #f3f6fa; color: #142136; font: 14px system-ui; }
+    main { max-width: 760px; margin: auto; } h1 { font-size: 22px; margin: 0 0 8px; }
+    .lab { position: relative; width: 360px; height: 360px; margin: 24px auto; border: 1px solid #d9e2ef; border-radius: 50%; background: #fff; }
+    .lab__subject { position: absolute; left: 50%; top: 50%; margin-left: -38px; margin-top: -42px; }
+    .lab button { position: absolute; width: 86px; height: 44px; margin: -22px 0 0 -43px; border: 1px solid #b9cdec; border-radius: 12px; background: #edf5ff; color: #1e40af; cursor: pointer; }
+    .lab button:focus-visible { outline: 3px solid #60a5fa; }
+    .note { color: #52647e; line-height: 1.5; } .practice-guide { margin-top: 24px; }
+    @media (max-width: 430px) { body { padding: 12px; } .lab { width: 300px; height: 300px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Kiểm tra mascot thỏ — 8 hướng</h1>
+    <p class="note">Di chuyển chuột đến từng nút. Nút không điều khiển frame bằng mã; mascot nhận sự kiện con trỏ thật.</p>
+    <div id="root"></div>
+  </main>
+  <script type="module">
+    import React from 'react';
+    import { createRoot } from 'react-dom/client';
+    import { RabbitMascot } from '../src/features/adaptive-learning/components/RabbitMascot.tsx';
+    import { PracticeGuidanceCard } from '../src/features/adaptive-learning/components/PracticeGuidanceCard.tsx';
+    const directions = [
+      ['N · 12h',50,7],['NE · 1h30',83,17],['E · 3h',93,50],['SE · 4h30',83,83],
+      ['S · 6h',50,93],['SW · 7h30',17,83],['W · 9h',7,50],['NW · 10h30',17,17]
+    ];
+    createRoot(document.getElementById('root')).render(React.createElement(React.Fragment,null,
+      React.createElement('div',{className:'lab'},
+        React.createElement('div',{className:'lab__subject'},React.createElement(RabbitMascot,{mood:'idle'})),
+        ...directions.map(([name,x,y])=>React.createElement('button',{key:name,style:{left:x+'%',top:y+'%'}},name))),
+      React.createElement(PracticeGuidanceCard,{submitting:false,analyzing:false,analysisError:false,exerciseTitle:'Bài thực hành hiện tại'})));
+  </script>
+</body>
+</html>
