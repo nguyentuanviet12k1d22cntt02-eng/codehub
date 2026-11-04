@@ -18,6 +18,8 @@ RUN npm prune --production
 # STAGE 2: Runner
 FROM node:20-alpine AS runner
 
+RUN apk add --no-cache python3
+
 WORKDIR /app
 
 COPY --from=builder /app/package*.json ./
