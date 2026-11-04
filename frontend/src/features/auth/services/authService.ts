@@ -4,7 +4,7 @@ import { API_BASE_URL } from '../../../config/api';
 const API_URL = `${API_BASE_URL}/api/auth`;
 
 export const authService = {
-    register: async (userData: any) => {
+    register: async (userData: {username:string;email:string;password:string;role?:string}) => {
         const response = await axios.post(`${API_URL}/register`, userData, { timeout: 12000 });
         return response.data;
     },
@@ -19,7 +19,7 @@ export const authService = {
         return response.data;
     },
 
-    login: async (userData: any) => {
+    login: async (userData: {email:string;password:string}) => {
         const response = await axios.post(`${API_URL}/login`, userData, { timeout: 12000 });
         return response.data;
     },
@@ -37,8 +37,8 @@ export const authService = {
         return response.data;
     },
 
-    getLessonDetail: async (id: string) => {
-        const response = await axios.get(`${API_URL}/lesson/${id}`);
+    getLessonDetail: async (id: string, signal?: AbortSignal) => {
+        const response = await axios.get(`${API_URL}/lesson/${id}`, { signal });
         return response.data;
     },
 

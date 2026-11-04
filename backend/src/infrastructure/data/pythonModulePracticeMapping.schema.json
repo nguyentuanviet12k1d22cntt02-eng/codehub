@@ -1,0 +1,328 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "palnet-module-practice-mapping/1.0"
+    },
+    "mappingVersion": {
+      "type": "string",
+      "const": "python-module-practice-20261103-v1"
+    },
+    "graphVersion": {
+      "type": "string",
+      "const": "2.1"
+    },
+    "graphSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "p0CatalogSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "contractSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "reviewDecisionsSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "automaticRecommendationEnabled": {
+      "type": "boolean",
+      "const": false
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "courseId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+        },
+        "modules": {
+          "type": "number",
+          "const": 8
+        },
+        "banks": {
+          "type": "number",
+          "const": 9
+        },
+        "exercises": {
+          "type": "number",
+          "const": 208
+        }
+      },
+      "required": [
+        "courseId",
+        "modules",
+        "banks",
+        "exercises"
+      ],
+      "additionalProperties": false
+    },
+    "limitation": {
+      "type": "string"
+    },
+    "rows": {
+      "minItems": 208,
+      "maxItems": 208,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "exerciseId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "courseId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "lessonContentId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "moduleCode": {
+            "type": "string",
+            "pattern": "^MOD-0[1-8]$"
+          },
+          "bankCode": {
+            "type": "string"
+          },
+          "sourceKey": {
+            "type": "string"
+          },
+          "sourcePosition": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "EASY",
+              "MEDIUM",
+              "HARD"
+            ]
+          },
+          "contentVersion": {
+            "type": "string",
+            "pattern": "^python-content-v1:[a-f0-9]{64}$"
+          },
+          "inventoryContentVersion": {
+            "type": "string",
+            "pattern": "^palnet-inventory-content\\/1\\.0:[a-f0-9]{64}$"
+          },
+          "mappingVersion": {
+            "type": "string"
+          },
+          "primarySkillId": {
+            "type": "string",
+            "pattern": "^PY-[A-Z]+-\\d{2}$"
+          },
+          "secondarySkillIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^PY-[A-Z]+-\\d{2}$"
+            }
+          },
+          "prerequisiteSkillIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^PY-[A-Z]+-\\d{2}$"
+            }
+          },
+          "mappingStatus": {
+            "type": "string",
+            "const": "REVIEWED"
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 10
+          },
+          "contentReview": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "APPROVED_FOR_P1",
+                  "EXCLUDED_PENDING_REPAIR"
+                ]
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "notes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "status",
+              "issues",
+              "notes"
+            ],
+            "additionalProperties": false
+          },
+          "sandbox": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "PASS",
+                  "REFERENCE_TEST_MISMATCH"
+                ]
+              },
+              "evidencePath": {
+                "type": "string"
+              },
+              "evidenceSha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "testCount": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "passed": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "status",
+              "evidencePath",
+              "evidenceSha256",
+              "testCount",
+              "passed"
+            ],
+            "additionalProperties": false
+          },
+          "eligibility": {
+            "type": "string",
+            "enum": [
+              "P1_ELIGIBLE",
+              "EXCLUDED"
+            ]
+          },
+          "modelSupport": {
+            "type": "string",
+            "const": "P2_NOT_EVALUATED"
+          },
+          "provenance": {
+            "type": "object",
+            "properties": {
+              "taskId": {
+                "type": "string"
+              },
+              "reviewedAt": {
+                "type": "string",
+                "const": "2026-11-03"
+              },
+              "reviewMethod": {
+                "type": "string",
+                "const": "CODEX_STATEMENT_REFERENCE_TEST_CONTRACT_REVIEW"
+              },
+              "statementSha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "referenceSolutionSha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "testContractSha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "reviewDecisionSha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "sourceSeedSha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "secondarySemantics": {
+                "type": "string",
+                "const": "REQUIRED_SUPPORT_OR_OBSERVED_REFERENCE_STRATEGY"
+              }
+            },
+            "required": [
+              "taskId",
+              "reviewedAt",
+              "reviewMethod",
+              "statementSha256",
+              "referenceSolutionSha256",
+              "testContractSha256",
+              "reviewDecisionSha256",
+              "sourceSeedSha256",
+              "secondarySemantics"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "exerciseId",
+          "courseId",
+          "lessonContentId",
+          "moduleCode",
+          "bankCode",
+          "sourceKey",
+          "sourcePosition",
+          "title",
+          "difficulty",
+          "contentVersion",
+          "inventoryContentVersion",
+          "mappingVersion",
+          "primarySkillId",
+          "secondarySkillIds",
+          "prerequisiteSkillIds",
+          "mappingStatus",
+          "rationale",
+          "contentReview",
+          "sandbox",
+          "eligibility",
+          "modelSupport",
+          "provenance"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "mappingVersion",
+    "graphVersion",
+    "graphSha256",
+    "p0CatalogSha256",
+    "contractSha256",
+    "reviewDecisionsSha256",
+    "automaticRecommendationEnabled",
+    "scope",
+    "limitation",
+    "rows"
+  ],
+  "additionalProperties": false
+}

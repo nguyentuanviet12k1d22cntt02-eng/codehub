@@ -1,5 +1,7 @@
 import * as acorn from 'acorn';
 import { spawnSync } from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export interface CodeConstraintConfig {
     requireComment?: boolean;
@@ -9,9 +11,12 @@ export interface CodeConstraintConfig {
     requiredClasses?: string[];
     customErrorMessage?: string;
     noGlobalLeakInFunctions?: boolean;
+    requiredConstructs?: string[];
+    forbiddenConstructs?: string[];
 }
 
 export interface AnalysisResult {
+    infrastructureError?: boolean;
     isValid: boolean;
     error: string | null;
     warnings: string[];
@@ -383,13 +388,97 @@ export class StaticCodeAnalyzer {
         const pythonScript = `
 import ast, json, sys
 
-code = sys.stdin.read()
+code = sys.stdin.buffer.read().decode('utf-8')
 
 try:
     tree = ast.parse(code)
 except SyntaxError as e:
     print(json.dumps({"error": f"Lỗi cú pháp Python (SyntaxError): {e.msg} tại dòng {e.lineno}"}))
     sys.exit(0)
+
+req_constructs = json.loads(sys.argv[1]) if len(sys.argv) > 1 else []
+forb_constructs = json.loads(sys.argv[2]) if len(sys.argv) > 2 else []
+
+if req_constructs or forb_constructs:
+    found = set()
+    def is_empty_iter(iter_node):
+        if isinstance(iter_node, (ast.List, ast.Tuple, ast.Set)) and len(iter_node.elts) == 0:
+            return True
+        if isinstance(iter_node, ast.Dict) and len(iter_node.keys) == 0:
+            return True
+        if isinstance(iter_node, ast.Call) and isinstance(iter_node.func, ast.Name) and iter_node.func.id == "range":
+            if len(iter_node.args) == 1 and isinstance(iter_node.args[0], ast.Constant) and iter_node.args[0].value == 0:
+                return True
+        return False
+
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.For, ast.AsyncFor, ast.comprehension)):
+            if hasattr(node, 'iter') and not is_empty_iter(node.iter):
+                found.add("for")
+            elif not hasattr(node, 'iter'):
+                found.add("for")
+        elif isinstance(node, ast.While):
+            if not (isinstance(node.test, ast.Constant) and not bool(node.test.value)):
+                found.add("while")
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            found.add("function")
+            found.add("def:" + node.name)
+        elif isinstance(node, ast.ClassDef):
+            found.add("class")
+            found.add("class:" + node.name)
+        elif isinstance(node, ast.Lambda):
+            found.add("lambda")
+        elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
+            found.add("read:" + node.id)
+        elif isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name):
+                found.add("call:" + node.func.id)
+            elif isinstance(node.func, ast.Attribute):
+                found.add("call:" + node.func.attr)
+
+    target_fns = set()
+    for r in req_constructs:
+        for alt in r.split("|"):
+            if alt.startswith("def:"):
+                target_fns.add(alt[4:])
+
+    fn_nodes = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+    if not target_fns:
+        reachable = set()
+        call_graph = {}
+        for fn in fn_nodes:
+            call_graph[fn.name] = set(c.func.id for c in ast.walk(fn) if isinstance(c, ast.Call) and isinstance(c.func, ast.Name))
+        queue = [c.func.id for n in tree.body if not isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+                 for c in ast.walk(n) if isinstance(c, ast.Call) and isinstance(c.func, ast.Name)]
+        while queue:
+            curr = queue.pop(0)
+            if curr not in reachable:
+                reachable.add(curr)
+                if curr in call_graph:
+                    queue.extend(call_graph[curr])
+        for fn in fn_nodes:
+            if fn.name in reachable:
+                if any(isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == fn.name for n in ast.walk(fn)):
+                    found.add("recursion")
+    else:
+        for fn in fn_nodes:
+            if fn.name in target_fns:
+                if any(isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == fn.name for n in ast.walk(fn)):
+                    found.add("recursion")
+
+    for req in req_constructs:
+        if "|" in req:
+            if not any(alt in found for alt in req.split("|")):
+                print(json.dumps({"error": f"CONSTRAINT_REQUIRED:{req}"}))
+                sys.exit(0)
+        elif req not in found:
+            print(json.dumps({"error": f"CONSTRAINT_REQUIRED:{req}"}))
+            sys.exit(0)
+
+    for forb in forb_constructs:
+        if forb in found:
+            print(json.dumps({"error": f"CONSTRAINT_FORBIDDEN:{forb}"}))
+            sys.exit(0)
 
 global_vars = set()
 for node in tree.body:
@@ -427,12 +516,19 @@ else:
 `;
 
         try {
-            const proc = spawnSync('python', ['-c', pythonScript], {
+            const pythonCmd = fs.existsSync(path.join(process.cwd(), '.venv/Scripts/python.exe'))
+                ? path.join(process.cwd(), '.venv/Scripts/python.exe')
+                : 'python';
+            const proc = spawnSync(pythonCmd, ['-I', '-X', 'utf8', '-c', pythonScript, JSON.stringify(config.requiredConstructs || []), JSON.stringify(config.forbiddenConstructs || [])], {
                 input: code,
                 encoding: 'utf-8',
+                env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
                 timeout: 3000
             });
 
+            if (proc.error || proc.status !== 0 || !proc.stdout) {
+                return { isValid: false, error: "AST_ANALYZER_UNAVAILABLE", warnings, infrastructureError: true };
+            }
             if (proc.status === 0 && proc.stdout) {
                 const res = JSON.parse(proc.stdout.trim());
                 if (res.error) {
@@ -440,7 +536,7 @@ else:
                 }
             }
         } catch (e) {
-            console.warn('[StaticCodeAnalyzer] Bỏ qua kiểm tra Python AST ngoại vi:', e);
+            return { isValid: false, error: 'AST_ANALYZER_UNAVAILABLE', warnings, infrastructureError: true };
         }
 
         // Kiểm tra từ khóa bắt buộc / cấm

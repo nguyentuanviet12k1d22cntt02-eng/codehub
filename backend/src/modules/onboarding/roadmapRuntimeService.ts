@@ -6,6 +6,7 @@ import { loadPythonBasicsPilotCatalog, PilotCatalog } from './pythonBasicsLesson
 import { planPythonBasicsRoadmap, PlannedLesson, SkillSignal } from './roadmapPlanner';
 import { verifiedPythonBasicsCompletions, VerifiedLessonCompletion } from './roadmapCompletionEvidence';
 import { withRoadmapTransactionRetry } from './roadmapTransactionRetry';
+import { getPalnetAdvice, PALNET_POLICY_VERSION } from './palnetRuntimeClient';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const detail = { items: { orderBy: { orderIndex: 'asc' as const } } };
@@ -53,6 +54,16 @@ function serialize(roadmap: any): RoadmapDto {
       quizScore: item.quizScore, practicalPassed: item.practicalPassed,
       startedAt: item.startedAt?.toISOString() ?? null,
       completedAt: item.completedAt?.toISOString() ?? null,
+      recommendation: {
+        engine: record(item.selectionEvidence) && item.selectionEvidence.effectivePolicy === 'PALNET_ADVISORY'
+          ? 'PALNET_ADVISORY' : 'RULE_BASED',
+        modelVersion: record(item.selectionEvidence) && typeof item.selectionEvidence.modelVersion === 'string'
+          ? item.selectionEvidence.modelVersion : null,
+        predictedCorrectness: record(item.selectionEvidence) && typeof item.selectionEvidence.predictedCorrectness === 'number'
+          ? item.selectionEvidence.predictedCorrectness : null,
+        fallbackReason: record(item.selectionEvidence) && typeof item.selectionEvidence.fallback === 'string'
+          ? item.selectionEvidence.fallback : null,
+      },
     })),
   };
 }
@@ -81,14 +92,21 @@ function roadmapItemData(
         passedExerciseCount: proof.passedExerciseCount,
       } as Prisma.InputJsonValue : undefined,
       selectionEvidence: {
-        source: item.weakness === null ? 'NO_SKILL_EVIDENCE' : 'PRETEST',
+        source: item.effectivePolicy === 'PALNET_ADVISORY' ? 'PALNET_ADVISORY' : item.weakness === null ? 'NO_SKILL_EVIDENCE' : 'PRETEST',
         assessmentId, policyVersion: catalog.policyVersion,
         effectivePolicy: item.effectivePolicy,
-        fallback: item.weakness === null ? 'NO_VERIFIED_SKILL_EVIDENCE' : 'NO_COMPLETE_VALIDATED_IN_DOMAIN_SIGNALS',
+        fallback: item.advisory?.modelVersion ? null : item.advisory?.fallback ?? (item.weakness === null ? 'NO_VERIFIED_SKILL_EVIDENCE' : 'NO_COMPLETE_VALIDATED_IN_DOMAIN_SIGNALS'),
         mappingVersion: catalog.mappingVersion, graphVersion: catalog.graphVersion,
         contentSha256: item.lesson.contentSha256, weakness: item.weakness,
         confidence: item.confidence, prerequisiteLessonIds: item.lesson.prerequisiteLessonIds,
-        modelVersion: null,
+        modelVersion: item.advisory?.modelVersion ?? null,
+        predictedCorrectness: item.predictedCorrectness ?? null,
+        checkpointSha256: item.advisory?.checkpointSha256 ?? null,
+        inputSha256: item.advisory?.inputSha256 ?? null,
+        cutoff: item.advisory?.cutoff ?? null,
+        historyCount: item.advisory?.historyCount ?? 0,
+        runtimePolicyVersion: PALNET_POLICY_VERSION,
+        evaluationStatus: item.advisory?.modelVersion ? 'SYNTHETIC_EXPLORATORY' : null,
       } as Prisma.InputJsonValue,
     };
   });
@@ -123,7 +141,8 @@ export class RoadmapRuntimeService {
     const completedLessonIds = new Set(verifiedCompletion.keys());
     // Keep the complete curriculum visible. Verified lessons are marked completed
     // instead of being removed from the roadmap.
-    const plan = planPythonBasicsRoadmap(catalog.lessons, new Set(), signals);
+    const advisory = await getPalnetAdvice(userId, catalog);
+    const plan = planPythonBasicsRoadmap(catalog.lessons, new Set(), signals, advisory);
     const firstIncomplete = plan.find(item => !completedLessonIds.has(item.lesson.lessonId));
     if (firstIncomplete && !firstIncomplete.lesson.prerequisiteLessonIds.every(id => completedLessonIds.has(id))) {
       throw new Error('ROADMAP_CONTRACT_VIOLATION: Bài mở đầu chưa đủ điều kiện tiên quyết.');
@@ -136,7 +155,7 @@ export class RoadmapRuntimeService {
           policyVersion: catalog.policyVersion, mappingVersion: catalog.mappingVersion,
           catalogVersion: catalog.catalogVersion, catalogSha256: catalog.catalogSha256,
           title: 'Lộ trình Python Basics từ kết quả Pre-test',
-          description: 'Thứ tự bài được chọn từ kết quả Pre-test và điều kiện tiên quyết. Bài sau mở khi bạn hoàn thành bài trước.',
+          description: 'Lộ trình kết hợp bằng chứng học tập, gợi ý PAL-Net thử nghiệm khi đủ điều kiện và quy tắc dự phòng. Bài sau mở khi hoàn thành bài trước.',
           status: firstIncomplete ? 'ACTIVE' : 'COMPLETED', totalItems: plan.length,
           completedItems: completedLessonIds.size,
           items: { create: roadmapItemData(plan, completedLessonIds, verifiedCompletion, assessmentId, catalog) },
@@ -180,8 +199,14 @@ export class RoadmapRuntimeService {
 
   public async sync(userId: string, id: string): Promise<RoadmapDto> {
     // Catalog is checked before any state change. A changed lesson stays closed.
-    await this.get(userId, id);
+    const current = await this.get(userId, id);
     const catalog = await loadPythonBasicsPilotCatalog();
+    // Network inference finishes before taking the database transaction lock.
+    const advisory = await getPalnetAdvice(userId, catalog);
+    const assessed = await prisma.pretestAssessment.findUniqueOrThrow({ where: { id: current.assessmentId } });
+    const assessmentSignals = signalsFromAssessment(
+      assessed.rawAssessmentData, assessed.language, assessed.goalId, assessed.graphVersion,
+    );
     const verifiedCompletion = await verifiedPythonBasicsCompletions(userId, catalog.lessons);
     const updated = await withRoadmapTransactionRetry(() => prisma.$transaction(async tx => {
       // Serialize syncs for this roadmap across tabs and application instances.
@@ -195,7 +220,7 @@ export class RoadmapRuntimeService {
         const signals = signalsFromAssessment(
           assessment.rawAssessmentData, assessment.language, assessment.goalId, assessment.graphVersion,
         );
-        const plan = planPythonBasicsRoadmap(catalog.lessons, new Set(), signals);
+        const plan = planPythonBasicsRoadmap(catalog.lessons, new Set(), signals, advisory);
         const completedLessonIds = new Set(verifiedCompletion.keys());
         const firstIncomplete = plan.find(item => !completedLessonIds.has(item.lesson.lessonId));
         roadmap = await tx.roadmap.update({
@@ -208,7 +233,7 @@ export class RoadmapRuntimeService {
           include: detail,
         });
       }
-      const items = roadmap.items;
+      let items = roadmap.items;
       const completedStableIds = new Set<string>(verifiedCompletion.keys());
       for (const item of items) if (item.learningStatus === 'COMPLETED' && item.lessonId) completedStableIds.add(item.lessonId);
       await tx.roadmapItem.updateMany({
@@ -225,6 +250,35 @@ export class RoadmapRuntimeService {
           } });
         }
       }
+      const hasPreservedOpenItem = items.some(item =>
+        ['AVAILABLE', 'IN_PROGRESS'].includes(item.learningStatus)
+        && item.lessonId && !completedStableIds.has(item.lessonId));
+      const newlyCompleted = items.some(item =>
+        item.learningStatus !== 'COMPLETED' && item.lessonId && completedStableIds.has(item.lessonId));
+      if (!hasPreservedOpenItem && newlyCompleted) {
+        const remaining = planPythonBasicsRoadmap(catalog.lessons, completedStableIds, assessmentSignals, advisory);
+        const retained = items.filter(item => item.lessonId && completedStableIds.has(item.lessonId));
+        const byLesson = new Map(items.map(item => [item.lessonId, item]));
+        if (retained.length + remaining.length !== items.length
+          || remaining.some(item => !byLesson.has(item.lesson.lessonId))) {
+          throw new Error('ROADMAP_CONTRACT_VIOLATION: Không thể đổi thứ tự bài ngoài catalog.');
+        }
+        // Move into an unused range first to satisfy (roadmapId, orderIndex).
+        await tx.roadmapItem.updateMany({ where: { roadmapId: id }, data: { orderIndex: { increment: 1000 } } });
+        for (let i = 0; i < retained.length; i++) {
+          await tx.roadmapItem.update({ where: { id: retained[i]!.id }, data: { orderIndex: i + 1 } });
+        }
+        const nextData = roadmapItemData(remaining, completedStableIds, verifiedCompletion, assessed.id, catalog);
+        for (let i = 0; i < remaining.length; i++) {
+          const item = byLesson.get(remaining[i]!.lesson.lessonId)!;
+          await tx.roadmapItem.update({ where: { id: item.id }, data: {
+            orderIndex: retained.length + i + 1, reason: nextData[i]!.reason,
+            selectionEvidence: nextData[i]!.selectionEvidence,
+          } });
+        }
+        roadmap = await tx.roadmap.findUniqueOrThrow({ where: { id }, include: detail });
+        items = roadmap.items;
+      }
       const first = items.find(item => !item.lessonId || !completedStableIds.has(item.lessonId));
       if (first) {
         const meta = record(first.selectionEvidence) ? first.selectionEvidence : {};
@@ -232,7 +286,9 @@ export class RoadmapRuntimeService {
         if (!prerequisites.every(value => typeof value === 'string' && completedStableIds.has(value))) {
           throw new Error('ROADMAP_PREREQUISITE_UNMET: Bài kế tiếp chưa đủ điều kiện.');
         }
-        await tx.roadmapItem.update({ where: { id: first.id }, data: { learningStatus: 'AVAILABLE' } });
+        await tx.roadmapItem.update({ where: { id: first.id }, data: {
+          learningStatus: hasPreservedOpenItem && first.learningStatus === 'IN_PROGRESS' ? 'IN_PROGRESS' : 'AVAILABLE',
+        } });
       }
       const completedItems = items.filter(item => item.lessonId && completedStableIds.has(item.lessonId)).length;
       await tx.roadmap.update({ where: { id }, data: {

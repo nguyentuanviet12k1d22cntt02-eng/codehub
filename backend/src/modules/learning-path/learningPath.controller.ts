@@ -1,11 +1,15 @@
 import { Response } from 'express';
 import { randomUUID } from 'crypto';
 import { sanitizeLegacy } from '../adaptive/adaptiveEvidence';
+import { reviewedLessonTheory } from '../adaptive/contentVersioning';
 import { prisma } from '../../infrastructure/database/prisma';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
 import { codeExecutionQueue } from '../../infrastructure/queue/queueService';
+import { ExecuteResult } from '../../infrastructure/sandbox/sandbox.types';
 import { getEvidenceBasedUserMastery } from '../recommendations/recommendationController';
 import { parseInteractionTelemetry } from '../learning-events/interactionTelemetry';
+import { resolveExerciseContract, buildPythonExecutionPayload, ResolvedContract } from './pythonGradingContract';
+import { matchPythonOutput } from '../adaptive/pythonOutputPolicy';
 
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000';
 
@@ -207,7 +211,11 @@ export const getPathById = async (req: AuthenticatedRequest, res: Response): Pro
             pathIdStr,userId).catch(()=>[] as any[]);
         const completedIds=completed.map(row=>String(row.exercise_id));
         const safePath=sanitizeLegacy(path);
-        for(const lesson of safePath.lessons||[]) lesson.completedExerciseIds=completedIds;
+        for(const lesson of safePath.lessons||[]) {
+            lesson.completedExerciseIds=completedIds;
+            const reviewed = reviewedLessonTheory(lesson.exercise?.id);
+            if (reviewed) Object.assign(lesson, reviewed);
+        }
         res.status(200).json({ success: true, data: safePath });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
@@ -284,6 +292,11 @@ export const submitExerciseCode = async (req: AuthenticatedRequest, res: Respons
         const { exerciseId, code } = req.body;
         const userId = req.user?.id;
 
+        if (!userId) {
+            res.status(401).json({ success: false, error: 'Chưa xác thực người dùng!' });
+            return;
+        }
+
         if (!exerciseId || !code) {
             res.status(400).json({ success: false, error: 'Thiếu mã nguồn hoặc bài tập!' });
             return;
@@ -291,7 +304,16 @@ export const submitExerciseCode = async (req: AuthenticatedRequest, res: Respons
 
         const exercise = await prisma.personalizedExercise.findUnique({
             where: { id: String(exerciseId) },
-            include: { testCases: true, lesson: true }
+            include: {
+                testCases: true,
+                lesson: {
+                    include: {
+                        path: {
+                            select: { id: true, userId: true }
+                        }
+                    }
+                }
+            }
         });
 
         if (!exercise) {
@@ -301,16 +323,77 @@ export const submitExerciseCode = async (req: AuthenticatedRequest, res: Respons
 
         // Chấm mã qua hàng đợi sandbox Docker EC2.
         let passedCases = 0;
-        const totalCases = exercise.testCases.length;
-        const results = [];
+        const results: Array<{
+            testCaseId?: string;
+            passed: boolean;
+            input?: string;
+            expectedOutput?: string;
+            actualOutput?: string;
+            errorMessage?: string;
+        }> = [];
 
+        // Determine authoritative language: prioritize exercise.language
         const rawLang = String(exercise.language || '').toUpperCase();
-        const isCpp = rawLang === 'CPP' || rawLang.includes('C++') || /#include\s*<|std::/i.test(code);
-        const isJs = !isCpp && (rawLang === 'JAVASCRIPT' || rawLang.includes('JS') || /console\.log|function\s*\(|let\s+|const\s+/i.test(code));
-        const execLanguage: 'CPP' | 'JAVASCRIPT' | 'PYTHON' = isCpp ? 'CPP' : (isJs ? 'JAVASCRIPT' : 'PYTHON');
+        const isCpp = rawLang === 'CPP' || rawLang === 'C++';
+        const isJs = rawLang === 'JAVASCRIPT' || rawLang === 'JS';
+        // Only if exercise.language is not specified, inspect code heuristics as fallback
+        const execLanguage: 'CPP' | 'JAVASCRIPT' | 'PYTHON' = isCpp ? 'CPP' : (
+            isJs ? 'JAVASCRIPT' : (
+                !rawLang && (/#include\s*<|std::/i.test(code)) ? 'CPP' : (
+                    !rawLang && (/console\.log|function\s*\(|let\s+|const\s+/i.test(code)) ? 'JAVASCRIPT' : 'PYTHON'
+                )
+            )
+        );
 
-        for (const tc of exercise.testCases) {
-            const rawInput = tc.input ? tc.input.trim() : '';
+        // Security check: Verify learner owns the path for this personalized exercise
+        const pathOwnerId = exercise.lesson?.path?.userId;
+        if (pathOwnerId && pathOwnerId !== userId) {
+            res.status(403).json({ success: false, error: 'Không thể truy cập hoặc nộp bài tập của người khác' });
+            return;
+        }
+
+        let pythonContract: ResolvedContract | null = null;
+        if (execLanguage === 'PYTHON') {
+            const contractRes = await resolveExerciseContract(prisma, exercise.id, userId);
+            if (contractRes.status === 'FORBIDDEN_OWNER_MISMATCH') {
+                res.status(403).json({ success: false, error: contractRes.error });
+                return;
+            }
+            if (contractRes.status === 'STORAGE_ERROR') {
+                res.status(503).json({
+                    success: false,
+                    error: 'STORAGE_UNAVAILABLE',
+                    message: contractRes.error
+                });
+                return;
+            }
+            if (contractRes.status === 'CONTRACT_INVALID') {
+                res.status(422).json({
+                    success: false,
+                    error: 'CONTRACT_INVALID',
+                    message: contractRes.reason
+                });
+                return;
+            }
+            if (contractRes.status === 'NEEDS_CONTRACT') {
+                res.status(422).json({
+                    success: false,
+                    error: 'NEEDS_CONTRACT',
+                    message: contractRes.reason
+                });
+                return;
+            }
+            if (contractRes.status === 'RESOLVED') {
+                pythonContract = contractRes.contract;
+            }
+        }
+
+        const casesToRun: any[] = pythonContract ? pythonContract.testCases : exercise.testCases;
+        const totalCases = casesToRun.length;
+        let hasInfrastructureError = false;
+
+        for (const tc of casesToRun) {
+            let rawInput = tc.input ? tc.input.trim() : '';
             const expectedOut = (tc.expectedOutput || '').trim();
 
             let codeToRun = code;
@@ -427,145 +510,78 @@ ${code}
     }
 })();
 `;
-            } else {
-                // Python: Sử dụng execution harness linh hoạt Function & Class OOP
-                if (rawInput) {
-                    codeToRun = `
-import sys
-import ast
-import inspect
-import json
-
-${code}
-
-if __name__ == '__main__':
-    try:
-        raw_val = ${JSON.stringify(rawInput)}
-        
-        is_literal = False
-        parsed_arg = None
-        try:
-            parsed_arg = ast.literal_eval(raw_val)
-            is_literal = True
-        except Exception:
-            is_literal = False
-
-        if is_literal:
-            custom_funcs = [
-                f for f in list(globals().keys())
-                if callable(globals()[f]) and not f.startswith('__') and f not in ['sys', 'ast', 'inspect', 'json']
-            ]
-            if custom_funcs:
-                target_fn = globals()[custom_funcs[-1]]
-                res = None
-                
-                if inspect.isclass(target_fn):
-                    init_sig = inspect.signature(target_fn.__init__)
-                    num_params = len([p for p in init_sig.parameters.values() if p.name != 'self'])
-                    if isinstance(parsed_arg, tuple) and num_params > 1 and len(parsed_arg) == num_params:
-                        inst = target_fn(*parsed_arg)
-                    else:
-                        inst = target_fn(parsed_arg)
-                        
-                    methods = [m for m in dir(inst) if callable(getattr(inst, m)) and not m.startswith('__')]
-                    called = False
-                    for m in methods:
-                        try:
-                            m_val = getattr(inst, m)()
-                            if m_val is not None:
-                                res = m_val
-                                called = True
-                                break
-                        except Exception:
-                            pass
-                    if not called:
-                        res = inst
-                else:
-                    sig = inspect.signature(target_fn)
-                    num_params = len(sig.parameters)
-                    if isinstance(parsed_arg, tuple) and num_params > 1 and len(parsed_arg) == num_params:
-                        res = target_fn(*parsed_arg)
-                    else:
-                        res = target_fn(parsed_arg)
-
-                if res is not None:
-                    print(res)
-            else:
-                try:
-                    res = eval(raw_val)
-                    if res is not None:
-                        print(res)
-                except Exception:
-                    exec(raw_val)
-        else:
-            # Script statement hoặc gán biến (ví dụ: s = Student(...); print(...))
-            local_scope = dict()
-            custom_funcs = [
-                f for f in list(globals().keys())
-                if callable(globals()[f]) and not f.startswith('__') and f not in ['sys', 'ast', 'inspect', 'json']
-            ]
-            if custom_funcs and '=' in raw_val and ('\\n' in raw_val or ';' in raw_val):
-                target_fn = globals()[custom_funcs[-1]]
-                exec(raw_val, globals(), local_scope)
-                sig = inspect.signature(target_fn)
-                kwargs = dict((k, local_scope[k]) for k in sig.parameters.keys() if k in local_scope)
-                if len(kwargs) == len(sig.parameters):
-                    res = target_fn(**kwargs)
-                else:
-                    res = target_fn(*list(local_scope.values()))
-                if res is not None:
-                    print(res)
-            else:
-                try:
-                    exec(raw_val, globals(), local_scope)
-                except Exception:
-                    res = eval(raw_val, globals(), local_scope)
-                    if res is not None:
-                        print(res)
-    except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-`;
-                }
+            } else if (pythonContract) {
+                // T06 & T07: Canonical Python Execution via resolved contract (both stdio & function AST checks)
+                const payload = buildPythonExecutionPayload(code, tc, pythonContract);
+                codeToRun = payload.codeToRun;
+                rawInput = payload.stdinData;
             }
 
-            const jobRes = await codeExecutionQueue.pushJob(codeToRun, execLanguage, rawInput, 5000);
+            let jobRes: ExecuteResult;
+            try {
+                jobRes = await codeExecutionQueue.pushJob(codeToRun, execLanguage, rawInput, 5000);
+            } catch (jobErr) {
+                hasInfrastructureError = true;
+                break;
+            }
+
+            // Distinguish infrastructure errors from student execution errors
+            if (jobRes.status === 'ERROR' && (!jobRes.failureType || jobRes.failureType === 'INTERNAL_ERROR')) {
+                hasInfrastructureError = true;
+                break;
+            }
+
             const actualOut = (jobRes.stdout || '').trim();
             const errOut = (jobRes.stderr || '').trim();
 
-            const checkMatch = (act: string, exp: string): boolean => {
-                if (act === exp) return true;
-                const normAct = act.replace(/\r\n/g, '\n').trim();
-                const normExp = exp.replace(/\r\n/g, '\n').trim();
-                if (normAct === normExp) return true;
-                if (normExp.toLowerCase() === 'none' && (normAct === 'None' || normAct === '')) return true;
-                if (normExp === '' && normAct === '') return true;
+            let isPassed = false;
+            if (jobRes.status === 'SUCCESS') {
+                if (pythonContract) {
+                    // T10: Python candidate output evaluation (rejects WRONG_PREFIX, handles json/text)
+                    const matchRes = matchPythonOutput(jobRes.stdout || '', tc.expectedOutput || '', pythonContract.comparator);
+                    isPassed = matchRes.passed;
+                } else {
+                    const checkMatch = (act: string, exp: string): boolean => {
+                        if (act === exp) return true;
+                        const normAct = act.replace(/\r\n/g, '\n').trim();
+                        const normExp = exp.replace(/\r\n/g, '\n').trim();
+                        if (normAct === normExp) return true;
+                        if (normExp.toLowerCase() === 'none' && (normAct === 'None' || normAct === '')) return true;
+                        if (normExp === '' && normAct === '') return true;
 
-                // 1. So khớp sau khi chuẩn hóa dấu nháy đơn / kép và khoảng trắng
-                const normalizeQuotes = (s: string) => s
-                    .replace(/["']/g, '"')
-                    .replace(/\s+/g, ' ')
-                    .trim();
-                if (normalizeQuotes(normAct) === normalizeQuotes(normExp)) return true;
+                        // 1. So khớp sau khi chuẩn hóa dấu nháy đơn / kép và khoảng trắng
+                        const normalizeQuotes = (s: string) => s
+                            .replace(/["']/g, '"')
+                            .replace(/\s+/g, ' ')
+                            .trim();
+                        if (normalizeQuotes(normAct) === normalizeQuotes(normExp)) return true;
 
-                // 2. So sánh cấu trúc dữ liệu Python (hỗ trợ cả Tuple, List, Dict, Boolean, None)
-                try {
-                    const pyToJson = (s: string) => s
-                        .trim()
-                        .replace(/\(/g, '[')
-                        .replace(/\)/g, ']')
-                        .replace(/'/g, '"')
-                        .replace(/\bTrue\b/g, 'true')
-                        .replace(/\bFalse\b/g, 'false')
-                        .replace(/\bNone\b/g, 'null');
-                    const parsedAct = JSON.parse(pyToJson(normAct));
-                    const parsedExp = JSON.parse(pyToJson(normExp));
-                    if (JSON.stringify(parsedAct) === JSON.stringify(parsedExp)) return true;
-                } catch {}
+                        // 2. So sánh cấu trúc dữ liệu Python
+                        try {
+                            const pyToJson = (s: string) => s
+                                .trim()
+                                .replace(/\(/g, '[')
+                                .replace(/\)/g, ']')
+                                .replace(/'/g, '"')
+                                .replace(/\bTrue\b/g, 'true')
+                                .replace(/\bFalse\b/g, 'false')
+                                .replace(/\bNone\b/g, 'null');
+                            const parsedAct = JSON.parse(pyToJson(normAct));
+                            const parsedExp = JSON.parse(pyToJson(normExp));
+                            if (JSON.stringify(parsedAct) === JSON.stringify(parsedExp)) return true;
+                        } catch {}
 
-                return false;
-            };
+                        return false;
+                    };
+                    isPassed = checkMatch(actualOut, expectedOut);
+                }
+            } else if (jobRes.status === 'TIMEOUT') {
+                isPassed = false;
+            } else {
+                // Student compile error, runtime error, or output limit exceeded
+                isPassed = false;
+            }
 
-            const isPassed = jobRes.status === 'SUCCESS' && checkMatch(actualOut, expectedOut);
             if (isPassed) passedCases++;
 
             results.push({
@@ -574,8 +590,18 @@ if __name__ == '__main__':
                 input: tc.isHidden ? 'Hidden' : tc.input,
                 expectedOutput: tc.isHidden ? 'Hidden' : tc.expectedOutput,
                 actualOutput: tc.isHidden ? (isPassed ? 'Passed' : 'Mismatch') : actualOut,
-                errorMessage: errOut || undefined
+                errorMessage: tc.isHidden && execLanguage === 'PYTHON' ? undefined
+                    : (errOut || (jobRes.status === 'TIMEOUT' ? 'Thời gian thực thi vượt quá giới hạn (Timeout)' : (jobRes.failureType || undefined)))
             });
+        }
+
+        if (hasInfrastructureError) {
+            res.status(503).json({
+                success: false,
+                error: 'INFRASTRUCTURE_EXECUTION_FAILURE',
+                message: 'Hạ tầng sandbox không thể hoàn thành kiểm định. Chưa tính điểm hoặc lưu trạng thái hoàn thành.'
+            });
+            return;
         }
 
         const isAllPassed = totalCases > 0 && passedCases === totalCases;

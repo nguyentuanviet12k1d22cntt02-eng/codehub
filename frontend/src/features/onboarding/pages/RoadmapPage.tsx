@@ -149,6 +149,13 @@ export default function RoadmapPage() {
 
         {roadmap && (
           <>
+            {current?.recommendation && (
+              <p className="mb-4 text-sm leading-6 text-text-secondary" role="status">
+                {current.recommendation.engine === 'PALNET_ADVISORY'
+                  ? 'Gợi ý thử nghiệm PAL-Net dựa trên lịch sử code đã chấm. Đây là hỗ trợ chọn bài, chưa phải đánh giá năng lực.'
+                  : 'Lộ trình đang dùng kết quả Pre-test và thứ tự chương trình. PAL-Net sẽ hỗ trợ khi đủ bằng chứng code phù hợp.'}
+              </p>
+            )}
             {/* Progress Level Card */}
             <section
               className="overflow-hidden rounded-3xl border border-border-custom bg-[linear-gradient(135deg,#1e1b4b,#4338ca_55%,#0f766e)] p-6 text-white shadow-xl shadow-indigo-950/10 sm:p-8"

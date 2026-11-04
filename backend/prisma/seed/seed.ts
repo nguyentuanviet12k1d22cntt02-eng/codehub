@@ -45,15 +45,7 @@ async function main() {
         }
     });
 
-    await prisma.course.deleteMany({
-        where: {
-            OR: [
-                { createdBy: author.id },
-                { title: 'Lập trình Python cơ bản cho người mới bắt đầu' }
-            ]
-        }
-    });
-
+    // Preserve the existing course and its learner history; update/create below.
 
     const courseDataPayload = {
         title: 'Lập trình Python cơ bản cho người mới bắt đầu',
@@ -207,7 +199,7 @@ async function main() {
                     if (ex.id) {
                         dbExercise = await prisma.codingExercise.findUnique({ where: { id: ex.id } });
                     }
-                    if (!dbExercise) {
+                    if (!dbExercise && !ex.id) {
                         dbExercise = await prisma.codingExercise.findFirst({
                             where: {
                                 lessonId: dbLesson.id,
@@ -215,7 +207,7 @@ async function main() {
                             }
                         });
                     }
-                    if (!dbExercise && Array.isArray(ex.legacyTitles) && ex.legacyTitles.length > 0) {
+                    if (!dbExercise && !ex.id && Array.isArray(ex.legacyTitles) && ex.legacyTitles.length > 0) {
                         dbExercise = await prisma.codingExercise.findFirst({
                             where: {
                                 lessonId: dbLesson.id,

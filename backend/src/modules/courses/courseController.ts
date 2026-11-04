@@ -1,5 +1,5 @@
 import { Course } from "@prisma/client";
-import { randomUUID } from "crypto";
+import { createHash, randomUUID } from "crypto";
 import { NextFunction, Request, response, Response } from "express";
 import { prisma } from "../../infrastructure/database/prisma";
 import { AuthenticatedRequest } from "../../shared/middleware/auth";
@@ -167,8 +167,14 @@ export const getLessonById = async (req: Request, res: Response, next: NextFunct
         const currentIndex = allLessons.findIndex(l => l.id === lesson.id);
         const nextLesson = currentIndex !== -1 && currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
 
-        res.status(200).json({
+        const visibleLesson = (lesson.lessonId || "").startsWith("LS-") ? {
             ...lesson,
+            codingExercises: lesson.codingExercises.map(({ solutionCode, ...exercise }) => ({
+                ...exercise, testCases: exercise.testCases.filter(tc => !tc.isHidden)
+            }))
+        } : lesson;
+        res.status(200).json({
+            ...visibleLesson,
             nextLessonId: nextLesson ? nextLesson.id : null
         });
     } catch (error) {
@@ -226,19 +232,23 @@ export const getLessonQuiz = async (req: Request, res: Response, next: NextFunct
         let actualLessonId = id;
         if (!uuidRegex.test(id)) {
             const found = await prisma.lesson.findFirst({ where: { lessonId: id }, select: { id: true } });
-            if (found) actualLessonId = found.id;
+            if (!found) {
+                res.status(404).json({ error: "Không tìm thấy bài học." });
+                return;
+            }
+            actualLessonId = found.id;
         }
 
         const questions = await prisma.lessonQuizQuestion.findMany({
             where: { lessonId: actualLessonId },
             orderBy: { orderIndex: 'asc' },
-            include: {
+            select: {
+                id: true,
+                question: true,
+                level: true,
+                orderIndex: true,
                 options: {
-                    select: {
-                        id: true,
-                        key: true,
-                        text: true
-                    },
+                    select: { id: true, key: true, text: true },
                     orderBy: { key: 'asc' }
                 }
             }
@@ -259,15 +269,16 @@ export const submitLessonQuiz = async (req: AuthenticatedRequest, res: Response,
     try {
         const id = req.params.id as string;
         const userId = req.user?.id;
-        const { answers } = req.body; // { [questionId]: 'A' | 'B' | 'C' | 'D' }
-        const telemetry = parseInteractionTelemetry(req.body.telemetry);
+        const { answers } = req.body ?? {}; // { [questionId]: 'A' | 'B' | 'C' | 'D' }
+        const telemetry = parseInteractionTelemetry(req.body?.telemetry);
 
         if (!userId) {
             res.status(401).json({ error: "Người dùng chưa đăng nhập." });
             return;
         }
 
-        if (!answers || typeof answers !== 'object') {
+        if (!answers || typeof answers !== 'object' || Array.isArray(answers)
+            || Object.keys(answers).length === 0) {
             res.status(400).json({ error: "Dữ liệu câu trả lời không hợp lệ." });
             return;
         }
@@ -276,7 +287,11 @@ export const submitLessonQuiz = async (req: AuthenticatedRequest, res: Response,
         let actualLessonId = id;
         if (!uuidRegex.test(id)) {
             const found = await prisma.lesson.findFirst({ where: { lessonId: id }, select: { id: true } });
-            if (found) actualLessonId = found.id;
+            if (!found) {
+                res.status(404).json({ error: "Không tìm thấy bài học." });
+                return;
+            }
+            actualLessonId = found.id;
         }
 
         const questions = await prisma.lessonQuizQuestion.findMany({
@@ -296,11 +311,36 @@ export const submitLessonQuiz = async (req: AuthenticatedRequest, res: Response,
             }
         });
 
+        if (!lessonContext || questions.length === 0) {
+            res.status(404).json({ error: "Bài học chưa có quiz." });
+            return;
+        }
+        const validQuestions = questions.every(q =>
+            q.explanation?.trim() && q.options.length === 4
+            && new Set(q.options.map(o => o.key)).size === 4
+            && q.options.every(o => ['A', 'B', 'C', 'D'].includes(o.key) && o.text.trim())
+            && q.options.filter(o => o.isCorrect).length === 1);
+        if (!validQuestions) {
+            res.status(503).json({ error: "Quiz chưa có hợp đồng chấm hợp lệ." });
+            return;
+        }
+        const questionIds = new Set(questions.map(q => q.id));
+        if (Object.entries(answers).some(([questionId, key]) =>
+            !questionIds.has(questionId) || typeof key !== 'string' || !['A', 'B', 'C', 'D'].includes(key))) {
+            res.status(400).json({ error: "Câu hỏi hoặc lựa chọn không thuộc quiz này." });
+            return;
+        }
+        const contentVersion = 'quiz-sha256:' + createHash('sha256').update(JSON.stringify(
+            questions.map(q => ({ id: q.id, question: q.question, level: q.level,
+                explanation: q.explanation, orderIndex: q.orderIndex,
+                options: [...q.options].sort((a, b) => a.key.localeCompare(b.key))
+                    .map(o => ({ key: o.key, text: o.text, isCorrect: o.isCorrect })) }))
+        )).digest('hex');
         let correctCount = 0;
         const results = questions.map(q => {
             const selectedKey = answers[q.id] || null;
             const correctOpt = q.options.find(o => o.isCorrect);
-            const correctKey = correctOpt ? correctOpt.key : 'A';
+            const correctKey = correctOpt!.key;
             const isCorrect = selectedKey === correctKey;
 
             if (isCorrect) {
@@ -312,7 +352,7 @@ export const submitLessonQuiz = async (req: AuthenticatedRequest, res: Response,
                 selectedKey,
                 correctKey,
                 isCorrect,
-                explanation: q.explanation || 'Chúc mừng bạn đã chọn đáp án chính xác!'
+                explanation: q.explanation!
             };
         });
 
@@ -332,7 +372,7 @@ export const submitLessonQuiz = async (req: AuthenticatedRequest, res: Response,
                     itemId: result.questionId,
                     difficulty,
                     mappingStatus: 'UNVERIFIED',
-                    contentVersion: lessonContext?.updatedAt.toISOString() ?? null,
+                    contentVersion,
                     sessionId: telemetry.sessionId,
                     openedAt: telemetry.openedAt,
                     submittedAt: new Date(),
@@ -354,7 +394,8 @@ export const submitLessonQuiz = async (req: AuthenticatedRequest, res: Response,
             success: true,
             score: correctCount,
             total: questions.length,
-            results
+            contentVersion,
+            results: answeredResults
         });
     } catch (error) {
         next(error);

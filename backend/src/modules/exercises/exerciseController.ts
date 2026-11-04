@@ -7,6 +7,9 @@ import { StaticCodeAnalyzer } from '../../infrastructure/analysis/staticCodeAnal
 import { ExecuteResult } from '../../infrastructure/sandbox/sandbox.types';
 import { parseInteractionTelemetry } from '../learning-events/interactionTelemetry';
 import { buildGradingDiagnostics } from '../learning-events/interactionErrorClassifier';
+import { matchPythonOutput } from '../adaptive/pythonOutputPolicy';
+import { pythonContentVersion, pythonCodeHash, PYTHON_GRADING_EVIDENCE } from '../onboarding/pythonModelEvidence';
+import {modulePracticeRefreshHint} from '../courses/modulePracticeRefresh';
 
 // Chạy thử code (không lưu database)
 export const runCodeDynamic = async (req: Request, res: Response): Promise<void> => {
@@ -240,15 +243,20 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
         }
 
         const lessonCode = exercise.lesson?.lessonId || '';
-        const isCppExercise = lessonCode.startsWith('CPP') || /#include\s*<|std::/i.test(code);
-        const isSqlExercise = !isCppExercise && (lessonCode.startsWith('SQL') || /SELECT|FROM|WHERE/i.test(code));
-        const isJsExercise = !isCppExercise && !isSqlExercise && (lessonCode.startsWith('JS') || /console\.log|function\s*\(|let\s+|const\s+/i.test(code));
+        const isPythonExercise = lessonCode.startsWith('LS-');
+        const isCppExercise = !isPythonExercise && (lessonCode.startsWith('CPP') || /#include\s*<|std::/i.test(code));
+        const isSqlExercise = !isPythonExercise && !isCppExercise && (lessonCode.startsWith('SQL') || /SELECT|FROM|WHERE/i.test(code));
+        const isJsExercise = !isPythonExercise && !isCppExercise && !isSqlExercise && (lessonCode.startsWith('JS') || /console\.log|function\s*\(|let\s+|const\s+/i.test(code));
         const execLanguage = isCppExercise ? 'CPP' : isSqlExercise ? 'SQL' : isJsExercise ? 'JAVASCRIPT' : 'PYTHON';
 
         // 2. Phân tích tĩnh AST & cấu trúc logic code (không chặn testcase chạy để học viên vẫn xem được output)
-        let astResult = { isValid: true, error: null as string | null, warnings: [] as string[] };
+        let astResult: ReturnType<typeof StaticCodeAnalyzer.analyze> = { isValid: true, error: null, warnings: [] };
         if (execLanguage === 'PYTHON' || execLanguage === 'CPP' || execLanguage === 'JAVASCRIPT') {
             astResult = StaticCodeAnalyzer.analyze(code, execLanguage, exercise.problemDescription || '', exercise.title);
+            if (astResult.infrastructureError) {
+                res.status(503).json({ error: "AST_ANALYZER_UNAVAILABLE" });
+                return;
+            }
             // Fallback kiểm tra ràng buộc cũ nếu AST chưa báo lỗi
             if (astResult.isValid) {
                 const legacyConstraintError = parseAndValidateConstraints(exercise.problemDescription || '', exercise.title, code, execLanguage);
@@ -278,13 +286,14 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
 
         const results = testCases.map((tc: any, index: number) => {
             const result = executionResults[index];
-            if (!result) {
+            const isInternalError = !result || (result.status === 'ERROR' && (!result.failureType || result.failureType === 'INTERNAL_ERROR'));
+            if (isInternalError) {
                 hasSystemError = true;
                 return {
                     id: tc.id,
                     input: tc.input,
                     expectedOutput: tc.expectedOutput,
-                    actualOutput: 'Lỗi hệ thống: Sandbox không trả về kết quả.',
+                    actualOutput: 'Lỗi hệ thống: Sandbox không trả về kết quả hoặc gặp sự cố nội bộ.',
                     passed: false
                 };
             }
@@ -301,6 +310,9 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
             }
 
             const matchOutput = (act: string, exp: string): boolean => {
+                if (execLanguage === 'PYTHON') {
+                    return matchPythonOutput(act, exp, 'text').passed;
+                }
                 const cleanActual = act.replace(/\r\n/g, '\n').trim().replace(/\s+/g, ' ');
                 const cleanExpected = exp.replace(/\r\n/g, '\n').trim().replace(/\s+/g, ' ');
                 if (cleanActual === cleanExpected) return true;
@@ -376,11 +388,17 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
                     openedAt: telemetry.openedAt,
                     activeTimeSeconds: telemetry.activeTimeSeconds,
                     hintCount: telemetry.hintCount,
+...(execLanguage === "PYTHON" ? {contentVersion: pythonContentVersion(exercise),
+                        codeHash: pythonCodeHash(code)} : {}),
                     errorType: diagnostics.errorType,
                     testsPassed: diagnostics.testsPassed,
                     testsTotal: diagnostics.testsTotal,
                     payload: {
                         stableLessonId: exercise.lesson?.lessonId || null,
+                        ...(execLanguage === 'PYTHON' ? {
+                            gradingContract: PYTHON_GRADING_EVIDENCE,
+                            feedbackReadyAt: new Date().toISOString(),
+                        } : {}),
                         runtimeMs: normalizedRuntime,
                         errorSummary: diagnostics.errorSummary,
                         testOutcomes: results.map((result: any, index: number) => ({
@@ -469,7 +487,12 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
             failureType: compileFailure?.failureType,
             message: returnMessage,
             submissionId: submission.id,
-            results,
+            recommendationRefresh: modulePracticeRefreshHint(execLanguage,exercise.lessonId,submission.id,execLanguage==='PYTHON'?pythonContentVersion(exercise):undefined),
+            results: execLanguage === "PYTHON" ? results.map((result: any, index: number) => {
+                const hidden = !!testCases[index]?.isHidden;
+                return hidden ? { id: result.id, input: "Hidden", expectedOutput: "Hidden",
+                    actualOutput: result.passed ? "Passed" : "Mismatch", passed: result.passed, isHidden: true } : result;
+            }) : results,
             runtimeMs: parseFloat(normalizedRuntime.toFixed(1)),
             runtimeBeats: parseFloat(beats.toFixed(1)),
             distribution: buckets.map(b => ({ range: b.label, count: b.count }))

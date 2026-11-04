@@ -26,6 +26,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/infrastructure/data ./dist/infrastructure/data
 COPY --from=builder /app/src/infrastructure/sandbox/sql/sql.runner.py ./dist/infrastructure/sandbox/sql/sql.runner.py
+COPY --from=builder /app/src/infrastructure/sandbox/python/file_case.runner.py ./dist/infrastructure/sandbox/python/file_case.runner.py
 
 EXPOSE 3000
 

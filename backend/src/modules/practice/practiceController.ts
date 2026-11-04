@@ -6,6 +6,8 @@ import { ProgrammingLanguage, ExerciseDifficulty, SubmissionStatus } from '@pris
 import { StaticCodeAnalyzer } from '../../infrastructure/analysis/staticCodeAnalyzer';
 import { parseInteractionTelemetry } from '../learning-events/interactionTelemetry';
 import { buildGradingDiagnostics } from '../learning-events/interactionErrorClassifier';
+import { matchPythonOutput } from '../adaptive/pythonOutputPolicy';
+import { checkTwoSumSemanticOutput } from './practiceValidators';
 
 // 1. Lấy danh sách bài tập luyện tập độc lập kèm bộ lọc
 export const getPracticeProblems = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -207,9 +209,13 @@ export const submitPracticeCode = async (req: AuthenticatedRequest, res: Respons
         }
 
         // Phân tích AST & cấu trúc logic code
-        let astResult = { isValid: true, error: null as string | null, warnings: [] as string[] };
+        let astResult: ReturnType<typeof StaticCodeAnalyzer.analyze> = { isValid: true, error: null, warnings: [] };
         if (language === 'PYTHON' || language === 'CPP' || language === 'C' || language === 'JAVASCRIPT') {
             astResult = StaticCodeAnalyzer.analyze(code, language, problem.description || '', problem.title);
+            if (astResult.infrastructureError) {
+                res.status(503).json({ error: "AST_ANALYZER_UNAVAILABLE" });
+                return;
+            }
         }
 
         // Gửi các testcase trong một batch đến sandbox Docker EC2.
@@ -232,13 +238,14 @@ export const submitPracticeCode = async (req: AuthenticatedRequest, res: Respons
 
         const results = problem.testCases.map((tc: any, index: number) => {
             const result = executionResults[index];
-            if (!result) {
+            const isInternalError = !result || (result.status === 'ERROR' && (!result.failureType || result.failureType === 'INTERNAL_ERROR'));
+            if (isInternalError) {
                 hasSystemError = true;
                 return {
                     id: tc.id,
                     input: tc.isHidden ? '📌 [Ẩn]' : tc.input,
                     expectedOutput: tc.isHidden ? '📌 [Ẩn]' : tc.expectedOutput,
-                    actualOutput: 'Lỗi hệ thống: Sandbox không trả về kết quả.',
+                    actualOutput: 'Lỗi hệ thống: Sandbox không trả về kết quả hoặc gặp sự cố nội bộ.',
                     passed: false,
                     isHidden: tc.isHidden
                 };
@@ -256,7 +263,13 @@ export const submitPracticeCode = async (req: AuthenticatedRequest, res: Respons
                 };
             }
 
-            const matchOutput = (act: string, exp: string): boolean => {
+            const matchOutput = (act: string, exp: string, inp?: string): boolean => {
+                if (language === 'PYTHON') {
+                    if ((problem.slug === 'two-sum' || id === '1ffd40d0-2ecb-43a6-b68c-a2917c002885') && inp) {
+                        return checkTwoSumSemanticOutput(act, inp).passed;
+                    }
+                    return matchPythonOutput(act, exp, 'text').passed;
+                }
                 const cleanActual = act.replace(/\r\n/g, '\n').trim();
                 const cleanExpected = exp.replace(/\r\n/g, '\n').trim();
                 if (cleanActual === cleanExpected) return true;
@@ -270,13 +283,14 @@ export const submitPracticeCode = async (req: AuthenticatedRequest, res: Respons
                 return false;
             };
             const actual = result.stdout || '';
-            const passed = result.status === 'SUCCESS' && matchOutput(actual, tc.expectedOutput);
+            const passed = result.status === 'SUCCESS' && matchOutput(actual, tc.expectedOutput, tc.input);
 
             return {
                 id: tc.id,
                 input: tc.isHidden ? '📌 [Ẩn]' : tc.input,
                 expectedOutput: tc.isHidden ? '📌 [Ẩn]' : tc.expectedOutput,
-                actualOutput: tc.isHidden && !passed ? '❌ Kết quả sai (Ẩn)' : (result.status === 'ERROR' ? result.stderr : actual),
+                actualOutput: tc.isHidden && language === 'PYTHON' ? (passed ? 'Passed' : 'Mismatch')
+                    : (tc.isHidden && !passed ? '❌ Kết quả sai (Ẩn)' : (result.status === 'ERROR' ? result.stderr : actual)),
                 passed,
                 isHidden: tc.isHidden
             };

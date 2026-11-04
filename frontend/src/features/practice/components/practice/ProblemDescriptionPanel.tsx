@@ -5,10 +5,17 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import type { ExerciseMock, SubmissionItem } from './types';
 
+function markdownAttributes<T extends {node?:unknown}>(props:T){
+    const {node,...attributes}=props;
+    void node; // ReactMarkdown AST metadata is not a DOM attribute.
+    return attributes;
+}
+
 interface ProblemDescriptionPanelProps {
     lessonId: string;
+    isBusy?: boolean;
     adaptiveMode: boolean;
-    exercises: any[];
+    exercises: ExerciseMock[];
     currentExerciseIdx: number;
     exercise: ExerciseMock | null;
     completedExercises: Record<string, boolean>;
@@ -21,6 +28,7 @@ interface ProblemDescriptionPanelProps {
 
 export const ProblemDescriptionPanel: React.FC<ProblemDescriptionPanelProps> = ({
     lessonId,
+    isBusy=false,
     adaptiveMode,
     exercises,
     currentExerciseIdx,
@@ -95,6 +103,7 @@ export const ProblemDescriptionPanel: React.FC<ProblemDescriptionPanelProps> = (
                                                     ? 'bg-accent-custom text-white dark:text-[#030303] shadow'
                                                     : 'bg-transparent text-text-tertiary hover:text-text-primary'
                                             }`}
+                                            disabled={isBusy}
                                             onClick={() => onSelectExercise(index)}
                                         >
                                             <span>Bài {index + 1}</span>
@@ -106,7 +115,7 @@ export const ProblemDescriptionPanel: React.FC<ProblemDescriptionPanelProps> = (
                         )}
 
                         {adaptiveMode && (
-                            <div className="text-xs font-semibold text-accent-custom" aria-label="Bài tập được PAL-Net đề xuất">
+                            <div className="text-xs font-semibold text-accent-custom" aria-label="Bài tập được đề xuất">
                                 Bài tập được đề xuất cho bạn
                             </div>
                         )}
@@ -134,41 +143,41 @@ export const ProblemDescriptionPanel: React.FC<ProblemDescriptionPanelProps> = (
                                 remarkPlugins={[remarkGfm]}
                                 rehypePlugins={[rehypeRaw]}
                                 components={{
-                                    h3: ({ node, ...props }) => <h3 className="text-sm font-bold text-text-primary mt-4 mb-2 flex items-center gap-1.5" {...props} />,
-                                    h4: ({ node, ...props }) => <h4 className="text-xs font-bold text-text-primary mt-3 mb-1" {...props} />,
-                                    blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-accent-custom bg-accent-bg/40 pl-3 py-1.5 my-2.5 rounded-r text-xs text-text-secondary" {...props} />,
-                                    ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-3 text-xs md:text-sm text-text-secondary flex flex-col gap-1" {...props} />,
-                                    li: ({ node, ...props }) => <li className="mb-0.5" {...props} />,
-                                    details: ({ node, ...props }) => <details className="my-3 p-3.5 rounded-xl border border-border-custom bg-bg-tertiary/40 text-xs md:text-sm transition-all" {...props} />,
-                                    summary: ({ node, ...props }) => <summary className="font-semibold text-text-primary hover:text-accent-custom cursor-pointer select-none transition-colors mb-2" {...props} />,
-                                    code: ({ node, className, children, ...props }) => {
+                                    h3: (props) => <h3 className="text-sm font-bold text-text-primary mt-4 mb-2 flex items-center gap-1.5" {...markdownAttributes(props)} />,
+                                    h4: (props) => <h4 className="text-xs font-bold text-text-primary mt-3 mb-1" {...markdownAttributes(props)} />,
+                                    blockquote: (props) => <blockquote className="border-l-4 border-accent-custom bg-accent-bg/40 pl-3 py-1.5 my-2.5 rounded-r text-xs text-text-secondary" {...markdownAttributes(props)} />,
+                                    ul: (props) => <ul className="list-disc pl-5 mb-3 text-xs md:text-sm text-text-secondary flex flex-col gap-1" {...markdownAttributes(props)} />,
+                                    li: (props) => <li className="mb-0.5" {...markdownAttributes(props)} />,
+                                    details: (props) => <details className="my-3 p-3.5 rounded-xl border border-border-custom bg-bg-tertiary/40 text-xs md:text-sm transition-all" {...markdownAttributes(props)} />,
+                                    summary: (props) => <summary className="font-semibold text-text-primary hover:text-accent-custom cursor-pointer select-none transition-colors mb-2" {...markdownAttributes(props)} />,
+                                    code: ({ className, children, ...props }) => {
                                         const contentStr = String(children || '');
                                         const hasNewline = contentStr.includes('\n');
                                         const match = /language-(\w+)/.exec(className || '');
                                         const isInline = !match && !hasNewline;
 
                                         return isInline ? (
-                                            <code className="bg-accent-bg text-accent-custom border border-accent-border px-1.5 py-0.5 rounded font-mono text-[11px] md:text-xs" {...props}>
+                                            <code className="bg-accent-bg text-accent-custom border border-accent-border px-1.5 py-0.5 rounded font-mono text-[11px] md:text-xs" {...markdownAttributes(props)}>
                                                 {children}
                                             </code>
                                         ) : (
                                             <pre className="bg-pre-bg border border-border-custom p-3 rounded-lg overflow-x-auto text-[11px] md:text-xs font-mono my-3 text-text-secondary select-text">
-                                                <code className={className} {...props}>
+                                                <code className={className} {...markdownAttributes(props)}>
                                                     {children}
                                                 </code>
                                             </pre>
                                         );
                                     },
-                                    table: ({ node, ...props }) => (
+                                    table: (props) => (
                                         <div className="overflow-x-auto w-full border border-border-custom rounded-xl my-4">
-                                            <table className="w-full text-xs text-left border-collapse" {...props} />
+                                            <table className="w-full text-xs text-left border-collapse" {...markdownAttributes(props)} />
                                         </div>
                                     ),
-                                    thead: ({ node, ...props }) => <thead className="bg-bg-tertiary border-b border-border-custom" {...props} />,
-                                    tbody: ({ node, ...props }) => <tbody className="divide-y divide-border-custom" {...props} />,
-                                    tr: ({ node, ...props }) => <tr className="hover:bg-bg-tertiary/30" {...props} />,
-                                    th: ({ node, ...props }) => <th className="p-2.5 font-semibold text-text-primary border-r border-border-custom last:border-r-0" {...props} />,
-                                    td: ({ node, ...props }) => <td className="p-2.5 text-text-secondary border-r border-border-custom/50 last:border-r-0" {...props} />
+                                    thead: (props) => <thead className="bg-bg-tertiary border-b border-border-custom" {...markdownAttributes(props)} />,
+                                    tbody: (props) => <tbody className="divide-y divide-border-custom" {...markdownAttributes(props)} />,
+                                    tr: (props) => <tr className="hover:bg-bg-tertiary/30" {...markdownAttributes(props)} />,
+                                    th: (props) => <th className="p-2.5 font-semibold text-text-primary border-r border-border-custom last:border-r-0" {...markdownAttributes(props)} />,
+                                    td: (props) => <td className="p-2.5 text-text-secondary border-r border-border-custom/50 last:border-r-0" {...markdownAttributes(props)} />
                                 }}
                             >
                                 {(exercise.problemDescription || '').replace(/<!--\s*CONSTRAINTS:[\s\S]*?-->/g, '').trim()}

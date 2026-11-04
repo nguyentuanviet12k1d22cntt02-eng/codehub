@@ -2,6 +2,8 @@ import { NextFunction, Response } from 'express';
 import { prisma } from '../../infrastructure/database/prisma';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
 import { getSkillGraphData } from '../recommendations/recommendationController';
+import {getPythonModulePracticeDecision} from './pythonModulePracticeService';
+import {resolvePracticeLesson,PracticeHttpError} from './pythonModulePracticeSnapshot';
 
 type PilotLanguage = 'PYTHON' | 'JAVASCRIPT' | 'CPP';
 
@@ -130,7 +132,7 @@ function pilotResponseIsValid(
     return payload.engine === 'PALNET_SYNTHETIC_MULTILINGUAL_PILOT' && payload.language === language;
 }
 
-export async function getModulePracticeRecommendation(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+async function getLegacyModulePracticeRecommendation(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
         const userId = req.user?.id;
         if (!userId) {
@@ -239,6 +241,23 @@ export async function getModulePracticeRecommendation(req: AuthenticatedRequest,
             availableCount: open.length,
         });
     } catch (error) {
+        next(error);
+    }
+}
+
+/** Public entry point: browser supplies only the bank identifier, never learner/skill/grade/model inputs. */
+export async function getModulePracticeRecommendation(req:AuthenticatedRequest,res:Response,next:NextFunction):Promise<void> {
+    try{
+        if(!req.user?.id){res.status(401).json({message:'Cần đăng nhập để nhận bài phù hợp.'});return;}
+        const lesson=await resolvePracticeLesson(prisma,String(req.params.id||''));
+        if(languageForLessonCode(lesson.lessonId||'')!=='PYTHON'){
+            await getLegacyModulePracticeRecommendation(req,res,next);return;
+        }
+        res.setHeader('Cache-Control','no-store');
+        const decision=await getPythonModulePracticeDecision(prisma,{id:req.user.id,role:req.user.role},lesson);
+        res.status(200).json(decision);
+    }catch(error){
+        if(error instanceof PracticeHttpError){res.status(error.status).json({code:error.code});return;}
         next(error);
     }
 }

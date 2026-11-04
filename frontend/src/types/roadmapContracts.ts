@@ -246,6 +246,12 @@ export interface CreateRoadmapDto {
 }
 
 export interface RoadmapItemDto {
+  recommendation?: {
+    engine: 'PALNET_ADVISORY' | 'RULE_BASED';
+    modelVersion: string | null;
+    predictedCorrectness: number | null;
+    fallbackReason: string | null;
+  };
   id: string;
   orderIndex: number;
   lessonId: string | null;

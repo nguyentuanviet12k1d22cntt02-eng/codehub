@@ -223,7 +223,8 @@ int main() {
         where: { slug: 'two-sum' },
         update: {},
         create: {
-            title: 'Two Sum',
+            id: "1ffd40d0-2ecb-43a6-b68c-a2917c002885",
+            title: "Two Sum",
             slug: 'two-sum',
             difficulty: ExerciseDifficulty.EASY,
             description: `### Đề bài
@@ -271,13 +272,17 @@ Kết quả đầu ra có thể trả về theo bất kỳ thứ tự nào.
     const largeInput = `${largeN}\n${largeNums.join(' ')}\n10001`;
     const largeExpected = `0 ${largeN - 1}`;
 
-    // Seed test cases for Two Sum
+    // Seed test cases for Two Sum (all satisfying exact single solution assumption)
     const twoSumTCs = [
         { input: '4\n2 7 11 15\n9', expectedOutput: '0 1', isHidden: false },
         { input: '3\n3 2 4\n6', expectedOutput: '1 2', isHidden: false },
         { input: '2\n3 3\n6', expectedOutput: '0 1', isHidden: true },
         { input: '4\n-1 -2 -4 -5\n-5', expectedOutput: '0 2', isHidden: true },
+        { input: '4\n-3 1 2 3\n0', expectedOutput: '0 3', isHidden: true },
         { input: '5\n10 20 30 40 50\n90', expectedOutput: '3 4', isHidden: true },
+        { input: '10\n18 28 19 16 2 17 11 30 16 1\n21', expectedOutput: '2 4', isHidden: true },
+        { input: '8\n10 3 28 27 15 24 2 5\n12', expectedOutput: '0 6', isHidden: true },
+        { input: '4\n13 5 20 26\n18', expectedOutput: '0 1', isHidden: true },
         { input: largeInput, expectedOutput: largeExpected, isHidden: true }
     ];
 
@@ -527,7 +532,8 @@ int main() {
         where: { slug: 'add-two-numbers' },
         update: {},
         create: {
-            title: 'Add Two Numbers',
+            id: "01cae930-03ea-433b-a69b-d95d1cc54e05",
+            title: "Add Two Numbers",
             slug: 'add-two-numbers',
             difficulty: ExerciseDifficulty.MEDIUM,
             description: `### Đề bài
@@ -573,11 +579,16 @@ Bạn có thể giả định rằng hai số không chứa số 0 ở đầu, n
         }
     });
 
+    // Seed test cases for Add Two Numbers (derived from 4-line contract & BigInt oracle)
     const addTwoNumbersTCs = [
         { input: '3\n2 4 3\n3\n5 6 4', expectedOutput: '7 0 8', isHidden: false },
         { input: '1\n0\n1\n0', expectedOutput: '0', isHidden: false },
+        { input: '1\n0\n3\n5 9 2', expectedOutput: '5 9 2', isHidden: true },
         { input: '7\n9 9 9 9 9 9 9\n4\n9 9 9 9', expectedOutput: '8 9 9 9 0 0 0 1', isHidden: true },
-        { input: '2\n5 6\n3\n4 9 2', expectedOutput: '9 5 3', isHidden: true }
+        { input: '2\n5 6\n3\n4 9 2', expectedOutput: '9 5 3', isHidden: true },
+        { input: '2\n5 5\n2\n5 5', expectedOutput: '0 1 1', isHidden: true },
+        { input: '1\n5\n1\n5', expectedOutput: '0 1', isHidden: true },
+        { input: '25\n9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9\n1\n1', expectedOutput: '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1', isHidden: true }
     ];
 
     // Clear and recreate to sync properly
@@ -765,7 +776,8 @@ int main() {
         where: { slug: 'longest-substring-without-repeating-characters' },
         update: {},
         create: {
-            title: 'Longest Substring Without Repeating Characters',
+            id: "f3e68060-afe9-41c5-982f-e7697a3ddcfe",
+            title: "Longest Substring Without Repeating Characters",
             slug: 'longest-substring-without-repeating-characters',
             difficulty: ExerciseDifficulty.MEDIUM,
             description: `### Đề bài
@@ -803,12 +815,57 @@ abcabcbb
     });
 
     const longestSubstrTCs = [
-        { input: 'abcabcbb', expectedOutput: '3', isHidden: false },
-        { input: 'bbbbb', expectedOutput: '1', isHidden: false },
-        { input: 'pwwkew', expectedOutput: '3', isHidden: true },
-        { input: 'abc def!@#abc', expectedOutput: '10', isHidden: true },
-        { input: '', expectedOutput: '0', isHidden: true }
-    ];
+    {
+        "input": "ffadagaec\n",
+        "expectedOutput": "4\n",
+        "isHidden": true
+    },
+    {
+        "input": "dgcfdf\n",
+        "expectedOutput": "4\n",
+        "isHidden": false
+    },
+    {
+        "input": "ac\n",
+        "expectedOutput": "2\n",
+        "isHidden": true
+    },
+    {
+        "input": "baaa\n",
+        "expectedOutput": "2\n",
+        "isHidden": true
+    },
+    {
+        "input": "eegbbcagg\n",
+        "expectedOutput": "4\n",
+        "isHidden": true
+    },
+    {
+        "input": "gbbcbdbbe\n",
+        "expectedOutput": "3\n",
+        "isHidden": true
+    },
+    {
+        "input": "gadabdedcb\n",
+        "expectedOutput": "4\n",
+        "isHidden": true
+    },
+    {
+        "input": "geed\n",
+        "expectedOutput": "2\n",
+        "isHidden": false
+    },
+    {
+        "input": "dgfgaaf\n",
+        "expectedOutput": "3\n",
+        "isHidden": true
+    },
+    {
+        "input": "fgcebb\n",
+        "expectedOutput": "5\n",
+        "isHidden": true
+    }
+];
 
     // Clear and recreate to sync properly
     await prisma.practiceTestCase.deleteMany({

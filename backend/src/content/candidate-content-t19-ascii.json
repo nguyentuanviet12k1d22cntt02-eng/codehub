@@ -1,0 +1,199 @@
+{
+  "hints": {
+    "scaffold_1_conceptual": "Hãy tưởng tượng bạn đang đọc từng ký tự trong chuỗi từ trái sang phải. Bạn cần một biến để nhớ vị trí ký tự hiện tại (chỉ mục) và một biến để đếm số chữ cái đã gặp. Vòng lặp sẽ dừng khi bạn đã đọc hết tất cả các ký tự.",
+    "scaffold_2_syntax": "Cú pháp vòng lặp while: while điều_kiện:. Trong thân vòng lặp, kiểm tra ký tự tại vị trí i có phải chữ cái ASCII (a-z, A-Z) không bằng điều kiện: ('a' <= s[i] <= 'z') or ('A' <= s[i] <= 'Z'). Nếu đúng thì tăng count, sau đó tăng i lên 1.",
+    "scaffold_3_pseudocode": "Bước 1: Đọc chuỗi s.\nBước 2: count = 0, i = 0.\nBước 3: Trong khi i < len(s):\n    - Nếu 'a' <= s[i] <= 'z' hoặc 'A' <= s[i] <= 'Z': tăng count lên 1.\n    - Tăng i lên 1.\nBước 4: In ra count."
+  },
+  "title": "Đếm số chữ cái trong chuỗi",
+  "language": "python",
+  "trace_id": "trace_e8cb432e028046508fd54a2d35f6d8f0",
+  "execution": {
+    "mode": "stdio",
+    "comparator": "text",
+    "entrypoint": "main"
+  },
+  "qc_status": "LOCAL_VERIFIED_CANDIDATE",
+  "concept_id": "PY-FLOW-02",
+  "difficulty": "EASY",
+  "test_cases": [
+    {
+      "input": "abc123\n",
+      "expected_output": "3\n",
+      "explanation": "Chuỗi abc123 có 3 chữ cái ASCII: a, b, c",
+      "is_hidden": false,
+      "category": "normal"
+    },
+    {
+      "input": "Hello World\n",
+      "expected_output": "10\n",
+      "explanation": "Chuỗi Hello World có 10 chữ cái ASCII",
+      "is_hidden": false,
+      "category": "normal"
+    },
+    {
+      "input": "12345\n",
+      "expected_output": "0\n",
+      "explanation": "Chuỗi chỉ chứa số",
+      "is_hidden": false,
+      "category": "boundary"
+    },
+    {
+      "input": "\n",
+      "expected_output": "0\n",
+      "explanation": "Chuỗi rỗng",
+      "is_hidden": true,
+      "category": "boundary"
+    },
+    {
+      "input": "a!b@c#d\n",
+      "expected_output": "4\n",
+      "explanation": "4 chữ cái ASCII",
+      "is_hidden": true,
+      "category": "boundary"
+    },
+    {
+      "input": "éA中1\n",
+      "expected_output": "1\n",
+      "explanation": "Chỉ có A là chữ cái ASCII (a-z, A-Z); é và 中 là ký tự phi-ASCII",
+      "is_hidden": false,
+      "category": "normal"
+    },
+    {
+      "input": "Tiếng Việt\n",
+      "expected_output": "7\n",
+      "explanation": "7 chữ cái ASCII: T, i, n, g, V, i, t",
+      "is_hidden": true,
+      "category": "boundary"
+    },
+    {
+      "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaéééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé\n",
+      "expected_output": "500\n",
+      "explanation": "500 ký tự ASCII a và 500 ký tự Unicode phi-ASCII",
+      "is_hidden": true,
+      "category": "boundary"
+    }
+  ],
+  "constraints": [
+    "Chuỗi nhập vào có độ dài tối đa 1000 ký tự.",
+    "Chỉ đếm các ký tự là chữ cái (a-z, A-Z), không đếm số, ký tự đặc biệt hay khoảng trắng."
+  ],
+  "exercise_id": "081d4826-5e06-4eb2-9320-b6e8b28ec2f2",
+  "concept_name": "Vòng lặp while & Kiểm soát vòng lặp vô tận",
+  "quick_theory": "Vòng lặp while tiếp tục thực thi thân lệnh khi điều kiện là True. Trong bài này, ta dùng biến chỉ mục i để duyệt từng ký tự. Điều kiện dừng là i < độ dài chuỗi. Mỗi lần lặp, ta kiểm tra ký tự hiện tại có phải chữ cái không và cập nhật biến đếm, sau đó tăng i lên 1 để tránh lặp vô tận.",
+  "starter_code": "s = input()\n\n# Khởi tạo biến đếm và biến chỉ mục\ncount = 0\ni = 0\n\n# Viết vòng lặp while tại đây\n# Gợi ý: điều kiện là i < len(s)\n# Trong vòng lặp: kiểm tra ký tự ASCII ('a' <= s[i] <= 'z' or 'A' <= s[i] <= 'Z'), cập nhật count, tăng i\n\nprint(count)\n",
+  "spec_snapshot": {
+    "mode": "remediation",
+    "language": "python",
+    "trace_id": "trace_e8cb432e028046508fd54a2d35f6d8f0",
+    "execution": {
+      "mode": "stdio",
+      "comparator": "text",
+      "entrypoint": "main"
+    },
+    "reasoning": "Học viên xác nhận tiếp tục chủ đề yêu cầu dù mức sẵn sàng tiên quyết hiện tại là 0%; tạo bài EASY có scaffold và không đổi concept.",
+    "difficulty": "EASY",
+    "source_refs": [
+      {
+        "id": "ai-service/data/pythonSkillGraph.json#PY-FLOW-02",
+        "sha256": "aae8408caff245f60d954ed66f5d48177bef027f39edb28ea9f24453327c4c68"
+      },
+      {
+        "id": "docs/Dữ liệu nội dung bài học/Python/Cấu trúc bài học/Chapter 05/Lession4.md",
+        "sha256": "70d867407dde6031e1fafc341cae4299eeeafd996fa24745e59177bd8ab4f871"
+      }
+    ],
+    "user_request": "Tôi muốn học lập trình\nNgười học bổ sung: Tôi muốn học về vòng lặp while",
+    "concept_title": "Vòng lặp while & Kiểm soát vòng lặp vô tận",
+    "prerequisites": [
+      "PY-FLOW-01"
+    ],
+    "recent_errors": [],
+    "schema_version": "4.0",
+    "selection_mode": "explicit",
+    "target_concept": "PY-FLOW-02",
+    "learner_evidence": {
+      "policy": "evidence_policy_v4",
+      "mastery": null,
+      "attempts": 0,
+      "confidence": null,
+      "batch_index": 1,
+      "batch_total": 3,
+      "function_ready": false,
+      "prerequisite_gaps": [
+        "PY-BASICS-03",
+        "PY-FLOW-01"
+      ],
+      "function_is_target": false,
+      "unlearned_constructs": [
+        "for",
+        "function",
+        "class"
+      ],
+      "avoid_function_syntax": true,
+      "prerequisite_readiness": 0,
+      "forced_prerequisite_override": true,
+      "prerequisite_evidence_coverage": 0
+    },
+    "test_constraints": {
+      "max_cases": 8,
+      "min_cases": 4,
+      "require_hidden_case": true,
+      "max_execution_time_ms": 3000,
+      "require_boundary_case": true
+    },
+    "target_sub_skills": [
+      "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+    ],
+    "learning_objectives": [
+      "Áp dụng while đúng yêu cầu và xử lý trường hợp biên."
+    ],
+    "required_constructs": [
+      "while"
+    ],
+    "forbidden_constructs": [
+      "for",
+      "function",
+      "class"
+    ]
+  },
+  "theoryContent": "# Vòng lặp while & Kiểm soát vòng lặp vô tận\n\n## 1. Mục tiêu và bản chất\n- **Mục tiêu**: Áp dụng vòng lặp `while` để xử lý dữ liệu khi số lần lặp chưa xác định trước (ví dụ: duyệt từng ký tự trong chuỗi cho đến khi hết).\n- **Bản chất**: `while` là vòng lặp kiểm soát bằng **điều kiện**. Thân lệnh được thực thi liên tục **trong khi** điều kiện là `True`.\n- **Điểm mấu chốt**: Phải đảm bảo có cơ chế làm cho điều kiện trở thành `False` sau một số bước hữu hạn để tránh **vòng lặp vô tận** (infinite loop) gây treo chương trình.\n\n## 2. Cú pháp trọng tâm\n```python\nwhile <điều_kiện>:\n    # Thân vòng lặp\n    # Cập nhật biến điều kiện (bắt buộc để thoát vòng lặp)\n```\n\n**Quy tắc vàng để tránh lặp vô tận:**\n1. Khởi tạo biến điều kiện trước vòng lặp.\n2. Trong thân vòng lặp, phải có lệnh thay đổi biến điều kiện (ví dụ: `i += 1`).\n3. Điều kiện dừng phải rõ ràng (ví dụ: `i < len(s)`).\n\n## 3. Ví dụ minh họa\n**Bài toán**: Đếm số chữ cái trong một chuỗi nhập vào.\n\n**Giải pháp sử dụng `while` với biến chỉ mục `i`:**\n```python\ns = input()\ncount = 0\ni = 0\n\n# Điều kiện: i nhỏ hơn độ dài chuỗi\nwhile i < len(s):\n    # Kiểm tra ký tự hiện tại có phải chữ cái không\n    if (('a' <= s[i] <= 'z') or ('A' <= s[i] <= 'Z')):\n        count += 1\n    # Cập nhật biến chỉ mục để tiến về phía điều kiện dừng\n    i += 1\n\nprint(count)\n```\n\n**Phân tích ví dụ:**\n- Với input `abc123`:\n  - `i=0`: `s[0]='a'` là chữ cái → `count=1`, `i` thành 1.\n  - `i=1`: `s[1]='b'` là chữ cái → `count=2`, `i` thành 2.\n  - `i=2`: `s[2]='c'` là chữ cái → `count=3`, `i` thành 3.\n  - `i=3`: `s[3]='1'` không phải chữ cái → `count` giữ nguyên, `i` thành 4.\n  - ... tiếp tục đến khi `i=6`.\n  - `i=6`: `6 < 6` là `False` → thoát vòng lặp.\n  - In ra `3`.\n\n## 4. Lỗi thường gặp\n1. **Quên cập nhật biến điều kiện**:\n   ```python\n   i = 0\n   while i < len(s):\n       if (('a' <= s[i] <= 'z') or ('A' <= s[i] <= 'Z')):\n           count += 1\n       # Thiếu i += 1 → i luôn bằng 0, vòng lặp chạy mãi mãi\n   ```\n   *Hậu quả*: Chương trình treo, không kết thúc (TimeoutError).\n\n2. **Điều kiện dừng sai**:\n   - Dùng `i <= len(s)` thay vì `i < len(s)` → gây lỗi `IndexError` khi truy cập `s[len(s)]`.\n\n3. **Không xử lý trường hợp biên**:\n   - Chuỗi rỗng (`\"\"`): `len(s) = 0`, điều kiện `0 < 0` là `False` → vòng lặp không chạy, kết quả đúng là `0`. Cần đảm bảo biến đếm được khởi tạo bằng `0`.\n\n## 5. Ghi nhớ và cách áp dụng vào bài tập\n- **Khi nào dùng `while`?**: Khi bạn cần duyệt qua dữ liệu dựa trên một điều kiện (ví dụ: duyệt từng phần tử cho đến khi hết), đặc biệt khi chưa biết trước số lần lặp chính xác hoặc cần kiểm soát chỉ mục thủ công.\n- **Công thức an toàn**:\n  1. `i = 0` (khởi tạo)\n  2. `while i < len(s):` (điều kiện)\n  3. Xử lý `s[i]`\n  4. `i += 1` (cập nhật)\n- **Áp dụng vào bài tập \"Đếm số chữ cái\"**:\n  - Đọc chuỗi `s`.\n  - Khởi tạo `count = 0` và `i = 0`.\n  - Dùng `while i < len(s)` để duyệt từng ký tự.\n  - Dùng `(('a' <= s[i] <= 'z') or ('A' <= s[i] <= 'Z'))` để kiểm tra ký tự có phải chữ cái không.\n  - Tăng `count` nếu đúng, tăng `i` mỗi lần lặp.\n  - In ra `count`.",
+  "harness_version": "adaptive_harness_v4",
+  "difficulty_stars": 1,
+  "problem_statement": "## Mô tả\nViết chương trình đọc một dòng văn bản từ bàn phím. Sử dụng vòng lặp while để đếm tổng số ký tự là chữ cái (a-z, A-Z) trong chuỗi đó. In ra màn hình kết quả là một số nguyên duy nhất.\n\n## Input\nMột dòng văn bản bất kỳ, có thể chứa chữ cái, số, ký tự đặc biệt hoặc khoảng trắng.\n\n## Output\nMột số nguyên đại diện cho tổng số chữ cái có trong chuỗi nhập vào.\n\n## Ví dụ\n**Input**\n```text\nabc123\n```\n\n**Output**\n```text\n3\n```\n\n## Ràng buộc\n- Chuỗi nhập vào có độ dài tối đa 1000 ký tự.\n- Chỉ đếm các ký tự là chữ cái (a-z, A-Z), không đếm số, ký tự đặc biệt hay khoảng trắng.",
+  "reference_solution": "s = input()\ncount = 0\ni = 0\nwhile i < len(s):\n    c = s[i]\n    if ('a' <= c <= 'z') or ('A' <= c <= 'Z'):\n        count += 1\n    i += 1\nprint(count)\n",
+  "common_pitfall_warning": "Quên tăng biến chỉ mục i trong vòng lặp sẽ gây ra vòng lặp vô tận (infinite loop) và chương trình bị treo. Luôn đảm bảo biến điều kiện dừng được cập nhật mỗi lần lặp.",
+  "statement_format_version": 2,
+  "provenance": {
+    "historical_artifact_hash": "b60832aba51762ef20db13f5da11d6a6de5db6440c3758c57f8e8059d0a86fa9",
+    "remediation_version": "mentor-d-2.1",
+    "publication_status": "CANDIDATE_ONLY_NOT_APPLIED",
+    "owner_linkage": {
+      "trace_id": "trace_e8cb432e028046508fd54a2d35f6d8f0",
+      "path_id": "348b0564-c708-449d-82bd-5e707a27f196",
+      "owner_user_id": "19fac5ca-b6ee-4790-8c88-392bdf4136e9",
+      "concept_id": "PY-FLOW-02"
+    },
+    "parent_source_refs": [
+      {
+        "path": "reviews/python-exercises-2026-10-27/snapshot.json",
+        "sha256": "6848c503e62ac743ff528dae0875b2b7c9c57f0febaa0441f54318306b35cf54"
+      },
+      {
+        "path": "reviews/python-exercises-2026-10-27/adaptive-artifacts-snapshot.json",
+        "sha256": "7146b3936b42132747259e2a06d0973c810ddee07c28fbd57057fae1abc920ac"
+      },
+      {
+        "path": "reviews/python-exercises-2026-10-27/stage-a-live-evidence.v2.1.json",
+        "sha256": "b4e9d2536b7fec8484e220bcd93101622d544f23b66ed8de202ce3529a1b452a"
+      }
+    ]
+  },
+  "content_version": {
+    "version": "mentor-d-2.1",
+    "parent_artifact_hash": "b60832aba51762ef20db13f5da11d6a6de5db6440c3758c57f8e8059d0a86fa9",
+    "hash_algorithm": "sha256",
+    "canonicalization": "JSON sorted keys, UTF-8, excluding only artifact_hash",
+    "applied": false
+  },
+  "artifact_hash": "ba0e8c8a5f241fa8ba6b0eda33855bc80245b7bbbbcd6a505786986f75fe4a9f"
+}

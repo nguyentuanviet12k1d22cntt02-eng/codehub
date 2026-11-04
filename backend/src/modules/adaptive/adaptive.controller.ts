@@ -6,6 +6,7 @@ import { AuthenticatedRequest } from '../../shared/middleware/auth';
 import { internalHeaders, mergeReviewReport, publicCase, publicExercise, publicRecord, publicReport, reviewCheckpoint, sanitizeLegacy } from './adaptiveEvidence';
 import { claimReviewRun, createRun, deferRun, finishRetryRun, finishRun, getRun, getRunForExercise, getSubmissionForGuidance, learnerContext, reserveSubmission, saveStage, storeGrading } from './adaptiveRepository';
 import { runExercise } from './adaptiveRunner';
+import { effectiveArtifact } from './contentVersioning';
 import { consumeSse } from './sse';
 import { getEvidenceBasedUserMastery } from '../recommendations/recommendationController';
 import { AI_TUTOR_LOCKED_MESSAGE, getTutorAvailability } from '../ai-tutor/tutorAvailability';
@@ -449,8 +450,11 @@ export async function submitExercise(req:AuthenticatedRequest,res:Response) {
             res.json(publicGrading(existing.result,existing.code,run));return;
         }
         reserved=true;
-        const execution=await runExercise(run.artifact,run.artifact.spec_snapshot,code);
-        const result=await storeGrading(id,req.user!.id,run,{...execution,submission_id:id});
+        const effectiveRun={...run,artifact:effectiveArtifact(run.artifact)};
+        const execution=await runExercise(effectiveRun.artifact,effectiveRun.artifact.spec_snapshot,code);
+        const result=await storeGrading(id,req.user!.id,effectiveRun,{...execution,submission_id:id,
+            content_version:effectiveRun.artifact.content_version?.version || null,
+            artifact_hash:effectiveRun.artifact.artifact_hash});
         if(result.passed) {
             const progress:any[]=await prisma.$queryRawUnsafe(
                 "SELECT COUNT(DISTINCT r.exercise_id)::int AS total, COUNT(DISTINCT CASE WHEN s.status='PASSED' THEN r.exercise_id END)::int AS passed FROM adaptive_generation_runs r LEFT JOIN adaptive_submissions s ON s.trace_id=r.trace_id AND s.user_id=r.user_id WHERE r.path_id=$1::uuid AND r.user_id=$2::uuid",

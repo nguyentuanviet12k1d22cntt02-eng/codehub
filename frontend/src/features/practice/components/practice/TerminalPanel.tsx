@@ -2,6 +2,17 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { ExerciseMock, SubmitStats, TestCaseMock } from './types';
 
+function fileCaseInputPreview(input: string): string | null {
+    try {
+        const value = JSON.parse(input);
+        if (value?.__pythonFileCase !== '1.0' || !value.files || typeof value.files !== 'object' || Array.isArray(value.files)) return null;
+        const files = Object.entries(value.files);
+        if (files.some(([, content]) => typeof content !== 'string')) return null;
+        return files.length ? files.map(([name, content]) => `--- ${name} ---\n${content === '' ? '(File rỗng)' : content}`).join('\n\n')
+            : 'Không có file đầu vào. Chương trình cần tạo file theo yêu cầu của đề.';
+    } catch { return null; }
+}
+
 interface TerminalPanelProps {
     activeTerminalTab: 'console' | 'testcase';
     consoleOutput: string;
@@ -54,6 +65,7 @@ export const TerminalPanel: React.FC<TerminalPanelProps> = ({
     onCompleteWithoutExercise
 }) => {
     const navigate = useNavigate();
+    const filePreview = fileCaseInputPreview(customInput);
 
     return (
         <div className="bg-bg-secondary rounded-xl border border-border-custom flex flex-col overflow-hidden h-full mt-1 transition-colors duration-200">
@@ -183,7 +195,7 @@ export const TerminalPanel: React.FC<TerminalPanelProps> = ({
                                             </span>
                                         </div>
                                         <div className="text-[10px] text-text-tertiary font-mono">
-                                            <div>Input: <code className="text-text-primary">{tc.input || 'Không có'}</code></div>
+                                            <div>Input: <code className="text-text-primary">{fileCaseInputPreview(tc.input || '') ?? (tc.input || 'Không có')}</code></div>
                                             <div>Expected: <code className="text-emerald-400">{tc.expectedOutput}</code></div>
                                             <div>Actual: <code className={tc.passed ? 'text-emerald-400' : 'text-rose-400'}>{tc.actualOutput || 'N/A'}</code></div>
                                         </div>
@@ -195,27 +207,34 @@ export const TerminalPanel: React.FC<TerminalPanelProps> = ({
                 ) : (
                     <div className="flex flex-col gap-3 font-sans">
                         <div className="flex flex-col gap-1">
-                            <span className="text-text-tertiary">Custom Input (Nhập dữ liệu kiểm thử):</span>
+                            <label htmlFor="practice-test-input" className="text-text-tertiary">
+                                {filePreview !== null ? 'Các file mẫu được cấp khi chạy thử:' : 'Custom Input (Nhập dữ liệu kiểm thử):'}
+                            </label>
                             <textarea
+                                id="practice-test-input"
+                                aria-describedby="practice-test-input-help"
+                                readOnly={filePreview !== null}
                                 className="bg-bg-secondary border border-border-custom rounded-lg p-2.5 text-text-primary outline-none focus:border-accent-custom/50 resize-none font-mono"
                                 rows={3}
-                                value={customInput}
+                                value={filePreview ?? customInput}
                                 onChange={(e) => onCustomInputChange(e.target.value)}
                             />
                         </div>
-                        <div className="text-[11px] text-text-tertiary/80 leading-normal">
-                            * Dữ liệu Custom Input sẽ được cấp vào hàm <code>input()</code> của chương trình khi bấm nút "Chạy thử".
+                        <div id="practice-test-input-help" className="text-[11px] text-text-tertiary/80 leading-normal">
+                            {filePreview !== null
+                                ? 'Hệ thống cấp sẵn file mẫu trong môi trường sạch. Hãy đọc/ghi file đúng tên trong đề; Nộp bài sẽ kiểm tra thêm các dữ liệu khác và file kết quả.'
+                                : <>* Dữ liệu Custom Input sẽ được cấp vào hàm <code>input()</code> của chương trình khi bấm nút "Chạy thử".</>}
                         </div>
                     </div>
                 )}
             </div>
 
             {/* Bottom action buttons */}
-            <div className="border-t border-border-custom bg-bg-secondary px-4 py-3 flex justify-between items-center shrink-0 transition-colors duration-200">
+            <div className="border-t border-border-custom bg-bg-secondary px-4 py-3 flex flex-wrap gap-2 justify-between items-center shrink-0 transition-colors duration-200">
                 <span className="text-[10px] text-text-tertiary font-sans">
                     Nhấn Nộp bài để kiểm tra toàn bộ testcases
                 </span>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     {exercise && (
                         <button
                             className="bg-bg-tertiary hover:bg-bg-tertiary/85 text-text-primary border border-border-custom px-4 py-2 rounded-[5px] text-xs font-semibold cursor-pointer active:scale-95 transition-all disabled:opacity-50 font-sans"
@@ -241,7 +260,7 @@ export const TerminalPanel: React.FC<TerminalPanelProps> = ({
                         <button
                             className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-[5px] text-xs font-bold cursor-pointer active:scale-95 transition-all border-none font-sans disabled:opacity-60 disabled:cursor-not-allowed"
                             onClick={onNextExercise}
-                            disabled={isSelectingNext}
+                            disabled={isSelectingNext || isRunning || isSubmitting}
                             aria-busy={isSelectingNext}
                         >
                             {isSelectingNext ? 'Đang chọn bài...' : adaptiveMode ? 'Bài phù hợp tiếp theo →' : 'Bài tập tiếp theo →'}
