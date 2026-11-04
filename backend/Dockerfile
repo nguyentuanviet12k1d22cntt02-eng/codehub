@@ -18,7 +18,7 @@ RUN npm prune --production
 # STAGE 2: Runner
 FROM node:20-alpine AS runner
 
-RUN apk add --no-cache python3
+RUN apk add --no-cache python3     && ln -s /usr/bin/python3 /usr/local/bin/python
 
 WORKDIR /app
 
