@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 
-const GMAIL_USER = process.env.GMAIL_USER || 'nguyentuanviet12k1@gmail.com';
-const GMAIL_APP_PASS = (process.env.GMAIL_APP_PASS || 'urlhfkvjbojrljts').replace(/\s+/g, '');
+const GMAIL_USER = process.env.GMAIL_USER || '';
+const GMAIL_APP_PASS = (process.env.GMAIL_APP_PASS || '').replace(/\s+/g, '');
 const GMAIL_RELAY_URL = process.env.GMAIL_RELAY_URL || '';
 const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
 
@@ -97,7 +97,11 @@ export const sendVerificationOtp = async (toEmail: string, otp: string, username
         }
     }
 
-    // 3. Fallback to Nodemailer SMTP
+    // 3. SMTP requires explicit deployment credentials.
+    if (!GMAIL_USER || !GMAIL_APP_PASS) {
+        console.warn('[EmailService] SMTP credentials are not configured');
+        return false;
+    }
     try {
         console.log(`[EmailService] Sending OTP via SMTP (smtp.gmail.com:465) to ${toEmail}...`);
         const sendPromise = transporter.sendMail({

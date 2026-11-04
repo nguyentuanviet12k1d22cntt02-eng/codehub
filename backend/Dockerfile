@@ -1,29 +1,30 @@
 # STAGE 1: Builder
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./  
+COPY package*.json ./
 COPY prisma ./prisma/
 
 RUN npm ci
 RUN npx prisma generate --schema ./prisma/schema.prisma
 
 COPY . .
-RUN npx tsc 
+RUN npx tsc
 
-# Remove devDependencies
-RUN npm prune --production
+# Keep the builder available for checks; prune runtime dependencies separately.
+FROM builder AS runtime-dependencies
+RUN npm prune --omit=dev
 
 # STAGE 2: Runner
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 RUN apk add --no-cache python3     && ln -s /usr/bin/python3 /usr/local/bin/python
 
 WORKDIR /app
 
 COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=runtime-dependencies /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/infrastructure/data ./dist/infrastructure/data

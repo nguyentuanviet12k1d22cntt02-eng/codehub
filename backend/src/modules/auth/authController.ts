@@ -38,7 +38,7 @@ const RegisterSchema = z.object({
     username: z.string().min(3, 'Tên đăng nhập phải có ít nhất 3 ký tự'),
     email: z.string().email('Email không đúng định dạng'),
     password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
-    role: z.enum(['STUDENT', 'TEACHER', 'ADMIN']).default('STUDENT'),
+    role: z.enum(['STUDENT', 'TEACHER']).default('STUDENT'),
 });
 
 const VerifyOtpSchema = z.object({

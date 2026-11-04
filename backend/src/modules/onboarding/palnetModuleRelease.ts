@@ -5,10 +5,19 @@ export interface ModuleContext {type:'MODULE_PRACTICE';course_id:string;module_i
 export interface ModuleRow {exercise_id:string;bank_id:string;bank_code:string;module_code:string;module_id:string;course_id:string;content_version:string;inventory_version:string;skill_id:string}
 export interface ModuleRelease {pins:Record<string,string>;catalog_revision:string;skill_ids:string[];qualified_skill_ids:string[];banks:ModuleContext[];rows:ModuleRow[]}
 export const sha=(v:string|Buffer)=>createHash('sha256').update(v).digest('hex');
+// The sealed release is immutable for the lifetime of a deployment. Learner and
+// catalog snapshots are still freshly read and verified for every decision.
+let cachedRelease:ModuleRelease|undefined;
+function freezeRelease<T>(value:T):T {
+ if(value&&typeof value==='object'){for(const child of Object.values(value))freezeRelease(child);Object.freeze(value);}
+ return value;
+}
 export function moduleRelease():ModuleRelease {
+ if(cachedRelease)return cachedRelease;
  const raw=fs.readFileSync(path.join(__dirname,'../../infrastructure/data/pythonModulePracticeRuntime.r03.json'));
  if(sha(raw)!=='2a6d87c7e134503d606b67355bea883528227c9441b398fb1bf2f861000b0898')throw Error('MODULE_RELEASE_INTEGRITY');
- return JSON.parse(raw.toString('utf8'));
+ cachedRelease=freezeRelease(JSON.parse(raw.toString('utf8')) as ModuleRelease);
+ return cachedRelease;
 }
 export const sameContext=(a:ModuleContext,b:ModuleContext)=>['type','course_id','module_id','module_code','bank_id','bank_code'].every(k=>a[k as keyof ModuleContext]===b[k as keyof ModuleContext]);
 export function resolvePinnedModuleContext(bankId:string):ModuleContext {
