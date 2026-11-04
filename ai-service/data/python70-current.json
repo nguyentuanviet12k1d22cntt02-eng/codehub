@@ -1,0 +1,177 @@
+{
+  "manifest_version": "2.0",
+  "status": "COMPLETE_CALIBRATED_SYNTHETIC_REQUIRES_INSTRUCTOR_REVIEW",
+  "purpose": "INSTRUCTOR_DIAGNOSTIC_REVIEW",
+  "downstream_training_authorized": false,
+  "ability_labels_generated": false,
+  "data_origin": "SYNTHETIC",
+  "run_id": "syn-py70-calibrated-20261031-edc2ccae22",
+  "measurement_campaign_id": "syn-py70-calibrated-20261031-edc2ccae22",
+  "temporal_interpretation": "RETROSPECTIVE_SYNTHETIC_CURRENT_CONTENT_AS_IF_FIXED",
+  "bank_captured_at_utc": "2026-10-30T10:44:59.947Z",
+  "snapshot": "reviews/synthetic-python-70-2026-10-28/calibration-correction-2026-10-31/snapshot.json",
+  "snapshot_sha256": "a43537dd1538a18faa6f4baae11d38fd23e556d0b0fbb24d1fcc2642c5e69b89",
+  "source_manifest": "reviews/synthetic-python-70-2026-10-28/calibration-correction-2026-10-31/source_manifest.json",
+  "source_manifest_sha256": "bca85dddaff8edf68d1a618448ce1666990ce8ada71d9a639fcb5bd59e675291",
+  "source_quarantine": "reviews/synthetic-python-70-2026-10-28/calibration-correction-2026-10-31/SOURCE_QUARANTINE.json",
+  "source_quarantine_sha256": "579476dae344e63bcd452911439bf4a5b2966fec6c26758284c8c3f3f25f18f1",
+  "scope": "70 aliases;59 Python lessons;322 bank code items,320 eligible and2 pending;178 quiz",
+  "dataset_dir": "reviews/synthetic-python-70-2026-10-28/calibration-correction-2026-10-31/runs/syn-py70-calibrated-20261031-edc2ccae22",
+  "notebook": "ai-service/notebooks/python70_synthetic_current.ipynb",
+  "html": "ai-service/reports/python70_synthetic_current.html",
+  "report": "reviews/synthetic-python-70-2026-10-28/calibration-correction-2026-10-31/report/REPORT.md",
+  "raw_files": {
+    "profiles.csv": {
+      "path": "reviews/synthetic-python-70-2026-10-28/calibration-correction-2026-10-31/runs/syn-py70-calibrated-20261031-edc2ccae22/profiles.csv",
+      "sha256": "afba6ae71ece7e13963f4a40fe0d57c0335a635d71afe306603f180ded5b61d7",
+      "bytes": 5724
+    },
+    "coding_submissions.csv": {
+      "path": "reviews/synthetic-python-70-2026-10-28/calibration-correction-2026-10-31/runs/syn-py70-calibrated-20261031-edc2ccae22/coding_submissions.csv",
+      "sha256": "dc6c946628e1656b8a868577856ea591c4790a6d6d90e4de2f71fff8742992f3",
+      "bytes": 44174179
+    },
+    "quiz_answers.csv": {
+      "path": "reviews/synthetic-python-70-2026-10-28/calibration-correction-2026-10-31/runs/syn-py70-calibrated-20261031-edc2ccae22/quiz_answers.csv",
+      "sha256": "49763014d385aed1506fd50afcd208fb81745d8f4b25a8eab11a13444edc563b",
+      "bytes": 2458152
+    },
+    "session_events.jsonl": {
+      "path": "reviews/synthetic-python-70-2026-10-28/calibration-correction-2026-10-31/runs/syn-py70-calibrated-20261031-edc2ccae22/session_events.jsonl",
+      "sha256": "0d9e37d37dcd4f76f7283e6f3bd5b198e933f8ea539bf2981e9780df5158a7be",
+      "bytes": 108607927
+    },
+    "execution_evidence.jsonl.gz": {
+      "path": "reviews/synthetic-python-70-2026-10-28/calibration-correction-2026-10-31/runs/syn-py70-calibrated-20261031-edc2ccae22/execution_evidence.jsonl.gz",
+      "sha256": "0f4c72555862dc31fffa92d7d72d59afae1113c495ffd96fe190a74121f8f958",
+      "bytes": 12270976
+    },
+    "pair_outcomes.jsonl": {
+      "path": "reviews/synthetic-python-70-2026-10-28/calibration-correction-2026-10-31/runs/syn-py70-calibrated-20261031-edc2ccae22/pair_outcomes.jsonl",
+      "sha256": "67c71ac58ac773ecd0e7f061494f689d01fcde17d1b80c92718bee9de1145898",
+      "bytes": 1307409
+    }
+  },
+  "build_script": "reviews/synthetic-python-70-2026-10-28/calibration-correction-2026-10-31/build_report.py",
+  "summary": {
+    "run_id": "syn-py70-calibrated-20261031-edc2ccae22",
+    "data_origin": "SYNTHETIC",
+    "profiles": 70,
+    "profiles_with_code": 70,
+    "profiles_with_quiz": 70,
+    "submissions": 57053,
+    "quiz_opportunities": 5401,
+    "quiz_answered": 5053,
+    "learner_exercise_pairs": 9355,
+    "code_items_exposed": 320,
+    "code_items_in_snapshot": 322,
+    "eligible_code_items_in_snapshot": 320,
+    "lessons_studied": 59,
+    "quiz_items_exposed": 178,
+    "quiz_items_in_snapshot": 178,
+    "sessions": 2884,
+    "attempt_histogram": {
+      "1": 322,
+      "2": 495,
+      "3": 486,
+      "4": 814,
+      "5": 985,
+      "6": 1634,
+      "7": 2059,
+      "8": 1463,
+      "9": 824,
+      "10": 241,
+      "11": 29,
+      "12": 3
+    },
+    "attempt_mean": 6.098663816141101,
+    "attempt_median": 6,
+    "attempt_modes": [
+      7
+    ],
+    "one_attempt_pct": 3.442009620523784,
+    "three_to_nine_pct": 88.34847675040085,
+    "six_seven_pct": 39.4762159273116,
+    "ten_to_twelve_pct": 2.9182255478353825,
+    "solved_pairs": 9117,
+    "first_pass_mean_among_solved": 6.13809367116376,
+    "postpass_submissions": 185,
+    "unsolved_pairs": 238,
+    "statuses": {
+      "SYNTAX_ERROR": 1326,
+      "PASSED": 9302,
+      "WRONG_OUTPUT": 23236,
+      "AST_CONSTRAINT_FAILED": 3535,
+      "RUNTIME_EXCEPTION": 18153,
+      "OUTPUT_LIMIT": 729,
+      "TIME_LIMIT": 771,
+      "MEMORY_LIMIT": 1
+    },
+    "terminal_reasons": {
+      "SOLVED": 8932,
+      "STOPPED_UNSOLVED": 181,
+      "SOLVED_POSTPASS_OBSERVED": 185,
+      "CENSORED_AT_CUTOFF": 57
+    },
+    "unique_fresh_evidence_contexts": 24620,
+    "executed_contexts": 22799,
+    "within_campaign_identical_context_reuses": 32433,
+    "old_cache_loaded": false,
+    "cosmetic_revisions": 0,
+    "repeated_shapes_within_pair": 0,
+    "night_submissions_00_to_06": 0,
+    "pending_items": 2
+  },
+  "behavior_calibration": {
+    "run_id": "syn-py70-calibrated-20261031-edc2ccae22",
+    "scope": "FULL70_PRIMARY_FROM_RAW_CODE_ROWS",
+    "data_origin": "SYNTHETIC",
+    "passed": true,
+    "checks": {
+      "mode6_or7": true,
+      "median6_to7": true,
+      "mean5_7_to7_3": true,
+      "band6_7_at_least28pct": true,
+      "band3_9_at_least80pct": true,
+      "one_attempt_at_most5pct": true,
+      "tail10_12_positive_at_most8pct": true,
+      "actual_count_cap": true
+    },
+    "pairs_or_items": 9355,
+    "histogram": {
+      "1": 322,
+      "2": 495,
+      "3": 486,
+      "4": 814,
+      "5": 985,
+      "6": 1634,
+      "7": 2059,
+      "8": 1463,
+      "9": 824,
+      "10": 241,
+      "11": 29,
+      "12": 3
+    },
+    "mean": 6.098663816141101,
+    "median": 6,
+    "modes": [
+      7
+    ],
+    "one_pct": 3.442009620523784,
+    "three_nine_pct": 88.34847675040085,
+    "six_seven_pct": 39.4762159273116,
+    "ten_twelve_pct": 2.918225547835382,
+    "instructor_realism_approval": false,
+    "meaning": "Operational design targets from qualitative instructor feedback; not a proof of human-data realism."
+  },
+  "archive_index": "reviews/synthetic-python-70-2026-10-28/calibration-correction-2026-10-31/archive/ARCHIVE_INDEX.json",
+  "old_submission_histories_used": false,
+  "old_execution_cache_loaded": false,
+  "pilot_execution_cache_loaded": false,
+  "within_new_campaign_identical_context_reuse": true,
+  "instructor_behavior_approval": false,
+  "eligible_code_items": 320,
+  "pending_source_items": 2,
+  "analysis_python": "C:\\Users\\ADMIN\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+  "analysis_runtime": "reviews/synthetic-python-70-2026-10-28/calibration-correction-2026-10-31/report/ANALYSIS_RUNTIME.json"
+}

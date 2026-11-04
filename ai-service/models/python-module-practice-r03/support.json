@@ -1,0 +1,1984 @@
+{
+  "schemaVersion": "palnet-module-practice-support/3.0",
+  "modelVersion": "python-module-practice-r03-s20261113-advisory-v1",
+  "scope": "ADVISORY_SYNTHETIC_ONLY",
+  "supportStatus": "ALL_P1_PRIMARY_SKILLS_SCREENED",
+  "qualifiedSkillIds": [
+    "PY-BASICS-01",
+    "PY-BASICS-03",
+    "PY-STRING-01",
+    "PY-STRING-02",
+    "PY-FLOW-01",
+    "PY-FLOW-02",
+    "PY-FLOW-03",
+    "PY-FLOW-04",
+    "PY-LIST-01",
+    "PY-LIST-02",
+    "PY-LIST-03",
+    "PY-DICT-01",
+    "PY-DICT-02",
+    "PY-DICT-03",
+    "PY-SET-01",
+    "PY-FUNC-01",
+    "PY-FUNC-03",
+    "PY-EXC-01",
+    "PY-EXC-03",
+    "PY-IO-01",
+    "PY-MODULE-02",
+    "PY-OOP-01",
+    "PY-OOP-04",
+    "PY-OOP-06",
+    "PY-FUNC-07"
+  ],
+  "unqualifiedSkillIds": [
+    "PY-BASICS-02",
+    "PY-TUPLE-01",
+    "PY-FUNC-02",
+    "PY-FUNC-04",
+    "PY-FUNC-05",
+    "PY-FUNC-06",
+    "PY-EXC-02",
+    "PY-MODULE-01",
+    "PY-OOP-02",
+    "PY-OOP-03",
+    "PY-OOP-05"
+  ],
+  "perSkill": [
+    {
+      "skillId": "PY-BASICS-01",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 711,
+          "positive": 413,
+          "negative": 298,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 238,
+          "positive": 126,
+          "negative": 112,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 230,
+          "positive": 133,
+          "negative": 97,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 230,
+        "positive": 133,
+        "prevalence": 0.5782608695652174,
+        "average_precision": 0.721453149519232,
+        "auc_roc": 0.682311448724905,
+        "accuracy_at_0_5": 0.6608695652173913,
+        "f1": 0.7328767123287672,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6328931675415573,
+        "brier": 0.22032527793580423,
+        "ece_equal_count_10": 0.08976571229488954
+      },
+      "skillRateMetrics": {
+        "events": 230,
+        "positive": 133,
+        "prevalence": 0.5782608695652174,
+        "average_precision": 0.5782608695652174,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.5782608695652174,
+        "f1": 0.7327823691460055,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6810695522523845,
+        "brier": 0.2439841782379816,
+        "ece_equal_count_10": 0.10869565217391305
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-BASICS-02",
+      "vocabularyMember": true,
+      "requestedP1Primary": false,
+      "counts": {
+        "train": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "validation": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "holdout": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        }
+      },
+      "servingSeedMetrics": null,
+      "skillRateMetrics": null,
+      "qualification": {
+        "qualified": false,
+        "reasons": [
+          "TRAIN_INSUFFICIENT_EVENTS",
+          "TRAIN_INSUFFICIENT_BOTH_CLASSES",
+          "VALIDATION_INSUFFICIENT_EVENTS",
+          "VALIDATION_INSUFFICIENT_BOTH_CLASSES",
+          "HOLDOUT_INSUFFICIENT_EVENTS",
+          "HOLDOUT_INSUFFICIENT_BOTH_CLASSES",
+          "MISSING_SKILL_EVALUATION"
+        ],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-BASICS-03",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 10809,
+          "positive": 6512,
+          "negative": 4297,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 3602,
+          "positive": 2075,
+          "negative": 1527,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 3610,
+          "positive": 2244,
+          "negative": 1366,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 3610,
+        "positive": 2244,
+        "prevalence": 0.621606648199446,
+        "average_precision": 0.7895689821433014,
+        "auc_roc": 0.7133633401450558,
+        "accuracy_at_0_5": 0.6872576177285319,
+        "f1": 0.7660103626943006,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5954329785230251,
+        "brier": 0.20440796957125384,
+        "ece_equal_count_10": 0.01250988634256776
+      },
+      "skillRateMetrics": {
+        "events": 3610,
+        "positive": 2244,
+        "prevalence": 0.621606648199446,
+        "average_precision": 0.621606648199446,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.621606648199446,
+        "f1": 0.7666552784420909,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6646595998133717,
+        "brier": 0.23587517818260828,
+        "ece_equal_count_10": 0.04531612254480166
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-STRING-01",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 3240,
+          "positive": 1890,
+          "negative": 1350,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 1080,
+          "positive": 611,
+          "negative": 469,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 1080,
+          "positive": 632,
+          "negative": 448,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 1080,
+        "positive": 632,
+        "prevalence": 0.5851851851851851,
+        "average_precision": 0.7903051992610578,
+        "auc_roc": 0.7420762460443038,
+        "accuracy_at_0_5": 0.6981481481481482,
+        "f1": 0.7627365356622998,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5884847535038837,
+        "brier": 0.20107537220049299,
+        "ece_equal_count_10": 0.040465371848808405
+      },
+      "skillRateMetrics": {
+        "events": 1080,
+        "positive": 632,
+        "prevalence": 0.5851851851851851,
+        "average_precision": 0.5851851851851851,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.5851851851851851,
+        "f1": 0.7383177570093458,
+        "f1_threshold": 0.5,
+        "log_loss": 0.678644283177285,
+        "brier": 0.24278300464865502,
+        "ece_equal_count_10": 0.05925925925925927
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-STRING-02",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 1440,
+          "positive": 840,
+          "negative": 600,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 480,
+          "positive": 271,
+          "negative": 209,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 480,
+          "positive": 277,
+          "negative": 203,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 480,
+        "positive": 277,
+        "prevalence": 0.5770833333333333,
+        "average_precision": 0.7844592882711652,
+        "auc_roc": 0.7564510679162739,
+        "accuracy_at_0_5": 0.71875,
+        "f1": 0.7761194029850746,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5826018258859212,
+        "brier": 0.197944617033158,
+        "ece_equal_count_10": 0.06637010096261897
+      },
+      "skillRateMetrics": {
+        "events": 480,
+        "positive": 277,
+        "prevalence": 0.5770833333333333,
+        "average_precision": 0.5770833333333333,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.5770833333333333,
+        "f1": 0.7318361955085865,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6812204670327117,
+        "brier": 0.24406035208367396,
+        "ece_equal_count_10": 0.059462799167533824
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-FLOW-01",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 10800,
+          "positive": 7147,
+          "negative": 3653,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 3600,
+          "positive": 2299,
+          "negative": 1301,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 3600,
+          "positive": 2461,
+          "negative": 1139,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 3600,
+        "positive": 2461,
+        "prevalence": 0.6836111111111111,
+        "average_precision": 0.8371206375705752,
+        "auc_roc": 0.7122355452700405,
+        "accuracy_at_0_5": 0.71,
+        "f1": 0.8061641292239139,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5627102955721547,
+        "brier": 0.19088073401378933,
+        "ece_equal_count_10": 0.02660996543450486
+      },
+      "skillRateMetrics": {
+        "events": 3600,
+        "positive": 2461,
+        "prevalence": 0.6836111111111111,
+        "average_precision": 0.6836111111111112,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.6836111111111111,
+        "f1": 0.8120772149810263,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6258356249737742,
+        "brier": 0.21705206583033218,
+        "ece_equal_count_10": 0.04345310836457897
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-FLOW-02",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 5400,
+          "positive": 3371,
+          "negative": 2029,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 1800,
+          "positive": 1102,
+          "negative": 698,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 1800,
+          "positive": 1149,
+          "negative": 651,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 1800,
+        "positive": 1149,
+        "prevalence": 0.6383333333333333,
+        "average_precision": 0.8172056629774145,
+        "auc_roc": 0.7336413551355015,
+        "accuracy_at_0_5": 0.705,
+        "f1": 0.7885304659498208,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5742010131567822,
+        "brier": 0.19515666122210368,
+        "ece_equal_count_10": 0.02962326827976438
+      },
+      "skillRateMetrics": {
+        "events": 1800,
+        "positive": 1149,
+        "prevalence": 0.6383333333333333,
+        "average_precision": 0.6383333333333334,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.6383333333333333,
+        "f1": 0.7792472024415056,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6549975100084435,
+        "brier": 0.2311568807331667,
+        "ece_equal_count_10": 0.05318013514764406
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-FLOW-03",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 6480,
+          "positive": 4109,
+          "negative": 2371,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 2160,
+          "positive": 1345,
+          "negative": 815,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 2160,
+          "positive": 1418,
+          "negative": 742,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 2160,
+        "positive": 1418,
+        "prevalence": 0.6564814814814814,
+        "average_precision": 0.8121544852056912,
+        "auc_roc": 0.7030825276860085,
+        "accuracy_at_0_5": 0.6861111111111111,
+        "f1": 0.7808661926308985,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5833739098224089,
+        "brier": 0.19959472681621013,
+        "ece_equal_count_10": 0.029559791729682018
+      },
+      "skillRateMetrics": {
+        "events": 2160,
+        "positive": 1418,
+        "prevalence": 0.6564814814814814,
+        "average_precision": 0.6564814814814814,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.6564814814814814,
+        "f1": 0.7926215762996087,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6447263336027523,
+        "brier": 0.22615170734186701,
+        "ece_equal_count_10": 0.038570889797457694
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-FLOW-04",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 1080,
+          "positive": 722,
+          "negative": 358,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 360,
+          "positive": 248,
+          "negative": 112,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 360,
+          "positive": 236,
+          "negative": 124,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 360,
+        "positive": 236,
+        "prevalence": 0.6555555555555556,
+        "average_precision": 0.7730485024853215,
+        "auc_roc": 0.6542851284855112,
+        "accuracy_at_0_5": 0.6666666666666666,
+        "f1": 0.7752808988764045,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6176174074890668,
+        "brier": 0.21308401310776182,
+        "ece_equal_count_10": 0.04754525207810932
+      },
+      "skillRateMetrics": {
+        "events": 360,
+        "positive": 236,
+        "prevalence": 0.6555555555555556,
+        "average_precision": 0.6555555555555556,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.6555555555555556,
+        "f1": 0.7919463087248322,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6446545118038154,
+        "brier": 0.2261198349324334,
+        "ece_equal_count_10": 0.056896286022499604
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-LIST-01",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 7200,
+          "positive": 4494,
+          "negative": 2706,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 2400,
+          "positive": 1403,
+          "negative": 997,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 2400,
+          "positive": 1514,
+          "negative": 886,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 2400,
+        "positive": 1514,
+        "prevalence": 0.6308333333333334,
+        "average_precision": 0.8278834049298928,
+        "auc_roc": 0.7475145444623693,
+        "accuracy_at_0_5": 0.7079166666666666,
+        "f1": 0.7843740387573055,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5672783801679496,
+        "brier": 0.192351129193607,
+        "ece_equal_count_10": 0.03490474058315157
+      },
+      "skillRateMetrics": {
+        "events": 2400,
+        "positive": 1514,
+        "prevalence": 0.6308333333333334,
+        "average_precision": 0.6308333333333334,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.6308333333333334,
+        "f1": 0.7736331119059785,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6590944306897093,
+        "brier": 0.23315774428517586,
+        "ece_equal_count_10": 0.04881726029299452
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-LIST-02",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 1080,
+          "positive": 565,
+          "negative": 515,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 360,
+          "positive": 185,
+          "negative": 175,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 360,
+          "positive": 197,
+          "negative": 163,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 360,
+        "positive": 197,
+        "prevalence": 0.5472222222222223,
+        "average_precision": 0.7524435742653897,
+        "auc_roc": 0.7366323066861823,
+        "accuracy_at_0_5": 0.6833333333333333,
+        "f1": 0.7259615384615384,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5998133075164007,
+        "brier": 0.20620371025690357,
+        "ece_equal_count_10": 0.0789593867543671
+      },
+      "skillRateMetrics": {
+        "events": 360,
+        "positive": 197,
+        "prevalence": 0.5472222222222223,
+        "average_precision": 0.5472222222222222,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.5472222222222223,
+        "f1": 0.7073608617594255,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6900815826458256,
+        "brier": 0.24846796103680419,
+        "ece_equal_count_10": 0.072233780243489
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-LIST-03",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 2160,
+          "positive": 1190,
+          "negative": 970,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 720,
+          "positive": 384,
+          "negative": 336,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 720,
+          "positive": 398,
+          "negative": 322,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 720,
+        "positive": 398,
+        "prevalence": 0.5527777777777778,
+        "average_precision": 0.8217047985772371,
+        "auc_roc": 0.7876650332407379,
+        "accuracy_at_0_5": 0.7138888888888889,
+        "f1": 0.7604651162790698,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5635237159634277,
+        "brier": 0.19011444890153964,
+        "ece_equal_count_10": 0.05974547372510034
+      },
+      "skillRateMetrics": {
+        "events": 720,
+        "positive": 398,
+        "prevalence": 0.5527777777777778,
+        "average_precision": 0.5527777777777778,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.5527777777777778,
+        "f1": 0.7119856887298748,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6876454887978377,
+        "brier": 0.2472539733220664,
+        "ece_equal_count_10": 0.049034235484617175
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-TUPLE-01",
+      "vocabularyMember": true,
+      "requestedP1Primary": false,
+      "counts": {
+        "train": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "validation": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "holdout": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        }
+      },
+      "servingSeedMetrics": null,
+      "skillRateMetrics": null,
+      "qualification": {
+        "qualified": false,
+        "reasons": [
+          "TRAIN_INSUFFICIENT_EVENTS",
+          "TRAIN_INSUFFICIENT_BOTH_CLASSES",
+          "VALIDATION_INSUFFICIENT_EVENTS",
+          "VALIDATION_INSUFFICIENT_BOTH_CLASSES",
+          "HOLDOUT_INSUFFICIENT_EVENTS",
+          "HOLDOUT_INSUFFICIENT_BOTH_CLASSES",
+          "MISSING_SKILL_EVALUATION"
+        ],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-DICT-01",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 2160,
+          "positive": 1289,
+          "negative": 871,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 720,
+          "positive": 402,
+          "negative": 318,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 720,
+          "positive": 459,
+          "negative": 261,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 720,
+        "positive": 459,
+        "prevalence": 0.6375,
+        "average_precision": 0.837996569931689,
+        "auc_roc": 0.7423267306071002,
+        "accuracy_at_0_5": 0.6805555555555556,
+        "f1": 0.7584033613445378,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5749750580327214,
+        "brier": 0.19630214211083946,
+        "ece_equal_count_10": 0.06595786083489658
+      },
+      "skillRateMetrics": {
+        "events": 720,
+        "positive": 459,
+        "prevalence": 0.6375,
+        "average_precision": 0.6375000000000001,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.6375,
+        "f1": 0.7786259541984732,
+        "f1_threshold": 0.5,
+        "log_loss": 0.660157994740264,
+        "brier": 0.23363468652012706,
+        "ece_equal_count_10": 0.07285931837458552
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-DICT-02",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 1440,
+          "positive": 866,
+          "negative": 574,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 480,
+          "positive": 277,
+          "negative": 203,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 480,
+          "positive": 293,
+          "negative": 187,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 480,
+        "positive": 293,
+        "prevalence": 0.6104166666666667,
+        "average_precision": 0.8264728785754502,
+        "auc_roc": 0.744520085415488,
+        "accuracy_at_0_5": 0.6916666666666667,
+        "f1": 0.7643312101910829,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5783420655342404,
+        "brier": 0.1978020349286646,
+        "ece_equal_count_10": 0.05317067081729571
+      },
+      "skillRateMetrics": {
+        "events": 480,
+        "positive": 293,
+        "prevalence": 0.6104166666666667,
+        "average_precision": 0.6104166666666666,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.6104166666666667,
+        "f1": 0.7580853816300129,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6690430303641878,
+        "brier": 0.23803930148854222,
+        "ece_equal_count_10": 0.08304066944155394
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-DICT-03",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 2160,
+          "positive": 1349,
+          "negative": 811,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 720,
+          "positive": 421,
+          "negative": 299,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 720,
+          "positive": 456,
+          "negative": 264,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 720,
+        "positive": 456,
+        "prevalence": 0.6333333333333333,
+        "average_precision": 0.8233598005180155,
+        "auc_roc": 0.7383207070707071,
+        "accuracy_at_0_5": 0.7111111111111111,
+        "f1": 0.7877551020408163,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5710819576672364,
+        "brier": 0.19406989304357714,
+        "ece_equal_count_10": 0.03261403805679743
+      },
+      "skillRateMetrics": {
+        "events": 720,
+        "positive": 456,
+        "prevalence": 0.6333333333333333,
+        "average_precision": 0.6333333333333333,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.6333333333333333,
+        "f1": 0.7755102040816326,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6579108830958085,
+        "brier": 0.23257677291533127,
+        "ece_equal_count_10": 0.08129770992366414
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-SET-01",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 2520,
+          "positive": 1244,
+          "negative": 1276,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 840,
+          "positive": 400,
+          "negative": 440,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 840,
+          "positive": 411,
+          "negative": 429,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 840,
+        "positive": 411,
+        "prevalence": 0.48928571428571427,
+        "average_precision": 0.7194819572188625,
+        "auc_roc": 0.7488359167191284,
+        "accuracy_at_0_5": 0.6773809523809524,
+        "f1": 0.6754491017964072,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5932982942383256,
+        "brier": 0.20358253133643267,
+        "ece_equal_count_10": 0.06278064846992493
+      },
+      "skillRateMetrics": {
+        "events": 840,
+        "positive": 411,
+        "prevalence": 0.48928571428571427,
+        "average_precision": 0.48928571428571427,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.5107142857142857,
+        "f1": 0.0,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6929175712304656,
+        "brier": 0.24988520412225743,
+        "ece_equal_count_10": 0.08452380952380953
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-FUNC-01",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 3960,
+          "positive": 2361,
+          "negative": 1599,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 1320,
+          "positive": 686,
+          "negative": 634,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 1320,
+          "positive": 813,
+          "negative": 507,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 1320,
+        "positive": 813,
+        "prevalence": 0.615909090909091,
+        "average_precision": 0.8161172979318334,
+        "auc_roc": 0.7568918292733223,
+        "accuracy_at_0_5": 0.7083333333333334,
+        "f1": 0.7704233750745378,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5702853971833528,
+        "brier": 0.19298068510229494,
+        "ece_equal_count_10": 0.057268843596631834
+      },
+      "skillRateMetrics": {
+        "events": 1320,
+        "positive": 813,
+        "prevalence": 0.615909090909091,
+        "average_precision": 0.615909090909091,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.615909090909091,
+        "f1": 0.7623066104078763,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6691531246482204,
+        "brier": 0.2380747893763349,
+        "ece_equal_count_10": 0.06539046274941769
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-FUNC-02",
+      "vocabularyMember": true,
+      "requestedP1Primary": false,
+      "counts": {
+        "train": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "validation": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "holdout": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        }
+      },
+      "servingSeedMetrics": null,
+      "skillRateMetrics": null,
+      "qualification": {
+        "qualified": false,
+        "reasons": [
+          "TRAIN_INSUFFICIENT_EVENTS",
+          "TRAIN_INSUFFICIENT_BOTH_CLASSES",
+          "VALIDATION_INSUFFICIENT_EVENTS",
+          "VALIDATION_INSUFFICIENT_BOTH_CLASSES",
+          "HOLDOUT_INSUFFICIENT_EVENTS",
+          "HOLDOUT_INSUFFICIENT_BOTH_CLASSES",
+          "MISSING_SKILL_EVALUATION"
+        ],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-FUNC-03",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 360,
+          "positive": 156,
+          "negative": 204,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 120,
+          "positive": 53,
+          "negative": 67,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 120,
+          "positive": 66,
+          "negative": 54,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 120,
+        "positive": 66,
+        "prevalence": 0.55,
+        "average_precision": 0.7550358753577103,
+        "auc_roc": 0.6958473625140292,
+        "accuracy_at_0_5": 0.6666666666666666,
+        "f1": 0.6721311475409836,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6537662875982447,
+        "brier": 0.22890702889382294,
+        "ece_equal_count_10": 0.15567868202924728
+      },
+      "skillRateMetrics": {
+        "events": 120,
+        "positive": 66,
+        "prevalence": 0.55,
+        "average_precision": 0.5499999999999999,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.45,
+        "f1": 0.0,
+        "f1_threshold": 0.5,
+        "log_loss": 0.7144240423227937,
+        "brier": 0.26056799986226126,
+        "ece_equal_count_10": 0.17572614107883816
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-FUNC-04",
+      "vocabularyMember": true,
+      "requestedP1Primary": false,
+      "counts": {
+        "train": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "validation": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "holdout": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        }
+      },
+      "servingSeedMetrics": null,
+      "skillRateMetrics": null,
+      "qualification": {
+        "qualified": false,
+        "reasons": [
+          "TRAIN_INSUFFICIENT_EVENTS",
+          "TRAIN_INSUFFICIENT_BOTH_CLASSES",
+          "VALIDATION_INSUFFICIENT_EVENTS",
+          "VALIDATION_INSUFFICIENT_BOTH_CLASSES",
+          "HOLDOUT_INSUFFICIENT_EVENTS",
+          "HOLDOUT_INSUFFICIENT_BOTH_CLASSES",
+          "MISSING_SKILL_EVALUATION"
+        ],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-FUNC-05",
+      "vocabularyMember": true,
+      "requestedP1Primary": false,
+      "counts": {
+        "train": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "validation": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "holdout": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        }
+      },
+      "servingSeedMetrics": null,
+      "skillRateMetrics": null,
+      "qualification": {
+        "qualified": false,
+        "reasons": [
+          "TRAIN_INSUFFICIENT_EVENTS",
+          "TRAIN_INSUFFICIENT_BOTH_CLASSES",
+          "VALIDATION_INSUFFICIENT_EVENTS",
+          "VALIDATION_INSUFFICIENT_BOTH_CLASSES",
+          "HOLDOUT_INSUFFICIENT_EVENTS",
+          "HOLDOUT_INSUFFICIENT_BOTH_CLASSES",
+          "MISSING_SKILL_EVALUATION"
+        ],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-FUNC-06",
+      "vocabularyMember": true,
+      "requestedP1Primary": false,
+      "counts": {
+        "train": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "validation": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "holdout": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        }
+      },
+      "servingSeedMetrics": null,
+      "skillRateMetrics": null,
+      "qualification": {
+        "qualified": false,
+        "reasons": [
+          "TRAIN_INSUFFICIENT_EVENTS",
+          "TRAIN_INSUFFICIENT_BOTH_CLASSES",
+          "VALIDATION_INSUFFICIENT_EVENTS",
+          "VALIDATION_INSUFFICIENT_BOTH_CLASSES",
+          "HOLDOUT_INSUFFICIENT_EVENTS",
+          "HOLDOUT_INSUFFICIENT_BOTH_CLASSES",
+          "MISSING_SKILL_EVALUATION"
+        ],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-EXC-01",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 1440,
+          "positive": 830,
+          "negative": 610,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 480,
+          "positive": 268,
+          "negative": 212,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 480,
+          "positive": 274,
+          "negative": 206,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 480,
+        "positive": 274,
+        "prevalence": 0.5708333333333333,
+        "average_precision": 0.7827011963363233,
+        "auc_roc": 0.7428778966763517,
+        "accuracy_at_0_5": 0.6875,
+        "f1": 0.7440273037542662,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5921070115101222,
+        "brier": 0.2030354835626401,
+        "ece_equal_count_10": 0.06840470020348827
+      },
+      "skillRateMetrics": {
+        "events": 480,
+        "positive": 274,
+        "prevalence": 0.5708333333333333,
+        "average_precision": 0.5708333333333333,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.5708333333333333,
+        "f1": 0.726790450928382,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6830805294342616,
+        "brier": 0.24498357373573532,
+        "ece_equal_count_10": 0.07544658342004858
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-EXC-02",
+      "vocabularyMember": true,
+      "requestedP1Primary": false,
+      "counts": {
+        "train": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "validation": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "holdout": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        }
+      },
+      "servingSeedMetrics": null,
+      "skillRateMetrics": null,
+      "qualification": {
+        "qualified": false,
+        "reasons": [
+          "TRAIN_INSUFFICIENT_EVENTS",
+          "TRAIN_INSUFFICIENT_BOTH_CLASSES",
+          "VALIDATION_INSUFFICIENT_EVENTS",
+          "VALIDATION_INSUFFICIENT_BOTH_CLASSES",
+          "HOLDOUT_INSUFFICIENT_EVENTS",
+          "HOLDOUT_INSUFFICIENT_BOTH_CLASSES",
+          "MISSING_SKILL_EVALUATION"
+        ],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-EXC-03",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 360,
+          "positive": 149,
+          "negative": 211,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 120,
+          "positive": 51,
+          "negative": 69,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 120,
+          "positive": 52,
+          "negative": 68,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 120,
+        "positive": 52,
+        "prevalence": 0.43333333333333335,
+        "average_precision": 0.6580955846860701,
+        "auc_roc": 0.7104072398190046,
+        "accuracy_at_0_5": 0.65,
+        "f1": 0.58,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6098235850867043,
+        "brier": 0.21235633005227247,
+        "ece_equal_count_10": 0.13678936250507828
+      },
+      "skillRateMetrics": {
+        "events": 120,
+        "positive": 52,
+        "prevalence": 0.43333333333333335,
+        "average_precision": 0.43333333333333335,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.5666666666666667,
+        "f1": 0.0,
+        "f1_threshold": 0.5,
+        "log_loss": 0.684777674602545,
+        "brier": 0.24582192684928514,
+        "ece_equal_count_10": 0.15000000000000002
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-IO-01",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 3960,
+          "positive": 2353,
+          "negative": 1607,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 1320,
+          "positive": 742,
+          "negative": 578,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 1320,
+          "positive": 782,
+          "negative": 538,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 1320,
+        "positive": 782,
+        "prevalence": 0.5924242424242424,
+        "average_precision": 0.7886875761680895,
+        "auc_roc": 0.7337919166373515,
+        "accuracy_at_0_5": 0.6795454545454546,
+        "f1": 0.7468581687612208,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5916608749305446,
+        "brier": 0.2028327002351714,
+        "ece_equal_count_10": 0.031366462474971095
+      },
+      "skillRateMetrics": {
+        "events": 1320,
+        "positive": 782,
+        "prevalence": 0.5924242424242424,
+        "average_precision": 0.5924242424242424,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.5924242424242424,
+        "f1": 0.7440532825880114,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6760455327637824,
+        "brier": 0.24149723084446847,
+        "ece_equal_count_10": 0.03675547600197356
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-MODULE-01",
+      "vocabularyMember": true,
+      "requestedP1Primary": false,
+      "counts": {
+        "train": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "validation": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "holdout": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        }
+      },
+      "servingSeedMetrics": null,
+      "skillRateMetrics": null,
+      "qualification": {
+        "qualified": false,
+        "reasons": [
+          "TRAIN_INSUFFICIENT_EVENTS",
+          "TRAIN_INSUFFICIENT_BOTH_CLASSES",
+          "VALIDATION_INSUFFICIENT_EVENTS",
+          "VALIDATION_INSUFFICIENT_BOTH_CLASSES",
+          "HOLDOUT_INSUFFICIENT_EVENTS",
+          "HOLDOUT_INSUFFICIENT_BOTH_CLASSES",
+          "MISSING_SKILL_EVALUATION"
+        ],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-MODULE-02",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 1440,
+          "positive": 817,
+          "negative": 623,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 480,
+          "positive": 240,
+          "negative": 240,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 480,
+          "positive": 266,
+          "negative": 214,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 480,
+        "positive": 266,
+        "prevalence": 0.5541666666666667,
+        "average_precision": 0.7065902990635371,
+        "auc_roc": 0.6822254233715129,
+        "accuracy_at_0_5": 0.6333333333333333,
+        "f1": 0.6901408450704225,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6317186313601371,
+        "brier": 0.22111857365214935,
+        "ece_equal_count_10": 0.07701881152267258
+      },
+      "skillRateMetrics": {
+        "events": 480,
+        "positive": 266,
+        "prevalence": 0.5541666666666667,
+        "average_precision": 0.5541666666666667,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.5541666666666667,
+        "f1": 0.7131367292225201,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6872952448899857,
+        "brier": 0.24707965041762267,
+        "ece_equal_count_10": 0.04407301422129728
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-OOP-01",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 3240,
+          "positive": 2029,
+          "negative": 1211,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 1080,
+          "positive": 654,
+          "negative": 426,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 1080,
+          "positive": 701,
+          "negative": 379,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 1080,
+        "positive": 701,
+        "prevalence": 0.649074074074074,
+        "average_precision": 0.8195650906002105,
+        "auc_roc": 0.724012812454127,
+        "accuracy_at_0_5": 0.6953703703703704,
+        "f1": 0.7772511848341233,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5758845680381082,
+        "brier": 0.19605576505232994,
+        "ece_equal_count_10": 0.0381550808471662
+      },
+      "skillRateMetrics": {
+        "events": 1080,
+        "positive": 701,
+        "prevalence": 0.649074074074074,
+        "average_precision": 0.649074074074074,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.649074074074074,
+        "f1": 0.7871982032565974,
+        "f1_threshold": 0.5,
+        "log_loss": 0.649708572830975,
+        "brier": 0.2285645804841793,
+        "ece_equal_count_10": 0.04881870533189359
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-OOP-02",
+      "vocabularyMember": true,
+      "requestedP1Primary": false,
+      "counts": {
+        "train": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "validation": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "holdout": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        }
+      },
+      "servingSeedMetrics": null,
+      "skillRateMetrics": null,
+      "qualification": {
+        "qualified": false,
+        "reasons": [
+          "TRAIN_INSUFFICIENT_EVENTS",
+          "TRAIN_INSUFFICIENT_BOTH_CLASSES",
+          "VALIDATION_INSUFFICIENT_EVENTS",
+          "VALIDATION_INSUFFICIENT_BOTH_CLASSES",
+          "HOLDOUT_INSUFFICIENT_EVENTS",
+          "HOLDOUT_INSUFFICIENT_BOTH_CLASSES",
+          "MISSING_SKILL_EVALUATION"
+        ],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-OOP-03",
+      "vocabularyMember": true,
+      "requestedP1Primary": false,
+      "counts": {
+        "train": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "validation": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "holdout": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        }
+      },
+      "servingSeedMetrics": null,
+      "skillRateMetrics": null,
+      "qualification": {
+        "qualified": false,
+        "reasons": [
+          "TRAIN_INSUFFICIENT_EVENTS",
+          "TRAIN_INSUFFICIENT_BOTH_CLASSES",
+          "VALIDATION_INSUFFICIENT_EVENTS",
+          "VALIDATION_INSUFFICIENT_BOTH_CLASSES",
+          "HOLDOUT_INSUFFICIENT_EVENTS",
+          "HOLDOUT_INSUFFICIENT_BOTH_CLASSES",
+          "MISSING_SKILL_EVALUATION"
+        ],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-OOP-04",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 360,
+          "positive": 269,
+          "negative": 91,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 120,
+          "positive": 81,
+          "negative": 39,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 120,
+          "positive": 91,
+          "negative": 29,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 120,
+        "positive": 91,
+        "prevalence": 0.7583333333333333,
+        "average_precision": 0.8363798578924501,
+        "auc_roc": 0.5926487305797651,
+        "accuracy_at_0_5": 0.7166666666666667,
+        "f1": 0.826530612244898,
+        "f1_threshold": 0.5,
+        "log_loss": 0.56589811044045,
+        "brier": 0.19104656368391126,
+        "ece_equal_count_10": 0.10660994946956633
+      },
+      "skillRateMetrics": {
+        "events": 120,
+        "positive": 91,
+        "prevalence": 0.7583333333333333,
+        "average_precision": 0.7583333333333334,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.7583333333333333,
+        "f1": 0.8625592417061612,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5553418748153739,
+        "brier": 0.18417095665249103,
+        "ece_equal_count_10": 0.1003803596127248
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-OOP-05",
+      "vocabularyMember": true,
+      "requestedP1Primary": false,
+      "counts": {
+        "train": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "validation": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        },
+        "holdout": {
+          "n": 0,
+          "positive": 0,
+          "negative": 0,
+          "profiles": 0
+        }
+      },
+      "servingSeedMetrics": null,
+      "skillRateMetrics": null,
+      "qualification": {
+        "qualified": false,
+        "reasons": [
+          "TRAIN_INSUFFICIENT_EVENTS",
+          "TRAIN_INSUFFICIENT_BOTH_CLASSES",
+          "VALIDATION_INSUFFICIENT_EVENTS",
+          "VALIDATION_INSUFFICIENT_BOTH_CLASSES",
+          "HOLDOUT_INSUFFICIENT_EVENTS",
+          "HOLDOUT_INSUFFICIENT_BOTH_CLASSES",
+          "MISSING_SKILL_EVALUATION"
+        ],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-OOP-06",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 360,
+          "positive": 188,
+          "negative": 172,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 120,
+          "positive": 61,
+          "negative": 59,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 120,
+          "positive": 67,
+          "negative": 53,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 120,
+        "positive": 67,
+        "prevalence": 0.5583333333333333,
+        "average_precision": 0.7831755776619042,
+        "auc_roc": 0.6902281047592228,
+        "accuracy_at_0_5": 0.5666666666666667,
+        "f1": 0.6231884057971014,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6325007299727826,
+        "brier": 0.22354793877916854,
+        "ece_equal_count_10": 0.1584045045077801
+      },
+      "skillRateMetrics": {
+        "events": 120,
+        "positive": 67,
+        "prevalence": 0.5583333333333333,
+        "average_precision": 0.5583333333333333,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.5583333333333333,
+        "f1": 0.7165775401069518,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6894860957582261,
+        "brier": 0.2481702277853342,
+        "ece_equal_count_10": 0.10833333333333336
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    },
+    {
+      "skillId": "PY-FUNC-07",
+      "vocabularyMember": true,
+      "requestedP1Primary": true,
+      "counts": {
+        "train": {
+          "n": 360,
+          "positive": 169,
+          "negative": 191,
+          "profiles": 360
+        },
+        "validation": {
+          "n": 120,
+          "positive": 49,
+          "negative": 71,
+          "profiles": 120
+        },
+        "holdout": {
+          "n": 120,
+          "positive": 52,
+          "negative": 68,
+          "profiles": 120
+        }
+      },
+      "servingSeedMetrics": {
+        "events": 120,
+        "positive": 52,
+        "prevalence": 0.43333333333333335,
+        "average_precision": 0.6382309468103031,
+        "auc_roc": 0.753393665158371,
+        "accuracy_at_0_5": 0.7166666666666667,
+        "f1": 0.6964285714285714,
+        "f1_threshold": 0.5,
+        "log_loss": 0.5997074438038765,
+        "brier": 0.20486182289766325,
+        "ece_equal_count_10": 0.12292918277283513
+      },
+      "skillRateMetrics": {
+        "events": 120,
+        "positive": 52,
+        "prevalence": 0.43333333333333335,
+        "average_precision": 0.43333333333333335,
+        "auc_roc": 0.5,
+        "accuracy_at_0_5": 0.5666666666666667,
+        "f1": 0.0,
+        "f1_threshold": 0.5,
+        "log_loss": 0.6851257462293834,
+        "brier": 0.2459975436602905,
+        "ece_equal_count_10": 0.1
+      },
+      "qualification": {
+        "qualified": true,
+        "reasons": [],
+        "scope": "ADVISORY_SYNTHETIC_ONLY_NOT_HUMAN_VALIDATION"
+      }
+    }
+  ],
+  "modules": [
+    {
+      "moduleCode": "MOD-01",
+      "totalCatalogItems": 30,
+      "p1Eligible": 30,
+      "p1Excluded": 0,
+      "modelQualifiedEligible": 30,
+      "eligibleSkillGap": 0,
+      "allPoolSkillsQualified": true
+    },
+    {
+      "moduleCode": "MOD-02",
+      "totalCatalogItems": 30,
+      "p1Eligible": 30,
+      "p1Excluded": 0,
+      "modelQualifiedEligible": 30,
+      "eligibleSkillGap": 0,
+      "allPoolSkillsQualified": true
+    },
+    {
+      "moduleCode": "MOD-03",
+      "totalCatalogItems": 30,
+      "p1Eligible": 30,
+      "p1Excluded": 0,
+      "modelQualifiedEligible": 30,
+      "eligibleSkillGap": 0,
+      "allPoolSkillsQualified": true
+    },
+    {
+      "moduleCode": "MOD-04",
+      "totalCatalogItems": 12,
+      "p1Eligible": 12,
+      "p1Excluded": 0,
+      "modelQualifiedEligible": 12,
+      "eligibleSkillGap": 0,
+      "allPoolSkillsQualified": true
+    },
+    {
+      "moduleCode": "MOD-05",
+      "totalCatalogItems": 35,
+      "p1Eligible": 35,
+      "p1Excluded": 0,
+      "modelQualifiedEligible": 35,
+      "eligibleSkillGap": 0,
+      "allPoolSkillsQualified": true
+    },
+    {
+      "moduleCode": "MOD-06",
+      "totalCatalogItems": 21,
+      "p1Eligible": 21,
+      "p1Excluded": 0,
+      "modelQualifiedEligible": 21,
+      "eligibleSkillGap": 0,
+      "allPoolSkillsQualified": true
+    },
+    {
+      "moduleCode": "MOD-07",
+      "totalCatalogItems": 25,
+      "p1Eligible": 25,
+      "p1Excluded": 0,
+      "modelQualifiedEligible": 25,
+      "eligibleSkillGap": 0,
+      "allPoolSkillsQualified": true
+    },
+    {
+      "moduleCode": "MOD-08",
+      "totalCatalogItems": 25,
+      "p1Eligible": 25,
+      "p1Excluded": 0,
+      "modelQualifiedEligible": 25,
+      "eligibleSkillGap": 0,
+      "allPoolSkillsQualified": true
+    }
+  ],
+  "qualificationCriteria": {
+    "trainMinEvents": 80,
+    "trainMinPerClass": 15,
+    "validationMinEvents": 20,
+    "validationMinPerClass": 3,
+    "holdoutMinEvents": 20,
+    "holdoutMinPerClass": 3,
+    "maxServingSeedBrierAboveSkillRate": 0.03,
+    "maxServingSeedECE": 0.25,
+    "scope": "ADVISORY_SYNTHETIC_ONLY; finite menu and shared-item calibration screen, not pedagogical/human validation",
+    "zeroTargetSkills": "UNSUPPORTED regardless of vocabulary",
+    "allPoolRule": "P3/P4 must not hide unqualified skills by dropping eligible items"
+  },
+  "evaluationResultSha256": "d9e5b79d00117fe388282f5fb4c9f6a43473ac8dae462306908f7ee6dc1f69c7",
+  "limitations": [
+    "No real learners or new-item holdout",
+    "Same finite code/test/error templates shared across splits",
+    "Synthetic cohorts are group-separated simulator realizations, not independent humans created by a seed",
+    "Target estimates PASS on locked tests only; no mastery or learning benefit claim",
+    "No real-human validation; do not call synthetic cohorts independent real learners",
+    "R02 outcomes already seen; architecture/generation choices informed by prior development, R03 holdout kept unopened until final lock"
+  ]
+}

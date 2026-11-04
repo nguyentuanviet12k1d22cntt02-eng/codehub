@@ -8,6 +8,9 @@ from typing import List, Optional, Dict
 from pathlib import Path
 from app.recommendation.serving_registry import checkpoint_metadata_matches, inspect_serving_model
 from app.knowledge_tracing.palnet import PALNet
+from app.api.palnet_runtime import router as palnet_runtime_router
+from app.recommendation.python70_runtime import runtime_status as python70_runtime_status
+from app.recommendation.module_practice_runtime import runtime_status as module_practice_runtime_status
 
 if sys.stdout.encoding != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8')
@@ -112,6 +115,21 @@ def startup_event():
 def read_root():
     return {"service": "PAL-Net Recommendation System AI Service", "active": True}
 
+@app.get("/health/ready")
+def readiness():
+    if os.getenv("PALNET_MODULE_PRACTICE_ENABLED", "false").lower() == "true":
+        from app.pipeline.runtime import secret
+
+        try:
+            secret()
+        except RuntimeError:
+            raise HTTPException(503, "INTERNAL_SIGNING_UNAVAILABLE") from None
+        status = module_practice_runtime_status()
+        if not status["available"]:
+            raise HTTPException(503, status["reason"])
+    return {"status": "ready"}
+
+
 @app.get("/model-status")
 def model_status():
     return {
@@ -119,7 +137,9 @@ def model_status():
         "readiness": palnet_readiness,
         "model_version": palnet_model_version,
         "fallback": "FALLBACK_RULE_BASED",
-        "lesson_policy_status": "NOT_ACTIVE",
+        "lesson_policy_status": "LEGACY_NOT_ACTIVE",
+        "python70_advisory": python70_runtime_status(),
+        "module_practice_r03": module_practice_runtime_status(),
         "knowledge_graph_skills": skills_list,
         "total_skills": len(skills_list)
     }
@@ -184,3 +204,4 @@ from app.api.adaptive import router as adaptive_pipeline_router
 app.include_router(adaptive_pipeline_router)
 from app.api.module_practice_pilot import router as module_practice_pilot_router
 app.include_router(module_practice_pilot_router)
+app.include_router(palnet_runtime_router)
