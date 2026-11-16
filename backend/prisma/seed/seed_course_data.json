@@ -1846,7 +1846,7 @@
               {
                 "title": "Phân loại học lực",
                 "difficulty": "MEDIUM",
-                "problemDescription": "### Yêu cầu\nNhập điểm trung bình của một học sinh (số thực) từ bàn phím. Phân loại học lực theo quy tắc:\n- Điểm từ `8.5` trở lên: in ra `\"Giỏi\"`\n- Điểm từ `6.5` đến dưới `8.5`: in ra `\"Khá\"`\n- Điểm từ `5.0` đến dưới `6.5`: in ra `\"Trung bình\"`\n- Điểm dưới `5.0`: in ra `\"Yếu\"`.\n\n### Ví dụ\n**Input**\n```text\n8.7\n```\n**Output**\n```text\nGiỏi\n```\n\n<!-- CONSTRAINTS: {\"requireComment\":false,\"requiredKeywords\":[\"input\",\"if\",\"elif\",\"else\",\"8.5\",\"6.5\",\"5.0\"],\"forbiddenKeywords\":[],\"customErrorMessage\":\"Đề bài yêu cầu nhập điểm số thực và dùng cấu trúc if-elif-else để phân loại đúng 4 mức học lực.\"} -->",
+                "problemDescription": "### Yêu cầu\nNhập điểm trung bình của một học sinh (số thực) từ bàn phím. Phân loại học lực theo quy tắc (dùng cấu trúc `if-elif-else`, nhánh `else` cho mức `\"Yếu\"`):\n- Điểm từ `8.5` trở lên: in ra `\"Giỏi\"`\n- Điểm từ `6.5` đến dưới `8.5`: in ra `\"Khá\"`\n- Điểm từ `5.0` đến dưới `6.5`: in ra `\"Trung bình\"`\n- Điểm dưới `5.0`: in ra `\"Yếu\"`.\n\n### Ví dụ\n**Input**\n```text\n8.7\n```\n**Output**\n```text\nGiỏi\n```\n\n<!-- CONSTRAINTS: {\"requireComment\":false,\"requiredKeywords\":[\"input\",\"if\",\"elif\",\"else\",\"8.5\",\"6.5\",\"5.0\"],\"forbiddenKeywords\":[],\"customErrorMessage\":\"Đề bài yêu cầu nhập điểm số thực và dùng cấu trúc if-elif-else để phân loại đúng 4 mức học lực.\"} -->",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "diem = float(input())\nif diem >= 8.5:\n    print(\"Giỏi\")\nelif diem >= 6.5:\n    print(\"Khá\")\nelif diem >= 5.0:\n    print(\"Trung bình\")\nelse:\n    print(\"Yếu\")",
                 "testCases": [
@@ -1886,7 +1886,7 @@
               {
                 "title": "Tìm số lớn nhất",
                 "difficulty": "MEDIUM",
-                "problemDescription": "### Yêu cầu\nNhập 3 số nguyên khác nhau từ bàn phím trên 3 dòng. Hãy tìm số lớn nhất trong 3 số đó và in ra màn hình.\n\n### Ví dụ\n**Input**\n```text\n10\n25\n15\n```\n**Output**\n```text\n25\n```\n\n<!-- CONSTRAINTS: {\"requireComment\":false,\"requiredKeywords\":[\"input\",\"if\",\"print\"],\"forbiddenKeywords\":[\"max(\"],\"customErrorMessage\":\"Đề bài yêu cầu nhập 3 số nguyên và dùng cấu trúc so sánh if để tìm số lớn nhất (không dùng hàm max() có sẵn).\"} -->",
+                "problemDescription": "### Yêu cầu\nNhập 3 số nguyên khác nhau từ bàn phím trên 3 dòng. Hãy tìm số lớn nhất trong 3 số đó và in ra màn hình. Không dùng hàm `max()` có sẵn; hãy so sánh các số bằng câu lệnh `if`.\n\n### Ví dụ\n**Input**\n```text\n10\n25\n15\n```\n**Output**\n```text\n25\n```\n\n<!-- CONSTRAINTS: {\"requireComment\":false,\"requiredKeywords\":[\"input\",\"if\",\"print\"],\"forbiddenKeywords\":[\"max(\"],\"customErrorMessage\":\"Đề bài yêu cầu nhập 3 số nguyên và dùng cấu trúc so sánh if để tìm số lớn nhất (không dùng hàm max() có sẵn).\"} -->",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "a = int(input())\nb = int(input())\nc = int(input())\nmax_val = a\nif b > max_val:\n    max_val = b\nif c > max_val:\n    max_val = c\nprint(max_val)",
                 "testCases": [
@@ -1964,7 +1964,7 @@
               {
                 "title": "Kiểm tra thông tin đăng nhập",
                 "difficulty": "MEDIUM",
-                "problemDescription": "### Yêu cầu\nNhập vào tên đăng nhập và mật khẩu trên 2 dòng từ bàn phím. Kiểm tra xem tên đăng nhập có là `\"admin\"` và mật khẩu là `\"123456\"` hay không.\n- Nếu đúng: in ra `\"Đăng nhập thành công\"`.\n- Ngược lại: in ra `\"Sai thông tin\"`.\n\n### Ví dụ\n**Input**\n```text\nadmin\n123456\n```\n**Output**\n```text\nĐăng nhập thành công\n```\n\n<!-- CONSTRAINTS: {\"requireComment\":false,\"requiredKeywords\":[\"input\",\"admin\",\"123456\",\"and\",\"if\"],\"forbiddenKeywords\":[],\"customErrorMessage\":\"Đề bài yêu cầu nhập username, password và dùng toán tử logic and để kiểm tra 'admin' và '123456'.\"} -->",
+                "problemDescription": "### Yêu cầu\nNhập vào tên đăng nhập và mật khẩu trên 2 dòng từ bàn phím. Kiểm tra xem tên đăng nhập có là `\"admin\"` và mật khẩu là `\"123456\"` hay không bằng một câu lệnh `if` kết hợp toán tử logic `and`.\n- Nếu đúng: in ra `\"Đăng nhập thành công\"`.\n- Ngược lại: in ra `\"Sai thông tin\"`.\n\n### Ví dụ\n**Input**\n```text\nadmin\n123456\n```\n**Output**\n```text\nĐăng nhập thành công\n```\n\n<!-- CONSTRAINTS: {\"requireComment\":false,\"requiredKeywords\":[\"input\",\"admin\",\"123456\",\"and\",\"if\"],\"forbiddenKeywords\":[],\"customErrorMessage\":\"Đề bài yêu cầu nhập username, password và dùng toán tử logic and để kiểm tra 'admin' và '123456'.\"} -->",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "username = input()\npassword = input()\nif username == \"admin\" and password == \"123456\":\n    print(\"Đăng nhập thành công\")\nelse:\n    print(\"Sai thông tin\")",
                 "testCases": [
@@ -7544,7 +7544,7 @@
               {
                 "title": "Tham số và Đối số",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\nĐịnh nghĩa một hàm tên là `print_info` nhận vào hai tham số là `name` và `age`. Hàm sẽ in ra màn hình thông báo: `\"{name} năm nay {age} tuổi.\"`. Hãy gọi hàm này với đối số cụ thể (ví dụ: name='Minh', age=20).\n\n### Ví dụ\n**Output**\n```text\nMinh năm nay 20 tuổi.\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"function\",\"def:print_info\",\"call:print_info\"]} -->",
+                "problemDescription": "### Yêu cầu\nĐịnh nghĩa một hàm tên là `print_info` nhận vào hai tham số là `name` và `age`. Hàm sẽ in ra màn hình thông báo: `\"{name} năm nay {age} tuổi.\"`. Sau đó gọi hàm này đúng một lần với đối số `name=\"Minh\"` và `age=20`.\n\n### Ví dụ\n**Output**\n```text\nMinh năm nay 20 tuổi.\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"function\",\"def:print_info\",\"call:print_info\"]} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
                 "solutionCode": "def print_info(name, age):\n    print(f\"{name} năm nay {age} tuổi.\")\nprint_info(\"Minh\", 20)\n",
                 "testCases": [
@@ -7873,14 +7873,39 @@
               {
                 "title": "Luồng Finally và Ném lỗi chủ động",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\nHãy viết hàm `tinh_thuong(diem)` nhận vào điểm số. Nếu điểm lớn hơn `10` hoặc nhỏ hơn `0`, hãy dùng lệnh `raise ValueError(\"Điểm không hợp lệ\")`. Bao bọc lệnh gọi hàm bằng `try-except-finally` để in ra lỗi nếu có và luôn in ra chữ `\"Kết thúc\"` trong khối `finally`.\n\n### Ví dụ\n**Output**\n```text\nĐiểm không hợp lệ\nKết thúc\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"function\",\"def:tinh_thuong\",\"call:tinh_thuong\"]} -->",
+                "problemDescription": "### Yêu cầu\nViết hàm `tinh_thuong(diem)` nhận vào điểm số:\n- Nếu `diem` lớn hơn `10` hoặc nhỏ hơn `0`: dùng lệnh `raise ValueError(\"Điểm không hợp lệ\")`.\n- Ngược lại: trả về chính `diem`.\n\nNhập một số nguyên `diem` từ bàn phím (dùng `input()` không có chuỗi gợi ý). Gọi `tinh_thuong(diem)` bên trong khối `try-except-finally`:\n- Nếu hàm trả về bình thường: in giá trị trả về.\n- Nếu bắt được `ValueError`: in thông báo lỗi (`print(e)`).\n- Khối `finally` luôn in `Kết thúc`.\n\n### Ví dụ 1\n**Input**\n```text\n15\n```\n**Output**\n```text\nĐiểm không hợp lệ\nKết thúc\n```\n\n### Ví dụ 2\n**Input**\n```text\n8\n```\n**Output**\n```text\n8\nKết thúc\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"function\",\"def:tinh_thuong\",\"call:tinh_thuong\"],\"requiredKeywords\":[\"raise\",\"except\",\"finally\"],\"customErrorMessage\":\"Đề bài yêu cầu hàm tinh_thuong dùng raise ValueError, và lời gọi hàm nằm trong try-except-finally.\"} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
-                "solutionCode": "def tinh_thuong(diem):\n    if diem > 10 or diem < 0:\n        raise ValueError(\"Điểm không hợp lệ\")\n    return diem\n\ntry:\n    tinh_thuong(15)\nexcept ValueError as e:\n    print(e)\nfinally:\n    print(\"Kết thúc\")\n",
+                "solutionCode": "def tinh_thuong(diem):\n    if diem > 10 or diem < 0:\n        raise ValueError(\"Điểm không hợp lệ\")\n    return diem\n\ndiem = int(input())\ntry:\n    print(tinh_thuong(diem))\nexcept ValueError as e:\n    print(e)\nfinally:\n    print(\"Kết thúc\")\n",
                 "testCases": [
                   {
-                    "input": "",
+                    "input": "15\n",
                     "expectedOutput": "Điểm không hợp lệ\nKết thúc\n",
                     "isHidden": false
+                  },
+                  {
+                    "input": "8\n",
+                    "expectedOutput": "8\nKết thúc\n",
+                    "isHidden": false
+                  },
+                  {
+                    "input": "-1\n",
+                    "expectedOutput": "Điểm không hợp lệ\nKết thúc\n",
+                    "isHidden": true
+                  },
+                  {
+                    "input": "0\n",
+                    "expectedOutput": "0\nKết thúc\n",
+                    "isHidden": true
+                  },
+                  {
+                    "input": "10\n",
+                    "expectedOutput": "10\nKết thúc\n",
+                    "isHidden": true
+                  },
+                  {
+                    "input": "11\n",
+                    "expectedOutput": "Điểm không hợp lệ\nKết thúc\n",
+                    "isHidden": true
                   }
                 ],
                 "id": "8e2cb95c-f6c2-4ac5-9af0-13745658b0ad"
@@ -7953,7 +7978,7 @@
               {
                 "title": "Khám phá Standard Library",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\nHãy viết chương trình sử dụng thư viện `random` để mô phỏng việc tung một quân xúc xắc 6 mặt ngẫu nhiên (sinh số ngẫu nhiên từ 1 đến 6). Ở đây, để chương trình kiểm thử chạy đồng nhất, hãy thiết lập `random.seed(42)` trước khi gọi hàm ngẫu nhiên và in kết quả ra màn hình.\n\n### Ví dụ\n**Output**\n```text\n6\n```",
+                "problemDescription": "### Yêu cầu\nHãy viết chương trình sử dụng thư viện `random` để mô phỏng việc tung một quân xúc xắc 6 mặt (sinh số ngẫu nhiên từ 1 đến 6). Để chương trình kiểm thử chạy đồng nhất, hãy gọi `random.seed(42)`, sau đó gọi đúng một lần `random.randint(1, 6)` và in kết quả ra màn hình.\n\n### Ví dụ\n**Output**\n```text\n6\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"call:seed\",\"call:randint\"]} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
                 "solutionCode": "import random\nrandom.seed(42)\nprint(random.randint(1, 6))\n",
                 "testCases": [
@@ -8877,14 +8902,24 @@
               {
                 "title": "Đọc và Ghi File Text",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\nCho file `input.txt` có sẵn dữ liệu gồm 2 dòng:\n```text\nLine 1\nLine 2\n```\nHãy viết chương trình mở file `input.txt` ở chế độ đọc (`'r'`), duyệt qua từng dòng bằng vòng lặp `for`, loại bỏ khoảng trắng thừa ở hai đầu bằng phương thức `.strip()` và in từng dòng ra màn hình. Đừng quên đóng file sau khi hoàn thành.\n\n### Ví dụ\n**Output**\n```text\nLine 1\nLine 2\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"call:open\"]} -->",
+                "problemDescription": "### Yêu cầu\nFile `input.txt` được cấp sẵn trong thư mục làm việc, mỗi dòng là một chuỗi văn bản. Hãy mở file `input.txt` ở chế độ đọc (`'r'`) với `encoding=\"utf-8\"`, duyệt qua từng dòng bằng vòng lặp `for`, loại bỏ khoảng trắng thừa ở hai đầu bằng phương thức `.strip()` và in từng dòng ra màn hình. Đừng quên đóng file sau khi hoàn thành.\n\n### Ví dụ\nFile `input.txt`:\n```text\nLine 1\nLine 2\n```\n**Output**\n```text\nLine 1\nLine 2\n```\n\n### Môi trường chạy\nHệ thống cấp sẵn file đầu vào UTF-8 cho từng testcase trong thư mục làm việc sạch. Không đọc dữ liệu file từ `input()` và không tự ghi lại file đầu vào. Dữ liệu hidden có thể khác ví dụ.\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"call:open\",\"for\"]} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
-                "solutionCode": "with open(\"input.txt\", \"w\", encoding=\"utf-8\") as f_out:\n    f_out.write(\"Line 1\\nLine 2\\n\")\n\nf = open(\"input.txt\", \"r\", encoding=\"utf-8\")\nfor line in f:\n    print(line.strip())\nf.close()\n",
+                "solutionCode": "f = open(\"input.txt\", \"r\", encoding=\"utf-8\")\nfor line in f:\n    print(line.strip())\nf.close()\n",
                 "testCases": [
                   {
-                    "input": "",
+                    "input": "{\"__pythonFileCase\":\"1.0\",\"stdin\":\"\",\"files\":{\"input.txt\":\"Line 1\\nLine 2\\n\"},\"expectedFiles\":{},\"preserveInputFiles\":true}",
                     "expectedOutput": "Line 1\nLine 2\n",
                     "isHidden": false
+                  },
+                  {
+                    "input": "{\"__pythonFileCase\":\"1.0\",\"stdin\":\"\",\"files\":{\"input.txt\":\"  Xin chào  \\nPython\\t\\n\"},\"expectedFiles\":{},\"preserveInputFiles\":true}",
+                    "expectedOutput": "Xin chào\nPython\n",
+                    "isHidden": true
+                  },
+                  {
+                    "input": "{\"__pythonFileCase\":\"1.0\",\"stdin\":\"\",\"files\":{\"input.txt\":\"Một dòng\\n\\nCuối\"},\"expectedFiles\":{},\"preserveInputFiles\":true}",
+                    "expectedOutput": "Một dòng\n\nCuối\n",
+                    "isHidden": true
                   }
                 ],
                 "id": "a9a856ee-f6ed-48d5-9c95-54646cf674ae"
