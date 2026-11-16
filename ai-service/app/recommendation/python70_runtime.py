@@ -1,4 +1,4 @@
-"""Versioned advisory inference for the frozen Python70 model.
+"""Versioned advisory inference for the Python70 PAL-Net model (R02, trained on v4-T).
 
 This is an explicitly authorized SYNTHETIC_EXPLORATORY integration, not a
 promotion through the separately validated legacy serving registry.
@@ -16,7 +16,8 @@ import torch
 from torch import nn
 
 ROOT = Path(__file__).resolve().parents[2]
-BUNDLE = ROOT / "models" / "python70-advisory"
+# R02: huấn luyện trên dữ liệu v4-T (2026-11-16). Bundle R01 nằm ở models/python70-advisory, giữ nguyên để hoàn nguyên.
+BUNDLE = ROOT / "models" / "python70-advisory-r02"
 FEATURE_VERSION = "python70-causal-feedback/1.0"
 POLICY_VERSION = "palnet-correctness-order/1.0"
 _slots = threading.BoundedSemaphore(2)
@@ -32,7 +33,7 @@ class GraphLayer(nn.Module):
         return torch.relu(adjacency @ self.linear(hidden))
 
 class Python70PAL(nn.Module):
-    """State-dict-compatible implementation; architecture is frozen with R01."""
+    """State-dict-compatible implementation; architecture is frozen with R01 and reused by R02."""
     def __init__(self, skills: int):
         super().__init__()
         self.node_features = nn.Parameter(torch.zeros(skills, 16))

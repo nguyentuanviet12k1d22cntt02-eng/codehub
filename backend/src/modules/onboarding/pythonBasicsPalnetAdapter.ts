@@ -6,9 +6,9 @@ import { signedPalnetExchange } from './palnetTransport';
 import { PilotCatalog } from './pythonBasicsLessonCatalog';
 import { trustedPythonFeedback } from './pythonModelEvidence';
 
-export const PALNET_MODEL_VERSION = 'python70-r01-s20261102-advisory-v1';
+export const PALNET_MODEL_VERSION = 'python70-r02-s20261102-advisory-v1';
 export const PALNET_POLICY_VERSION = 'palnet-correctness-order/1.0';
-export const PALNET_CHECKPOINT_SHA256 = '9fb3fe36edec11b1db625196494c5fc7d70cad1ca8b0747b22e1f2f1aa7a1397';
+export const PALNET_CHECKPOINT_SHA256 = 'db460b5c17a155e0bdd68d8c6a7c19eb23707c6d68957dad6ddcee03540af20a';
 export interface PalnetAdvice {
   probabilities: Record<string, number>; modelVersion: string | null;
   checkpointSha256: string | null; inputSha256: string | null; cutoff: string;

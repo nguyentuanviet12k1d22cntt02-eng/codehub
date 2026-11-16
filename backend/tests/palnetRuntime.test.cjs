@@ -38,7 +38,7 @@ const lessons=[
  {lessonId:'string',primarySkillId:'PY-STRING-01',prerequisiteLessonIds:['intro'],curriculumOrder:3},
 ];
 const advice={probabilities:{'PY-BASICS-01':.1,'PY-BASICS-03':.2,'PY-STRING-01':.8},
- modelVersion:'python70-r01-s20261102-advisory-v1',checkpointSha256:'9fb3fe36edec11b1db625196494c5fc7d70cad1ca8b0747b22e1f2f1aa7a1397',
+ modelVersion:'python70-r02-s20261102-advisory-v1',checkpointSha256:'db460b5c17a155e0bdd68d8c6a7c19eb23707c6d68957dad6ddcee03540af20a',
  historyCount:1,cutoff:now.toISOString(),inputSha256:'a'.repeat(64),fallback:null};
 test('real model scores may change branch order, never prerequisites',()=>{
  const p=planPythonBasicsRoadmap(lessons,new Set(),{},advice);

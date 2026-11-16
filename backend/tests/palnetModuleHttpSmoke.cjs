@@ -23,7 +23,7 @@ async function main(){
   const db={codingExercise:{findMany:async()=>e.ex},learningInteraction:{findMany:async()=>e.events},submission:{findMany:async()=>e.submissions}};
   const original=Module._load;let getPalnetAdvice;
   try{Module._load=function(name,parent,isMain){const resolved=Module._resolveFilename(name,parent);if(String(resolved).replace(/\\/g,'/').endsWith('/infrastructure/database/prisma.ts'))return{prisma:db};return original.apply(this,arguments);};({getPalnetAdvice}=require('../src/modules/onboarding/palnetRuntimeClient'));}finally{Module._load=original;}
-  const old=await getPalnetAdvice(owner,{goalId:'GOAL_PY_BASICS',graphVersion:'2.1',lessons:[{contentId:release.rows[0].bank_id,primarySkillId:release.rows[0].skill_id}]});assert.equal(old.fallback,null);assert.equal(old.modelVersion,'python70-r01-s20261102-advisory-v1');
+  const old=await getPalnetAdvice(owner,{goalId:'GOAL_PY_BASICS',graphVersion:'2.1',lessons:[{contentId:release.rows[0].bank_id,primarySkillId:release.rows[0].skill_id}]});assert.equal(old.fallback,null);assert.equal(old.modelVersion,'python70-r02-s20261102-advisory-v1');
   const result={status:'PASS',transport:'Node signed client -> loopback HTTP -> FastAPI production router -> real checkpoint',modules:8,banks,lengths,rawSummaryHttpParity:[0,1,2000],longSummaryHttp:[2001,10000],unsignedRequestStatus:401,roadmapV1RealCheckpoint:true,syntheticFixtures:true,databaseWrites:0,externalAiCalls:0};
   fs.writeFileSync(path.join(root,'reviews/palnet-p3-2026-11-03/http-smoke.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
  }finally{if(child.exitCode===null){child.kill();await Promise.race([new Promise(r=>child.once('exit',r)),wait(2000)]);}}

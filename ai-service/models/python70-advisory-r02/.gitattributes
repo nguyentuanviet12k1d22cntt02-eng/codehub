@@ -1,0 +1,2 @@
+# Bundle files are SHA-256 pinned: store bytes exactly, no line-ending conversion.
+* -text
