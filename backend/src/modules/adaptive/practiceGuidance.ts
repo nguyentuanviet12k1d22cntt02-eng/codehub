@@ -124,10 +124,14 @@ export function evidencePracticeGuidance(code: string, result: any, run: any): P
                 RangeError: 'Một giá trị vượt phạm vi mà thao tác hiện tại cho phép.',
                 OperationalError: 'Câu truy vấn không thực thi được với dữ liệu của bài hiện tại.',
             };
-            return reply(syntax ? 'Cần sửa cú pháp trước' : 'Chương trình gặp lỗi khi chạy',
+            const runtimeReply = reply(syntax ? 'Cần sửa cú pháp trước' : 'Chương trình gặp lỗi khi chạy',
                 `${testLabel}${known ? ` (${known})` : ''}: ${known ? explanations[known] : 'Chi tiết lỗi có trong bảng kết quả bên dưới.'}`,
                 location ? `Đối chiếu ${location.toLowerCase()} với thông báo lỗi và kiểm tra biểu thức ở đó trước.`
                     : 'Đối chiếu thông báo lỗi với mã vừa nộp; chưa đủ bằng chứng để xác định chính xác dòng lỗi.', location);
+            // Lỗi runtime có dòng xác định từ traceback của test công khai: đánh dấu dòng đó trong editor.
+            const line = Number(/^Dòng (\d+)$/.exec(location || '')?.[1]);
+            return !syntax && Number.isInteger(line) && line >= 1 ? { ...runtimeReply, diagnostic: { kind: 'runtime', source: 'SANDBOX', line,
+                message: `${known ? known + ': ' + explanations[known] : 'Chương trình dừng do lỗi khi chạy.'} Kiểm tra biểu thức ở dòng này.` } } : runtimeReply;
         }
         const expected = String(failed.expected ?? '').replace(/\r\n/g, '\n').trimEnd();
         const actual = String(failed.actual ?? '').replace(/\r\n/g, '\n').trimEnd();

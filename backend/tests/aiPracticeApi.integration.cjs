@@ -509,6 +509,10 @@ test('G04b AI bận mãi qua 3 lần thử → kết thúc FAILED, không thử 
   const final = await run(traceId);
   assert.equal(final.status, 'FAILED');
   assert.equal(final.report.error.code, 'AI_SERVICE_BUSY');
+  // Hết lượt thử: tin nhắn của AI Tutor không được hứa "sẽ tự chạy lại" nữa (lỗi tìm thấy ở E2E giai đoạn 2).
+  const [message] = await ctx.prisma.$queryRawUnsafe("SELECT content FROM path_chat_messages WHERE session_id=$1::uuid AND sender='AI_TUTOR' ORDER BY created_at DESC LIMIT 1", r.complete.sessionId);
+  assert.doesNotMatch(message.content, /tự chạy lại/);
+  assert.match(message.content, /gửi lại yêu cầu/);
   const requests = ctx.ai.state.requests.length;
   await ctx.prisma.$executeRawUnsafe("UPDATE adaptive_generation_runs SET next_attempt_at=now()-interval '1 second' WHERE trace_id=$1", traceId);
   await ctx.retry.retryAdaptiveRuns();
@@ -531,6 +535,10 @@ test('G05 học viên đóng tab giữa lúc sinh bài: run vẫn hoàn tất v�
   const r = await start(ctx.users.a, 'Cho tôi một bài tập Python về while', { abortAfter: e => e.type === 'agent_step' });
   assert.equal(r.aborted, true, JSON.stringify({ status: r.status, json: r.json, events: r.events?.map(e => e.type) }));
   const created = r.events.find(e => e.type === 'session_created');
+  // Mở lại trong lúc run còn chạy: phiên báo run đang chạy để giao diện hiện trạng thái chờ và tự cập nhật.
+  const during = await api('GET', '/chat/session/' + created.sessionId, ctx.users.a);
+  assert.deepEqual(during.json.activeRuns, [{ trace_id: created.trace_id, status: 'RUNNING' }]);
+  assert.equal((await api('GET', '/chat/session/' + created.sessionId, ctx.users.b)).status, 404, 'người khác không xem được');
   const stored = await H.waitFor(async () => { const row = await run(created.trace_id); return row.status === 'SUCCEEDED' ? row : null; }, 15000);
   assert.ok(stored.artifact);
   const session = await H.waitFor(async () => {
@@ -538,6 +546,7 @@ test('G05 học viên đóng tab giữa lúc sinh bài: run vẫn hoàn tất v�
     return s.json.session.messages.some(m => m.sender === 'AI_TUTOR') ? s : null;
   }, 10000);
   assert.equal(session.json.session.messages.at(-1).metadata.step, 'EXERCISE_READY');
+  assert.deepEqual(session.json.activeRuns, [], 'run đã xong thì không còn trong danh sách đang chạy');
   queue(request => ({ report: H.reports.chat(request, 'tiếp tục được') }));
   assert.equal((await reply(ctx.users.a, created.sessionId, 'tiếp')).complete?.aiMessage?.content, 'tiếp tục được');
 });

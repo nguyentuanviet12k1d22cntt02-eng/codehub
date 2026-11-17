@@ -22,6 +22,8 @@ import {
 import { API_BASE_URL } from '../../../config/api';
 import { AITutorChat, type ChatMessage } from '../../ai-tutor/components/AITutorChat';
 import type { AdaptiveRunReport } from '../../ai-tutor/components/AgentEvidencePanel';
+import { ChatHttpError, chatHttpErrorMessage } from '../chatHttpError';
+import { withPendingRuns } from '../pendingRuns';
 import {
     RobotAvatar,
     RobotHelpCardIllustration,
@@ -152,7 +154,7 @@ const PersonalizedPath: React.FC = () => {
             if (choiceVersion === sessionChoiceVersion.current && res.data.success && res.data.session) {
                 setActiveSessionId(sessionId);
                 sessionStorage.setItem('vibecode_ai_tutor_session', sessionId);
-                setChatMessages(res.data.session.messages || []);
+                setChatMessages(withPendingRuns(res.data.session.messages || [], res.data.activeRuns));
                 setMobileSidebarOpen(false);
             }
         } catch (e: any) {
@@ -201,7 +203,7 @@ const PersonalizedPath: React.FC = () => {
                         sessionStorage.getItem('vibecode_ai_tutor_session') === savedSessionId &&
                         res.data.success && res.data.session) {
                         setActiveSessionId(savedSessionId);
-                        setChatMessages(res.data.session.messages || []);
+                        setChatMessages(withPendingRuns(res.data.session.messages || [], res.data.activeRuns));
                     }
                 })
                 .catch(() => {
@@ -335,7 +337,10 @@ const PersonalizedPath: React.FC = () => {
                 const response = await fetch(url, { method: 'POST', headers: {
                     'Content-Type': 'application/json', Authorization: `Bearer ${authToken}`
                 }, body: JSON.stringify(body) });
-                if (!response.ok || !response.body) throw new Error(`Máy chủ phản hồi lỗi (${response.status}): ${response.statusText}`);
+                if (!response.ok || !response.body) {
+                    const payload = await response.json().catch(() => ({}));
+                    throw new ChatHttpError(response.status, chatHttpErrorMessage(response.status, payload));
+                }
 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
@@ -491,7 +496,9 @@ const PersonalizedPath: React.FC = () => {
                 }:message));
             const errorMsg: ChatMessage = {
                 sender: 'AI_TUTOR',
-                content: `Xin lỗi bạn, kết nối tới AI Tutor tạm thời gián đoạn: ${e.message || 'Không có phản hồi'}. Bạn vui lòng thử lại nhé!`,
+                // Lỗi HTTP có thông điệp riêng; chỉ lỗi mạng thật mới gọi là "kết nối gián đoạn".
+                content: e instanceof ChatHttpError ? e.message
+                    : `Xin lỗi bạn, kết nối tới AI Tutor tạm thời gián đoạn: ${e.message || 'Không có phản hồi'}. Bạn vui lòng thử lại nhé!`,
                 timestamp: new Date().toISOString()
             };
             if (choiceVersion === sessionChoiceVersion.current && !batchRootTraceId) setChatMessages(prev => {

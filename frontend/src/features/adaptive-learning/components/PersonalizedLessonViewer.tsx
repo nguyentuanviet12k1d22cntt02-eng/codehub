@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { PracticeCodeEditor } from './PracticeCodeEditor';
+import { submissionErrorText } from '../submissionError';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import axios from 'axios';
@@ -777,6 +778,7 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                                         </button>
 
                                         <button
+                                            data-guide-avoid
                                             onClick={handleSubmitExercise}
                                             disabled={submittingCode}
                                             className="inline-flex items-center gap-2 px-5 py-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-50 text-white text-xs font-bold tracking-wide shadow-md shadow-emerald-500/20 transition-all cursor-pointer active:scale-95"
@@ -882,14 +884,15 @@ export const PersonalizedLessonViewer: React.FC<PersonalizedLessonViewerProps> =
                                             {executionOutput.error && (
                                                 <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-500/40 rounded-xl text-xs text-amber-800 dark:text-amber-200 space-y-1">
                                                     <span className="font-bold">Máy chấm chưa trả kết quả. Bạn chưa bị tính là làm sai.</span>
-                                                    <div className="font-mono text-[11px]">{executionOutput.error}</div>
+                                                    <div className="text-[11px] leading-relaxed">{submissionErrorText(executionOutput.error)}</div>
                                                 </div>
                                             )}
 
                                             {/* Detailed Testcases Comparison */}
-                                            {executionOutput.results && executionOutput.results.length > 0 && (
+                                            {/* Chưa chấm được thì không có kết quả test thật: ẩn bảng test (tránh "FAILED", "(Rỗng)", mã lỗi nội bộ). */}
+                                            {!executionOutput.error && executionOutput.results && executionOutput.results.length > 0 && (
                                                 <div className="space-y-3">
-                                                    <div className="flex items-center gap-2 border-b border-slate-200/80 dark:border-white/10 pb-2 overflow-x-auto">
+                                                    <div data-guide-avoid className="flex items-center gap-2 border-b border-slate-200/80 dark:border-white/10 pb-2 overflow-x-auto">
                                                         {executionOutput.results.map((res: any, i: number) => (
                                                             <button
                                                                 key={i}

@@ -27,6 +27,8 @@ export function aiServiceBusyReport(traceId:string,previous?:any) {
         agent_traces:Array.isArray(previous?.agent_traces)?previous.agent_traces:[],
         reply:AI_SERVICE_BUSY_REPLY,error:{code:AI_SERVICE_BUSY,message:'AI service reached its concurrent pipeline limit (HTTP 429)'}};
 }
+// Dùng khi đã hết lượt thử lại mà AI vẫn bận: không được hứa "sẽ tự chạy lại" nữa.
+export const AI_SERVICE_BUSY_FINAL_REPLY='AI Tutor đang quá tải nên chưa tạo được bài sau nhiều lần thử lại; chưa có bài nào được phát hành. Bạn vui lòng gửi lại yêu cầu sau ít phút.';
 export const waitingProviderReply=(code:string|undefined,fallback:string)=>code===AI_SERVICE_BUSY?AI_SERVICE_BUSY_REPLY:fallback;
 export const isRetryableProviderFailure=(code?:string)=>Boolean(code&&retryableProviderCodes.has(code));
 export const providerRetryDelay=(error:any,retryCount=0)=>{
@@ -511,5 +513,8 @@ export async function confirmPath(req:AuthenticatedRequest,res:Response) {
 export async function getSession(req:AuthenticatedRequest,res:Response) {
     const session=await prisma.pathChatSession.findFirst({where:{id:String(req.params.sessionId),userId:req.user!.id},include:{messages:{orderBy:{createdAt:'asc'}}}});
     if(!session){res.status(404).json({success:false});return;}
-    res.json({success:true,session:sanitizeLegacy(session)});
+    // Run còn chạy (vd học viên tải lại trang giữa lúc sinh bài): trả về để giao diện hiện trạng thái chờ và tự cập nhật.
+    // Chỉ lấy run cập nhật trong 10 phút (hạn upstream 330 s) để không chờ mãi run mồ côi sau khi backend khởi động lại.
+    const activeRuns:any[]=await prisma.$queryRawUnsafe("SELECT trace_id,status FROM adaptive_generation_runs WHERE user_id=$1::uuid AND session_id=$2::uuid AND status IN ('RUNNING','WAITING_PROVIDER') AND updated_at>now()-interval '10 minutes' ORDER BY created_at",req.user!.id,session.id);
+    res.json({success:true,session:sanitizeLegacy(session),activeRuns});
 }

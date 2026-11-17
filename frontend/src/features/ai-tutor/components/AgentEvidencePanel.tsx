@@ -97,7 +97,7 @@ export function AgentEvidencePanel({records,pipeline,onRetrySettled}:{
             </div>
         </div>
         {resumingLegacyRun&&<p className="mx-3 mb-3 rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900">Phiên cũ đang được tiếp tục tự động; không cần duyệt từng bước.</p>}
-        {activePipeline?.error?.code && <p role={activePipeline.status==='WAITING_PROVIDER'?'status':'alert'} className={'mx-3 mb-3 rounded-lg p-2 text-xs '+(activePipeline.status==='WAITING_PROVIDER'?'bg-amber-50 text-amber-800':'bg-rose-50 text-rose-800')}>Mã lỗi: {activePipeline.error.code}. {activePipeline.error.message || (activePipeline.status==='WAITING_PROVIDER'?'Yêu cầu được lưu và sẽ tự thử lại.':'AI Tutor chưa hoàn thành yêu cầu này; hãy xem bước dừng để thử lại.')}</p>}
+        {activePipeline?.error?.code && <p role={activePipeline.status==='WAITING_PROVIDER'?'status':'alert'} className={'mx-3 mb-3 rounded-lg p-2 text-xs '+(activePipeline.status==='WAITING_PROVIDER'?'bg-amber-50 text-amber-800':'bg-rose-50 text-rose-800')}>{/* Câu cho học viên trước; mã nội bộ chỉ là mã tham chiếu nhỏ (error.message có thể là tiếng Anh kỹ thuật nên không hiện). */}{activePipeline.status==='WAITING_PROVIDER'?'Yêu cầu của bạn vẫn được giữ và sẽ tự thử lại.':'AI Tutor chưa hoàn thành yêu cầu này. Bạn có thể gửi lại yêu cầu sau ít phút.'} <span className="opacity-70">(Mã tham chiếu: {activePipeline.error.code})</span></p>}
         {error && <p role="alert" className="px-3 pb-3 text-xs text-rose-700">{error}</p>}
         <ol className="divide-y divide-slate-200">
             {sorted.map((record,index)=>{

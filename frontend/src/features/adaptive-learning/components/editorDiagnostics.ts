@@ -5,9 +5,9 @@ import type { PracticeDiagnostic } from './practiceGuidanceResult';
 export const DIAGNOSTIC_OWNER = 'practice-submission';
 
 export function diagnosticRange(diagnostic: PracticeDiagnostic | undefined, code: string) {
-    if (!diagnostic || !['syntax','logic'].includes(diagnostic.kind) || typeof diagnostic.message !== 'string'
+    if (!diagnostic || !['syntax','runtime','logic'].includes(diagnostic.kind) || typeof diagnostic.message !== 'string'
         || !diagnostic.message.trim() || diagnostic.message.length > 400
-        || (diagnostic.kind === 'syntax' ? diagnostic.source !== 'SANDBOX' : diagnostic.source !== 'AI')) return null;
+        || (diagnostic.kind === 'logic' ? diagnostic.source !== 'AI' : diagnostic.source !== 'SANDBOX')) return null;
     const lines = code.split(/\r?\n/);
     const line = diagnostic.line, column = diagnostic.column ?? 1;
     const endLine = diagnostic.endLine ?? line;
@@ -27,7 +27,7 @@ export function installEditorDiagnostic(instance: editor.IStandaloneCodeEditor, 
     const range = diagnosticRange(diagnostic,code);
     if (!model || model.getValue() !== code || !range || !diagnostic) return () => {};
     monaco.editor.setModelMarkers(model,DIAGNOSTIC_OWNER,[{...range,source:diagnostic.source === 'SANDBOX' ? 'Sandbox' : 'AI Tutor',
-        message:diagnostic.message,severity:diagnostic.kind === 'syntax' ? monaco.MarkerSeverity.Error : monaco.MarkerSeverity.Warning}]);
+        message:diagnostic.message,severity:diagnostic.kind === 'logic' ? monaco.MarkerSeverity.Warning : monaco.MarkerSeverity.Error}]);
     const node = document.createElement('div');
     node.className = `practice-inline-diagnostic practice-inline-diagnostic--${diagnostic.kind}`;
     node.setAttribute('role','status'); node.setAttribute('aria-live','polite');

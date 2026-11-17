@@ -1,5 +1,5 @@
 export interface PracticeDiagnostic {
-    kind: 'syntax' | 'logic';
+    kind: 'syntax' | 'runtime' | 'logic';
     line: number;
     column?: number;
     endLine?: number;

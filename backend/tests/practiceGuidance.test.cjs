@@ -110,6 +110,16 @@ test('only student traceback lines within the submitted source are shown', () =>
     ]) assert.equal(evidencePracticeGuidance('x\ny', failedResult({}, {status: 'RUNTIME_ERROR', stderr}), run).location, location);
 });
 
+test('runtime error on a public test marks the student line in the editor; no line means no marker', () => {
+    const stderr = 'Traceback (most recent call last):\n  File "<submission>", line 2, in <module>\nZeroDivisionError: integer division or modulo by zero';
+    const guidance = evidencePracticeGuidance('s = input()\nprint(1 // 0)', failedResult({}, {status: 'RUNTIME_ERROR', stderr}), run);
+    assert.equal(guidance.analysisKind, 'runtime');
+    assert.deepEqual({ kind: guidance.diagnostic.kind, source: guidance.diagnostic.source, line: guidance.diagnostic.line }, { kind: 'runtime', source: 'SANDBOX', line: 2 });
+    assert.match(guidance.diagnostic.message, /ZeroDivisionError/);
+    const harnessOnly = evidencePracticeGuidance('x\ny', failedResult({}, {status: 'RUNTIME_ERROR', stderr: 'File "/work/main.py", line 1\nNameError: x'}), run);
+    assert.equal(harnessOnly.diagnostic, undefined);
+});
+
 test('hidden-only failures never disclose private input output errors or a guessed line', () => {
     const result = failedResult({test_results:[{is_hidden: true, passed: false, status:'RUNTIME_ERROR',
         input:'PRIVATE_INPUT', expected:'PRIVATE_EXPECTED', actual:'PRIVATE_ACTUAL', stderr:'File "<submission>", line 1\nPRIVATE_ERROR'}]});

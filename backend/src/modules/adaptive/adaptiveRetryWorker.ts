@@ -1,7 +1,7 @@
 import { consumeSse } from './sse';
 import { internalHeaders, mergeReviewReport, resumeCheckpoint, reviewCheckpoint, verifiedTargetConcept } from './adaptiveEvidence';
 import { claimRetry, deferRun, dueRetries, finishRetryRun, saveStage } from './adaptiveRepository';
-import { aiServiceBusyReport, isRetryableProviderFailure, providerRetryDelay, upstreamPipelineTimeoutMs, waitingProviderReply } from './adaptive.controller';
+import { AI_SERVICE_BUSY, AI_SERVICE_BUSY_FINAL_REPLY, aiServiceBusyReport, isRetryableProviderFailure, providerRetryDelay, upstreamPipelineTimeoutMs, waitingProviderReply } from './adaptive.controller';
 
 let active=false;
 
@@ -50,7 +50,8 @@ async function retryRun(row:any) {
         {...report,agent_traces:[...(row.report?.agent_traces||[]),...(report.agent_traces||[])]};
     if(isRetryableProviderFailure(report.error?.code)&&row.retry_count<2) {
         await deferRun(row.trace_id,{...merged,status:'WAITING_PROVIDER',reply:waitingProviderReply(report.error?.code,'Provider chưa sẵn sàng; yêu cầu được xếp lịch thử lại.')},providerRetryDelay(report.error,row.retry_count));
-    } else await finishRetryRun(row.trace_id,row.session_id,merged);
+    } else await finishRetryRun(row.trace_id,row.session_id,
+        report.error?.code===AI_SERVICE_BUSY?{...merged,reply:AI_SERVICE_BUSY_FINAL_REPLY}:merged);
 }
 
 export async function retryAdaptiveRuns() {

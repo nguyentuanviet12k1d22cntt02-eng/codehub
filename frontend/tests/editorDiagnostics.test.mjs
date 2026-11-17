@@ -10,6 +10,13 @@ test('ranges preserve sandbox coordinates and reject invented lines or invalid s
     assert.equal(diagnosticRange({...diagnostic,column:100},'x'),null);
 });
 
+test('runtime errors from the sandbox mark the whole reported line; an AI source is rejected',()=>{
+    const runtime={kind:'runtime',source:'SANDBOX',line:2,message:'ZeroDivisionError: Phép chia gặp mẫu số bằng không.'};
+    assert.deepEqual(diagnosticRange(runtime,'s = input()\nprint(1 // 0)'),{startLineNumber:2,startColumn:1,endLineNumber:2,endColumn:14});
+    assert.equal(diagnosticRange({...runtime,source:'AI'},'s = input()\nprint(1 // 0)'),null);
+    assert.equal(diagnosticRange({...runtime,line:3},'s = input()\nprint(1 // 0)'),null);
+});
+
 test('markers and view zones clear on edit/model switch and do not apply to stale code',()=>{
     const before={document:global.document,requestAnimationFrame:global.requestAnimationFrame,cancelAnimationFrame:global.cancelAnimationFrame,ResizeObserver:global.ResizeObserver};
     const markers=[],zones=new Map();let onEdit,onModel;let cleaned=0;

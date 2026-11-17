@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { GripHorizontal, Lightbulb, Minus, Sparkles, X } from 'lucide-react';
 import { RabbitMascot } from './RabbitMascot';
@@ -21,6 +21,10 @@ export function PracticeGuidanceCard({ guidance, submitting, analyzing, analysis
         guidance || submitting || analyzing || error || analysisError ? 'expanded' : 'minimized',
     );
     const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
+    // Vị trí tự né: khi thẻ mở che nút Nộp bài / hàng tab test (đánh dấu data-guide-avoid) thì dời lên hoặc xuống.
+    const [autoPosition, setAutoPosition] = useState<{ x: number; y: number } | null>(null);
+    const userMovedRef = useRef(false);
+    const userOpenedRef = useRef(false);
 
     const panelId = useId();
     const labelId = useId();
@@ -47,6 +51,7 @@ export function PracticeGuidanceCard({ guidance, submitting, analyzing, analysis
         window.requestAnimationFrame(() => launcher.current?.focus({ preventScroll: true }));
     };
     const expand = () => {
+        userOpenedRef.current = true;
         setView('expanded');
         window.requestAnimationFrame(() => minimizeButton.current?.focus({ preventScroll: true }));
     };
@@ -80,6 +85,7 @@ export function PracticeGuidanceCard({ guidance, submitting, analyzing, analysis
 
             if (hasDraggedRef.current) {
                 ev.preventDefault();
+                userMovedRef.current = true;
                 const width = dock.offsetWidth || 340;
                 const height = dock.offsetHeight || 260;
                 const newX = Math.max(8, Math.min(window.innerWidth - width - 8, dragStartRef.current.elementX + dx));
@@ -133,16 +139,62 @@ export function PracticeGuidanceCard({ guidance, submitting, analyzing, analysis
         };
     }, [view]);
 
+    // Học viên bắt đầu sửa mã: gợi ý đã thuộc lần nộp trước, thu gọn để không che editor và nút Nộp bài.
+    useEffect(() => {
+        if (stale) setView(current => current === 'expanded' ? 'minimized' : current);
+    }, [stale]);
+
+    useLayoutEffect(() => {
+        if (view !== 'expanded' || userMovedRef.current) { setAutoPosition(null); return; }
+        let frame = 0;
+        const place = () => {
+            window.cancelAnimationFrame(frame);
+            frame = window.requestAnimationFrame(() => {
+                const dock = dockRef.current;
+                if (!dock) return;
+                const width = dock.offsetWidth, height = dock.offsetHeight;
+                const viewportW = window.innerWidth, viewportH = window.innerHeight;
+                const left = Math.max(8, viewportW - width - 24);
+                const avoid = [...document.querySelectorAll<HTMLElement>('[data-guide-avoid]')]
+                    .map(el => el.getBoundingClientRect())
+                    .filter(r => r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < viewportH);
+                const hits = (x: number, y: number) => avoid.some(r => x < r.right && x + width > r.left && y < r.bottom && y + height > r.top);
+                const fits = (x: number, y: number) => x >= 8 && x + width <= viewportW - 8 && y >= 8 && y + height <= viewportH - 8;
+                const defaultTop = viewportH - height - 24;
+                if (!hits(left, defaultTop)) { setAutoPosition(null); return; }
+                // Ưu tiên dời lên/xuống, sau đó sang trái vùng cần né.
+                const candidates = [
+                    ...avoid.flatMap(r => [{ x: left, y: r.top - height - 8 }, { x: left, y: r.bottom + 8 }]).sort((a, b) => b.y - a.y),
+                    ...avoid.map(r => ({ x: r.left - width - 8, y: Math.min(defaultTop, Math.max(8, r.top)) })),
+                ];
+                const spot = candidates.find(c => fits(c.x, c.y) && !hits(c.x, c.y));
+                if (spot) setAutoPosition(spot);
+                // Không có chỗ trống: thẻ tự mở sau khi nộp thì thu gọn; học viên tự mở thì giữ nguyên chỗ mặc định.
+                else if (userOpenedRef.current) setAutoPosition(null);
+                else setView('minimized');
+            });
+        };
+        place();
+        window.addEventListener('resize', place);
+        window.addEventListener('scroll', place, { capture: true, passive: true });
+        return () => {
+            window.cancelAnimationFrame(frame);
+            window.removeEventListener('resize', place);
+            window.removeEventListener('scroll', place, { capture: true });
+        };
+    }, [view, guidance, submitting, analyzing]);
+
     const isAnalyzing = submitting || (analyzing && !guidance);
+    const placed = position ?? autoPosition;
 
     const content = <div
         ref={dockRef}
         className="practice-guide-dock"
         data-state={view}
         onPointerDown={handlePointerDown}
-        style={position ? {
-            left: `${position.x}px`,
-            top: `${position.y}px`,
+        style={placed ? {
+            left: `${placed.x}px`,
+            top: `${placed.y}px`,
             right: 'auto',
             bottom: 'auto',
         } : undefined}
