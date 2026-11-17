@@ -98,8 +98,11 @@ class AdaptiveExercisePlanner:
             "javascript": {"for": "JS-LOOP-01", "while": "JS-LOOP-01",
                            "function": "JS-FUNC-01", "class": "JS-CLASS-01"},
         }.get(routing.language, {})
+        # Bài về lớp/đối tượng bắt buộc có phương thức (def __init__...): không được coi "def" là cấu trúc chưa học.
+        # Bài vẫn chạy ở chế độ stdin/stdout (use_function không đổi).
+        class_concept = cid.startswith(("PY-OOP", "JS-CLASS"))
         for construct, lesson_id in construct_lessons.items():
-            is_target = cid == lesson_id or (construct == "function" and function_lesson)
+            is_target = cid == lesson_id or (construct == "function" and (function_lesson or class_concept))
             if not is_target and not prerequisite_is_ready(lesson_id) and construct not in required:
                 forbidden.append(construct)
         forbidden = list(dict.fromkeys(forbidden))
@@ -153,7 +156,7 @@ class AdaptiveExercisePlanner:
             "forced_prerequisite_override": forced_override,
             "function_ready": function_ready,
             "function_is_target": function_lesson,
-            "avoid_function_syntax": bool(function_concept and not function_ready and not function_lesson),
+            "avoid_function_syntax": bool(function_concept and not function_ready and not function_lesson and not class_concept),
             "unlearned_constructs": [name for name in construct_lessons if name in forbidden],
             "batch_index": ctx.get("batch_index"),
             "batch_total": ctx.get("batch_total")}

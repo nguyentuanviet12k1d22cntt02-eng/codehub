@@ -40,6 +40,21 @@ def stdio_draft(code="score = float(input())\nif score >= 8:\n    print('Giỏi'
 
 
 class LearnerKnowledgeContractTests(unittest.TestCase):
+    def test_class_lessons_may_define_methods_even_before_functions_are_learned(self):
+        """E2E Production 2026-11-17: bài OOP thất bại 3/3 vì "def" bị cấm trong khi lớp cần def __init__."""
+        learner = {"states": {"PY-BASICS-03": {"mastery": .8, "attempts": 4, "confidence": .7}}}
+        spec = AdaptiveExercisePlanner().plan_exercise(route("python", "PY-OOP-01"), "learner", learner_context=learner)
+        self.assertNotIn("function", spec.forbidden_constructs)
+        self.assertFalse(spec.learner_evidence["avoid_function_syntax"])
+        self.assertEqual(spec.execution["mode"], "stdio", "vẫn chạy bằng stdin/stdout")
+        draft = stdio_draft("class Student:" + chr(10) + "    def __init__(self, name):" + chr(10) + "        self.name = name" + chr(10)
+                            + "s = Student(input())" + chr(10) + "print(s.name)")
+        self.assertTrue(SchemaValidator.validate(draft, spec)[0])
+        # Chủ đề khác vẫn giữ quy tắc cũ.
+        other = AdaptiveExercisePlanner().plan_exercise(route("python", "PY-FLOW-01"), "learner", learner_context=learner)
+        self.assertIn("function", other.forbidden_constructs)
+        self.assertTrue(other.learner_evidence["avoid_function_syntax"])
+
     def test_unlearned_functions_do_not_leak_into_if_else_exercise(self):
         spec = AdaptiveExercisePlanner().plan_exercise(route("python", "PY-FLOW-01"), "learner",
             learner_context={"states": {"PY-BASICS-03": {"mastery": .8, "attempts": 4, "confidence": .7}}})
