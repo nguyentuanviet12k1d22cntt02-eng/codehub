@@ -1,4 +1,5 @@
 import type { CodeConstraintConfig } from '../../infrastructure/analysis/staticCodeAnalyzer';
+import { EXTRA_TESTCASES } from './exerciseExtraTestcases';
 
 /**
  * Vá nội dung cho bài luyện tập theo module (LS-0x.MP).
@@ -106,4 +107,12 @@ export function learnerStatement(exercise: { id: string; problemDescription: str
             + 'In đúng từng dòng như Output (mỗi giá trị trên một dòng nếu Output có nhiều dòng), không in thêm chữ gợi ý.';
     }
     return statement;
+}
+
+/**
+ * Nhóm D: testcase ẩn bổ sung khi chấm bài bị ghim. Không thuộc DB nên `contentVersion` không đổi;
+ * ID dạng `<exerciseId>:extra:<i>` chỉ dùng trong kết quả trả về.
+ */
+export function extraTestcasesFor(exerciseId: string): { id: string; input: string; expectedOutput: string; isHidden: true }[] {
+    return (EXTRA_TESTCASES[exerciseId] || []).map((tc, index) => ({ ...tc, id: `${exerciseId}:extra:${index + 1}` }));
 }

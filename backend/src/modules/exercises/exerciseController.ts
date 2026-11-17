@@ -4,7 +4,7 @@ import { codeExecutionQueue } from '../../infrastructure/queue/queueService';
 import { exerciseService } from './exercise.service';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
 import { StaticCodeAnalyzer, stripPythonComments } from '../../infrastructure/analysis/staticCodeAnalyzer';
-import { constraintPatchFor } from './exerciseContentPatches';
+import { constraintPatchFor, extraTestcasesFor } from './exerciseContentPatches';
 import { ExecuteResult } from '../../infrastructure/sandbox/sandbox.types';
 import { parseInteractionTelemetry } from '../learning-events/interactionTelemetry';
 import { buildGradingDiagnostics } from '../learning-events/interactionErrorClassifier';
@@ -287,7 +287,8 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
         // 3. Gửi các testcase trong một batch đến sandbox Docker EC2.
         let totalRuntime = 0;
         let hasSystemError = false;
-        const testCases = exercise.testCases || [];
+        // Test ẩn bổ sung (nhóm D) chỉ nối vào bản chấm; exercise.testCases giữ nguyên để tính contentVersion.
+        const testCases = [...(exercise.testCases || []), ...(execLanguage === 'PYTHON' ? extraTestcasesFor(exercise.id) : [])];
         let executionResults: ExecuteResult[] = [];
         try {
             executionResults = await codeExecutionQueue.pushBatchJob(
