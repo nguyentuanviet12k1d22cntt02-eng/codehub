@@ -340,6 +340,25 @@ test('E02 nộp sai: test công khai hiện output thật, test ẩn chỉ hiệ
   assert.ok(r.json.guidance, 'có gợi ý dựa trên bằng chứng ngay khi chấm');
 });
 
+test('E02b Python thiếu cấu trúc bắt buộc/dùng cấu trúc cấm: báo vi phạm dễ hiểu, không lộ traceback harness', { skip }, async () => {
+  const p = await publishedExercise(ctx.users.a);
+  const calls = ctx.grader.state.calls;
+  // Không có while (bắt buộc) và có for (bị cấm): mã học viên không được chạy, báo cả hai vi phạm.
+  const r = await submit(ctx.users.a, p.exerciseId, 's = input()\nfor ch in s:\n    pass\nprint(0)\n');
+  assert.equal(r.status, 200);
+  assert.equal(r.json.isPassed, false);
+  assert.equal(r.json.status, 'CONSTRAINT_VIOLATION');
+  assert.deepEqual(r.json.results, [], 'không trả testcase nào, giống bài JavaScript');
+  assert.equal(ctx.grader.state.calls - calls, 1, 'dừng ngay sau lần chạy đầu, không chạy hết các test');
+  const body = JSON.stringify(r.json);
+  for (const leak of ['Traceback', '__LEARNER_CONSTRAINT__', 'ValueError', '<submission>']) assert.ok(!body.includes(leak), leak + ' lọt ra học viên: ' + body.slice(Math.max(0, body.indexOf(leak) - 150), body.indexOf(leak) + 80));
+  assert.equal(r.json.guidance.analysisKind, 'constraint');
+  assert.match(r.json.guidance.title, /while/);
+  const stored = (await ctx.prisma.$queryRawUnsafe('SELECT status, result FROM adaptive_submissions WHERE submission_id=$1::uuid', r.submissionId))[0];
+  assert.equal(stored.status, 'FAILED');
+  assert.deepEqual(stored.result.errors, ['CONSTRAINT_REQUIRED:while', 'CONSTRAINT_FORBIDDEN:for']);
+});
+
 test('E03 lỗi cú pháp và lỗi runtime được chấm trượt, không làm hỏng server', { skip }, async () => {
   const p = await publishedExercise(ctx.users.a);
   for (const code of ['s = input(\nprint(s)\n', 's = input()\nprint(1/0)\n']) {

@@ -60,10 +60,12 @@ else:
     for fn in [n for n in ast.walk(tree) if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef))]:
         if any(isinstance(n,ast.Call) and isinstance(n.func,ast.Name) and n.func.id==fn.name for n in ast.walk(fn)):
             found.add("recursion")
-    for required in spec.get("required_constructs",[]):
-        if required not in found: raise ValueError("CONSTRAINT_REQUIRED:"+required)
-    for forbidden in spec.get("forbidden_constructs",[]):
-        if forbidden in found: raise ValueError("CONSTRAINT_FORBIDDEN:"+forbidden)
+    violations=["CONSTRAINT_REQUIRED:"+c for c in spec.get("required_constructs",[]) if c not in found]
+    violations+=["CONSTRAINT_FORBIDDEN:"+c for c in spec.get("forbidden_constructs",[]) if c in found]
+    if violations:
+        # Báo vi phạm qua marker riêng, không kèm traceback của harness; mã học viên chưa chạy.
+        print("__LEARNER_CONSTRAINT__"+json.dumps(violations),file=sys.stderr)
+        sys.exit(1)
     scope={"__name__":"__main__"}
     if spec["execution"]["mode"]=="function":
         args=tc.get("arguments")
@@ -137,6 +139,18 @@ export function staticConstraints(code: string, spec: Specification): string[] {
     else if (spec.required_constructs.length || spec.forbidden_constructs.length) return ['SQL_CONSTRAINT_REQUIRES_SQL_POLICY'];
     return [...spec.required_constructs.filter(c => !found.has(c)).map(c => 'CONSTRAINT_REQUIRED:' + c),
         ...spec.forbidden_constructs.filter(c => found.has(c)).map(c => 'CONSTRAINT_FORBIDDEN:' + c)];
+}
+
+/** Vi phạm cấu trúc do harness Python báo (kiểm trên AST trước khi chạy mã học viên). */
+export function pythonConstraintViolations(stderr: string): string[] | null {
+    const marker = /^__LEARNER_CONSTRAINT__(\[[^\n]*\])\s*$/m.exec(stderr || '');
+    if (!marker) return null;
+    try {
+        const list = JSON.parse(marker[1]);
+        const valid = Array.isArray(list) ? list.filter((e: unknown): e is string =>
+            typeof e === 'string' && /^CONSTRAINT_(?:REQUIRED|FORBIDDEN):[A-Za-z_][\w.]{0,60}$/.test(e)) : [];
+        return valid.length ? valid : null;
+    } catch { return null; }
 }
 
 export function sandboxInput(code: string, draft: Draft, spec: Specification, index: number) {
@@ -215,6 +229,9 @@ export async function runExercise(rawDraft: unknown, rawSpec: unknown, code?: st
             const result = await executeSandboxCase(source,draft,spec,i);
             test_results.push(result);
             if (result.status === 'INFRA_ERROR') return {passed:false,status:'INFRA_ERROR',error:'Isolated sandbox unavailable',errors:['SANDBOX_UNAVAILABLE'],test_results,harness_version:VERSION};
+            const pythonViolations = spec.language === 'python' && result.status === 'RUNTIME_ERROR' ? pythonConstraintViolations(result.stderr) : null;
+            if (pythonViolations) // Cùng dạng kết quả với JavaScript: không có testcase nào, chỉ có danh sách vi phạm.
+                return {passed:false,status:'CONSTRAINT_VIOLATION',errors:pythonViolations,test_results:[],harness_version:VERSION};
             if (errors.length && !sandboxSyntax(source,{test_results:[{...result,is_hidden:false}]}))
                 return {passed:false,status:'CONSTRAINT_VIOLATION',errors,test_results:[],harness_version:VERSION};
         }
