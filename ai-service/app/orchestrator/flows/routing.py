@@ -108,7 +108,9 @@ class RoutingFlowMixin:
                         "original_user_request": routing.user_text,
                         "required_constructs": routing.required_constructs,
                         "forbidden_constructs": routing.forbidden_constructs,
-                        "ordered_output": routing.ordered_output},
+                        "ordered_output": routing.ordered_output,
+                        # Giữ ý "khó hơn"/"dễ hơn" qua bước hỏi số bài.
+                        "difficulty_request": routing.difficulty_request},
                     suggested_options=[f"{number} bài" for number in range(1, MAX_EXERCISES + 1)])
             requested_count = raw_count
             turn.exercise_count = min(raw_count, MAX_EXERCISES)

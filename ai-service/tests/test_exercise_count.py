@@ -63,6 +63,29 @@ class ExerciseCountTests(unittest.TestCase):
         self.assertEqual(second["exercise_count"], 2)
         self.assertEqual(second["exercise"]["language"], "python")
 
+    def test_count_reply_keeps_harder_or_easier_request(self):
+        """E2E Production 2026-11-17: "Cho tôi bài khó hơn" → hỏi số bài → "1 bài" làm mất ý "khó hơn"."""
+        from app.agents.intent_router_agent import IntentRouterAgent
+        for wanted in ("harder", "easier"):
+            pending = {"type": "EXERCISE_COUNT_SELECTION", "language": "python", "target_concept_id": "PY-BASICS-01",
+                       "original_user_request": "Cho tôi bài khó hơn", "difficulty_request": wanted}
+            route = IntentRouterAgent(None).route("1 bài", {"pending_confirmation": pending})
+            self.assertEqual(route.difficulty_request, wanted)
+            self.assertEqual(route.mode, "remediation" if wanted == "easier" else "progression")
+        legacy = {"type": "EXERCISE_COUNT_SELECTION", "language": "python", "target_concept_id": "PY-BASICS-01",
+                  "original_user_request": "Tạo bài tập về biến", "difficulty_request": "bogus"}
+        self.assertEqual(IntentRouterAgent(None).route("1 bài", {"pending_confirmation": legacy}).difficulty_request, "auto")
+
+    def test_harder_after_count_reply_raises_planned_difficulty(self):
+        pending = {"type": "EXERCISE_COUNT_SELECTION", "language": "python", "target_concept_id": "PY-BASICS-01",
+                   "original_user_request": "Cho tôi bài khó hơn", "difficulty_request": "harder"}
+        states = {"PY-BASICS-01": {"mastery": 0.72, "attempts": 28, "confidence": 0.99}}
+        report = AdaptiveLearningOrchestrator(Client, Sandbox).process_turn(
+            "u", [{"sender": "USER", "content": "1 bài"}],
+            learner_context={"pending_confirmation": pending, "states": states, "last_difficulty": "MEDIUM"})
+        plan = next(s["output"] for s in report["agent_traces"] if s["agent"] == "AdaptiveExercisePlanner")
+        self.assertEqual(plan["difficulty"], "HARD")
+
     def test_new_request_replaces_pending_quantity_question(self):
         pending = {"type": "EXERCISE_COUNT_SELECTION", "language": "python",
                    "target_concept_id": "PY-SET-01",

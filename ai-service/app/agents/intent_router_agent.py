@@ -14,7 +14,7 @@ from app.services.knowledge_graph_service import KnowledgeGraphService, TOPIC_AL
 # Chữ chung chung đứng đầu một dẫn chứng chủ đề ("câu lệnh if-elif-else", "viết hàm", "bài tập về list"):
 # không mang nghĩa chủ đề nên được bỏ trước khi so với học liệu. Chỉ bỏ ở đầu cụm; phần còn lại vẫn phải khớp.
 _EVIDENCE_FILLER = ("bai tap ve", "bai tap", "chu de", "kien thuc ve", "kien thuc", "cau lenh", "lenh",
-                    "viet", "su dung", "cach dung", "cach", "ve")
+                    "lap trinh", "viet", "su dung", "cach dung", "cach", "ve")
 
 
 def _evidence_core(folded: str) -> str:
@@ -30,6 +30,20 @@ def _evidence_core(folded: str) -> str:
                 changed = True
                 break
     return core
+
+
+def _singular(folded: str) -> str:
+    """Dạng số ít tiếng Anh cho từng từ ("lists" → "list", "dictionaries" → "dictionary")."""
+    words = []
+    for word in folded.split():
+        if len(word) > 3 and word.endswith("ies"):
+            word = word[:-3] + "y"
+        elif len(word) > 3 and word.endswith("es") and word[:-2].endswith(("s", "x", "ch", "sh")):
+            word = word[:-2]
+        elif len(word) > 3 and word.endswith("s") and not word.endswith("ss"):
+            word = word[:-1]
+        words.append(word)
+    return " ".join(words)
 
 
 class IntentRouterAgent(RoutingContextMixin, RoutingCatalogMixin, RoutingValidationMixin):
@@ -85,8 +99,11 @@ class IntentRouterAgent(RoutingContextMixin, RoutingCatalogMixin, RoutingValidat
                 topic = pending_context.get("target_concept_id")
                 if language not in self.ALLOWED_CONSTRUCTS or (topic and not self.kg.get_concept(language, topic)):
                     raise PipelineError("ROUTING_TARGET_INVALID", "Chủ đề/ngôn ngữ của lựa chọn số bài không còn hợp lệ.")
+                saved_difficulty = pending_context.get("difficulty_request")
+                difficulty = saved_difficulty if saved_difficulty in ("easier", "same", "harder", "auto") else "auto"
                 return RoutingDecision(intent="REQUEST_ADAPTIVE_EXERCISE", language=language,
                     topic=topic, topic_match="matched" if topic else "unspecified",
+                    difficulty_request=difficulty, mode="remediation" if difficulty == "easier" else "progression",
                     required_constructs=pending_context.get("required_constructs", []),
                     forbidden_constructs=pending_context.get("forbidden_constructs", []),
                     ordered_output=pending_context.get("ordered_output", False),
@@ -282,11 +299,20 @@ class IntentRouterAgent(RoutingContextMixin, RoutingCatalogMixin, RoutingValidat
                 raise PipelineError("ROUTING_TARGET_UNSUPPORTED", "Thiếu dẫn chứng về chủ đề trong yêu cầu.")
             for quote in decision.topic_evidence:
                 evidence = _fold_topic(quote)
-                core = _evidence_core(evidence)
-                if (not evidence or not core or f" {evidence} " not in f" {request_terms} "
-                        or (f" {evidence} " not in f" {concept_terms} " and f" {core} " not in f" {concept_terms} "
-                            and self.kg.resolve_concept_by_topic(decision.language, quote) != decision.topic
-                            and self.kg.resolve_concept_by_topic(decision.language, core) != decision.topic)):
+                # Cả cụm phải có trong yêu cầu; để khớp học liệu, xét cả cụm và từng phần tách bởi ngoặc/phẩy
+                # (vd "lập trình hướng đối tượng (class)" → "lập trình hướng đối tượng", "class").
+                parts = [quote, *(part for part in re.split(r"[(),;/]", quote) if part.strip() and part != quote)]
+                def matches_topic(text):
+                    folded = _fold_topic(text)
+                    core = _evidence_core(folded)
+                    if not core:
+                        return False
+                    # Thử cả dạng số ít tiếng Anh ("lists", "loops", "dictionaries").
+                    return any(f" {form} " in f" {concept_terms} "
+                               or self.kg.resolve_concept_by_topic(decision.language, form) == decision.topic
+                               for form in dict.fromkeys([folded, core, _singular(core)]) if form)                         or self.kg.resolve_concept_by_topic(decision.language, text) == decision.topic
+                if (not evidence or f" {evidence} " not in f" {request_terms} "
+                        or not any(matches_topic(part) for part in parts)):
                     raise PipelineError("ROUTING_TARGET_UNSUPPORTED", "Dẫn chứng chủ đề không khớp yêu cầu và học liệu.")
         elif decision.topic is not None:
             raise PipelineError("ROUTING_SCHEMA_INVALID", "Yêu cầu chưa ghép chủ đề không được tự chọn mã.")

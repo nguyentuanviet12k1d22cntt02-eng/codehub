@@ -38,6 +38,7 @@ class RouterTopicEvidenceTests(unittest.TestCase):
         self.assertEqual(fold("vòng lặp for"), "vong lap for")
         self.assertEqual(fold("câu lệnh"), "")
         self.assertEqual(fold("về"), "")
+        self.assertEqual(fold("lập trình hướng đối tượng"), "huong doi tuong")
 
     def test_if_elif_else_request_routes_to_conditionals(self):
         request = "Cho tôi 1 bài tập Python mức trung bình về câu lệnh if-elif-else"
@@ -48,6 +49,27 @@ class RouterTopicEvidenceTests(unittest.TestCase):
         request = "Cho tôi 1 bài tập Python mức trung bình về viết hàm"
         route = IntentRouterAgent(FixedClient(decision("PY-FUNC-01", ["viết hàm"], "viết hàm"))).route(request)
         self.assertEqual(route.topic, "PY-FUNC-01")
+
+    def test_oop_request_with_parenthesised_keyword_routes_to_classes(self):
+        request = "Cho tôi 1 bài tập Python về lập trình hướng đối tượng (class)"
+        for evidence in (["lập trình hướng đối tượng (class)"], ["lập trình hướng đối tượng"]):
+            route = IntentRouterAgent(FixedClient(decision("PY-OOP-01", evidence, "lập trình hướng đối tượng"))).route(request)
+            self.assertEqual(route.topic, "PY-OOP-01", evidence)
+
+    def test_english_plural_topics_route(self):
+        for topic, word in (("PY-LIST-01", "lists"), ("PY-DICT-01", "dictionaries"), ("PY-FUNC-01", "functions")):
+            request = f"Give me a Python exercise about {word}"
+            route = IntentRouterAgent(FixedClient(decision(topic, [word], word))).route(request)
+            self.assertEqual(route.topic, topic, word)
+
+    def test_plural_does_not_route_to_an_unrelated_topic(self):
+        with self.assertRaises(PipelineError):
+            IntentRouterAgent(FixedClient(decision("PY-FLOW-01", ["lists"], "lists"))).route("Give me a Python exercise about lists")
+
+    def test_parenthesised_parts_cannot_route_to_an_unrelated_topic(self):
+        request = "Cho tôi 1 bài tập Python về vòng lặp (for)"
+        with self.assertRaises(PipelineError):
+            IntentRouterAgent(FixedClient(decision("PY-OOP-01", ["vòng lặp (for)"], "vòng lặp"))).route(request)
 
     def test_stripping_filler_does_not_allow_a_wrong_topic(self):
         # "câu lệnh for" không được gán vào chủ đề if-elif-else chỉ vì đã bỏ chữ "câu lệnh".
