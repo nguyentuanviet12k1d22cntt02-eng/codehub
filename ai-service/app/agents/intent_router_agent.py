@@ -11,6 +11,26 @@ from app.contracts.routing import RoutingDecision
 from app.pipeline.llm_client import PipelineError
 from app.services.knowledge_graph_service import KnowledgeGraphService, TOPIC_ALIASES, _fold_topic
 
+# Chữ chung chung đứng đầu một dẫn chứng chủ đề ("câu lệnh if-elif-else", "viết hàm", "bài tập về list"):
+# không mang nghĩa chủ đề nên được bỏ trước khi so với học liệu. Chỉ bỏ ở đầu cụm; phần còn lại vẫn phải khớp.
+_EVIDENCE_FILLER = ("bai tap ve", "bai tap", "chu de", "kien thuc ve", "kien thuc", "cau lenh", "lenh",
+                    "viet", "su dung", "cach dung", "cach", "ve")
+
+
+def _evidence_core(folded: str) -> str:
+    core = folded
+    changed = True
+    while changed and core:
+        changed = False
+        for filler in _EVIDENCE_FILLER:
+            if core == filler:
+                return ""
+            if core.startswith(filler + " "):
+                core = core[len(filler) + 1:]
+                changed = True
+                break
+    return core
+
 
 class IntentRouterAgent(RoutingContextMixin, RoutingCatalogMixin, RoutingValidationMixin):
     """LLM routes against the published curriculum; graph IDs are verified locally."""
@@ -262,9 +282,11 @@ class IntentRouterAgent(RoutingContextMixin, RoutingCatalogMixin, RoutingValidat
                 raise PipelineError("ROUTING_TARGET_UNSUPPORTED", "Thiếu dẫn chứng về chủ đề trong yêu cầu.")
             for quote in decision.topic_evidence:
                 evidence = _fold_topic(quote)
-                if (not evidence or f" {evidence} " not in f" {request_terms} "
-                        or (f" {evidence} " not in f" {concept_terms} "
-                            and self.kg.resolve_concept_by_topic(decision.language, quote) != decision.topic)):
+                core = _evidence_core(evidence)
+                if (not evidence or not core or f" {evidence} " not in f" {request_terms} "
+                        or (f" {evidence} " not in f" {concept_terms} " and f" {core} " not in f" {concept_terms} "
+                            and self.kg.resolve_concept_by_topic(decision.language, quote) != decision.topic
+                            and self.kg.resolve_concept_by_topic(decision.language, core) != decision.topic)):
                     raise PipelineError("ROUTING_TARGET_UNSUPPORTED", "Dẫn chứng chủ đề không khớp yêu cầu và học liệu.")
         elif decision.topic is not None:
             raise PipelineError("ROUTING_SCHEMA_INVALID", "Yêu cầu chưa ghép chủ đề không được tự chọn mã.")
