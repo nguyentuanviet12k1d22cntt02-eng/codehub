@@ -7,7 +7,7 @@ import { StaticCodeAnalyzer } from '../../infrastructure/analysis/staticCodeAnal
 import { ExecuteResult } from '../../infrastructure/sandbox/sandbox.types';
 import { parseInteractionTelemetry } from '../learning-events/interactionTelemetry';
 import { buildGradingDiagnostics } from '../learning-events/interactionErrorClassifier';
-import { matchPythonOutput } from '../adaptive/pythonOutputPolicy';
+import { matchCoursePythonOutput } from '../adaptive/pythonOutputPolicy';
 import { pythonContentVersion, pythonCodeHash, PYTHON_GRADING_EVIDENCE } from '../onboarding/pythonModelEvidence';
 import {modulePracticeRefreshHint} from '../courses/modulePracticeRefresh';
 
@@ -311,7 +311,7 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
 
             const matchOutput = (act: string, exp: string): boolean => {
                 if (execLanguage === 'PYTHON') {
-                    return matchPythonOutput(act, exp, 'text').passed;
+                    return matchCoursePythonOutput(id, act, exp);
                 }
                 const cleanActual = act.replace(/\r\n/g, '\n').trim().replace(/\s+/g, ' ');
                 const cleanExpected = exp.replace(/\r\n/g, '\n').trim().replace(/\s+/g, ' ');

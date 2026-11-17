@@ -86,3 +86,34 @@ export function matchPythonOutput(
         failureReason: 'TEXT_OUTPUT_MISMATCH'
     };
 }
+
+/**
+ * Bài có đáp số là số thực mà đề không quy định cách làm tròn. Nội dung các bài
+ * này được model r03 ghim (contentVersion), nên sửa ở cách chấm chứ không sửa đề:
+ * so từng dòng, dòng nào cả hai là số thì chấp nhận lệch trong `tolerance`.
+ */
+export const NUMERIC_TOLERANCE_EXERCISES: Readonly<Record<string, number>> = Object.freeze({
+    // LS-01.MP "Tính điểm thi cuối kỳ (có trọng số)": ck*0.5+gk*0.3+bt*0.2 in 7.8999999999999995.
+    '45c415d2-ab5e-4b3f-a75c-e82622ba3eeb': 1e-6,
+    // LS-01.MP "Tính toán chi phí sơn nhà": int(2*(d*c+r*c)*g) cắt 1679999.99… thành 1679999.
+    'c087d75a-97f8-4065-9330-c99dd4ac4390': 1,
+});
+
+const NUMBER_LINE = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
+
+export function matchNumericOutput(actual: string, expected: string, tolerance: number): boolean {
+    const a = normalizeTextOutput(actual).split('\n'), e = normalizeTextOutput(expected).split('\n');
+    if (a.length !== e.length) return false;
+    return e.every((line, i) => {
+        const x = a[i].trim(), y = line.trim();
+        if (NUMBER_LINE.test(x) && NUMBER_LINE.test(y)) return Math.abs(Number(x) - Number(y)) <= tolerance;
+        return a[i] === line;
+    });
+}
+
+/** Chấm output Python của bài trong khóa học; chỉ các bài trong danh sách trên mới được so số có sai số. */
+export function matchCoursePythonOutput(exerciseId: string, actual: string, expected: string): boolean {
+    if (matchPythonOutput(actual, expected, 'text').passed) return true;
+    const tolerance = NUMERIC_TOLERANCE_EXERCISES[exerciseId];
+    return tolerance !== undefined && matchNumericOutput(actual, expected, tolerance);
+}
