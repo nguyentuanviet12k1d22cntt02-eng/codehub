@@ -33,7 +33,13 @@ def test_router_agent():
 def test_knowledge_retriever():
     print("\n--- 2. Testing KnowledgeRetriever ---")
     retriever = KnowledgeRetriever()
-    assert len(retriever.skill_graph.get("skills", [])) == 33, "Should have 33 skills in DAG"
+    # So với chính file đồ thị đang dùng thay vì con số cố định (đồ thị đã tăng từ 33 lên 35 kỹ năng).
+    import json
+    graph_path = os.path.join(retriever._get_data_dir(), "pythonSkillGraph.json")
+    with open(graph_path, encoding="utf-8") as f:
+        expected_skills = len(json.load(f)["skills"])
+    assert expected_skills > 0
+    assert len(retriever.skill_graph.get("skills", [])) == expected_skills, "Retriever must load every skill in the Python DAG"
     
     sample_mastery = {
         "PY-DICT-02": 0.32,

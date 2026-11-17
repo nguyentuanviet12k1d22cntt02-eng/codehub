@@ -16,6 +16,18 @@ import { evidencePracticeGuidance, isGraderFailure, requestPracticeGuidance } fr
 const idSchema=z.string().uuid();
 const sessionsRunning=new Set<string>();
 const retryableProviderCodes=new Set(['PROVIDER_TIMEOUT','PROVIDER_NETWORK_ERROR','PROVIDER_SERVER_ERROR','PROVIDER_RATE_LIMITED','PROVIDER_DEADLINE_EXCEEDED','PROVIDER_RESPONSE_INVALID','PROVIDER_COOLDOWN','PROVIDER_FULL_POOL_OUTAGE','STAGE_BUDGET_EXHAUSTED','RUN_DEADLINE_EXCEEDED','LLM_BUDGET_EXCEEDED','SANDBOX_BACKEND_TIMEOUT','SANDBOX_BACKEND_UNREACHABLE']);
+// AI service trả HTTP 429 khi đã chạy đủ số pipeline đồng thời. Đây là tình trạng bận tạm thời,
+// không phải lỗi của yêu cầu: giữ yêu cầu và để worker tự thử lại thay vì báo "pipeline dừng".
+export const AI_SERVICE_BUSY='AI_SERVICE_BUSY';
+retryableProviderCodes.add(AI_SERVICE_BUSY);
+export const AI_SERVICE_BUSY_REPLY='AI Tutor đang xử lý nhiều yêu cầu cùng lúc. Yêu cầu của bạn đã được giữ lại và sẽ tự chạy lại sau khoảng 30 giây; chưa có bài nào được phát hành.';
+export function aiServiceBusyReport(traceId:string,previous?:any) {
+    return {trace_id:traceId,schema_version:'4.0',status:'FAILED',exercise:null,fallback_used:false,
+        intent:previous?.intent,exercise_count:previous?.exercise_count,
+        agent_traces:Array.isArray(previous?.agent_traces)?previous.agent_traces:[],
+        reply:AI_SERVICE_BUSY_REPLY,error:{code:AI_SERVICE_BUSY,message:'AI service reached its concurrent pipeline limit (HTTP 429)'}};
+}
+export const waitingProviderReply=(code:string|undefined,fallback:string)=>code===AI_SERVICE_BUSY?AI_SERVICE_BUSY_REPLY:fallback;
 export const isRetryableProviderFailure=(code?:string)=>Boolean(code&&retryableProviderCodes.has(code));
 export const providerRetryDelay=(error:any,retryCount=0)=>{
     const requested=Number(error?.details?.retry_after_seconds);
@@ -156,19 +168,24 @@ async function chat(req:AuthenticatedRequest,res:Response,isStart:boolean,stream
         try {
             const upstream=await fetch((process.env.AI_SERVICE_URL||'http://127.0.0.1:8000')+'/pal-net/adaptive-tutor-agent/stream',
                 {method:'POST',headers:internalHeaders(body),body,signal:abort.signal});
-            if(!upstream.ok||!upstream.body) throw Error('AI_SERVICE_HTTP_'+upstream.status);
-            await consumeSse(upstream.body,async event=>{
-                if(event.type==='agent_step' && event.record) {
-                    await saveStage(traceId!,event.record);
-                    if(stream)send({...event,record:publicRecord(event.record)});
-                } else if(event.type==='complete') report=event.data;
-                else if(event.type==='error') throw Error(event.error||'AI_STREAM_FAILED');
-            });
-            if(!report || report.trace_id!==traceId) throw Error('AI_STREAM_INCOMPLETE');
-            // No artifact may enter storage without a genuine completed publication gate.
-            if(report.exercise && (report.status!=='SUCCEEDED' || !report.agent_traces?.some((s:any)=>s.agent==='PublicationGate'&&s.status==='SUCCEEDED'&&s.output?.approved===true))) throw Error('PUBLICATION_GATE_MISSING');
+            if(upstream.status===429) {
+                await upstream.body?.cancel().catch(()=>{});
+                report=aiServiceBusyReport(traceId);
+            } else {
+                if(!upstream.ok||!upstream.body) throw Error('AI_SERVICE_HTTP_'+upstream.status);
+                await consumeSse(upstream.body,async event=>{
+                    if(event.type==='agent_step' && event.record) {
+                        await saveStage(traceId!,event.record);
+                        if(stream)send({...event,record:publicRecord(event.record)});
+                    } else if(event.type==='complete') report=event.data;
+                    else if(event.type==='error') throw Error(event.error||'AI_STREAM_FAILED');
+                });
+                if(!report || report.trace_id!==traceId) throw Error('AI_STREAM_INCOMPLETE');
+                // No artifact may enter storage without a genuine completed publication gate.
+                if(report.exercise && (report.status!=='SUCCEEDED' || !report.agent_traces?.some((s:any)=>s.agent==='PublicationGate'&&s.status==='SUCCEEDED'&&s.output?.approved===true))) throw Error('PUBLICATION_GATE_MISSING');
+            }
             if (isRetryableProviderFailure(report.error?.code)) {
-                report={...report,status:'WAITING_PROVIDER',reply:'Provider tạm thời chưa trả được kết quả hợp lệ. Yêu cầu được giữ lại để tự thử lại; chưa có bài nào được phát hành.'};
+                report={...report,status:'WAITING_PROVIDER',reply:waitingProviderReply(report.error?.code,'Provider tạm thời chưa trả được kết quả hợp lệ. Yêu cầu được giữ lại để tự thử lại; chưa có bài nào được phát hành.')};
                 await deferRun(traceId,report,providerRetryDelay(report.error,0));
             } else await finishRun(traceId,report);
         } finally { clearTimeout(timer); }
@@ -240,20 +257,25 @@ export async function continueAgentReviewStream(req:AuthenticatedRequest,res:Res
         try {
             const upstream=await fetch((process.env.AI_SERVICE_URL||'http://127.0.0.1:8000')+'/pal-net/adaptive-tutor-agent/stream',
                 {method:'POST',headers:internalHeaders(body),body,signal:abort.signal});
-            if(!upstream.ok||!upstream.body) throw Error('AI_SERVICE_HTTP_'+upstream.status);
-            await consumeSse(upstream.body,async event=>{
-                if(event.type==='agent_step'&&event.record) {
-                    await saveStage(traceId!,event.record);
-                    send({...event,record:publicRecord(event.record)});
-                } else if(event.type==='complete') report=event.data;
-                else if(event.type==='error') throw Error(event.error||'AI_STREAM_FAILED');
-            });
-            if(!report||report.trace_id!==traceId) throw Error('AI_STREAM_INCOMPLETE');
-            report=mergeReviewReport(run.report,report);
-            if(report.exercise && (report.status!=='SUCCEEDED'||!report.agent_traces?.some((step:any)=>
-                step.agent==='PublicationGate'&&step.status==='SUCCEEDED'&&step.output?.approved===true))) throw Error('PUBLICATION_GATE_MISSING');
+            if(upstream.status===429) {
+                await upstream.body?.cancel().catch(()=>{});
+                report=aiServiceBusyReport(traceId,run.report);
+            } else {
+                if(!upstream.ok||!upstream.body) throw Error('AI_SERVICE_HTTP_'+upstream.status);
+                await consumeSse(upstream.body,async event=>{
+                    if(event.type==='agent_step'&&event.record) {
+                        await saveStage(traceId!,event.record);
+                        send({...event,record:publicRecord(event.record)});
+                    } else if(event.type==='complete') report=event.data;
+                    else if(event.type==='error') throw Error(event.error||'AI_STREAM_FAILED');
+                });
+                if(!report||report.trace_id!==traceId) throw Error('AI_STREAM_INCOMPLETE');
+                report=mergeReviewReport(run.report,report);
+                if(report.exercise && (report.status!=='SUCCEEDED'||!report.agent_traces?.some((step:any)=>
+                    step.agent==='PublicationGate'&&step.status==='SUCCEEDED'&&step.output?.approved===true))) throw Error('PUBLICATION_GATE_MISSING');
+            }
             if(isRetryableProviderFailure(report.error?.code)) {
-                report={...report,status:'WAITING_PROVIDER',reply:'Provider tạm thời chưa trả được kết quả hợp lệ. Bước hiện tại sẽ được tự thử lại.'};
+                report={...report,status:'WAITING_PROVIDER',reply:waitingProviderReply(report.error?.code,'Provider tạm thời chưa trả được kết quả hợp lệ. Bước hiện tại sẽ được tự thử lại.')};
                 await deferRun(traceId,report,providerRetryDelay(report.error,Number(run.retry_count||0)));
             }
         } finally {clearTimeout(timer);}

@@ -10,6 +10,24 @@ export interface AuthenticatedRequest extends Request {
     };
 }
 
+/**
+ * Khóa ký JWT. Không bao giờ dùng giá trị dự phòng đoán được: thiếu cấu hình thì từ chối mọi token
+ * (trước đây dùng 'secret'/'mykey', ai biết chuỗi đó đều tự ký được token hợp lệ).
+ */
+export function jwtSecret(): string | null {
+    const secret = process.env.JWT_SECRET;
+    return typeof secret === 'string' && secret.length > 0 ? secret : null;
+}
+
+let missingSecretLogged = false;
+export function authNotConfigured(res: Response): void {
+    if (!missingSecretLogged) {
+        missingSecretLogged = true;
+        console.error('[auth] JWT_SECRET chưa được cấu hình; mọi yêu cầu cần xác thực bị từ chối.');
+    }
+    res.status(503).json({ message: 'Máy chủ chưa sẵn sàng xác thực. Vui lòng thử lại sau.', error: 'AUTH_NOT_CONFIGURED' });
+}
+
 export const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -19,8 +37,13 @@ export const authenticateToken = (req: AuthenticatedRequest, res: Response, next
         return;
     }
 
+    const secret = jwtSecret();
+    if (!secret) {
+        authNotConfigured(res);
+        return;
+    }
+
     try {
-        const secret = process.env.JWT_SECRET || 'secret';
         const decoded = jwt.verify(token, secret) as any;
         req.user = decoded;
         next();
@@ -39,8 +62,14 @@ export const optionalAuthenticateToken = (req: AuthenticatedRequest, res: Respon
         return;
     }
 
+    const secret = jwtSecret();
+    if (!secret) {
+        // Không xác thực được thì coi như khách, tuyệt đối không tin token.
+        next();
+        return;
+    }
+
     try {
-        const secret = process.env.JWT_SECRET || 'secret';
         const decoded = jwt.verify(token, secret) as any;
         req.user = decoded;
         next();

@@ -1,7 +1,7 @@
 import { consumeSse } from './sse';
 import { internalHeaders, mergeReviewReport, resumeCheckpoint, reviewCheckpoint, verifiedTargetConcept } from './adaptiveEvidence';
 import { claimRetry, deferRun, dueRetries, finishRetryRun, saveStage } from './adaptiveRepository';
-import { isRetryableProviderFailure, providerRetryDelay, upstreamPipelineTimeoutMs } from './adaptive.controller';
+import { aiServiceBusyReport, isRetryableProviderFailure, providerRetryDelay, upstreamPipelineTimeoutMs, waitingProviderReply } from './adaptive.controller';
 
 let active=false;
 
@@ -26,15 +26,21 @@ async function retryRun(row:any) {
         const response=await fetch((process.env.AI_SERVICE_URL||'http://127.0.0.1:8000')+'/pal-net/adaptive-tutor-agent/stream',
             {method:'POST',headers:internalHeaders(body),body,signal:controller.signal});
         if(response.status===413) throw Error('RESUME_CHECKPOINT_TOO_LARGE');
-        if(!response.ok||!response.body) throw Error('AI_SERVICE_HTTP_'+response.status);
-        await consumeSse(response.body,async event=>{
-            if(event.type==='agent_step'&&event.record) await saveStage(row.trace_id,event.record);
-            else if(event.type==='complete') report=event.data;
-            else if(event.type==='error') throw Error(event.error||'AI_STREAM_FAILED');
-        });
-        if(!report||report.trace_id!==row.trace_id) throw Error('AI_STREAM_INCOMPLETE');
-        if(report.exercise && (report.status!=='SUCCEEDED'||!report.agent_traces?.some((step:any)=>
-            step.agent==='PublicationGate'&&step.status==='SUCCEEDED'&&step.output?.approved===true))) throw Error('PUBLICATION_GATE_MISSING');
+        if(response.status===429) {
+            // AI vẫn đang đủ luồng: giữ yêu cầu, xếp lịch thử lại như lỗi provider tạm thời.
+            await response.body?.cancel().catch(()=>{});
+            report=aiServiceBusyReport(row.trace_id);
+        } else {
+            if(!response.ok||!response.body) throw Error('AI_SERVICE_HTTP_'+response.status);
+            await consumeSse(response.body,async event=>{
+                if(event.type==='agent_step'&&event.record) await saveStage(row.trace_id,event.record);
+                else if(event.type==='complete') report=event.data;
+                else if(event.type==='error') throw Error(event.error||'AI_STREAM_FAILED');
+            });
+            if(!report||report.trace_id!==row.trace_id) throw Error('AI_STREAM_INCOMPLETE');
+            if(report.exercise && (report.status!=='SUCCEEDED'||!report.agent_traces?.some((step:any)=>
+                step.agent==='PublicationGate'&&step.status==='SUCCEEDED'&&step.output?.approved===true))) throw Error('PUBLICATION_GATE_MISSING');
+        }
     } catch(error:any) {
         const errorCode=error?.message==='RESUME_CHECKPOINT_TOO_LARGE'?'RESUME_CHECKPOINT_TOO_LARGE':error.name==='AbortError'?'RUN_DEADLINE_EXCEEDED':'TRANSPORT_OR_STORAGE_ERROR';
         report={trace_id:row.trace_id,schema_version:'4.0',status:'FAILED',exercise:null,agent_traces:[],fallback_used:false,
@@ -43,7 +49,7 @@ async function retryRun(row:any) {
     const merged=isReviewMode?mergeReviewReport(row.report,report):
         {...report,agent_traces:[...(row.report?.agent_traces||[]),...(report.agent_traces||[])]};
     if(isRetryableProviderFailure(report.error?.code)&&row.retry_count<2) {
-        await deferRun(row.trace_id,{...merged,status:'WAITING_PROVIDER',reply:'Provider chưa sẵn sàng; yêu cầu được xếp lịch thử lại.'},providerRetryDelay(report.error,row.retry_count));
+        await deferRun(row.trace_id,{...merged,status:'WAITING_PROVIDER',reply:waitingProviderReply(report.error?.code,'Provider chưa sẵn sàng; yêu cầu được xếp lịch thử lại.')},providerRetryDelay(report.error,row.retry_count));
     } else await finishRetryRun(row.trace_id,row.session_id,merged);
 }
 

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../../infrastructure/database/prisma';
-import { AuthenticatedRequest } from './auth';
+import { AuthenticatedRequest, authNotConfigured, jwtSecret } from './auth';
 
 interface JwtPayload {
     id?: string;
@@ -17,7 +17,8 @@ export const authenticateAdmin = async (req: AuthenticatedRequest, res: Response
             return res.status(401).json({ message: 'Không có token xác thực' });
         }
 
-        const secret = process.env.JWT_SECRET || 'mykey';
+        const secret = jwtSecret();
+        if (!secret) return authNotConfigured(res);
         const decoded = jwt.verify(token, secret) as JwtPayload;
 
         const targetId = decoded.id || decoded.userId;
