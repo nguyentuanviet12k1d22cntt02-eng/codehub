@@ -3,7 +3,8 @@ import { prisma } from '../../infrastructure/database/prisma';
 import { codeExecutionQueue } from '../../infrastructure/queue/queueService';
 import { exerciseService } from './exercise.service';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
-import { StaticCodeAnalyzer } from '../../infrastructure/analysis/staticCodeAnalyzer';
+import { StaticCodeAnalyzer, stripPythonComments } from '../../infrastructure/analysis/staticCodeAnalyzer';
+import { constraintPatchFor } from './exerciseContentPatches';
 import { ExecuteResult } from '../../infrastructure/sandbox/sandbox.types';
 import { parseInteractionTelemetry } from '../learning-events/interactionTelemetry';
 import { buildGradingDiagnostics } from '../learning-events/interactionErrorClassifier';
@@ -61,8 +62,24 @@ export const runCodeDynamic = async (req: Request, res: Response): Promise<void>
     }
 };
 
+// Luật cứng bên dưới gắn với ID bài, không phụ thuộc tiêu đề: đổi tiêu đề bài không làm mất kiểm tra.
+const LEGACY_RULE_BY_EXERCISE_ID: Readonly<Record<string, string>> = Object.freeze({
+    'ffe18ae9-47c6-4cb7-8629-c022bfff8563': 'Viết chú thích và in nhiều dòng',
+    '2c11fad2-9ce7-48b6-a3f8-70452d6d5364': 'Khai báo biến cơ bản',
+    '7c828bbb-302d-48b9-a6c2-cf9dc40b7c20': 'Tính toán hóa đơn áo thun',
+    '256b7793-d84b-4f71-bb92-c23d7339cf1b': 'Khai báo kiểu dữ liệu nguyên thủy',
+    '44c0d849-7b28-4bb5-bf55-72406de9ddd9': 'Kiểm tra kiểu dữ liệu với type()',
+    '9bfc2ca5-9217-4e36-93f8-a1deabc52d46': 'Tính toán chia chia lấy dư pizza',
+    'd4803954-55e3-48a8-b85b-9daa92365e60': 'Cập nhật ví tiết kiệm',
+    'a8c9bc9f-2567-4131-8862-f9477440ea9f': 'Định dạng ngày xuất bản',
+});
+
+export function legacyRuleKey(exerciseId: string, exerciseTitle: string): string {
+    return LEGACY_RULE_BY_EXERCISE_ID[exerciseId] ?? exerciseTitle;
+}
+
 // Hàm kiểm tra các ràng buộc biến (Review 3) để tránh người dùng in tắt chuỗi kết quả
-function validateCodeConstraints(exerciseTitle: string, code: string): string | null {
+export function validateCodeConstraints(exerciseTitle: string, code: string): string | null {
     // Loại bỏ chú thích để tránh so khớp giả
     const cleanCode = code.replace(/#.*$/gm, '').replace(/'''[\s\S]*?'''/g, '').replace(/"""[\s\S]*?"""/g, '');
 
@@ -156,7 +173,7 @@ interface CodeConstraintConfig {
     customErrorMessage?: string;
 }
 
-function parseAndValidateConstraints(problemDescription: string, exerciseTitle: string, code: string, execLanguage: string = 'PYTHON'): string | null {
+export function parseAndValidateConstraints(problemDescription: string, exerciseTitle: string, code: string, execLanguage: string = 'PYTHON'): string | null {
     // 1. Kiểm tra nếu có metadata CONSTRAINTS trong problemDescription
     const match = /<!--\s*CONSTRAINTS:\s*(\{[\s\S]*?\})\s*-->/.exec(problemDescription || '');
     if (match) {
@@ -187,7 +204,8 @@ function parseAndValidateConstraints(problemDescription: string, exerciseTitle: 
                     const trimmed = kw.trim();
                     if (!trimmed) continue;
                     const kwRegex = new RegExp(trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-                    if (!kwRegex.test(code)) {
+                    const keywordSource = execLanguage === 'PYTHON' ? stripPythonComments(code) : cleanCode; // chú thích không được tính
+                    if (!kwRegex.test(keywordSource)) {
                         return config.customErrorMessage || `Mã nguồn của bạn bắt buộc phải sử dụng cú pháp/từ khóa \`${trimmed}\`.`;
                     }
                 }
@@ -252,14 +270,14 @@ export const submitExercise = async (req: AuthenticatedRequest, res: Response, n
         // 2. Phân tích tĩnh AST & cấu trúc logic code (không chặn testcase chạy để học viên vẫn xem được output)
         let astResult: ReturnType<typeof StaticCodeAnalyzer.analyze> = { isValid: true, error: null, warnings: [] };
         if (execLanguage === 'PYTHON' || execLanguage === 'CPP' || execLanguage === 'JAVASCRIPT') {
-            astResult = StaticCodeAnalyzer.analyze(code, execLanguage, exercise.problemDescription || '', exercise.title);
+            astResult = StaticCodeAnalyzer.analyze(code, execLanguage, exercise.problemDescription || '', exercise.title, constraintPatchFor(exercise.id));
             if (astResult.infrastructureError) {
                 res.status(503).json({ error: "AST_ANALYZER_UNAVAILABLE" });
                 return;
             }
             // Fallback kiểm tra ràng buộc cũ nếu AST chưa báo lỗi
             if (astResult.isValid) {
-                const legacyConstraintError = parseAndValidateConstraints(exercise.problemDescription || '', exercise.title, code, execLanguage);
+                const legacyConstraintError = parseAndValidateConstraints(exercise.problemDescription || '', legacyRuleKey(exercise.id, exercise.title), code, execLanguage);
                 if (legacyConstraintError) {
                     astResult = { isValid: false, error: legacyConstraintError, warnings: [] };
                 }

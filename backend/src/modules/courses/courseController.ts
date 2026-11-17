@@ -4,6 +4,7 @@ import { NextFunction, Request, response, Response } from "express";
 import { prisma } from "../../infrastructure/database/prisma";
 import { AuthenticatedRequest } from "../../shared/middleware/auth";
 import { parseInteractionTelemetry } from "../learning-events/interactionTelemetry";
+import { learnerStatement } from '../exercises/exerciseContentPatches';
 
 export const getCourses = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -169,9 +170,11 @@ export const getLessonById = async (req: Request, res: Response, next: NextFunct
 
         const visibleLesson = (lesson.lessonId || "").startsWith("LS-") ? {
             ...lesson,
-            codingExercises: lesson.codingExercises.map(({ solutionCode, ...exercise }) => ({
-                ...exercise, testCases: exercise.testCases.filter(tc => !tc.isHidden)
-            }))
+            codingExercises: lesson.codingExercises.map(({ solutionCode, ...exercise }) => {
+                const testCases = exercise.testCases.filter(tc => !tc.isHidden);
+                // Làm rõ đề / ví dụ chỉ thêm vào bản trả cho học viên; DB (và contentVersion) giữ nguyên.
+                return { ...exercise, testCases, problemDescription: learnerStatement({ ...exercise, testCases }) };
+            })
         } : lesson;
         res.status(200).json({
             ...visibleLesson,

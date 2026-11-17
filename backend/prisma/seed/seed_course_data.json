@@ -371,7 +371,7 @@
                 "id": "6f602dba-d4f0-4622-a7bc-c5608d4d5882"
               },
               {
-                "title": "Tính toán chia chia lấy dư pizza",
+                "title": "Tính toán chia lấy dư pizza",
                 "difficulty": "EASY",
                 "problemDescription": "### Yêu cầu\nMột nhóm bạn gồm `4` người đi ăn pizza hết tổng cộng `350000` đồng.\n1. Tính số tiền mỗi người phải trả khi chia đều và gán vào biến `so_tien_moi_nguoi`.\n2. Tính số tiền dư không thể chia đều và gán vào biến `so_tien_du`.\n3. In cả hai biến ra màn hình lần lượt trên 2 dòng.\n\n### Ví dụ\n**Output**\n```text\n87500.0\n0\n```\n\n<!-- CONSTRAINTS: {\"requireComment\":false,\"requiredKeywords\":[\"so_tien_moi_nguoi\",\"so_tien_du\"],\"forbiddenKeywords\":[],\"customErrorMessage\":\"Đề bài yêu cầu bạn khai báo 2 biến: so_tien_moi_nguoi và so_tien_du.\"} -->",
                 "starterCode": "# Viết code của bạn ở đây\n",
@@ -3223,7 +3223,7 @@
                   "In lời chào N lần"
                 ],
                 "difficulty": "EASY",
-                "problemDescription": "Nhập số nguyên dương `n`. In `Xin chào Python` đúng `n` lần, mỗi lần trên một dòng.",
+                "problemDescription": "### Yêu cầu\nNhập số nguyên dương `n`. In `Xin chào Python` đúng `n` lần, mỗi lần trên một dòng.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n3\n```\n**Output**\n```text\nXin chào Python\nXin chào Python\nXin chào Python\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\nfor _ in range(n):\n    print(\"Xin chào Python\")",
                 "testCases": [
@@ -3246,7 +3246,7 @@
                   "In các số từ 1 đến N"
                 ],
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `n`. In lần lượt các số từ 1 đến `n`, mỗi số trên một dòng.",
+                "problemDescription": "### Yêu cầu\nNhập `n`. In lần lượt các số từ 1 đến `n`, mỗi số trên một dòng.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n4\n```\n**Output**\n```text\n1\n2\n3\n4\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\nfor lan in range(1, n + 1):\n    print(lan)",
                 "testCases": [
@@ -3269,7 +3269,7 @@
                   "In các số chẵn đến N"
                 ],
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `n`. In các số chẵn từ 2 đến `n`.",
+                "problemDescription": "### Yêu cầu\nNhập `n`. In các số chẵn từ 2 đến `n`.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n8\n```\n**Output**\n```text\n2\n4\n6\n8\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\nfor so in range(2, n + 1, 2):\n    print(so)",
                 "testCases": [
@@ -3310,7 +3310,7 @@
                   "Tính tổng từ 1 đến N bằng for"
                 ],
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `n`. Dùng biến đếm để in từ 1 đến `n`.",
+                "problemDescription": "### Yêu cầu\nNhập `n`. Dùng biến đếm để in từ 1 đến `n`.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n3\n```\n**Output**\n```text\n1\n2\n3\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\ndem = 1\nwhile dem <= n:\n    print(dem)\n    dem += 1",
                 "testCases": [
@@ -3333,7 +3333,7 @@
                   "Đếm số chia hết cho 3"
                 ],
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `n`. Dùng biến `tong` để tính tổng từ 1 đến `n`.",
+                "problemDescription": "### Yêu cầu\nNhập `n`. Dùng biến `tong` để tính tổng từ 1 đến `n`.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n4\n```\n**Output**\n```text\n10\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\ntong = 0\nfor so in range(1, n + 1):\n    tong += so\nprint(tong)",
                 "testCases": [
@@ -3356,7 +3356,7 @@
                   "Tính tích từ 1 đến N"
                 ],
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `n >= 0`. Tính tích từ 1 đến `n`; với `n = 0`, in `1`.",
+                "problemDescription": "### Yêu cầu\nNhập `n >= 0`. Tính tích từ 1 đến `n`; với `n = 0`, in `1`.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n4\n```\n**Output**\n```text\n24\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\ntich = 1\nfor so in range(1, n + 1):\n    tich *= so\nprint(tich)",
                 "testCases": [
@@ -3397,7 +3397,7 @@
                   "Đếm ngược bằng while"
                 ],
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `n`. Dùng `for` để in từ `n` về 1.",
+                "problemDescription": "### Yêu cầu\nNhập `n`. Dùng `for` để in từ `n` về 1.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n4\n```\n**Output**\n```text\n4\n3\n2\n1\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"for\"]} -->",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\nfor so in range(n, 0, -1):\n    print(so)",
                 "testCases": [
@@ -3420,7 +3420,7 @@
                   "Tính tổng từ 1 đến N bằng while"
                 ],
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `n`. Tính tổng các số chẵn từ 1 đến `n`.",
+                "problemDescription": "### Yêu cầu\nNhập `n`. Tính tổng các số chẵn từ 1 đến `n`.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n10\n```\n**Output**\n```text\n30\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\ntong = 0\nfor so in range(2, n + 1, 2):\n    tong += so\nprint(tong)",
                 "testCases": [
@@ -3443,7 +3443,7 @@
                   "Cộng đến khi gặp 0"
                 ],
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `n`. In bảng nhân của `n` từ 1 đến 5 theo mẫu `n x i = ket_qua`.",
+                "problemDescription": "### Yêu cầu\nNhập `n`. In bảng nhân của `n` từ 1 đến 5 theo mẫu `n x i = ket_qua`.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n2\n```\n**Output**\n```text\n2 x 1 = 2\n2 x 2 = 4\n2 x 3 = 6\n2 x 4 = 8\n2 x 5 = 10\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\nfor i in range(1, 6):\n    print(f\"{n} x {i} = {n * i}\")",
                 "testCases": [
@@ -3484,7 +3484,7 @@
                   "Tìm số chia hết cho 7 đầu tiên"
                 ],
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `n`. In từ `n` về 1 bằng `while`.",
+                "problemDescription": "### Yêu cầu\nNhập `n`. In từ `n` về 1 bằng `while`.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n3\n```\n**Output**\n```text\n3\n2\n1\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"while\"]} -->",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\nwhile n >= 1:\n    print(n)\n    n -= 1",
                 "testCases": [
@@ -3507,7 +3507,7 @@
                   "Bỏ qua các số chia hết cho 3"
                 ],
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `n`. Dùng `while` tính tổng từ 1 đến `n`.",
+                "problemDescription": "### Yêu cầu\nNhập `n`. Dùng `while` tính tổng từ 1 đến `n`.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n5\n```\n**Output**\n```text\n15\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"while\"]} -->",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\ni = 1\ntong = 0\nwhile i <= n:\n    tong += i\n    i += 1\nprint(tong)",
                 "testCases": [
@@ -3530,7 +3530,7 @@
                   "Tính tổng số dương đến khi dừng"
                 ],
                 "difficulty": "MEDIUM",
-                "problemDescription": "Nhập các số nguyên, mỗi số trên một dòng. Gặp `0` thì dừng và in tổng các số trước đó.",
+                "problemDescription": "### Yêu cầu\nNhập các số nguyên, mỗi số trên một dòng. Gặp `0` thì dừng và in tổng các số trước đó.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n5\n3\n0\n```\n**Output**\n```text\n8\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "tong = 0\nso = int(input())\nwhile so != 0:\n    tong += so\n    so = int(input())\nprint(tong)",
                 "testCases": [
@@ -3563,7 +3563,7 @@
               {
                 "title": "Tìm số chia hết cho 7 đầu tiên",
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `a`, `b` với `a <= b`. In số đầu tiên trong đoạn `[a, b]` chia hết cho 7; nếu không có, in `KHONG CO`.",
+                "problemDescription": "### Yêu cầu\nNhập `a`, `b` với `a <= b`. In số đầu tiên trong đoạn `[a, b]` chia hết cho 7; nếu không có, in `KHONG CO`.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n10\n20\n```\n**Output**\n```text\n14\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "a = int(input())\nb = int(input())\nfor so in range(a, b + 1):\n    if so % 7 == 0:\n        print(so)\n        break\nelse:\n    print(\"KHONG CO\")",
                 "testCases": [
@@ -3583,7 +3583,7 @@
               {
                 "title": "Bỏ qua số chẵn",
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `n`. In các số lẻ từ 1 đến `n` bằng `continue`.",
+                "problemDescription": "### Yêu cầu\nNhập `n`. In các số lẻ từ 1 đến `n` bằng `continue`.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n7\n```\n**Output**\n```text\n1\n3\n5\n7\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"continue\"]} -->",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\nfor so in range(1, n + 1):\n    if so % 2 == 0:\n        continue\n    print(so)",
                 "testCases": [
@@ -3618,7 +3618,7 @@
               {
                 "title": "Đếm số chẵn trong đoạn",
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `a`, `b` với `a <= b`. Đếm các số chẵn trong đoạn `[a, b]`.",
+                "problemDescription": "### Yêu cầu\nNhập `a`, `b` với `a <= b`. Đếm các số chẵn trong đoạn `[a, b]`.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n2\n8\n```\n**Output**\n```text\n4\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "a = int(input())\nb = int(input())\ndem = 0\nfor so in range(a, b + 1):\n    if so % 2 == 0:\n        dem += 1\nprint(dem)",
                 "testCases": [
@@ -3638,7 +3638,7 @@
               {
                 "title": "Tổng số chia hết cho 5",
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `n`. Tính tổng các số từ 1 đến `n` chia hết cho 5.",
+                "problemDescription": "### Yêu cầu\nNhập `n`. Tính tổng các số từ 1 đến `n` chia hết cho 5.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n12\n```\n**Output**\n```text\n15\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\ntong = 0\nfor so in range(1, n + 1):\n    if so % 5 == 0:\n        tong += so\nprint(tong)",
                 "testCases": [
@@ -3658,7 +3658,7 @@
               {
                 "title": "Tìm điểm đạt đầu tiên",
                 "difficulty": "MEDIUM",
-                "problemDescription": "Nhập `n`, sau đó nhập `n` điểm nguyên. In vị trí đầu tiên (tính từ 1) có điểm từ 5 trở lên; nếu không có, in `KHONG CO`.",
+                "problemDescription": "### Yêu cầu\nNhập `n`, sau đó nhập `n` điểm nguyên. In vị trí đầu tiên (tính từ 1) có điểm từ 5 trở lên; nếu không có, in `KHONG CO`.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n4\n3\n4\n7\n8\n```\n**Output**\n```text\n3\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\nfor vi_tri in range(1, n + 1):\n    diem = int(input())\n    if diem >= 5:\n        print(vi_tri)\n        break\nelse:\n    print(\"KHONG CO\")",
                 "testCases": [
@@ -3693,7 +3693,7 @@
               {
                 "title": "In hình chữ nhật sao",
                 "difficulty": "EASY",
-                "problemDescription": "Nhập `hang` và `cot`. In hình chữ nhật gồm `hang` dòng, mỗi dòng có đúng `cot` dấu `*` liền nhau.",
+                "problemDescription": "### Yêu cầu\nNhập `hang` và `cot`. In hình chữ nhật gồm `hang` dòng, mỗi dòng có đúng `cot` dấu `*` liền nhau.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n2\n3\n```\n**Output**\n```text\n***\n***\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "hang = int(input())\ncot = int(input())\nfor _ in range(hang):\n    for _ in range(cot):\n        print(\"*\", end=\"\")\n    print()",
                 "testCases": [
@@ -3713,7 +3713,7 @@
               {
                 "title": "Bảng nhân nhỏ",
                 "difficulty": "MEDIUM",
-                "problemDescription": "Nhập `a`, `b` với `a <= b`. In bảng nhân từ `a` đến `b`, mỗi số nhân từ 1 đến 3 theo mẫu `x i = ket_qua`.",
+                "problemDescription": "### Yêu cầu\nNhập `a`, `b` với `a <= b`. In bảng nhân từ `a` đến `b`, mỗi số nhân từ 1 đến 3 theo mẫu `{so} x {i} = {ket_qua}` (vd `2 x 1 = 2`), mỗi phép nhân in trên một dòng.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n2\n3\n```\n**Output**\n```text\n2 x 1 = 2\n2 x 2 = 4\n2 x 3 = 6\n3 x 1 = 3\n3 x 2 = 6\n3 x 3 = 9\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "a = int(input())\nb = int(input())\nfor so in range(a, b + 1):\n    for i in range(1, 4):\n        print(f\"{so} x {i} = {so * i}\")",
                 "testCases": [
@@ -3748,7 +3748,7 @@
               {
                 "title": "Thống kê điểm đạt",
                 "difficulty": "MEDIUM",
-                "problemDescription": "Nhập `n`, sau đó nhập `n` điểm nguyên. In số điểm từ 5 trở lên, rồi in tổng điểm; mỗi kết quả trên một dòng.",
+                "problemDescription": "### Yêu cầu\nNhập `n`, sau đó nhập `n` điểm nguyên. In số điểm từ 5 trở lên, rồi in tổng điểm; mỗi kết quả trên một dòng.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n4\n3\n5\n8\n4\n```\n**Output**\n```text\n2\n20\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\ndem_dat = 0\ntong = 0\nfor _ in range(n):\n    diem = int(input())\n    tong += diem\n    if diem >= 5:\n        dem_dat += 1\nprint(dem_dat)\nprint(tong)",
                 "testCases": [
@@ -3768,7 +3768,7 @@
               {
                 "title": "Mini project: Báo cáo nhiệt độ",
                 "difficulty": "MEDIUM",
-                "problemDescription": "Nhập `n`, sau đó nhập `n` nhiệt độ nguyên. In số ngày nóng (nhiệt độ từ 30 trở lên), rồi in tổng nhiệt độ.",
+                "problemDescription": "### Yêu cầu\nNhập `n`, sau đó nhập `n` nhiệt độ nguyên. In số ngày nóng (nhiệt độ từ 30 trở lên), rồi in tổng nhiệt độ.\n\nDữ liệu nhập mỗi giá trị trên một dòng (dùng `input()` không có chuỗi gợi ý). In đúng định dạng như Output, mỗi kết quả trên một dòng.\n\n### Ví dụ\n**Input**\n```text\n5\n28\n31\n30\n25\n33\n```\n**Output**\n```text\n3\n147\n```",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "n = int(input())\nngay_nong = 0\ntong = 0\nfor _ in range(n):\n    nhiet_do = int(input())\n    tong += nhiet_do\n    if nhiet_do >= 30:\n        ngay_nong += 1\nprint(ngay_nong)\nprint(tong)",
                 "testCases": [
@@ -6989,7 +6989,7 @@
               {
                 "title": "Set: Tập hợp toán học",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\nKhai báo hai tập hợp: `set_a = {1, 2, 3}` và `set_b = {3, 4, 5}`. Hãy tìm tập hợp giao (các phần tử chung của cả hai tập hợp) và in kết quả ra màn hình.\n\n### Ví dụ\n**Output**\n```text\n{3}\n```",
+                "problemDescription": "### Yêu cầu\nKhai báo hai tập hợp: `set_a = {1, 2, 3}` và `set_b = {3, 4, 5}`. Hãy tìm tập hợp giao (các phần tử chung của cả hai tập hợp) và in kết quả ra màn hình.\n\n### Ví dụ\n**Output**\n```text\n{3}\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"op:intersect|call:intersection\",\"read:set_a\",\"read:set_b\"]} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
                 "solutionCode": "set_a = {1, 2, 3}\nset_b = {3, 4, 5}\nprint(set_a & set_b)\n",
                 "testCases": [
@@ -7022,7 +7022,7 @@
               {
                 "title": "Dictionary: Cấu trúc Key-Value",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\nHãy khởi tạo một Dictionary tên là `car` lưu trữ thông tin về một chiếc xe gồm: hãng xe (`brand`) là `\"Toyota\"`, và năm sản xuất (`year`) là `2020`. In ra màn hình giá trị của hãng xe (`brand`) từ từ điển đó.\n\n### Ví dụ\n**Output**\n```text\nToyota\n```",
+                "problemDescription": "### Yêu cầu\nHãy khởi tạo một Dictionary tên là `car` lưu trữ thông tin về một chiếc xe gồm: hãng xe (`brand`) là `\"Toyota\"`, và năm sản xuất (`year`) là `2020`. In ra màn hình giá trị của hãng xe (`brand`) từ từ điển đó.\n\n### Ví dụ\n**Output**\n```text\nToyota\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"getitem:car|call:get\"]} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
                 "solutionCode": "car = {\"brand\": \"Toyota\", \"year\": 2020}\nprint(car[\"brand\"])\n",
                 "testCases": [
@@ -7055,7 +7055,7 @@
               {
                 "title": "Thao tác trên Dictionary",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\nKhai báo từ điển `scores = {\"Math\": 8, \"English\": 7}`. Hãy thêm môn `\"Physics\"` với điểm số là `9` vào từ điển, sau đó cập nhật điểm môn `\"English\"` lên `8`. In từ điển `scores` cuối cùng ra màn hình.\n\n### Ví dụ\n**Output**\n```text\n{'Math': 8, 'English': 8, 'Physics': 9}\n```",
+                "problemDescription": "### Yêu cầu\nKhai báo từ điển `scores = {\"Math\": 8, \"English\": 7}`. Hãy thêm môn `\"Physics\"` với điểm số là `9` vào từ điển, sau đó cập nhật điểm môn `\"English\"` lên `8`. In từ điển `scores` cuối cùng ra màn hình.\n\n### Ví dụ\n**Output**\n```text\n{'Math': 8, 'English': 8, 'Physics': 9}\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"setitem:scores\",\"read:scores\"]} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
                 "solutionCode": "scores = {\"Math\": 8, \"English\": 7}\nscores[\"Physics\"] = 9\nscores[\"English\"] = 8\nprint(scores)\n",
                 "testCases": [
@@ -7670,7 +7670,7 @@
               {
                 "title": "Phạm vi của Biến (Scope)",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\nKhai báo biến toàn cục `status = \"OFF\"`. Hãy định nghĩa hàm `turn_on()` sử dụng từ khóa `global` để thay đổi giá trị của biến `status` thành `\"ON\"`. Hãy gọi hàm này và in ra màn hình biến `status` sau khi gọi để kiểm tra.\n\n### Ví dụ\n**Output**\n```text\nON\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"function\",\"def:turn_on\",\"call:turn_on\"]} -->",
+                "problemDescription": "### Yêu cầu\nKhai báo biến toàn cục `status = \"OFF\"`. Hãy định nghĩa hàm `turn_on()` sử dụng từ khóa `global` để thay đổi giá trị của biến `status` thành `\"ON\"`. Hãy gọi hàm này và in ra màn hình biến `status` sau khi gọi để kiểm tra.\n\n### Ví dụ\n**Output**\n```text\nON\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"function\",\"def:turn_on\",\"call:turn_on\",\"global\"]} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
                 "solutionCode": "status = \"OFF\"\ndef turn_on():\n    global status\n    status = \"ON\"\nturn_on()\nprint(status)\n",
                 "testCases": [
@@ -7685,7 +7685,7 @@
               {
                 "title": "Đếm lượt gọi hàm",
                 "difficulty": "HARD",
-                "problemDescription": "### Yêu cầu\nKhai báo biến toàn cục `count = 0`.\nĐịnh nghĩa hàm `click()` sử dụng từ khóa `global` để cộng thêm `1` vào biến `count` mỗi lần gọi.\nGọi hàm này 3 lần liên tiếp, sau đó in giá trị của `count` ra màn hình.\n\n### Ví dụ\n**Output**\n```text\n3\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"function\",\"def:click\",\"call:click\"]} -->",
+                "problemDescription": "### Yêu cầu\nKhai báo biến toàn cục `count = 0`.\nĐịnh nghĩa hàm `click()` sử dụng từ khóa `global` để cộng thêm `1` vào biến `count` mỗi lần gọi.\nGọi hàm này 3 lần liên tiếp, sau đó in giá trị của `count` ra màn hình.\n\n### Ví dụ\n**Output**\n```text\n3\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"function\",\"def:click\",\"call:click\",\"global\"]} -->",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "count = 0\ndef click():\n    global count\n    count += 1\n\nclick()\nclick()\nclick()\nprint(count)",
                 "testCases": [
@@ -7700,7 +7700,7 @@
               {
                 "title": "Phạm vi nonlocal",
                 "difficulty": "HARD",
-                "problemDescription": "### Yêu cầu\nĐịnh nghĩa hàm ngoài `outer()`. Bên trong `outer()`, tạo biến `x = \"bố\"`.\nĐịnh nghĩa hàm trong `inner()` lồng bên trong `outer()`, dùng từ khóa `nonlocal x` để thay đổi giá trị của `x` thành `\"con\"`.\nTrong hàm `outer()`, hãy gọi hàm `inner()` rồi in giá trị của `x` ra màn hình. Cuối cùng, gọi hàm `outer()` ở phạm vi toàn cục.\n\n### Ví dụ\n**Output**\n```text\ncon\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"function\",\"def:outer\",\"call:outer\"]} -->",
+                "problemDescription": "### Yêu cầu\nĐịnh nghĩa hàm ngoài `outer()`. Bên trong `outer()`, tạo biến `x = \"bố\"`.\nĐịnh nghĩa hàm trong `inner()` lồng bên trong `outer()`, dùng từ khóa `nonlocal x` để thay đổi giá trị của `x` thành `\"con\"`.\nTrong hàm `outer()`, hãy gọi hàm `inner()` rồi in giá trị của `x` ra màn hình. Cuối cùng, gọi hàm `outer()` ở phạm vi toàn cục.\n\n### Ví dụ\n**Output**\n```text\ncon\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"function\",\"def:outer\",\"call:outer\",\"nonlocal\",\"def:inner\",\"call:inner\"]} -->",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "def outer():\n    x = \"bố\"\n    def inner():\n        nonlocal x\n        x = \"con\"\n    inner()\n    print(x)\n\nouter()",
                 "testCases": [
@@ -7730,7 +7730,7 @@
               {
                 "title": "Tăng biến toàn cục",
                 "difficulty": "HARD",
-                "problemDescription": "### Yêu cầu\nKhai báo biến toàn cục `score = 10`.\nĐịnh nghĩa hàm `add_score()` sử dụng từ khóa `global` để cộng thêm `5` điểm vào biến toàn cục `score`.\nGọi hàm này và in giá trị của biến `score` sau khi gọi ra màn hình.\n\n### Ví dụ\n**Output**\n```text\n15\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"function\",\"def:add_score\",\"call:add_score\"]} -->",
+                "problemDescription": "### Yêu cầu\nKhai báo biến toàn cục `score = 10`.\nĐịnh nghĩa hàm `add_score()` sử dụng từ khóa `global` để cộng thêm `5` điểm vào biến toàn cục `score`.\nGọi hàm này và in giá trị của biến `score` sau khi gọi ra màn hình.\n\n### Ví dụ\n**Output**\n```text\n15\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"function\",\"def:add_score\",\"call:add_score\",\"global\"]} -->",
                 "starterCode": "# Viết code của bạn ở đây\n",
                 "solutionCode": "score = 10\ndef add_score():\n    global score\n    score += 5\n\nadd_score()\nprint(score)",
                 "testCases": [
@@ -7792,7 +7792,7 @@
               {
                 "title": "Nhận diện Ngoại lệ (Exceptions)",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\nHãy viết một dòng code Python thực hiện một phép toán hoặc ép kiểu gây ra lỗi `TypeError` (ví dụ: cộng chuỗi với số nguyên). Hãy bao quanh dòng code đó bằng một khối `try-except` để bắt `TypeError` và in ra dòng chữ `\"Lỗi kiểu dữ liệu\"` nhằm phục vụ việc kiểm thử.\n\n### Ví dụ\n**Output**\n```text\nLỗi kiểu dữ liệu\n```",
+                "problemDescription": "### Yêu cầu\nHãy viết một dòng code Python thực hiện một phép toán hoặc ép kiểu gây ra lỗi `TypeError` (ví dụ: cộng chuỗi với số nguyên). Hãy bao quanh dòng code đó bằng một khối `try-except` để bắt `TypeError` và in ra dòng chữ `\"Lỗi kiểu dữ liệu\"` nhằm phục vụ việc kiểm thử.\n\n### Ví dụ\n**Output**\n```text\nLỗi kiểu dữ liệu\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"try\",\"except:TypeError\"]} -->",
                 "starterCode": "try:\n    # Viết dòng code lỗi TypeError ở đây\n    pass\nexcept TypeError:\n    print(\"Lỗi kiểu dữ liệu\")\n",
                 "solutionCode": "try:\n    \"hello\" + 5\nexcept TypeError:\n    print(\"Lỗi kiểu dữ liệu\")\n",
                 "testCases": [
@@ -7945,7 +7945,7 @@
               {
                 "title": "Khái niệm Module và Lệnh Import",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\nHãy viết câu lệnh import để nạp thư viện toán học `math` của Python. Sau đó sử dụng hàm tính căn bậc hai `math.sqrt()` để tính căn bậc hai của số `16` và in kết quả ra màn hình.\n\n### Ví dụ\n**Output**\n```text\n4.0\n```",
+                "problemDescription": "### Yêu cầu\nHãy viết câu lệnh import để nạp thư viện toán học `math` của Python. Sau đó sử dụng hàm tính căn bậc hai `math.sqrt()` để tính căn bậc hai của số `16` và in kết quả ra màn hình.\n\n### Ví dụ\n**Output**\n```text\n4.0\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"call:sqrt\",\"read:math\"]} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
                 "solutionCode": "import math\nprint(math.sqrt(16))\n",
                 "testCases": [
@@ -8869,12 +8869,12 @@
               {
                 "title": "Cấu trúc bộ nhớ và Hàm open()",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\nViết một đoạn mã mở file có tên `\"output.txt\"` ở chế độ ghi tiếp dữ liệu (`'a'`) với mã hóa tiếng Việt `\"utf-8\"`, lưu vào biến `f`, sau đó đóng file lại ngay lập tức.\nCuối cùng, in dòng chữ `\"Đã đóng file\"` ra màn hình.\n\n### Ví dụ\n**Output**\n```text\nĐã đóng file\n```",
+                "problemDescription": "### Yêu cầu\nViết một đoạn mã mở file có tên `\"output.txt\"` ở chế độ ghi tiếp dữ liệu (`'a'`) với mã hóa tiếng Việt `\"utf-8\"`, lưu vào biến `f`, sau đó đóng file lại ngay lập tức.\nCuối cùng, in dòng chữ `\"Đã đóng file\"` ra màn hình.\n\n### Ví dụ\n**Output**\n```text\nĐã đóng file\n```\n\n### Môi trường chạy\nMỗi testcase chạy trong thư mục làm việc sạch; bộ chấm kiểm cả nội dung file `output.txt` sau khi chương trình kết thúc.\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"call:open\",\"call:close\"]} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
                 "solutionCode": "f = open(\"output.txt\", \"a\", encoding=\"utf-8\")\nf.close()\nprint(\"Đã đóng file\")\n",
                 "testCases": [
                   {
-                    "input": "",
+                    "input": "{\"__pythonFileCase\":\"1.0\",\"stdin\":\"\",\"files\":{},\"expectedFiles\":{\"output.txt\":\"\"},\"preserveInputFiles\":true}",
                     "expectedOutput": "Đã đóng file\n",
                     "isHidden": false
                   }
@@ -8945,12 +8945,12 @@
               {
                 "title": "Context Manager với từ khóa 'with'",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\nHãy sử dụng cấu trúc `with open()` để mở file `output.txt` ở chế độ ghi đè (`'w'`) với mã hóa `utf-8`, và ghi chuỗi `\"Hoàn thành khóa học Python\"` vào file.\nSau khi khối `with` kết thúc, hãy mở lại file đó ở chế độ đọc và in toàn bộ nội dung ra màn hình.\n\n### Ví dụ\n**Output**\n```text\nHoàn thành khóa học Python\n```",
+                "problemDescription": "### Yêu cầu\nHãy sử dụng cấu trúc `with open()` để mở file `output.txt` ở chế độ ghi đè (`'w'`) với mã hóa `utf-8`, và ghi chuỗi `\"Hoàn thành khóa học Python\"` vào file.\nSau khi khối `with` kết thúc, hãy mở lại file đó ở chế độ đọc và in toàn bộ nội dung ra màn hình.\n\n### Ví dụ\n**Output**\n```text\nHoàn thành khóa học Python\n```\n\n### Môi trường chạy\nMỗi testcase chạy trong thư mục làm việc sạch; bộ chấm kiểm cả nội dung file `output.txt` sau khi chương trình kết thúc.\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"with\",\"call:open\",\"call:write\",\"call:read|call:readline|call:readlines|for\"]} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
                 "solutionCode": "with open(\"output.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"Hoàn thành khóa học Python\")\n\nwith open(\"output.txt\", \"r\", encoding=\"utf-8\") as f:\n    print(f.read())\n",
                 "testCases": [
                   {
-                    "input": "",
+                    "input": "{\"__pythonFileCase\":\"1.0\",\"stdin\":\"\",\"files\":{},\"expectedFiles\":{\"output.txt\":\"Hoàn thành khóa học Python\"},\"preserveInputFiles\":true}",
                     "expectedOutput": "Hoàn thành khóa học Python\n",
                     "isHidden": false
                   }
@@ -8992,7 +8992,7 @@
               {
                 "title": "Tư duy Hướng đối tượng (Class vs Object)",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\n1. Định nghĩa một lớp (class) rỗng tên là `Student` (sử dụng từ khóa `pass`).\n2. Khởi tạo một đối tượng từ lớp này và gán vào biến `student_a`.\n3. In ra tên kiểu dữ liệu của `student_a` bằng câu lệnh: `print(type(student_a).__name__)`.\n\n### Ví dụ\n**Output**\n```text\nStudent\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"class\"]} -->",
+                "problemDescription": "### Yêu cầu\n1. Định nghĩa một lớp (class) rỗng tên là `Student` (sử dụng từ khóa `pass`).\n2. Khởi tạo một đối tượng từ lớp này và gán vào biến `student_a`.\n3. In ra tên kiểu dữ liệu của `student_a` bằng câu lệnh: `print(type(student_a).__name__)`.\n\n### Ví dụ\n**Output**\n```text\nStudent\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"class\",\"class:Student\",\"call:Student\"]} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
                 "solutionCode": "class Student:\n    pass\nstudent_a = Student()\nprint(type(student_a).__name__)\n",
                 "testCases": [
@@ -9025,7 +9025,7 @@
               {
                 "title": "Thuộc tính và Phương thức",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\n1. Định nghĩa lớp `Person` có phương thức `introduce(self)` in ra màn hình dòng chữ: `\"Tôi là con người.\"`.\n2. Khởi tạo một đối tượng từ lớp `Person` và gọi phương thức `introduce()` của đối tượng đó.\n\n### Ví dụ\n**Output**\n```text\nTôi là con người.\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"class\"]} -->",
+                "problemDescription": "### Yêu cầu\n1. Định nghĩa lớp `Person` có phương thức `introduce(self)` in ra màn hình dòng chữ: `\"Tôi là con người.\"`.\n2. Khởi tạo một đối tượng từ lớp `Person` và gọi phương thức `introduce()` của đối tượng đó.\n\n### Ví dụ\n**Output**\n```text\nTôi là con người.\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"class\",\"class:Person\",\"def:introduce\",\"call:introduce\"]} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
                 "solutionCode": "class Person:\n    def introduce(self):\n        print(\"Tôi là con người.\")\np = Person()\np.introduce()\n",
                 "testCases": [
@@ -9058,7 +9058,7 @@
               {
                 "title": "Phương thức Khởi tạo (__init__)",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\n1. Định nghĩa lớp `Rectangle` (Hình chữ nhật) có phương thức khởi tạo `__init__(self, width, height)` để gán giá trị cho hai thuộc tính `width` và `height`.\n2. Định nghĩa thêm phương thức `get_area(self)` trả về diện tích (`width * height`).\n3. Khởi tạo một đối tượng `rect` từ lớp này với chiều rộng là `10` và chiều cao là `20`, sau đó gọi `rect.get_area()` và in diện tích ra màn hình.\n\n### Ví dụ\n**Output**\n```text\n200\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"class\"]} -->",
+                "problemDescription": "### Yêu cầu\n1. Định nghĩa lớp `Rectangle` (Hình chữ nhật) có phương thức khởi tạo `__init__(self, width, height)` để gán giá trị cho hai thuộc tính `width` và `height`.\n2. Định nghĩa thêm phương thức `get_area(self)` trả về diện tích (`width * height`).\n3. Khởi tạo một đối tượng `rect` từ lớp này với chiều rộng là `10` và chiều cao là `20`, sau đó gọi `rect.get_area()` và in diện tích ra màn hình.\n\n### Ví dụ\n**Output**\n```text\n200\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"class\",\"class:Rectangle\",\"def:__init__\",\"def:get_area\",\"call:get_area\"]} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
                 "solutionCode": "class Rectangle:\n    def __init__(self, width, height):\n        self.width = width\n        self.height = height\n    def get_area(self):\n        return self.width * self.height\n\nrect = Rectangle(10, 20)\nprint(rect.get_area())\n",
                 "testCases": [
@@ -9091,7 +9091,7 @@
               {
                 "title": "Khái quát về Kế thừa (Inheritance)",
                 "difficulty": "EASY",
-                "problemDescription": "### Yêu cầu\n1. Định nghĩa lớp cha `Vehicle` có phương thức khởi tạo `__init__(self, brand)` nhận vào thuộc tính thương hiệu `brand`.\n2. Định nghĩa lớp con `ElectricCar` kế thừa từ `Vehicle`. Trong `__init__`, sử dụng `super().__init__(brand)` để khởi tạo thuộc tính `brand`. Thêm phương thức `show_brand(self)` in ra giá trị của `self.brand`.\n3. Khởi tạo một đối tượng `ElectricCar` với thương hiệu `\"Tesla\"` và gọi phương thức `show_brand()`.\n\n### Ví dụ\n**Output**\n```text\nTesla\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"class\"]} -->",
+                "problemDescription": "### Yêu cầu\n1. Định nghĩa lớp cha `Vehicle` có phương thức khởi tạo `__init__(self, brand)` nhận vào thuộc tính thương hiệu `brand`.\n2. Định nghĩa lớp con `ElectricCar` kế thừa từ `Vehicle`. Trong `__init__`, sử dụng `super().__init__(brand)` để khởi tạo thuộc tính `brand`. Thêm phương thức `show_brand(self)` in ra giá trị của `self.brand`.\n3. Khởi tạo một đối tượng `ElectricCar` với thương hiệu `\"Tesla\"` và gọi phương thức `show_brand()`.\n\n### Ví dụ\n**Output**\n```text\nTesla\n```\n\n<!-- CONSTRAINTS: {\"requiredConstructs\":[\"class\",\"class:Vehicle\",\"class:ElectricCar\",\"call:super\",\"def:show_brand\",\"call:show_brand\"]} -->",
                 "starterCode": "# Nhập code của bạn ở đây\n",
                 "solutionCode": "class Vehicle:\n    def __init__(self, brand):\n        self.brand = brand\n\nclass ElectricCar(Vehicle):\n    def __init__(self, brand):\n        super().__init__(brand)\n    def show_brand(self):\n        print(self.brand)\n\ncar = ElectricCar(\"Tesla\")\ncar.show_brand()\n",
                 "testCases": [

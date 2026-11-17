@@ -22,6 +22,76 @@ export interface AnalysisResult {
     warnings: string[];
 }
 
+/** Gộp ràng buộc trong đề với ràng buộc bổ sung theo ID bài (danh sách được nối, không ghi đè). */
+export function mergeConstraintConfig(base: CodeConstraintConfig, extra: CodeConstraintConfig = {}): CodeConstraintConfig {
+    const merged: CodeConstraintConfig = { ...base, ...extra };
+    for (const key of ['requiredKeywords', 'forbiddenKeywords', 'requiredFunctions', 'requiredClasses', 'requiredConstructs', 'forbiddenConstructs'] as const) {
+        const values = [...(base[key] || []), ...(extra[key] || [])];
+        if (values.length) merged[key] = [...new Set(values)];
+    }
+    return merged;
+}
+
+/**
+ * Bỏ chú thích `#` của mã Python, giữ nguyên chuỗi (kể cả chuỗi có dấu `#`).
+ * Dùng cho kiểm tra từ khóa: viết từ khóa trong chú thích không được tính.
+ */
+export function stripPythonComments(code: string): string {
+    let out = '', i = 0;
+    while (i < code.length) {
+        const ch = code[i];
+        if (ch === '#') { while (i < code.length && code[i] !== '\n') i++; continue; }
+        if (ch === '"' || ch === "'") {
+            const triple = code.startsWith(ch.repeat(3), i);
+            const quote = triple ? ch.repeat(3) : ch;
+            let j = i + quote.length;
+            while (j < code.length) {
+                if (code[j] === '\\') { j += 2; continue; }
+                if (code.startsWith(quote, j)) { j += quote.length; break; }
+                if (!triple && code[j] === '\n') break;
+                j++;
+            }
+            out += code.slice(i, j); i = j; continue;
+        }
+        out += ch; i++;
+    }
+    return out;
+}
+
+const CONSTRUCT_LABELS: Record<string, string> = {
+    for: 'vòng lặp `for`', while: 'vòng lặp `while`', function: 'hàm tự định nghĩa (`def`)', class: 'lớp (`class`)',
+    lambda: 'biểu thức `lambda`', recursion: 'đệ quy', global: 'từ khóa `global`', nonlocal: 'từ khóa `nonlocal`',
+    raise: 'lệnh `raise`', try: 'khối `try`', continue: 'lệnh `continue`', break: 'lệnh `break`', return: 'lệnh `return`',
+    'slice:reverse': 'cắt chuỗi/danh sách đảo ngược (`[::-1]`)',
+    'op:in': 'toán tử `in`', 'op:xor': 'toán tử `^` (hiệu đối xứng)', 'op:union': 'toán tử `|` (hợp)',
+    'op:intersect': 'toán tử `&` (giao)', 'op:diff': 'toán tử `-` (hiệu)', del: 'lệnh `del`', with: 'khối `with`',
+};
+
+function constructLabel(construct: string): string {
+    return construct.split('|').map(part => {
+        if (CONSTRUCT_LABELS[part]) return CONSTRUCT_LABELS[part];
+        const [kind, name] = part.split(':');
+        if (kind === 'def') return `hàm \`${name}\``;
+        if (kind === 'class') return `lớp \`${name}\``;
+        if (kind === 'call') return `lời gọi \`${name}()\``;
+        if (kind === 'read') return `biến \`${name}\``;
+        if (kind === 'setitem') return `phép gán theo key/chỉ số trên \`${name}\` (vd \`${name}[...] = ...\`)`;
+        if (kind === 'getitem') return `phép truy cập theo key/chỉ số trên \`${name}\` (vd \`${name}[...]\`)`;
+        if (kind === 'except') return `khối \`except ${name}\``;
+        return `\`${part}\``;
+    }).join(' hoặc ');
+}
+
+/** Đổi mã vi phạm kỹ thuật (CONSTRAINT_REQUIRED:x) thành câu tiếng Việt cho học viên; câu khác giữ nguyên. */
+export function describeConstraintError(error: string | null): string | null {
+    const match = /^CONSTRAINT_(REQUIRED|FORBIDDEN):(.+)$/.exec(error || '');
+    if (!match) return error;
+    const label = constructLabel(match[2]);
+    return match[1] === 'REQUIRED'
+        ? `Đề bài yêu cầu sử dụng ${label} để giải. Bộ kiểm tra chưa tìm thấy cấu trúc này trong mã của bạn (chú thích không được tính).`
+        : `Đề bài không cho phép dùng ${label}. Hãy tự cài đặt phần xử lý đó theo kiến thức đang luyện.`;
+}
+
 export class StaticCodeAnalyzer {
     // Danh sách biến môi trường / hàm toàn cục chuẩn của JS không coi là biến rò rỉ (leak)
     private static readonly JS_BUILTINS = new Set([
@@ -40,9 +110,10 @@ export class StaticCodeAnalyzer {
         code: string,
         language: string,
         problemDescription: string = '',
-        exerciseTitle: string = ''
+        exerciseTitle: string = '',
+        extraConfig: CodeConstraintConfig = {}
     ): AnalysisResult {
-        const config = this.extractConstraints(problemDescription);
+        const config = mergeConstraintConfig(this.extractConstraints(problemDescription), extraConfig);
 
         // 1. Phân tích theo từng ngôn ngữ
         if (language === 'JAVASCRIPT') {
@@ -428,6 +499,43 @@ if req_constructs or forb_constructs:
             found.add("class:" + node.name)
         elif isinstance(node, ast.Lambda):
             found.add("lambda")
+        elif isinstance(node, ast.Global):
+            found.add("global")
+        elif isinstance(node, ast.Nonlocal):
+            found.add("nonlocal")
+        elif isinstance(node, ast.Raise):
+            found.add("raise")
+        elif isinstance(node, ast.Try) or type(node).__name__ == "TryStar":
+            found.add("try")
+        elif isinstance(node, ast.Continue):
+            found.add("continue")
+        elif isinstance(node, ast.Break):
+            found.add("break")
+        elif isinstance(node, ast.Return) and node.value is not None:
+            found.add("return")
+        elif isinstance(node, ast.ExceptHandler) and node.type is not None:
+            for t in (node.type.elts if isinstance(node.type, ast.Tuple) else [node.type]):
+                if isinstance(t, ast.Name):
+                    found.add("except:" + t.id)
+        elif isinstance(node, ast.Slice) and node.lower is None and node.upper is None and node.step is not None:
+            step = node.step
+            if isinstance(step, ast.UnaryOp) and isinstance(step.op, ast.USub) and isinstance(step.operand, ast.Constant) and step.operand.value == 1:
+                found.add("slice:reverse")
+            elif isinstance(step, ast.Constant) and step.value == -1:
+                found.add("slice:reverse")
+        elif isinstance(node, ast.Compare):
+            if any(isinstance(op, (ast.In, ast.NotIn)) for op in node.ops):
+                found.add("op:in")
+        elif isinstance(node, (ast.BinOp, ast.AugAssign)):
+            sym = {ast.BitXor: "xor", ast.BitOr: "union", ast.BitAnd: "intersect", ast.Sub: "diff"}.get(type(node.op))
+            if sym:
+                found.add("op:" + sym)
+        elif isinstance(node, ast.Delete):
+            found.add("del")
+        elif isinstance(node, (ast.With, ast.AsyncWith)):
+            found.add("with")
+        elif isinstance(node, ast.Subscript) and isinstance(node.value, ast.Name):
+            found.add(("setitem:" if isinstance(node.ctx, (ast.Store, ast.Del)) else "getitem:") + node.value.id)
         elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
             found.add("read:" + node.id)
         elif isinstance(node, ast.Call):
@@ -532,7 +640,7 @@ else:
             if (proc.status === 0 && proc.stdout) {
                 const res = JSON.parse(proc.stdout.trim());
                 if (res.error) {
-                    return { isValid: false, error: res.error, warnings };
+                    return { isValid: false, error: describeConstraintError(res.error), warnings };
                 }
             }
         } catch (e) {
@@ -545,7 +653,7 @@ else:
                 const trimmed = kw.trim();
                 if (!trimmed) continue;
                 const kwRegex = new RegExp(trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-                if (!kwRegex.test(code)) {
+                if (!kwRegex.test(stripPythonComments(code))) { // chú thích không được tính
                     return {
                         isValid: false,
                         error: config.customErrorMessage || `Mã nguồn bắt buộc phải sử dụng cú pháp/từ khóa: \`${trimmed}\`.`,
