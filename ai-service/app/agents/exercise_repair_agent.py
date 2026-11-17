@@ -36,7 +36,7 @@ def repair_strategy(draft, feedback, spec):
     if feedback.get("validation_stage") == "SchemaValidator":
         try:
             parsed = ExerciseDraft.model_validate(draft)
-            prose_errors = validate_statement(parsed, spec.execution.get("mode", "stdio"))
+            prose_errors = validate_statement(parsed, spec.execution.get("mode", "stdio"), getattr(spec, "difficulty", None))
             prose_errors.extend(validate_task_wording(parsed, spec))
             if prose_errors and set(feedback.get("errors", [])) <= set(prose_errors):
                 return "STATEMENT_ONLY"

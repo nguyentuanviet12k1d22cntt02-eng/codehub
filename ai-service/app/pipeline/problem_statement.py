@@ -88,7 +88,9 @@ def format_statement(draft, mode):
     return statement
 
 
-def validate_statement(draft, mode):
+def validate_statement(draft, mode, difficulty=None):
+    # Bài HARD/CHALLENGE có nhiều bước xử lý hơn nên được phép viết dài hơn một chút.
+    hard = str(difficulty or "").upper() in ("HARD", "CHALLENGE")
     statement = draft.problem_statement
     matches = list(SECTION.finditer(statement))
     names = [match.group(1) for match in matches]
@@ -103,13 +105,13 @@ def validate_statement(draft, mode):
     if not parts["Input"] or not parts["Output"]:
         errors.append("Input và Output phải mô tả dữ liệu/kết quả cụ thể, không được để trống.")
     sentences = [part for part in re.split(r"(?<=[.!?])\s+", description) if part.strip()]
-    if not 2 <= len(sentences) <= 4:
-        errors.append("Mô tả cần 2–4 câu ngắn, chỉ nêu nhiệm vụ lập trình.")
-    if len(description.split()) > 85 or len(parts["Input"].split()) > 45 or len(parts["Output"].split()) > 45:
+    if not 2 <= len(sentences) <= (5 if hard else 4):
+        errors.append(f"Mô tả cần 2–{5 if hard else 4} câu ngắn, chỉ nêu nhiệm vụ lập trình.")
+    if len(description.split()) > (110 if hard else 85) or len(parts["Input"].split()) > 45 or len(parts["Output"].split()) > 45:
         errors.append("Mô tả/Input/Output còn dài; hãy viết ngắn gọn, đi thẳng vào nhiệm vụ.")
     prose_words = len(" ".join((draft.title, description, parts["Input"], parts["Output"],
                                  parts.get("Ràng buộc", ""))).split())
-    if prose_words > (190 if mode == "sql" else 130):
+    if prose_words > (190 if mode == "sql" else 170 if hard else 130):
         errors.append("Phần lời của đề quá dài; ưu tiên khoảng 50–100 từ, trừ dữ liệu ví dụ cần thiết.")
     if re.search(r"(?i)\b(?:lý thuyết|gợi ý|cách giải|bước 1|bước 2)\b", description):
         errors.append("Đề không được đưa lý thuyết hay hướng dẫn giải vào phần Mô tả.")

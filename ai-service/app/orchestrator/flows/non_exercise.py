@@ -23,7 +23,7 @@ class NonExerciseFlowMixin:
                 observed = [(cid, s) for cid, s in data["states"].items() if s.get("attempts", 0) > 0 and self.kg.get_concept(routing.language, cid)]
                 if observed:
                     weakest = sorted(observed, key=lambda p: p[1]["mastery"])[:3]
-                    reply = "Các kỹ năng cần củng cố theo kết quả đã lưu:\n" + "\n".join(f"- {cid}: {s['mastery']:.0%}, {s['attempts']} lượt làm." for cid, s in weakest)
+                    reply = "Các kỹ năng cần củng cố theo kết quả đã lưu:\n" + "\n".join(f"- {(self.kg.get_concept(routing.language, cid) or {}).get('name', cid)} ({cid}): {s['mastery']:.0%}, {s['attempts']} lượt làm." for cid, s in weakest)
                 return result("SUCCEEDED", reply)
             if turn.intent == "ASK_KNOWLEDGE":
                 concepts = stage("KnowledgeRetrievalService", "LOCAL_GRAPH", {"language": routing.language},

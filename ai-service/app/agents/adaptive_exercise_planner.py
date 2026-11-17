@@ -138,7 +138,7 @@ class AdaptiveExercisePlanner:
         if forced_override and readiness.get("prerequisite_gaps"):
             reasoning = (
                 f"Học viên xác nhận tiếp tục chủ đề yêu cầu dù mức sẵn sàng tiên quyết hiện tại là "
-                f"{round(prerequisite_score * 100)}%; tạo bài EASY có scaffold và không đổi concept."
+                f"{round(prerequisite_score * 100)}%; tạo bài {difficulty} có scaffold và không đổi concept."
             )
         else:
             reasoning = (("Bám sát chủ đề được yêu cầu. " if selection == "explicit" else

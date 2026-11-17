@@ -14,7 +14,7 @@ class SchemaValidator:
             return False, [str(exc)[:1600]]
         errors = []
         if draft.statement_format_version == 2:
-            errors.extend(validate_statement(draft, spec.execution.get("mode", "stdio") if spec else "stdio"))
+            errors.extend(validate_statement(draft, spec.execution.get("mode", "stdio") if spec else "stdio", getattr(spec, "difficulty", None) if spec else None))
         tests = draft.test_cases
         if draft.starter_code.strip() == draft.reference_solution.strip():
             errors.append("starter_code trùng reference_solution. Starter phải là khung TODO, không chứa nghiệm mẫu.")

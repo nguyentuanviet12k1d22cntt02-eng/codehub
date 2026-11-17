@@ -128,6 +128,21 @@ class ProblemStatementFormatTests(unittest.TestCase):
         value["problem_statement"] = format_statement(value, "stdio")
         self.assertFalse(SchemaValidator.validate(value)[0])
 
+    def test_hard_exercises_may_be_longer_than_easy_ones(self):
+        """E2E Production 2026-11-17: 3/3 bài mức khó thất bại vì "Phần lời của đề quá dài"."""
+        value = draft()
+        steps = " ".join(f"Câu số {i} mô tả một bước xử lý dữ liệu rồi ghi nhớ kết quả trung gian cho bước sau." for i in range(5))
+        value["problem_statement"] = "\n\n".join(["## Mô tả\n" + steps, "## Input\n" + " ".join(["Dữ liệu"] * 12) + ".",
+                                                  "## Output\n" + " ".join(["Kết quả"] * 12) + ".", "## Ví dụ\nX"])
+        value["problem_statement"] = format_statement(value, "stdio")
+        value["statement_format_version"] = 2
+        body = ExerciseDraft.model_validate(value)
+        easy = validate_statement(body, "stdio", "EASY")
+        hard = validate_statement(body, "stdio", "HARD")
+        self.assertTrue(any("2–4 câu" in e for e in easy), easy)
+        self.assertFalse(any("2–5 câu" in e or "quá dài" in e or "còn dài" in e for e in hard), hard)
+        self.assertTrue(any("2–4 câu" in e for e in validate_statement(body, "stdio")), "mặc định giữ giới hạn cũ")
+
 
 if __name__ == "__main__":
     unittest.main()

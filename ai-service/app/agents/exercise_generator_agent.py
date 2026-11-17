@@ -41,6 +41,9 @@ gợi ý và ví dụ phải luyện trực tiếp target_concept; tuyệt đố
 def/function, tham số hoặc return. Chỉ dùng kiến thức đã có bằng chứng hoặc chính chủ đề mục tiêu.
 Các cấu trúc trong forbidden_constructs phản ánh kỹ năng chưa học hoặc người học cấm dùng;
 không đưa chúng vào nghiệm mẫu, mã khung hay yêu cầu của đề.
+Với difficulty HARD/CHALLENGE, tăng độ khó bằng logic (nhiều bước xử lý, điều kiện biên, dữ liệu lớn hơn),
+KHÔNG bằng cấu trúc đang bị cấm: nghiệm mẫu vẫn không được dùng for/while/def/class nếu chúng nằm trong forbidden_constructs
+(dùng hàm dựng sẵn, comprehension, đệ quy chỉ khi không bị cấm). Đề HARD được phép dài tới khoảng 130 từ.
 Nếu required_constructs có for/while, phần Mô tả phải nêu đúng vòng lặp đó;
 không thêm một mục Ràng buộc chỉ để lặp lại yêu cầu đã rõ.
 Không đổi sang loại vòng lặp khác chỉ vì chúng cùng nằm trong target_concept chung;

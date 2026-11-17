@@ -101,6 +101,9 @@ class RoutingFlowMixin:
                 pending_count = None
             raw_count = (current_count if current_count is not None else
                          original_count if original_count is not None else pending_count)
+            # "Khó hơn"/"dễ hơn"/"như vậy" là yêu cầu nối tiếp một bài: mặc định 1 bài, không hỏi lại số lượng.
+            if raw_count is None and routing.difficulty_request in ("easier", "harder", "same"):
+                raw_count = 1
             if raw_count is None or raw_count < 1:
                 return result("AWAITING_CONFIRMATION", "Bạn muốn tạo bao nhiêu bài tập thực hành? Chọn từ 1 đến 5 bài.",
                     pending_confirmation={"type": "EXERCISE_COUNT_SELECTION", "language": routing.language,
