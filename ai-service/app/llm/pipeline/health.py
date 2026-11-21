@@ -65,11 +65,12 @@ def provider_degraded(provider):
     cutoff = time.monotonic() - HEALTH_WINDOW_SECONDS
     with _provider_lock:
         events = [event for event in _provider_events.get(provider, ()) if event[0] >= cutoff]
-    slow = [event for event in events if event[2]]
-    if len(slow) < SLOW_FAILURES_TO_DEMOTE:
+    if sum(1 for event in events if event[2]) < SLOW_FAILURES_TO_DEMOTE:
         return False
-    last_slow = slow[-1][0]
-    return not any(ok and at > last_slow for at, ok, _ in events)
+    # Compare by order, not timestamp: two outcomes can share a clock tick
+    # (time.monotonic is ~15 ms coarse on Windows with Python 3.11).
+    last_slow_index = max(index for index, event in enumerate(events) if event[2])
+    return not any(ok for _, ok, _ in events[last_slow_index + 1:])
 
 
 def configured_provider_order():
