@@ -453,3 +453,45 @@ export const getCallLogs = async (req: Request, res: Response) => {
         return res.status(500).json({ success: false, message: 'Lỗi lấy lịch sử cuộc gọi AI: ' + error.message });
     }
 };
+
+/** Shape raw per-model rows for the admin table (pure; tested). */
+export function shapeProviderStats(rows: any[]) {
+    return rows.map(row => {
+        const total = Number(row.total) || 0;
+        const ok = Number(row.ok) || 0;
+        return {
+            provider: String(row.provider),
+            model: String(row.model),
+            total,
+            succeeded: ok,
+            successRate: total ? Math.round((ok / total) * 100) : 0,
+            p50LatencyMs: row.p50 == null ? null : Math.round(Number(row.p50)),
+            p90LatencyMs: row.p90 == null ? null : Math.round(Number(row.p90)),
+            lastError: row.last_error ? String(row.last_error).replace(/\s+/g, ' ').trim().slice(0, 160) : null,
+        };
+    });
+}
+
+/**
+ * Per provider/model reliability for the last N hours (default 24): calls, success
+ * rate, p50/p90 latency of successful calls and the latest error. On 2026-11-21 this
+ * question (why every stage took 10-35 s) needed a manual trace analysis; Gemini
+ * 3.8 Flash had failed 81% of its calls for days.
+ */
+export const getProviderStats = async (req: Request, res: Response) => {
+    try {
+        const hours = Math.min(Math.max(Number(req.query.hours) || 24, 1), 168);
+        const rows: any[] = await prisma.$queryRawUnsafe(
+            `SELECT provider, model, count(*)::int AS total,
+                    count(*) FILTER (WHERE status='SUCCESS')::int AS ok,
+                    percentile_cont(0.5) WITHIN GROUP (ORDER BY latency_ms) FILTER (WHERE status='SUCCESS') AS p50,
+                    percentile_cont(0.9) WITHIN GROUP (ORDER BY latency_ms) FILTER (WHERE status='SUCCESS') AS p90,
+                    (array_agg(error_message ORDER BY created_at DESC) FILTER (WHERE status<>'SUCCESS'))[1] AS last_error
+             FROM ai_call_logs WHERE created_at > now() - ($1::int * interval '1 hour')
+             GROUP BY provider, model ORDER BY total DESC LIMIT 50`, hours);
+        return res.json({ success: true, hours, models: shapeProviderStats(rows) });
+    } catch (error: any) {
+        console.error('getProviderStats error:', error);
+        return res.status(500).json({ success: false, message: 'Lỗi thống kê nhà cung cấp AI: ' + error.message });
+    }
+};

@@ -9,6 +9,7 @@ import {
     getActiveKeysInternal,
     reportKeyUsageInternal,
     getCallLogs,
+    getProviderStats,
     recordCallLogInternal
 } from './aiKey.controller';
 
@@ -18,6 +19,7 @@ aiKeyAdminRouter.use(authenticateAdmin);
 
 aiKeyAdminRouter.get('/', getAllKeys);
 aiKeyAdminRouter.get('/logs', getCallLogs);
+aiKeyAdminRouter.get('/stats', getProviderStats);
 aiKeyAdminRouter.post('/bulk', createBulkKeys);
 aiKeyAdminRouter.put('/:id/toggle', toggleKeyStatus);
 aiKeyAdminRouter.delete('/:id', deleteKey);

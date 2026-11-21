@@ -17,6 +17,17 @@ import {
     Eye
 } from 'lucide-react';
 
+interface ProviderModelStat {
+    provider: string;
+    model: string;
+    total: number;
+    succeeded: number;
+    successRate: number;
+    p50LatencyMs: number | null;
+    p90LatencyMs: number | null;
+    lastError: string | null;
+}
+
 interface AIKeyItem {
     id: string;
     provider: string;
@@ -104,6 +115,16 @@ export default function AIKeyManagement() {
         }
     };
 
+    const [providerStats, setProviderStats] = useState<ProviderModelStat[]>([]);
+    const loadProviderStats = async () => {
+        try {
+            const res = await axios.get(`${API_BASE_URL}/api/admin/ai-keys/stats?hours=24`, getAuthHeaders());
+            if (res.data.success) setProviderStats(res.data.models || []);
+        } catch (error) {
+            console.error('Failed to load AI provider stats:', error);
+        }
+    };
+
     const loadLogs = async () => {
         try {
             setLogsLoading(true);
@@ -125,6 +146,7 @@ export default function AIKeyManagement() {
     useEffect(() => {
         loadKeys();
         loadLogs();
+        loadProviderStats();
     }, []);
 
     // Auto-refresh logs every 6 seconds if enabled
@@ -302,6 +324,56 @@ export default function AIKeyManagement() {
                         </h3>
                     </div>
                 </div>
+            </div>
+
+            {/* 2b. Provider/model reliability over the last 24 hours */}
+            <div className="p-6 rounded-2xl bg-bg-secondary border border-border-custom shadow-sm space-y-4">
+                <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                        <Activity className="w-4 h-4 text-sky-500" />
+                        <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                            Độ ổn định theo model (24 giờ)
+                        </h2>
+                    </div>
+                    <button type="button" onClick={loadProviderStats}
+                        className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800" title="Tải lại thống kê">
+                        <RefreshCw className="w-4 h-4" />
+                    </button>
+                </div>
+                {providerStats.length === 0 ? (
+                    <p className="text-xs text-slate-500">Chưa có lượt gọi nào trong 24 giờ qua.</p>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                            <thead>
+                                <tr className="text-left text-slate-500 border-b border-border-custom">
+                                    <th className="py-2 pr-3 font-semibold">Provider</th>
+                                    <th className="py-2 pr-3 font-semibold">Model</th>
+                                    <th className="py-2 pr-3 font-semibold text-right">Lượt gọi</th>
+                                    <th className="py-2 pr-3 font-semibold text-right">Thành công</th>
+                                    <th className="py-2 pr-3 font-semibold text-right">p50 / p90</th>
+                                    <th className="py-2 font-semibold">Lỗi gần nhất</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {providerStats.map(stat => (
+                                    <tr key={`${stat.provider}-${stat.model}`} className="border-b border-border-custom/60 align-top">
+                                        <td className="py-2 pr-3 font-semibold text-slate-800 dark:text-slate-200">{stat.provider}</td>
+                                        <td className="py-2 pr-3 font-mono text-slate-600 dark:text-slate-300">{stat.model}</td>
+                                        <td className="py-2 pr-3 text-right tabular-nums">{stat.total}</td>
+                                        <td className={`py-2 pr-3 text-right font-bold tabular-nums ${stat.successRate >= 90 ? 'text-emerald-600' : stat.successRate >= 60 ? 'text-amber-600' : 'text-rose-600'}`}>
+                                            {stat.successRate}%
+                                        </td>
+                                        <td className="py-2 pr-3 text-right tabular-nums text-slate-600 dark:text-slate-300">
+                                            {stat.p50LatencyMs == null ? '—' : `${(stat.p50LatencyMs / 1000).toFixed(1)}s / ${((stat.p90LatencyMs ?? stat.p50LatencyMs) / 1000).toFixed(1)}s`}
+                                        </td>
+                                        <td className="py-2 text-slate-500 break-words max-w-xs">{stat.lastError || '—'}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
 
             {/* 3. Bulk Key Insertion Form */}
