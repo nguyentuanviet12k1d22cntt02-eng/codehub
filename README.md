@@ -43,6 +43,10 @@ uvicorn main:app --reload --port 8000
 source venv/bin/activate
 uvicorn main:app --reload --port 8000
 ```
+On Windows you can instead run `powershell -ExecutionPolicy Bypass -File .\run_local.ps1`
+inside `ai-service`: it picks a Python that has uvicorn/fastapi/torch, checks the
+port and `backend/.env`, and starts uvicorn with `--reload`
+(options: `-Check`, `-Test`, `-Smoke`, `-Port 8001`, `-NoReload`).
 *(AI Service active at `http://localhost:8000`)*
 
 🔑 **Default Demo Account:**
