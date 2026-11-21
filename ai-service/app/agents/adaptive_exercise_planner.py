@@ -149,6 +149,18 @@ class AdaptiveExercisePlanner:
                 5: "Đọc danh sách từ một dòng bằng input().split(), kết hợp thêm và xóa phần tử rồi in danh sách kết quả.",
             }
             sub_skills = [list_focus.get(ctx.get("batch_index"), list_focus[1])]
+        if cid == "PY-DICT-01" and {"for", "while"} <= set(forbidden):
+            # Without loops a dictionary cannot be filled from "n then n lines":
+            # it has a small fixed number of pairs, and each batch position
+            # practises one dictionary operation on it.
+            dict_focus = {
+                1: "Tạo dict từ 2 hoặc 3 cặp khóa-giá trị đọc ở số dòng cố định, rồi in giá trị của một khóa bằng d[key].",
+                2: "Tạo dict từ 2 hoặc 3 cặp khóa-giá trị đọc ở số dòng cố định, rồi kiểm tra một khóa có tồn tại bằng toán tử in và in YES hoặc NO.",
+                3: "Tạo dict từ 2 hoặc 3 cặp khóa-giá trị đọc ở số dòng cố định, thêm hoặc cập nhật một cặp bằng d[key] = giá trị rồi in giá trị của khóa đó và len(d).",
+                4: "Tạo dict từ 2 hoặc 3 cặp khóa-giá trị đọc ở số dòng cố định, rồi đọc một khóa bằng .get(key, giá trị mặc định) để xử lý khóa không tồn tại.",
+                5: "Tạo dict từ 2 hoặc 3 cặp khóa-giá trị đọc ở số dòng cố định, xóa một khóa bằng .pop(key) hoặc del rồi in len(d).",
+            }
+            sub_skills = [dict_focus.get(ctx.get("batch_index"), dict_focus[1])]
         if forced_override and readiness.get("prerequisite_gaps"):
             reasoning = (
                 f"Học viên xác nhận tiếp tục chủ đề yêu cầu dù mức sẵn sàng tiên quyết hiện tại là "

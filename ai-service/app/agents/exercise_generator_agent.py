@@ -137,6 +137,16 @@ Nếu có previous_draft và feedback, sửa đúng lỗi trên bản đó, khô
                 "target_sub_skills. Ví dụ khung: items = input().split(); pos = int(input()); "
                 "items.insert(pos, input()); print(' '.join(items)). Có test danh sách rỗng (dòng '\\n')."
             )
+        if no_loops and spec.target_concept == "PY-DICT-01":
+            guidance.append(
+                "BÀI DICTIONARY CHO NGƯỜI CHƯA HỌC VÒNG LẶP: dict chỉ có 2 hoặc 3 cặp khóa-giá trị, mỗi cặp "
+                "nằm trên một dòng riêng với số dòng CỐ ĐỊNH (không có dòng n, không đọc lặp). Ví dụ khung: "
+                "k1, v1 = input().split(); k2, v2 = input().split(); d = {k1: v1, k2: v2}; key = input(); "
+                "print(d[key]). Không dùng dict comprehension, zip, map hay vòng lặp. Chỉ in các giá trị "
+                "đơn (số, chuỗi, YES/NO, len), KHÔNG in nguyên cả dict vì khoảng trắng và dấu nháy dễ làm "
+                "expected_output sai. Phải có ít nhất 4 test_cases và expected_output phải đúng từng ký tự "
+                "với kết quả của reference_solution."
+            )
         if spec.target_concept == "PY-SET-01" and spec.execution.get("mode") == "stdio" and {"for", "while"} <= forbidden:
             guidance.append(
                 "BÀI SET CHO NGƯỜI CHƯA HỌC VÒNG LẶP: Chọn dữ liệu là các từ được phân tách bằng dấu cách, "
