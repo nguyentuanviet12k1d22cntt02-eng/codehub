@@ -1,0 +1,24 @@
+name: Keep Render warm
+
+# Render's free instances sleep after ~15 minutes without traffic and need 15-50 s to wake.
+# A request every 10 minutes keeps the AI service and backend awake. Any HTTP response counts as traffic.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Ping services
+        run: |
+          for url in \
+            https://codehub-ai.onrender.com/ \
+            https://codehub-backend-nmr4.onrender.com/; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 90 "$url" || true)
+            echo "$url -> $code"
+          done
