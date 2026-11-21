@@ -40,6 +40,10 @@ jobs:
           --deselect tests/test_kt_final_training_contract.py
           --deselect tests/test_report_knowledge_graphs.py
           --deselect tests/test_set_generation_regression.py::SetGenerationRegressionTests::test_pipeline_repairs_set_comprehension_and_publishes_only_verified_candidate
+          -rfE 2>&1 | tee pytest.log
+      - name: Report failing tests as annotations
+        if: failure()
+        run: grep -E "^(FAILED|ERROR) " pytest.log | head -30 | sed 's/^/::error title=pytest::/' || true
       - name: Pinned-data tests (known to fail on Windows checkouts; not blocking)
         continue-on-error: true
         run: >
