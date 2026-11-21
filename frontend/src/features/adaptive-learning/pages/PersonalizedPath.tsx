@@ -24,6 +24,7 @@ import { AITutorChat, type ChatMessage } from '../../ai-tutor/components/AITutor
 import type { AdaptiveRunReport } from '../../ai-tutor/components/AgentEvidencePanel';
 import { ChatHttpError, chatHttpErrorMessage } from '../chatHttpError';
 import { withPendingRuns } from '../pendingRuns';
+import { planBatch, batchToResume, shouldResume, isQuietBatchError, type BatchResumeStatus } from '../batchResume';
 import {
     RobotAvatar,
     RobotHelpCardIllustration,
@@ -310,9 +311,11 @@ const PersonalizedPath: React.FC = () => {
         void handleContinueAgent(traceId);
     }, [activeSessionId, chatMessages, chatLoading, isTutorLocked, handleContinueAgent]);
 
-    // Send or Start Interactive Chat Session (Real-Time SSE Streaming from AI Multi-Agent Pipeline)
-    const handleSendMessage = async (msgText: string) => {
-        if (!msgText.trim() || chatLoading || isTutorLocked) return;
+    // Send or Start Interactive Chat Session (Real-Time SSE Streaming from AI Multi-Agent Pipeline).
+    // With `resume`, no new message is sent: an unfinished practice batch (e.g. the page was
+    // reloaded mid-batch) continues from its first position that has no verified exercise.
+    const handleSendMessage = async (msgText: string, resume?: BatchResumeStatus) => {
+        if ((!msgText.trim() && !resume) || chatLoading || isTutorLocked) return;
 
         let sessionId = activeSessionId;
         if (!sessionId) sessionChoiceVersion.current += 1;
@@ -443,18 +446,40 @@ const PersonalizedPath: React.FC = () => {
                 ));
             };
 
-            const first = await settleReport(await sendOne(msgText),1);
-            // Replace the waiting response even when the durable retry ends in
-            // failure or clarification. A stale WAITING_PROVIDER card must not linger.
-            if (first) await refreshMessages();
+            const fetchBatchStatus = async (rootTraceId: string): Promise<BatchResumeStatus> =>
+                (await axios.get(`${API_BASE_URL}/api/learning-path/adaptive/batch/${rootTraceId}`,
+                    { headers: { Authorization: `Bearer ${authToken}` } })).data.data;
+
+            let first: Awaited<ReturnType<typeof settleReport>>;
+            let batchStatus = resume;
+            if (batchStatus) {
+                // A position may still be generating on the server from the previous page.
+                const deadline = Date.now() + 20 * 60 * 1000;
+                while (batchStatus.running && Date.now() < deadline && choiceVersion === sessionChoiceVersion.current) {
+                    setCurrentAgentStep({ step: `Bài ${batchStatus.completedCount + 1}/${batchStatus.expectedCount}`,
+                        title: 'Đang chờ bài đang tạo dở hoàn tất' });
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                    batchStatus = await fetchBatchStatus(batchStatus.rootTraceId);
+                }
+                if (batchStatus.running || choiceVersion !== sessionChoiceVersion.current) return;
+                first = { status: 'SUCCEEDED', trace_id: batchStatus.rootTraceId,
+                    exercise_count: batchStatus.expectedCount, exercise: batchStatus.exercise };
+            } else {
+                first = await settleReport(await sendOne(msgText),1);
+                // Replace the waiting response even when the durable retry ends in
+                // failure or clarification. A stale WAITING_PROVIDER card must not linger.
+                if (first) await refreshMessages();
+            }
             if (first?.status === 'SUCCEEDED' && first.exercise && first.exercise_count > 1
                 && choiceVersion === sessionChoiceVersion.current) {
                 batchRootTraceId=first.trace_id;
-                const total = Math.min(5, Math.max(1, Number(first.exercise_count) || 1));
-                const titles = [String(first.exercise.title || '')];
-                let completed = 1;
+                // Positions already verified are skipped; a position that already failed
+                // twice is not retried on every reload (plan.remaining is then empty).
+                const plan = planBatch(Number(first.exercise_count), String(first.exercise.title || ''), batchStatus);
+                const { total, done, titles } = plan;
+                let completed = done.size;
                 updateBatchProgress(first.trace_id, completed, total);
-                for (let index = 2; index <= total; index++) {
+                for (const index of plan.remaining) {
                     if (choiceVersion !== sessionChoiceVersion.current) break;
                     setCurrentAgentStep({ step: `Bài ${index}/${total}`, title: 'Đang tạo bài thực hành tiếp theo' });
                     const topic = String(first.exercise.concept_name || first.exercise.concept_id);
@@ -463,6 +488,7 @@ const PersonalizedPath: React.FC = () => {
                         conceptId: first.exercise.concept_id, language: first.exercise.language, total }),index);
                     if (next?.status !== 'SUCCEEDED' || !next.exercise) break;
                     titles.push(String(next.exercise.title || ''));
+                    done.add(index);
                     completed += 1;
                     updateBatchProgress(first.trace_id, completed, total);
                 }
@@ -485,6 +511,12 @@ const PersonalizedPath: React.FC = () => {
                 }
             }
         } catch (e: any) {
+            // Another tab is already continuing this batch (409), or the status check
+            // failed before anything ran: leave the batch card untouched.
+            if (isQuietBatchError(Boolean(resume), Boolean(batchRootTraceId), e instanceof ChatHttpError ? e.status : undefined)) {
+                console.warn('Batch resume skipped:', e);
+                return;
+            }
             console.error('Chat stream error:', e);
             if (batchRootTraceId) await axios.post(`${API_BASE_URL}/api/learning-path/adaptive/batch-failed`,
                 {parentTraceId:batchRootTraceId},
@@ -515,6 +547,37 @@ const PersonalizedPath: React.FC = () => {
             }
         }
     };
+
+    // The batch loop runs in this tab. If the page was reloaded or the session
+    // reopened mid-batch, continue the unfinished batch instead of leaving it
+    // stuck at "GENERATING" forever.
+    const sendMessageRef = useRef(handleSendMessage);
+    useEffect(() => { sendMessageRef.current = handleSendMessage; });
+    const resumingBatches = useRef(new Set<string>());
+    useEffect(() => {
+        if (!activeSessionId || chatLoading || isTutorLocked || !token) return;
+        const rootTraceId = batchToResume(chatMessages, resumingBatches.current);
+        if (!rootTraceId) return;
+        resumingBatches.current.add(rootTraceId);
+        const choiceVersion = sessionChoiceVersion.current;
+        void (async () => {
+            let ran = false;
+            try {
+                const response = await axios.get(`${API_BASE_URL}/api/learning-path/adaptive/batch/${rootTraceId}`,
+                    { headers: { Authorization: `Bearer ${token}` } });
+                const status = response.data?.data as BatchResumeStatus | undefined;
+                if (!shouldResume(status) || choiceVersion !== sessionChoiceVersion.current) return;
+                ran = true;
+                await sendMessageRef.current('', status);
+            } catch (error) {
+                console.error('Batch status error:', error);
+            } finally {
+                // Allow another attempt only after a resume actually ran (e.g. the learner
+                // switched session mid-way); a missing or published batch is not retried.
+                if (ran) resumingBatches.current.delete(rootTraceId);
+            }
+        })();
+    }, [activeSessionId, chatMessages, chatLoading, isTutorLocked, token]);
 
     // Confirm and Build Final Path -> Redirect to Workspace Page
     const handleConfirmPath = async () => {

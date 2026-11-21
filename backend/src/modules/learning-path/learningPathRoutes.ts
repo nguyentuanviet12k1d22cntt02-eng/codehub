@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { authenticateToken } from '../../shared/middleware/auth';
 import { getMyPaths, getPathById, submitQuizAnswer, getChatSessions, deleteChatSession } from './learningPath.controller';
 import { startChat,replyChat,startChatStream,replyChatStream,startExercise,submitExercise,analyzePracticeSubmission,
-    retiredMastery,generatePath,confirmPath,reportRun,getSession,continueAgentReviewStream,markExerciseBatchFailed } from '../adaptive/adaptive.controller';
+    retiredMastery,generatePath,confirmPath,reportRun,getSession,continueAgentReviewStream,markExerciseBatchFailed,getExerciseBatchStatus } from '../adaptive/adaptive.controller';
 import { getLearnerTutorAvailability } from '../ai-tutor/tutorAvailability.controller';
 
 const router=Router();
@@ -25,6 +25,7 @@ router.get('/chat/session/:sessionId',getSession);
 router.delete('/chat/session/:sessionId',deleteChatSession);
 router.post('/adaptive/start-exercise',startExercise);
 router.post('/adaptive/batch-failed',markExerciseBatchFailed);
+router.get('/adaptive/batch/:traceId',getExerciseBatchStatus);
 router.post('/adaptive/update-mastery',retiredMastery);
 router.get('/adaptive/runs/:traceId',reportRun);
 export default router;

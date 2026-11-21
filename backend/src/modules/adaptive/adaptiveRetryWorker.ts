@@ -1,7 +1,7 @@
 import { consumeSse } from './sse';
 import { internalHeaders, mergeReviewReport, resumeCheckpoint, reviewCheckpoint, verifiedTargetConcept } from './adaptiveEvidence';
-import { claimRetry, deferRun, dueRetries, finishRetryRun, saveStage } from './adaptiveRepository';
-import { AI_SERVICE_BUSY, AI_SERVICE_BUSY_FINAL_REPLY, aiServiceBusyReport, isRetryableProviderFailure, providerRetryDelay, upstreamPipelineTimeoutMs, waitingProviderReply } from './adaptive.controller';
+import { claimRetry, deferRun, dueRetries, ensureBatchPositionIndex, finishRetryRun, saveStage, sweepOrphanRuns } from './adaptiveRepository';
+import { AI_SERVICE_BUSY, AI_SERVICE_BUSY_FINAL_REPLY, aiServiceBusyReport, isRetryableProviderFailure, providerRetryDelay, syncBatchProgressMessage, upstreamPipelineTimeoutMs, waitingProviderReply } from './adaptive.controller';
 
 let active=false;
 
@@ -50,14 +50,29 @@ async function retryRun(row:any) {
         {...report,agent_traces:[...(row.report?.agent_traces||[]),...(report.agent_traces||[])]};
     if(isRetryableProviderFailure(report.error?.code)&&row.retry_count<2) {
         await deferRun(row.trace_id,{...merged,status:'WAITING_PROVIDER',reply:waitingProviderReply(report.error?.code,'Provider chưa sẵn sàng; yêu cầu được xếp lịch thử lại.')},providerRetryDelay(report.error,row.retry_count));
-    } else await finishRetryRun(row.trace_id,row.session_id,
-        report.error?.code===AI_SERVICE_BUSY?{...merged,reply:AI_SERVICE_BUSY_FINAL_REPLY}:merged);
+    } else {
+        await finishRetryRun(row.trace_id,row.session_id,
+            report.error?.code===AI_SERVICE_BUSY?{...merged,reply:AI_SERVICE_BUSY_FINAL_REPLY}:merged);
+        // A batch position finished by the worker must update the batch card too.
+        if(merged.status==='SUCCEEDED'&&row.request?.batch_parent_trace_id)
+            await syncBatchProgressMessage(row.request.batch_parent_trace_id,row.user_id).catch(()=>{});
+    }
 }
+
+const ORPHAN_SWEEP_INTERVAL_MS=60*1000;
+let lastOrphanSweep=0;
 
 export async function retryAdaptiveRuns() {
     if(active) return;
     active=true;
     try {
+        // Close runs orphaned by a restart first: the batch-position index cannot be
+        // created while two orphaned RUNNING rows still share a position.
+        if(Date.now()-lastOrphanSweep>=ORPHAN_SWEEP_INTERVAL_MS) {
+            lastOrphanSweep=Date.now();
+            await sweepOrphanRuns().catch(err=>console.warn('[AdaptiveRetryWorker] Warning sweeping orphaned runs:', err?.message || err));
+            await ensureBatchPositionIndex();
+        }
         const candidates = await dueRetries().catch(err => {
             console.warn('[AdaptiveRetryWorker] Warning fetching due retries:', err?.message || err);
             return [];

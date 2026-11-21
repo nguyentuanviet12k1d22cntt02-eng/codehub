@@ -1,10 +1,11 @@
 import { Response } from 'express';
+import { SessionLock, summarizeExerciseBatch, batchPositionTaken, batchReadyForPublish, batchProgressMessage, batchStatusView, isBatchRoot } from './exerciseBatch';
 import { randomUUID, createHash } from 'crypto';
 import { z } from 'zod';
 import { prisma } from '../../infrastructure/database/prisma';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
 import { internalHeaders, mergeReviewReport, publicCase, publicExercise, publicRecord, publicReport, reviewCheckpoint, sanitizeLegacy } from './adaptiveEvidence';
-import { claimReviewRun, createRun, deferRun, finishRetryRun, finishRun, getRun, getRunForExercise, getSubmissionForGuidance, learnerContext, reserveSubmission, saveStage, storeGrading } from './adaptiveRepository';
+import { claimReviewRun, createRun, deferRun, finishRetryRun, finishRun, getRun, getRunForExercise, getSubmissionForGuidance, isUniqueViolation, learnerContext, reserveSubmission, saveStage, storeGrading } from './adaptiveRepository';
 import { runExercise } from './adaptiveRunner';
 import { effectiveArtifact } from './contentVersioning';
 import { consumeSse } from './sse';
@@ -14,7 +15,7 @@ import { awsDockerConfigurationReady } from '../../infrastructure/sandbox/aws-do
 import { evidencePracticeGuidance, isGraderFailure, requestPracticeGuidance } from './practiceGuidance';
 
 const idSchema=z.string().uuid();
-const sessionsRunning=new Set<string>();
+const sessionLock=new SessionLock();
 const retryableProviderCodes=new Set(['PROVIDER_TIMEOUT','PROVIDER_NETWORK_ERROR','PROVIDER_SERVER_ERROR','PROVIDER_RATE_LIMITED','PROVIDER_DEADLINE_EXCEEDED','PROVIDER_RESPONSE_INVALID','PROVIDER_COOLDOWN','PROVIDER_FULL_POOL_OUTAGE','STAGE_BUDGET_EXHAUSTED','RUN_DEADLINE_EXCEEDED','LLM_BUDGET_EXCEEDED','SANDBOX_BACKEND_TIMEOUT','SANDBOX_BACKEND_UNREACHABLE']);
 // AI service trả HTTP 429 khi đã chạy đủ số pipeline đồng thời. Đây là tình trạng bận tạm thời,
 // không phải lỗi của yêu cầu: giữ yêu cầu và để worker tự thử lại thay vì báo "pipeline dừng".
@@ -93,6 +94,7 @@ async function chat(req:AuthenticatedRequest,res:Response,isStart:boolean,stream
     const userId=req.user!.id;
     let traceId:string|undefined,session:any,report:any,userMessage:any;
     let batchContinuation=false;
+    let lockHeld=false;
     let batchTotal:number|undefined;
     const send=(value:any)=>{if(!res.destroyed)res.write('data: '+JSON.stringify(value)+'\n\n');};
     const abort=new AbortController();
@@ -116,7 +118,10 @@ async function chat(req:AuthenticatedRequest,res:Response,isStart:boolean,stream
                 message:'Lượt xử lý trước đang được tiếp tục tự động. Hãy đợi hoàn tất rồi gửi yêu cầu mới.'});
             return;
         }
-        if(sessionsRunning.has(session.id)){res.status(409).json({success:false,error:'Phiên này đang xử lý một yêu cầu'});return;}
+        // Check and take the session lock in one synchronous step: two tabs (or two
+        // resumed batch loops) must not both pass the check across an await.
+        lockHeld=sessionLock.tryAcquire(session.id);
+        if(!lockHeld){res.status(409).json({success:false,error:'Phiên này đang xử lý một yêu cầu'});return;}
         if(req.body.batchParentTraceId!==undefined) {
             const parentTrace=z.string().regex(/^trace_[A-Za-z0-9_-]{8,80}$/).parse(req.body.batchParentTraceId);
             const batchIndex=z.number().int().min(2).max(5).parse(req.body.batchIndex);
@@ -124,9 +129,15 @@ async function chat(req:AuthenticatedRequest,res:Response,isStart:boolean,stream
             batchContinuation=validExerciseBatchContinuation(parent,session.id,
                 String(req.body.target_concept_id||''),String(req.body.language||''),batchIndex);
             if(!batchContinuation){res.status(400).json({success:false,error:'Lượt tạo bài tiếp theo không hợp lệ'});return;}
+            // A position that is already verified or still generating must not be generated twice.
+            const summary=summarizeExerciseBatch(parent,await batchRuns(parent,userId));
+            if(batchPositionTaken(summary,batchIndex)) {
+                batchContinuation=false;
+                res.status(409).json({success:false,error:'BATCH_POSITION_TAKEN',
+                    message:'Bài này trong bộ đang được tạo hoặc đã tạo xong.'});return;
+            }
             batchTotal=Number(parent.report.exercise_count);
         }
-        sessionsRunning.add(session.id);
         // Continuations are internal steps of one learner request, not new chat turns.
         userMessage=batchContinuation?{sender:'USER',content}:await prisma.pathChatMessage.create({data:{sessionId:session.id,sender:'USER',content}});
         traceId='trace_'+randomUUID().replace(/-/g,'');
@@ -160,7 +171,18 @@ async function chat(req:AuthenticatedRequest,res:Response,isStart:boolean,stream
             target_concept_id:req.body.target_concept_id||null,learner_context:context,
             run_attempt:1,sequence_offset:0,review_mode:false,
             ...(batchContinuation?{batch_parent_trace_id:req.body.batchParentTraceId,batch_index:req.body.batchIndex}:{} )};
-        await createRun(traceId,userId,session.id,request);
+        try {
+            await createRun(traceId,userId,session.id,request);
+        } catch(error:any) {
+            // The database allows one in-flight run per batch position; another tab or
+            // backend instance got there first.
+            if(batchContinuation && isUniqueViolation(error)) {
+                traceId=undefined;
+                res.status(409).json({success:false,error:'BATCH_POSITION_TAKEN',message:'Bài này trong bộ đang được tạo hoặc đã tạo xong.'});
+                return;
+            }
+            throw error;
+        }
         if(stream) {
             res.setHeader('Content-Type','text/event-stream');res.setHeader('Cache-Control','no-cache');res.setHeader('X-Accel-Buffering','no');res.flushHeaders();
             send({type:'session_created',sessionId:session.id,trace_id:traceId});
@@ -201,9 +223,12 @@ async function chat(req:AuthenticatedRequest,res:Response,isStart:boolean,stream
             reply:'Kết nối pipeline dừng trước khi hoàn thành. Các bước đã chạy được lưu trong báo cáo.',error:{code:error.name==='AbortError'?'RUN_DEADLINE_EXCEEDED':'TRANSPORT_OR_STORAGE_ERROR',message:error.message},fallback_used:false};
         await finishRun(traceId,report);
     } finally {
-        if(session) sessionsRunning.delete(session.id);
+        // Only the request that took the lock releases it; a rejected 409 must not unlock a running turn.
+        if(session) sessionLock.release(session.id,lockHeld);
     }
     if(!report || !session) return;
+    if(batchContinuation && report.status==='SUCCEEDED')
+        await syncBatchProgressMessage(req.body.batchParentTraceId,userId).catch(()=>{});
     const safe=publicReport(report);
     const isBatchParent=!batchContinuation&&safe.status==='SUCCEEDED'&&safe.exercise&&Number(safe.exercise_count)>1;
     const aiMessage=batchContinuation?null:await prisma.pathChatMessage.create({data:{sessionId:session.id,sender:'AI_TUTOR',
@@ -339,22 +364,44 @@ export function publicPracticeExercise(run:any) {
             expectedOutput:test.expected_output,isHidden:false}))};
 }
 
+export { summarizeExerciseBatch };
+
+async function batchRuns(parent:any,userId:string):Promise<any[]> {
+    return prisma.$queryRawUnsafe(
+        "SELECT * FROM adaptive_generation_runs WHERE user_id=$1::uuid AND session_id=$2::uuid AND (trace_id=$3 OR request->>'batch_parent_trace_id'=$3) ORDER BY created_at ASC",
+        userId,parent.session_id,parent.trace_id);
+}
+
+/** Keep the batch card's progress in the database, so a reloaded page shows the real count. */
+export async function syncBatchProgressMessage(parentTrace:string,userId:string) {
+    const parent=await getRun(parentTrace,userId);
+    if(!parent||parent.path_id) return;
+    const summary=summarizeExerciseBatch(parent,await batchRuns(parent,userId));
+    const messages:any[]=await prisma.$queryRawUnsafe(
+        "SELECT id,metadata FROM path_chat_messages WHERE session_id=$1::uuid AND sender='AI_TUTOR' AND metadata->'pipeline'->>'trace_id'=$2 ORDER BY created_at DESC LIMIT 1",
+        parent.session_id,parentTrace);
+    const update=messages[0]?batchProgressMessage(messages[0].metadata,summary):null;
+    if(update) await prisma.pathChatMessage.update({where:{id:messages[0].id},data:update});
+}
+
+export async function getExerciseBatchStatus(req:AuthenticatedRequest,res:Response) {
+    try {
+        const traceId=z.string().regex(/^trace_[A-Za-z0-9_-]{8,80}$/).parse(req.params.traceId);
+        const parent=await getRun(traceId,req.user!.id);
+        if(!isBatchRoot(parent)){res.status(404).json({success:false,error:'BATCH_NOT_FOUND'});return;}
+        const summary=summarizeExerciseBatch(parent,await batchRuns(parent,req.user!.id));
+        res.json({success:true,data:batchStatusView(parent,summary)});
+    } catch(error:any){res.status(error instanceof z.ZodError?400:500).json({success:false,error:'BATCH_STATUS_FAILED'});}
+}
+
 async function publishExerciseBatch(selected:any,userId:string) {
     const parentTrace=selected.request?.batch_parent_trace_id||selected.trace_id;
     const parent=await getRun(parentTrace,userId);
     const expected=Number(parent?.report?.exercise_count);
     if(!parent || !Number.isInteger(expected) || expected<2 || expected>5 || parent.session_id!==selected.session_id)
         throw Error('BATCH_INVALID');
-    const candidates:any[]=await prisma.$queryRawUnsafe(
-        "SELECT * FROM adaptive_generation_runs WHERE user_id=$1::uuid AND session_id=$2::uuid AND (trace_id=$3 OR request->>'batch_parent_trace_id'=$3) ORDER BY created_at ASC",
-        userId,parent.session_id,parentTrace);
-    const ordered=[parent,...candidates.filter(run=>run.trace_id!==parentTrace).sort((a,b)=>Number(a.request?.batch_index)-Number(b.request?.batch_index))];
-    if(ordered.length!==expected || new Set(ordered.map(run=>run.exercise_id)).size!==expected ||
-        ordered.some((run,index)=>run.status!=='SUCCEEDED'||run.artifact?.qc_status!=='VERIFIED'||
-            !run.report?.agent_traces?.some((step:any)=>step.agent==='PublicationGate'&&step.status==='SUCCEEDED'&&step.output?.approved===true)||
-            run.artifact?.concept_id!==parent.artifact?.concept_id||run.artifact?.language!==parent.artifact?.language||
-            (index>0 && (run.request?.batch_parent_trace_id!==parentTrace||Number(run.request?.batch_index)!==index+1))))
-        throw Error('BATCH_INCOMPLETE');
+    const ordered=summarizeExerciseBatch(parent,await batchRuns(parent,userId)).ordered;
+    if(!batchReadyForPublish(parent,ordered)) throw Error('BATCH_INCOMPLETE');
     return prisma.$transaction(async tx=>{
         const locked:any[]=await tx.$queryRawUnsafe(
             'SELECT trace_id,path_id FROM adaptive_generation_runs WHERE trace_id=ANY($1::text[]) ORDER BY trace_id FOR UPDATE',
@@ -415,10 +462,7 @@ export async function markExerciseBatchFailed(req:AuthenticatedRequest,res:Respo
         if(!parent || parent.path_id || !Number.isInteger(expected) || expected<2 || expected>5) {
             res.status(409).json({success:false,error:'BATCH_NOT_PENDING'});return;
         }
-        const rows:any[]=await prisma.$queryRawUnsafe(
-            "SELECT COUNT(*)::int AS completed FROM adaptive_generation_runs WHERE user_id=$1::uuid AND session_id=$2::uuid AND status='SUCCEEDED' AND artifact->>'qc_status'='VERIFIED' AND (trace_id=$3 OR request->>'batch_parent_trace_id'=$3)",
-            req.user!.id,parent.session_id,traceId);
-        const completed=Math.min(expected,Number(rows[0]?.completed||0));
+        const completed=summarizeExerciseBatch(parent,await batchRuns(parent,req.user!.id)).completed;
         const messages:any[]=await prisma.$queryRawUnsafe(
             "SELECT id,metadata FROM path_chat_messages WHERE session_id=$1::uuid AND sender='AI_TUTOR' AND metadata->'pipeline'->>'trace_id'=$2 ORDER BY created_at DESC LIMIT 1",
             parent.session_id,traceId);
@@ -515,6 +559,6 @@ export async function getSession(req:AuthenticatedRequest,res:Response) {
     if(!session){res.status(404).json({success:false});return;}
     // Run còn chạy (vd học viên tải lại trang giữa lúc sinh bài): trả về để giao diện hiện trạng thái chờ và tự cập nhật.
     // Chỉ lấy run cập nhật trong 10 phút (hạn upstream 330 s) để không chờ mãi run mồ côi sau khi backend khởi động lại.
-    const activeRuns:any[]=await prisma.$queryRawUnsafe("SELECT trace_id,status FROM adaptive_generation_runs WHERE user_id=$1::uuid AND session_id=$2::uuid AND status IN ('RUNNING','WAITING_PROVIDER') AND updated_at>now()-interval '10 minutes' ORDER BY created_at",req.user!.id,session.id);
+    const activeRuns:any[]=await prisma.$queryRawUnsafe("SELECT trace_id,status,request->>'batch_parent_trace_id' AS batch_parent_trace_id FROM adaptive_generation_runs WHERE user_id=$1::uuid AND session_id=$2::uuid AND status IN ('RUNNING','WAITING_PROVIDER') AND updated_at>now()-interval '10 minutes' ORDER BY created_at",req.user!.id,session.id);
     res.json({success:true,session:sanitizeLegacy(session),activeRuns});
 }

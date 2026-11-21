@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const {equalOutput,staticConstraints,sandboxInput,executionTimeoutMs}=require('../dist/modules/adaptive/adaptiveRunner');
 const {publicReport,publicTutorMessageData,publicCase,internalHeaders,verifyInternal,resumeCheckpoint,reviewCheckpoint,mergeReviewReport,sanitizeLegacy,verifiedTargetConcept}=require('../dist/modules/adaptive/adaptiveEvidence');
 const {consumeSse}=require('../dist/modules/adaptive/sse');
-const {isRetryableProviderFailure,providerRetryDelay,confirmedLanguageForReply,recoverLearningModeConfirmation,confirmedSessionLanguage,validExerciseBatchContinuation,publicPracticeExercise}=require('../dist/modules/adaptive/adaptive.controller');
+const {isRetryableProviderFailure,providerRetryDelay,confirmedLanguageForReply,recoverLearningModeConfirmation,confirmedSessionLanguage,validExerciseBatchContinuation,publicPracticeExercise,summarizeExerciseBatch}=require('../dist/modules/adaptive/adaptive.controller');
 const {calculateMasteryUpdate}=require('../dist/modules/adaptive/masteryPolicy');
 const spec={language:'python',execution:{mode:'function',entrypoint:'solution',comparator:'json',call_style_required:true},required_constructs:[],forbidden_constructs:[]};
 
@@ -16,6 +16,39 @@ test('batch continuation requires the verified parent, same session, language an
  assert.equal(validExerciseBatchContinuation(parent,'session-1','PY-FUNC-01','python',2),false);
  assert.equal(validExerciseBatchContinuation(parent,'session-1','PY-FLOW-01','cpp',2),false);
  assert.equal(validExerciseBatchContinuation({...parent,status:'FAILED'},'session-1','PY-FLOW-01','python',2),false);
+});
+
+test('batch summary survives a reloaded tab: retries, failures and an in-flight position',()=>{
+ const gate={agent_traces:[{agent:'PublicationGate',status:'SUCCEEDED',output:{approved:true}}]};
+ const now=Date.parse('2026-11-21T03:00:00Z');
+ const run=(trace,index,status,minute,extra={})=>({trace_id:trace,status,exercise_id:'ex-'+trace,
+  created_at:new Date(now-(60-minute)*60000).toISOString(),updated_at:new Date(now-(60-minute)*60000).toISOString(),
+  request:{batch_parent_trace_id:'trace_root0001',batch_index:index},
+  artifact:status==='SUCCEEDED'?{qc_status:'VERIFIED',title:'Bai '+index}:null,report:status==='SUCCEEDED'?gate:{},...extra});
+ const parent={trace_id:'trace_root0001',status:'SUCCEEDED',exercise_id:'ex-root',created_at:new Date(now-3600000).toISOString(),
+  request:{},report:{exercise_count:5,...gate},artifact:{qc_status:'VERIFIED',title:'Bai 1'}};
+ // Live trace 2026-11-21: positions 1-3 verified, then the tab reloaded and nothing continued.
+ let summary=summarizeExerciseBatch(parent,[parent,run('trace_c2',2,'SUCCEEDED',1),run('trace_c3',3,'SUCCEEDED',2)],now);
+ assert.equal(summary.completed,3);
+ assert.equal(summary.nextIndex,4);
+ assert.equal(summary.running,false);
+ assert.deepEqual(summary.titles,['Bai 1','Bai 2','Bai 3',null,null]);
+ // A failed attempt at position 4 followed by a verified retry counts once, in order.
+ summary=summarizeExerciseBatch(parent,[parent,run('trace_c2',2,'SUCCEEDED',1),run('trace_c3',3,'SUCCEEDED',2),
+  run('trace_c4a',4,'FAILED',3),run('trace_c4b',4,'SUCCEEDED',4),run('trace_c5',5,'SUCCEEDED',5)],now);
+ assert.equal(summary.completed,5);
+ assert.equal(summary.nextIndex,null);
+ assert.deepEqual(summary.ordered.map(r=>r.trace_id),['trace_root0001','trace_c2','trace_c3','trace_c4b','trace_c5']);
+ // Two failures at the next position are reported so the client stops retrying.
+ summary=summarizeExerciseBatch(parent,[parent,run('trace_c2a',2,'FAILED',1),run('trace_c2b',2,'FAILED',2)],now);
+ assert.equal(summary.nextIndex,2);
+ assert.equal(summary.nextIndexFailures,2);
+ // A recently updated RUNNING position is in flight; an orphan older than 10 minutes is not.
+ assert.equal(summarizeExerciseBatch(parent,[parent,run('trace_c2',2,'RUNNING',58)],now).running,true);
+ assert.equal(summarizeExerciseBatch(parent,[parent,run('trace_c2',2,'RUNNING',20)],now).running,false);
+ // A child of another batch never counts.
+ assert.equal(summarizeExerciseBatch(parent,[parent,{...run('trace_x',2,'SUCCEEDED',1),
+  request:{batch_parent_trace_id:'trace_other001',batch_index:2}}],now).completed,1);
 });
 
 test('grouped practice exposes only visible tests and never the solution',()=>{

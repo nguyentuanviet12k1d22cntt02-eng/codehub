@@ -36,6 +36,47 @@ export function ensureStorage() {
     return ready;
 }
 const rows = (sql:string,...args:any[]):Promise<any[]> => prisma.$queryRawUnsafe(sql,...args);
+
+/**
+ * A RUNNING row whose backend died (restart, crash) is never finished by anyone.
+ * A live run updates updated_at at every stage and ends within the 330 s upstream
+ * limit, so 10 minutes of silence means orphaned. WAITING_PROVIDER rows are left
+ * alone: they wait for next_attempt_at by design.
+ */
+export const ORPHAN_SWEEP_SQL="UPDATE adaptive_generation_runs SET status='FAILED',"+
+    "report=jsonb_set(report,'{error}',jsonb_build_object('code','RUN_ORPHANED','message','Lượt chạy bị gián đoạn (máy chủ khởi động lại) và đã được đóng tự động.'),true),"+
+    "updated_at=now() WHERE status='RUNNING' AND updated_at < now() - interval '10 minutes' RETURNING trace_id";
+
+/** One in-flight run per batch position, enforced by the database for every backend instance. */
+export const BATCH_POSITION_INDEX_SQL="CREATE UNIQUE INDEX IF NOT EXISTS adaptive_runs_batch_position_inflight "+
+    "ON adaptive_generation_runs ((request->>'batch_parent_trace_id'),(request->>'batch_index')) "+
+    "WHERE status IN ('RUNNING','WAITING_PROVIDER') AND request ? 'batch_parent_trace_id'";
+
+export async function sweepOrphanRuns():Promise<number> {
+    await ensureStorage();
+    const swept=await rows(ORPHAN_SWEEP_SQL);
+    if(swept.length) console.warn(`[adaptive] closed ${swept.length} orphaned run(s): ${swept.map(row=>row.trace_id).join(', ')}`);
+    return swept.length;
+}
+
+let positionIndexReady=false;
+/** Created after the orphan sweep: existing duplicate orphans would make the index fail. Retried until it succeeds. */
+export async function ensureBatchPositionIndex():Promise<boolean> {
+    if(positionIndexReady) return true;
+    try {
+        await prisma.$executeRawUnsafe(BATCH_POSITION_INDEX_SQL);
+        positionIndexReady=true;
+    } catch(error:any) {
+        console.warn('[adaptive] batch position index not created yet:', error?.message);
+    }
+    return positionIndexReady;
+}
+
+/** Postgres unique violation (23505), as surfaced by Prisma raw queries. */
+export function isUniqueViolation(error:any):boolean {
+    const text=`${error?.code||''} ${error?.meta?.code||''} ${error?.message||''}`;
+    return /23505|duplicate key value|Unique constraint failed/i.test(text);
+}
 export async function createRun(traceId:string,userId:string,sessionId:string,request:any) {
     await ensureStorage();
     await prisma.$executeRawUnsafe('INSERT INTO adaptive_generation_runs(trace_id,user_id,session_id,request) VALUES($1,$2::uuid,$3::uuid,$4::jsonb)',traceId,userId,sessionId,JSON.stringify(request));
