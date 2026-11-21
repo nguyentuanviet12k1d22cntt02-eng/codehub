@@ -1,4 +1,5 @@
 import { consumeSse } from './sse';
+import { wakeBatchWorker } from './exerciseBatchWorker';
 import { internalHeaders, mergeReviewReport, resumeCheckpoint, reviewCheckpoint, verifiedTargetConcept } from './adaptiveEvidence';
 import { claimRetry, deferRun, dueRetries, ensureBatchPositionIndex, finishRetryRun, saveStage, sweepOrphanRuns } from './adaptiveRepository';
 import { AI_SERVICE_BUSY, AI_SERVICE_BUSY_FINAL_REPLY, aiServiceBusyReport, isRetryableProviderFailure, providerRetryDelay, syncBatchProgressMessage, upstreamPipelineTimeoutMs, waitingProviderReply } from './adaptive.controller';
@@ -56,6 +57,8 @@ async function retryRun(row:any) {
         // A batch position finished by the worker must update the batch card too.
         if(merged.status==='SUCCEEDED'&&row.request?.batch_parent_trace_id)
             await syncBatchProgressMessage(row.request.batch_parent_trace_id,row.user_id).catch(()=>{});
+        // The batch worker continues (or closes) the batch now instead of at its next tick.
+        if(row.request?.batch_parent_trace_id) wakeBatchWorker();
     }
 }
 

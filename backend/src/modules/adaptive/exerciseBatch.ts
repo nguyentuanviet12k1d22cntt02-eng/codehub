@@ -65,11 +65,12 @@ export function batchProgressMessage(metadata:any,summary:BatchSummary) {
 }
 
 /** Public view returned by GET /adaptive/batch/:traceId (never the solution or tests). */
-export function batchStatusView(parent:any,summary:BatchSummary) {
+export function batchStatusView(parent:any,summary:BatchSummary,cardStatus?:string) {
     const first=parent.artifact||{};
-    return {rootTraceId:parent.trace_id,published:Boolean(parent.path_id),pathId:parent.path_id||null,
+    const state=parent.path_id?'READY':cardStatus==='FAILED'?'FAILED':'GENERATING';
+    return {rootTraceId:parent.trace_id,state,published:Boolean(parent.path_id),pathId:parent.path_id||null,
         expectedCount:summary.expected,completedCount:summary.completed,running:summary.running,
-        nextIndex:summary.nextIndex,nextIndexFailures:summary.nextIndexFailures,titles:summary.titles,
+        nextIndex:summary.nextIndex,nextIndexFailures:summary.nextIndexFailures,maxPositionFailures:MAX_POSITION_FAILURES,titles:summary.titles,
         exercise:{exercise_id:parent.exercise_id,title:first.title,concept_id:first.concept_id,
             concept_name:first.concept_name,language:first.language}};
 }
@@ -78,6 +79,41 @@ export function batchStatusView(parent:any,summary:BatchSummary) {
 export function isBatchRoot(parent:any):boolean {
     const expected=Number(parent?.report?.exercise_count);
     return Boolean(parent)&&!parent.request?.batch_parent_trace_id&&Number.isInteger(expected)&&expected>=2&&expected<=5&&passedPublicationGate(parent);
+}
+
+/** A position that failed this many times stops the batch instead of being generated again. */
+export const MAX_POSITION_FAILURES=2;
+/** The backend continues a batch for this long after its first exercise (4 positions x 2 attempts x provider retries fit well inside); older unfinished batches are closed as failed. */
+export const BATCH_CONTINUE_WINDOW_MS=3*60*60*1000;
+
+export type BatchAction=
+    | {kind:'none'}            // published, or the card is no longer GENERATING
+    | {kind:'wait'}            // a position is generating or waiting for a provider retry
+    | {kind:'publish'}         // every position holds a verified exercise
+    | {kind:'fail',reason:'POSITION_FAILED'|'EXPIRED'}
+    | {kind:'generate',index:number};
+
+/**
+ * What the backend batch worker does next for one batch. Positions are generated
+ * one at a time in order; a position that failed MAX_POSITION_FAILURES times stops
+ * the batch; a batch older than BATCH_CONTINUE_WINDOW_MS is closed instead of revived.
+ */
+export function nextBatchAction(parent:any,summary:BatchSummary,cardStatus:string|undefined,now=Date.now()):BatchAction {
+    if(!parent||parent.path_id||cardStatus!=='GENERATING') return {kind:'none'};
+    if(summary.running) return {kind:'wait'};
+    if(summary.expected>=2&&summary.completed===summary.expected) return {kind:'publish'};
+    if(now-new Date(parent.created_at).getTime()>BATCH_CONTINUE_WINDOW_MS) return {kind:'fail',reason:'EXPIRED'};
+    if(!summary.nextIndex) return {kind:'none'};
+    if(summary.nextIndexFailures>=MAX_POSITION_FAILURES) return {kind:'fail',reason:'POSITION_FAILED'};
+    return {kind:'generate',index:summary.nextIndex};
+}
+
+/** The learner-facing request the backend sends for the next position (mirrors what the browser used to send). */
+export function batchPositionPrompt(parent:any,summary:BatchSummary):string {
+    const first=parent?.artifact||{};
+    const topic=String(first.concept_name||first.concept_id||'');
+    const titles=summary.titles.filter(Boolean).join('; ');
+    return `Tạo 1 bài thực hành khác về ${topic} bằng ${first.language}. Tránh trùng các bài đã tạo: ${titles}.`;
 }
 
 /**

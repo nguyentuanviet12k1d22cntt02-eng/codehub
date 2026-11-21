@@ -1,11 +1,14 @@
 /**
- * Quy tắc tiếp tục một bộ bài thực hành (nhiều bài) bị dừng giữa chừng, ví dụ khi trang
- * được tải lại. Không có I/O, để kiểm thử độc lập; PersonalizedPath gọi API và React state.
+ * Theo dõi một bộ bài thực hành (nhiều bài). Backend tự tạo các bài 2..N và tự phát hành
+ * bộ bài (exerciseBatchWorker), kể cả khi không còn tab nào mở; trình duyệt chỉ hỏi tiến độ
+ * qua GET /adaptive/batch/:traceId và hiển thị. Không có I/O ở đây, để kiểm thử độc lập.
  */
 
 /** GET /adaptive/batch/:traceId — tiến độ của một bộ bài nhiều bài. */
-export interface BatchResumeStatus {
+export interface BatchStatus {
     rootTraceId: string;
+    /** Trạng thái thẻ bộ bài; backend cũ chưa có trường này. */
+    state?: 'GENERATING' | 'READY' | 'FAILED';
     published: boolean;
     pathId: string | null;
     expectedCount: number;
@@ -17,54 +20,27 @@ export interface BatchResumeStatus {
     exercise: { exercise_id: string; title: string; concept_id: string; concept_name?: string; language: string };
 }
 
-/** Một vị trí đã lỗi chừng này lần thì không tự thử lại mỗi lần tải trang. */
-export const MAX_POSITION_FAILURES = 2;
+/** Bao lâu hỏi tiến độ một lần. */
+export const BATCH_POLL_MS = 4000;
 
-export interface BatchPlan {
-    total: number;
-    done: Set<number>;
-    titles: string[];
-    /** Vị trí cần tạo, theo thứ tự (2..total, bỏ các vị trí đã xong). */
-    remaining: number[];
-    /** Vị trí kế tiếp đã lỗi quá số lần cho phép: đánh dấu bộ thất bại thay vì thử tiếp. */
-    exhausted: boolean;
+type BatchMessage = { metadata?: { practiceBatch?: { status?: string; rootTraceId?: string } } };
+
+/** Bộ bài đang tạo (thẻ GENERATING) trong đoạn chat, cần theo dõi tiến độ. */
+export function batchToWatch(messages: BatchMessage[]): string | null {
+    return messages.find(message => message.metadata?.practiceBatch?.status === 'GENERATING')
+        ?.metadata?.practiceBatch?.rootTraceId || null;
 }
 
-/** Kế hoạch cho một bộ bài: từ trạng thái backend (khi tiếp tục) hoặc từ bài 1 vừa tạo xong. */
-export function planBatch(expectedCount: number, firstTitle: string, status?: BatchResumeStatus): BatchPlan {
-    const total = Math.min(5, Math.max(1, Number(expectedCount) || 1));
-    const done = new Set<number>(status
-        ? status.titles.map((title, index) => (title ? index + 1 : 0)).filter(Boolean)
-        : [1]);
-    const titles = status
-        ? status.titles.filter((title): title is string => Boolean(title))
-        : [String(firstTitle || '')];
-    const remaining: number[] = [];
-    for (let index = 2; index <= total; index++) if (!done.has(index)) remaining.push(index);
-    const exhausted = Boolean(status && status.nextIndexFailures >= MAX_POSITION_FAILURES);
-    return { total, done, titles, remaining: exhausted ? [] : remaining, exhausted };
-}
+export type BatchPollOutcome =
+    | { kind: 'ready'; pathId: string }
+    | { kind: 'failed' }
+    | { kind: 'progress'; completedCount: number; expectedCount: number };
 
-/** Bộ bài nào trong đoạn chat cần tự tiếp tục (thẻ còn GENERATING và chưa được xử lý). */
-export function batchToResume(
-    messages: { metadata?: { practiceBatch?: { status?: string; rootTraceId?: string } } }[],
-    alreadyResuming: ReadonlySet<string>,
-): string | null {
-    const rootTraceId = messages.find(message => message.metadata?.practiceBatch?.status === 'GENERATING')
-        ?.metadata?.practiceBatch?.rootTraceId;
-    return rootTraceId && !alreadyResuming.has(rootTraceId) ? rootTraceId : null;
-}
-
-/** Có cần chạy vòng tạo bài không (bộ đã phát hành thì không). */
-export function shouldResume(status: BatchResumeStatus | undefined): status is BatchResumeStatus {
-    return Boolean(status && !status.published);
-}
-
-/**
- * Lỗi nào không được làm hỏng thẻ bộ bài:
- * - đang tiếp tục mà lỗi trước khi kịp chạy (ví dụ đọc trạng thái thất bại) → giữ nguyên thẻ;
- * - 409 trong lúc tạo bộ bài → tab khác đang làm tiếp, không đánh dấu thất bại.
- */
-export function isQuietBatchError(resuming: boolean, batchStarted: boolean, httpStatus?: number): boolean {
-    return (resuming && !batchStarted) || (batchStarted && httpStatus === 409);
+/** Kết quả một lần hỏi tiến độ: đã phát hành → mở bộ bài; thất bại → tải lại đoạn chat; còn lại → cập nhật thẻ. */
+export function batchPollOutcome(status: BatchStatus): BatchPollOutcome {
+    if (status.published && status.pathId) return { kind: 'ready', pathId: status.pathId };
+    if (status.state === 'FAILED') return { kind: 'failed' };
+    const expectedCount = Math.min(5, Math.max(1, Number(status.expectedCount) || 1));
+    const completedCount = Math.min(expectedCount, Math.max(0, Number(status.completedCount) || 0));
+    return { kind: 'progress', completedCount, expectedCount };
 }

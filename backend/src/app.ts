@@ -19,6 +19,7 @@ import roadmapRuntimeRoutes from './modules/onboarding/roadmapRuntimeRoutes';
 import { aiKeyAdminRouter, aiKeyInternalRouter } from './modules/ai-keys/aiKey.routes';
 import { adaptiveInternalRouter } from './modules/adaptive/adaptiveInternal.routes';
 import { startAdaptiveRetryWorker } from './modules/adaptive/adaptiveRetryWorker';
+import { startExerciseBatchWorker } from './modules/adaptive/exerciseBatchWorker';
 
 dotenv.config();
 
@@ -73,6 +74,7 @@ const startServer = (port: number) => {
     server.on('listening', () => {
         retryCount = 0;
         startAdaptiveRetryWorker();
+        startExerciseBatchWorker();
         console.log(`🚀 Express Backend Server đang chạy thành công tại http://localhost:${port}`);
     });
 

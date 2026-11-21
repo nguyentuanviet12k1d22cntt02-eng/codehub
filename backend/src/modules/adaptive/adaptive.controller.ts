@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { SessionLock, summarizeExerciseBatch, batchPositionTaken, batchReadyForPublish, batchProgressMessage, batchStatusView, isBatchRoot } from './exerciseBatch';
+import { SessionLock, summarizeExerciseBatch, batchPositionTaken, batchReadyForPublish, batchProgressMessage, batchStatusView, isBatchRoot, batchPositionPrompt, type BatchSummary } from './exerciseBatch';
 import { randomUUID, createHash } from 'crypto';
 import { z } from 'zod';
 import { prisma } from '../../infrastructure/database/prisma';
@@ -9,13 +9,15 @@ import { claimReviewRun, createRun, deferRun, finishRetryRun, finishRun, getRun,
 import { runExercise } from './adaptiveRunner';
 import { effectiveArtifact } from './contentVersioning';
 import { consumeSse } from './sse';
+import { wakeBatchWorker } from './exerciseBatchWorker';
 import { getEvidenceBasedUserMastery } from '../recommendations/recommendationController';
 import { AI_TUTOR_LOCKED_MESSAGE, getTutorAvailability } from '../ai-tutor/tutorAvailability';
 import { awsDockerConfigurationReady } from '../../infrastructure/sandbox/aws-docker/docker-grader.client';
 import { evidencePracticeGuidance, isGraderFailure, requestPracticeGuidance } from './practiceGuidance';
 
 const idSchema=z.string().uuid();
-const sessionLock=new SessionLock();
+/** Shared by chat turns and the batch worker: one in-flight pipeline per chat session in this process. */
+export const sessionLock=new SessionLock();
 const retryableProviderCodes=new Set(['PROVIDER_TIMEOUT','PROVIDER_NETWORK_ERROR','PROVIDER_SERVER_ERROR','PROVIDER_RATE_LIMITED','PROVIDER_DEADLINE_EXCEEDED','PROVIDER_RESPONSE_INVALID','PROVIDER_COOLDOWN','PROVIDER_FULL_POOL_OUTAGE','STAGE_BUDGET_EXHAUSTED','RUN_DEADLINE_EXCEEDED','LLM_BUDGET_EXCEEDED','SANDBOX_BACKEND_TIMEOUT','SANDBOX_BACKEND_UNREACHABLE']);
 // AI service trả HTTP 429 khi đã chạy đủ số pipeline đồng thời. Đây là tình trạng bận tạm thời,
 // không phải lỗi của yêu cầu: giữ yêu cầu và để worker tự thử lại thay vì báo "pipeline dừng".
@@ -90,6 +92,64 @@ export function validExerciseBatchContinuation(parent:any,sessionId:string,conce
         && parent?.artifact?.language===language;
 }
 
+/** Learner context sent to the AI service: requested language, evidence-based mastery and sandbox readiness. */
+async function pipelineLearnerContext(userId:string,sessionId:string,language?:string) {
+    const context:any=await learnerContext(userId,sessionId,language);
+    const masteryProfile=await getEvidenceBasedUserMastery(userId,context.language);
+    context.states=masteryProfile.evidence||{};
+    context.mastery_source='EVIDENCE_BASED_UNIFIED';
+    context.mastery_stats=masteryProfile.stats;
+    context.sandbox_configured=awsDockerConfigurationReady();
+    return context;
+}
+
+/** Close a run whose pipeline call broke (transport, storage or deadline); the stages already saved stay in the report. */
+async function failRun(traceId:string,userId:string,error:any) {
+    const saved=await getRun(traceId,userId);
+    const report={trace_id:traceId,schema_version:'4.0',status:'FAILED',exercise:null,agent_traces:saved?.report?.agent_traces||[],
+        reply:'Kết nối pipeline dừng trước khi hoàn thành. Các bước đã chạy được lưu trong báo cáo.',error:{code:error?.name==='AbortError'?'RUN_DEADLINE_EXCEEDED':'TRANSPORT_OR_STORAGE_ERROR',message:error?.message},fallback_used:false};
+    await finishRun(traceId,report);
+    return report;
+}
+
+/**
+ * Run one created run through the AI service and store its outcome: SUCCEEDED/FAILED
+ * via finishRun, a retryable provider failure via deferRun (the retry worker picks it
+ * up). Needs no HTTP response, so the batch worker uses it as well as chat().
+ * Throws only for transport/storage errors; callers close the run with failRun.
+ */
+async function executePipelineRun(traceId:string,request:any,onStage?:(event:any)=>void) {
+    let report:any;
+    const abort=new AbortController();
+    const body=JSON.stringify(request);
+    const timer=setTimeout(()=>abort.abort(),upstreamPipelineTimeoutMs);
+    try {
+        const upstream=await fetch((process.env.AI_SERVICE_URL||'http://127.0.0.1:8000')+'/pal-net/adaptive-tutor-agent/stream',
+            {method:'POST',headers:internalHeaders(body),body,signal:abort.signal});
+        if(upstream.status===429) {
+            await upstream.body?.cancel().catch(()=>{});
+            report=aiServiceBusyReport(traceId);
+        } else {
+            if(!upstream.ok||!upstream.body) throw Error('AI_SERVICE_HTTP_'+upstream.status);
+            await consumeSse(upstream.body,async event=>{
+                if(event.type==='agent_step' && event.record) {
+                    await saveStage(traceId,event.record);
+                    onStage?.(event);
+                } else if(event.type==='complete') report=event.data;
+                else if(event.type==='error') throw Error(event.error||'AI_STREAM_FAILED');
+            });
+            if(!report || report.trace_id!==traceId) throw Error('AI_STREAM_INCOMPLETE');
+            // No artifact may enter storage without a genuine completed publication gate.
+            if(report.exercise && (report.status!=='SUCCEEDED' || !report.agent_traces?.some((s:any)=>s.agent==='PublicationGate'&&s.status==='SUCCEEDED'&&s.output?.approved===true))) throw Error('PUBLICATION_GATE_MISSING');
+        }
+        if (isRetryableProviderFailure(report.error?.code)) {
+            report={...report,status:'WAITING_PROVIDER',reply:waitingProviderReply(report.error?.code,'Provider tạm thời chưa trả được kết quả hợp lệ. Yêu cầu được giữ lại để tự thử lại; chưa có bài nào được phát hành.')};
+            await deferRun(traceId,report,providerRetryDelay(report.error,0));
+        } else await finishRun(traceId,report);
+        return report;
+    } finally { clearTimeout(timer); }
+}
+
 async function chat(req:AuthenticatedRequest,res:Response,isStart:boolean,stream:boolean,autoPublish=false) {
     const userId=req.user!.id;
     let traceId:string|undefined,session:any,report:any,userMessage:any;
@@ -97,7 +157,6 @@ async function chat(req:AuthenticatedRequest,res:Response,isStart:boolean,stream
     let lockHeld=false;
     let batchTotal:number|undefined;
     const send=(value:any)=>{if(!res.destroyed)res.write('data: '+JSON.stringify(value)+'\n\n');};
-    const abort=new AbortController();
     try {
         const availability = await getTutorAvailability();
         if (!availability.enabled) {
@@ -152,13 +211,8 @@ async function chat(req:AuthenticatedRequest,res:Response,isStart:boolean,stream
         pendingConfirmation=recoverLearningModeConfirmation(content,pendingConfirmation,session.messages)||pendingConfirmation;
         const confirmedLanguage=selectedLanguage||confirmedLanguageForReply(content,pendingConfirmation);
         const sessionLanguage=!confirmedLanguage&&!req.body.language?confirmedSessionLanguage(session.messages):undefined;
-        const context:any=await learnerContext(userId,session.id,confirmedLanguage||req.body.language||sessionLanguage);
+        const context:any=await pipelineLearnerContext(userId,session.id,confirmedLanguage||req.body.language||sessionLanguage);
         if(sessionLanguage) context.language_source='previous';
-        const masteryProfile=await getEvidenceBasedUserMastery(userId,context.language);
-        context.states=masteryProfile.evidence||{};
-        context.mastery_source='EVIDENCE_BASED_UNIFIED';
-        context.mastery_stats=masteryProfile.stats;
-        context.sandbox_configured=awsDockerConfigurationReady();
         if(pendingConfirmation?.target_concept_id||['ROUTING_CLARIFICATION','EXERCISE_COUNT_SELECTION'].includes(pendingConfirmation?.type)) context.pending_confirmation=pendingConfirmation;
         if(batchContinuation) {
             context.batch_continuation=true;
@@ -187,41 +241,13 @@ async function chat(req:AuthenticatedRequest,res:Response,isStart:boolean,stream
             res.setHeader('Content-Type','text/event-stream');res.setHeader('Cache-Control','no-cache');res.setHeader('X-Accel-Buffering','no');res.flushHeaders();
             send({type:'session_created',sessionId:session.id,trace_id:traceId});
         }
-        const body=JSON.stringify(request);
-        const timer=setTimeout(()=>abort.abort(),upstreamPipelineTimeoutMs);
-        try {
-            const upstream=await fetch((process.env.AI_SERVICE_URL||'http://127.0.0.1:8000')+'/pal-net/adaptive-tutor-agent/stream',
-                {method:'POST',headers:internalHeaders(body),body,signal:abort.signal});
-            if(upstream.status===429) {
-                await upstream.body?.cancel().catch(()=>{});
-                report=aiServiceBusyReport(traceId);
-            } else {
-                if(!upstream.ok||!upstream.body) throw Error('AI_SERVICE_HTTP_'+upstream.status);
-                await consumeSse(upstream.body,async event=>{
-                    if(event.type==='agent_step' && event.record) {
-                        await saveStage(traceId!,event.record);
-                        if(stream)send({...event,record:publicRecord(event.record)});
-                    } else if(event.type==='complete') report=event.data;
-                    else if(event.type==='error') throw Error(event.error||'AI_STREAM_FAILED');
-                });
-                if(!report || report.trace_id!==traceId) throw Error('AI_STREAM_INCOMPLETE');
-                // No artifact may enter storage without a genuine completed publication gate.
-                if(report.exercise && (report.status!=='SUCCEEDED' || !report.agent_traces?.some((s:any)=>s.agent==='PublicationGate'&&s.status==='SUCCEEDED'&&s.output?.approved===true))) throw Error('PUBLICATION_GATE_MISSING');
-            }
-            if (isRetryableProviderFailure(report.error?.code)) {
-                report={...report,status:'WAITING_PROVIDER',reply:waitingProviderReply(report.error?.code,'Provider tạm thời chưa trả được kết quả hợp lệ. Yêu cầu được giữ lại để tự thử lại; chưa có bài nào được phát hành.')};
-                await deferRun(traceId,report,providerRetryDelay(report.error,0));
-            } else await finishRun(traceId,report);
-        } finally { clearTimeout(timer); }
+        report=await executePipelineRun(traceId,request,stream?event=>send({...event,record:publicRecord(event.record)}):undefined);
     } catch(error:any) {
         if(!traceId || !session) {
             res.status(error instanceof z.ZodError?400:503).json({success:false,error:error instanceof z.ZodError?'Yêu cầu không hợp lệ':'Không khởi tạo được pipeline'});
             return;
         }
-        const saved=await getRun(traceId,userId);
-        report={trace_id:traceId,schema_version:'4.0',status:'FAILED',exercise:null,agent_traces:saved?.report?.agent_traces||[],
-            reply:'Kết nối pipeline dừng trước khi hoàn thành. Các bước đã chạy được lưu trong báo cáo.',error:{code:error.name==='AbortError'?'RUN_DEADLINE_EXCEEDED':'TRANSPORT_OR_STORAGE_ERROR',message:error.message},fallback_used:false};
-        await finishRun(traceId,report);
+        report=await failRun(traceId,userId,error);
     } finally {
         // Only the request that took the lock releases it; a rejected 409 must not unlock a running turn.
         if(session) sessionLock.release(session.id,lockHeld);
@@ -238,6 +264,8 @@ async function chat(req:AuthenticatedRequest,res:Response,isStart:boolean,stream
             suggestedOptions:isBatchParent?[]:safe.suggested_options||[],
             practiceBatch:isBatchParent?{status:'GENERATING',expectedCount:Number(safe.exercise_count),completedCount:1,rootTraceId:safe.trace_id}:undefined,
             pendingConfirmation:safe.pending_confirmation||null,step:isBatchParent?'PRACTICE_BATCH':safe.exercise?'EXERCISE_READY':'CHAT'}}});
+    // The backend generates positions 2..N on its own; start now instead of at the next worker tick.
+    if(isBatchParent) wakeBatchWorker();
     const payload={type:'complete',success:true,sessionId:session.id,
         ...(batchContinuation?{}:{userMessage,aiMessage}),
         ...(isStart&&aiMessage?{messages:[userMessage,aiMessage]}:{}),pipeline:safe,exercise:safe.exercise};
@@ -377,11 +405,66 @@ export async function syncBatchProgressMessage(parentTrace:string,userId:string)
     const parent=await getRun(parentTrace,userId);
     if(!parent||parent.path_id) return;
     const summary=summarizeExerciseBatch(parent,await batchRuns(parent,userId));
+    const card=await batchCardMessage(parent);
+    const update=card?batchProgressMessage(card.metadata,summary):null;
+    if(update) await prisma.pathChatMessage.update({where:{id:card!.id},data:update});
+}
+
+/** The chat message that shows a batch (its "card"), or undefined. */
+export async function batchCardMessage(parent:any):Promise<{id:string,metadata:any}|undefined> {
     const messages:any[]=await prisma.$queryRawUnsafe(
         "SELECT id,metadata FROM path_chat_messages WHERE session_id=$1::uuid AND sender='AI_TUTOR' AND metadata->'pipeline'->>'trace_id'=$2 ORDER BY created_at DESC LIMIT 1",
-        parent.session_id,parentTrace);
-    const update=messages[0]?batchProgressMessage(messages[0].metadata,summary):null;
-    if(update) await prisma.pathChatMessage.update({where:{id:messages[0].id},data:update});
+        parent.session_id,parent.trace_id);
+    return messages[0];
+}
+
+export async function loadBatchSummary(parent:any) {
+    return summarizeExerciseBatch(parent,await batchRuns(parent,parent.user_id));
+}
+
+/**
+ * Generate one batch position on the server (no HTTP request involved): the same
+ * pipeline request the browser used to send for a continuation. Returns null when
+ * another worker or tab already holds this position (unique index), else the report.
+ */
+export async function generateBatchPosition(parent:any,index:number,summary:BatchSummary) {
+    const userId=parent.user_id,sessionId=parent.session_id;
+    const language=String(parent.artifact.language),conceptId=String(parent.artifact.concept_id);
+    const recent=await prisma.pathChatMessage.findMany({where:{sessionId},orderBy:{createdAt:'desc'},take:20});
+    const content=batchPositionPrompt(parent,summary);
+    const traceId='trace_'+randomUUID().replace(/-/g,'');
+    const context:any=await pipelineLearnerContext(userId,sessionId,language);
+    context.batch_continuation=true;
+    context.batch_index=index;
+    context.batch_total=Number(parent.report.exercise_count);
+    const request={user_id:userId,session_id:sessionId,trace_id:traceId,
+        messages:[...recent.reverse(),{sender:'USER',content}].slice(-20).map((m:any)=>({sender:m.sender,content:m.content})),
+        language,target_concept_id:conceptId,learner_context:context,
+        run_attempt:1,sequence_offset:0,review_mode:false,
+        batch_parent_trace_id:parent.trace_id,batch_index:index};
+    try {
+        await createRun(traceId,userId,sessionId,request);
+    } catch(error:any) {
+        if(isUniqueViolation(error)) return null;
+        throw error;
+    }
+    let report:any;
+    try { report=await executePipelineRun(traceId,request); }
+    catch(error:any) { report=await failRun(traceId,userId,error); }
+    if(report.status==='SUCCEEDED') await syncBatchProgressMessage(parent.trace_id,userId).catch(()=>{});
+    return report;
+}
+
+/** Close an unfinished batch: the card says how many exercises were verified and nothing is published. */
+export async function markBatchFailed(parent:any) {
+    const expected=Number(parent.report?.exercise_count);
+    const completed=(await loadBatchSummary(parent)).completed;
+    const card=await batchCardMessage(parent);
+    if(card) await prisma.pathChatMessage.update({where:{id:card.id},data:{
+        content:`Mới kiểm định được ${completed}/${expected} bài. Chưa phát hành bộ bài vì chưa đủ số lượng bạn yêu cầu.`,
+        metadata:{...card.metadata,exercise:null,suggestedOptions:[],step:'PRACTICE_BATCH_FAILED',
+            practiceBatch:{status:'FAILED',expectedCount:expected,completedCount:completed,rootTraceId:parent.trace_id}}}});
+    return {completedCount:completed,expectedCount:expected};
 }
 
 export async function getExerciseBatchStatus(req:AuthenticatedRequest,res:Response) {
@@ -390,11 +473,12 @@ export async function getExerciseBatchStatus(req:AuthenticatedRequest,res:Respon
         const parent=await getRun(traceId,req.user!.id);
         if(!isBatchRoot(parent)){res.status(404).json({success:false,error:'BATCH_NOT_FOUND'});return;}
         const summary=summarizeExerciseBatch(parent,await batchRuns(parent,req.user!.id));
-        res.json({success:true,data:batchStatusView(parent,summary)});
+        const card=await batchCardMessage(parent);
+        res.json({success:true,data:batchStatusView(parent,summary,card?.metadata?.practiceBatch?.status)});
     } catch(error:any){res.status(error instanceof z.ZodError?400:500).json({success:false,error:'BATCH_STATUS_FAILED'});}
 }
 
-async function publishExerciseBatch(selected:any,userId:string) {
+export async function publishExerciseBatch(selected:any,userId:string) {
     const parentTrace=selected.request?.batch_parent_trace_id||selected.trace_id;
     const parent=await getRun(parentTrace,userId);
     const expected=Number(parent?.report?.exercise_count);
@@ -462,15 +546,7 @@ export async function markExerciseBatchFailed(req:AuthenticatedRequest,res:Respo
         if(!parent || parent.path_id || !Number.isInteger(expected) || expected<2 || expected>5) {
             res.status(409).json({success:false,error:'BATCH_NOT_PENDING'});return;
         }
-        const completed=summarizeExerciseBatch(parent,await batchRuns(parent,req.user!.id)).completed;
-        const messages:any[]=await prisma.$queryRawUnsafe(
-            "SELECT id,metadata FROM path_chat_messages WHERE session_id=$1::uuid AND sender='AI_TUTOR' AND metadata->'pipeline'->>'trace_id'=$2 ORDER BY created_at DESC LIMIT 1",
-            parent.session_id,traceId);
-        if(messages[0]) await prisma.pathChatMessage.update({where:{id:messages[0].id},data:{
-            content:`Mới kiểm định được ${completed}/${expected} bài. Chưa phát hành bộ bài vì chưa đủ số lượng bạn yêu cầu.`,
-            metadata:{...messages[0].metadata,exercise:null,suggestedOptions:[],step:'PRACTICE_BATCH_FAILED',
-                practiceBatch:{status:'FAILED',expectedCount:expected,completedCount:completed,rootTraceId:traceId}}}});
-        res.json({success:true,completedCount:completed,expectedCount:expected});
+        res.json({success:true,...await markBatchFailed(parent)});
     } catch(error:any){res.status(error instanceof z.ZodError?400:500).json({success:false,error:'BATCH_UPDATE_FAILED'});}
 }
 

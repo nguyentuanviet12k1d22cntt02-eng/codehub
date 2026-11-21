@@ -230,3 +230,18 @@ export async function storeGrading(id:string,userId:string,run:any,result:any) {
         return stored;
     });
 }
+
+/**
+ * Batch roots the backend still has to finish: a verified first exercise of a 2..5
+ * exercise request, not yet published, whose chat card still says GENERATING.
+ */
+export const PENDING_BATCH_ROOTS_SQL="SELECT r.* FROM adaptive_generation_runs r "+
+    "JOIN LATERAL (SELECT pm.metadata FROM path_chat_messages pm WHERE pm.session_id=r.session_id AND pm.sender='AI_TUTOR' "+
+    "AND pm.metadata->'pipeline'->>'trace_id'=r.trace_id ORDER BY pm.created_at DESC LIMIT 1) card ON true "+
+    "WHERE r.status='SUCCEEDED' AND r.path_id IS NULL AND NOT (r.request ? 'batch_parent_trace_id') "+
+    "AND r.report->>'exercise_count' IN ('2','3','4','5') "+
+    "AND card.metadata->'practiceBatch'->>'status'='GENERATING' ORDER BY r.created_at LIMIT $1";
+export async function pendingBatchRoots(limit=20):Promise<any[]> {
+    await ensureStorage();
+    return rows(PENDING_BATCH_ROOTS_SQL,limit);
+}

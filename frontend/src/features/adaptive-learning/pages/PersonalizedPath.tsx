@@ -24,7 +24,7 @@ import { AITutorChat, type ChatMessage } from '../../ai-tutor/components/AITutor
 import type { AdaptiveRunReport } from '../../ai-tutor/components/AgentEvidencePanel';
 import { ChatHttpError, chatHttpErrorMessage } from '../chatHttpError';
 import { withPendingRuns } from '../pendingRuns';
-import { planBatch, batchToResume, shouldResume, isQuietBatchError, type BatchResumeStatus } from '../batchResume';
+import { batchToWatch, batchPollOutcome, BATCH_POLL_MS, type BatchStatus } from '../batchResume';
 import {
     RobotAvatar,
     RobotHelpCardIllustration,
@@ -312,10 +312,10 @@ const PersonalizedPath: React.FC = () => {
     }, [activeSessionId, chatMessages, chatLoading, isTutorLocked, handleContinueAgent]);
 
     // Send or Start Interactive Chat Session (Real-Time SSE Streaming from AI Multi-Agent Pipeline).
-    // With `resume`, no new message is sent: an unfinished practice batch (e.g. the page was
-    // reloaded mid-batch) continues from its first position that has no verified exercise.
-    const handleSendMessage = async (msgText: string, resume?: BatchResumeStatus) => {
-        if ((!msgText.trim() && !resume) || chatLoading || isTutorLocked) return;
+    // A multi-exercise request returns after its first verified exercise; the backend then
+    // generates and publishes the rest on its own (see the batch-progress effect below).
+    const handleSendMessage = async (msgText: string) => {
+        if (!msgText.trim() || chatLoading || isTutorLocked) return;
 
         let sessionId = activeSessionId;
         if (!sessionId) sessionChoiceVersion.current += 1;
@@ -324,19 +324,14 @@ const PersonalizedPath: React.FC = () => {
         setChatLoading(true);
         setCurrentAgentStep(null);
 
-        let batchRootTraceId: string | null = null;
         try {
-            const sendOne = async (text: string, batch?: { parentTraceId: string; index: number; conceptId: string; language: string; total: number }) => {
+            const sendOne = async (text: string) => {
                 if (choiceVersion !== sessionChoiceVersion.current) return null;
-                const optimisticUserMsg: ChatMessage | null = batch ? null : { sender: 'USER', content: text, timestamp: new Date().toISOString() };
-                if (optimisticUserMsg) setChatMessages(prev => [...prev, optimisticUserMsg]);
+                const optimisticUserMsg: ChatMessage = { sender: 'USER', content: text, timestamp: new Date().toISOString() };
+                setChatMessages(prev => [...prev, optimisticUserMsg]);
                 const starting = !sessionId;
                 const url = `${API_BASE_URL}/api/learning-path/chat/${starting ? 'start-stream' : 'reply-stream'}`;
-                const body = starting ? { goal: text } : {
-                    sessionId, content: text,
-                    ...(batch ? { batchParentTraceId: batch.parentTraceId, batchIndex: batch.index,
-                        target_concept_id: batch.conceptId, language: batch.language } : {})
-                };
+                const body = starting ? { goal: text } : { sessionId, content: text };
                 const response = await fetch(url, { method: 'POST', headers: {
                     'Content-Type': 'application/json', Authorization: `Bearer ${authToken}`
                 }, body: JSON.stringify(body) });
@@ -361,14 +356,14 @@ const PersonalizedPath: React.FC = () => {
                         }
                     } else if (data.type === 'agent_step') {
                         if (choiceVersion === sessionChoiceVersion.current) setCurrentAgentStep({ agent: data.agent, title: data.title, desc: data.desc,
-                            icon: data.icon, step: batch ? `Bài ${batch.index}/${batch.total} · ${data.step || ''}` : data.step });
+                            icon: data.icon, step: data.step });
                     } else if (data.type === 'complete') {
                         completedReport = data.pipeline;
                         if (choiceVersion === sessionChoiceVersion.current && data.messages) setChatMessages(data.messages);
-                        else if (choiceVersion === sessionChoiceVersion.current && data.aiMessage && optimisticUserMsg) setChatMessages(prev => [
+                        else if (choiceVersion === sessionChoiceVersion.current && data.aiMessage) setChatMessages(prev => [
                             ...prev.filter(m => m !== optimisticUserMsg), data.userMessage, data.aiMessage
                         ]);
-                        if (!batch) fetchChatSessions(authToken || undefined);
+                        fetchChatSessions(authToken || undefined);
                     } else if (data.type === 'error') throw new Error(data.error || 'Lỗi xử lý luồng AI');
                 };
                 while (true) {
@@ -428,104 +423,13 @@ const PersonalizedPath: React.FC = () => {
                     setChatMessages(response.data.session.messages || []);
             };
 
-            const updateBatchProgress = (rootTraceId: string, completedCount: number, expectedCount: number) => {
-                if (choiceVersion !== sessionChoiceVersion.current) return;
-                setChatMessages(previous => previous.map(message =>
-                    message.metadata?.practiceBatch?.rootTraceId !== rootTraceId ? message : {
-                        ...message,
-                        metadata: {
-                            ...message.metadata,
-                            practiceBatch: {
-                                ...message.metadata.practiceBatch,
-                                status: 'GENERATING',
-                                completedCount,
-                                expectedCount
-                            }
-                        }
-                    }
-                ));
-            };
-
-            const fetchBatchStatus = async (rootTraceId: string): Promise<BatchResumeStatus> =>
-                (await axios.get(`${API_BASE_URL}/api/learning-path/adaptive/batch/${rootTraceId}`,
-                    { headers: { Authorization: `Bearer ${authToken}` } })).data.data;
-
-            let first: Awaited<ReturnType<typeof settleReport>>;
-            let batchStatus = resume;
-            if (batchStatus) {
-                // A position may still be generating on the server from the previous page.
-                const deadline = Date.now() + 20 * 60 * 1000;
-                while (batchStatus.running && Date.now() < deadline && choiceVersion === sessionChoiceVersion.current) {
-                    setCurrentAgentStep({ step: `Bài ${batchStatus.completedCount + 1}/${batchStatus.expectedCount}`,
-                        title: 'Đang chờ bài đang tạo dở hoàn tất' });
-                    await new Promise(resolve => setTimeout(resolve, 5000));
-                    batchStatus = await fetchBatchStatus(batchStatus.rootTraceId);
-                }
-                if (batchStatus.running || choiceVersion !== sessionChoiceVersion.current) return;
-                first = { status: 'SUCCEEDED', trace_id: batchStatus.rootTraceId,
-                    exercise_count: batchStatus.expectedCount, exercise: batchStatus.exercise };
-            } else {
-                first = await settleReport(await sendOne(msgText),1);
-                // Replace the waiting response even when the durable retry ends in
-                // failure or clarification. A stale WAITING_PROVIDER card must not linger.
-                if (first) await refreshMessages();
-            }
-            if (first?.status === 'SUCCEEDED' && first.exercise && first.exercise_count > 1
-                && choiceVersion === sessionChoiceVersion.current) {
-                batchRootTraceId=first.trace_id;
-                // Positions already verified are skipped; a position that already failed
-                // twice is not retried on every reload (plan.remaining is then empty).
-                const plan = planBatch(Number(first.exercise_count), String(first.exercise.title || ''), batchStatus);
-                const { total, done, titles } = plan;
-                let completed = done.size;
-                updateBatchProgress(first.trace_id, completed, total);
-                for (const index of plan.remaining) {
-                    if (choiceVersion !== sessionChoiceVersion.current) break;
-                    setCurrentAgentStep({ step: `Bài ${index}/${total}`, title: 'Đang tạo bài thực hành tiếp theo' });
-                    const topic = String(first.exercise.concept_name || first.exercise.concept_id);
-                    const prompt = `Tạo 1 bài thực hành khác về ${topic} bằng ${first.exercise.language}. Tránh trùng các bài đã tạo: ${titles.join('; ')}.`;
-                    const next = await settleReport(await sendOne(prompt, { parentTraceId: first.trace_id, index,
-                        conceptId: first.exercise.concept_id, language: first.exercise.language, total }),index);
-                    if (next?.status !== 'SUCCEEDED' || !next.exercise) break;
-                    titles.push(String(next.exercise.title || ''));
-                    done.add(index);
-                    completed += 1;
-                    updateBatchProgress(first.trace_id, completed, total);
-                }
-                if (choiceVersion === sessionChoiceVersion.current && completed === total) {
-                    const published = await axios.post(`${API_BASE_URL}/api/learning-path/adaptive/start-exercise`,
-                        { exercise_id: first.exercise.exercise_id },
-                        { headers: { Authorization: `Bearer ${authToken}` } });
-                    if (published.data.success && published.data.pathId && Number(published.data.exerciseCount) === total) {
-                        batchRootTraceId=null;
-                        navigate(`/personalized-path/${published.data.pathId}`);
-                    } else {
-                        throw new Error(`Bộ bài phát hành không đủ ${total} bài theo yêu cầu`);
-                    }
-                } else if (choiceVersion === sessionChoiceVersion.current) {
-                    await axios.post(`${API_BASE_URL}/api/learning-path/adaptive/batch-failed`,
-                        {parentTraceId:first.trace_id,completedCount:completed},
-                        {headers:{Authorization:`Bearer ${authToken}`}});
-                    batchRootTraceId=null;
-                    await refreshMessages();
-                }
-            }
+            const first = await settleReport(await sendOne(msgText),1);
+            // Replace the waiting response even when the durable retry ends in failure or
+            // clarification (a stale WAITING_PROVIDER card must not linger). A batch card
+            // comes back GENERATING and the batch-progress effect follows it from here.
+            if (first) await refreshMessages();
         } catch (e: any) {
-            // Another tab is already continuing this batch (409), or the status check
-            // failed before anything ran: leave the batch card untouched.
-            if (isQuietBatchError(Boolean(resume), Boolean(batchRootTraceId), e instanceof ChatHttpError ? e.status : undefined)) {
-                console.warn('Batch resume skipped:', e);
-                return;
-            }
             console.error('Chat stream error:', e);
-            if (batchRootTraceId) await axios.post(`${API_BASE_URL}/api/learning-path/adaptive/batch-failed`,
-                {parentTraceId:batchRootTraceId},
-                {headers:{Authorization:`Bearer ${authToken}`}}).catch(()=>{});
-            if (batchRootTraceId) setChatMessages(prev=>prev.map(message=>
-                message.metadata?.practiceBatch?.rootTraceId===batchRootTraceId?{
-                    ...message,content:'Bộ bài chưa đủ số lượng yêu cầu nên chưa được phát hành.',
-                    metadata:{...message.metadata,practiceBatch:{...message.metadata.practiceBatch!,status:'FAILED'}}
-                }:message));
             const errorMsg: ChatMessage = {
                 sender: 'AI_TUTOR',
                 // Lỗi HTTP có thông điệp riêng; chỉ lỗi mạng thật mới gọi là "kết nối gián đoạn".
@@ -533,7 +437,7 @@ const PersonalizedPath: React.FC = () => {
                     : `Xin lỗi bạn, kết nối tới AI Tutor tạm thời gián đoạn: ${e.message || 'Không có phản hồi'}. Bạn vui lòng thử lại nhé!`,
                 timestamp: new Date().toISOString()
             };
-            if (choiceVersion === sessionChoiceVersion.current && !batchRootTraceId) setChatMessages(prev => {
+            if (choiceVersion === sessionChoiceVersion.current) setChatMessages(prev => {
                 const last = prev.at(-1);
                 if (last?.sender !== 'AI_TUTOR') return [...prev, errorMsg];
                 return [...prev.slice(0, -1), { ...last, content: errorMsg.content,
@@ -548,36 +452,51 @@ const PersonalizedPath: React.FC = () => {
         }
     };
 
-    // The batch loop runs in this tab. If the page was reloaded or the session
-    // reopened mid-batch, continue the unfinished batch instead of leaving it
-    // stuck at "GENERATING" forever.
-    const sendMessageRef = useRef(handleSendMessage);
-    useEffect(() => { sendMessageRef.current = handleSendMessage; });
-    const resumingBatches = useRef(new Set<string>());
+    // The backend generates and publishes a practice batch on its own (it finishes even
+    // with no tab open). This tab only follows its progress: it updates the batch card,
+    // opens the batch once published, and reloads the chat if the batch failed. Any
+    // number of tabs can follow the same batch.
+    const watchedBatch = batchToWatch(chatMessages);
+    const batchGenerating = Boolean(watchedBatch);
     useEffect(() => {
-        if (!activeSessionId || chatLoading || isTutorLocked || !token) return;
-        const rootTraceId = batchToResume(chatMessages, resumingBatches.current);
-        if (!rootTraceId) return;
-        resumingBatches.current.add(rootTraceId);
+        if (!activeSessionId || !token || !watchedBatch) return;
         const choiceVersion = sessionChoiceVersion.current;
+        const headers = { Authorization: `Bearer ${token}` };
+        let stopped = false;
+        const active = () => !stopped && choiceVersion === sessionChoiceVersion.current;
         void (async () => {
-            let ran = false;
-            try {
-                const response = await axios.get(`${API_BASE_URL}/api/learning-path/adaptive/batch/${rootTraceId}`,
-                    { headers: { Authorization: `Bearer ${token}` } });
-                const status = response.data?.data as BatchResumeStatus | undefined;
-                if (!shouldResume(status) || choiceVersion !== sessionChoiceVersion.current) return;
-                ran = true;
-                await sendMessageRef.current('', status);
-            } catch (error) {
-                console.error('Batch status error:', error);
-            } finally {
-                // Allow another attempt only after a resume actually ran (e.g. the learner
-                // switched session mid-way); a missing or published batch is not retried.
-                if (ran) resumingBatches.current.delete(rootTraceId);
+            while (active()) {
+                try {
+                    const status = (await axios.get(`${API_BASE_URL}/api/learning-path/adaptive/batch/${watchedBatch}`,
+                        { headers })).data?.data as BatchStatus | undefined;
+                    if (!status || !active()) return;
+                    const outcome = batchPollOutcome(status);
+                    if (outcome.kind === 'ready') {
+                        navigate(`/personalized-path/${outcome.pathId}`);
+                        return;
+                    }
+                    if (outcome.kind === 'failed') {
+                        const response = await axios.get(`${API_BASE_URL}/api/learning-path/chat/session/${activeSessionId}`, { headers });
+                        if (active() && response.data.success) setChatMessages(response.data.session.messages || []);
+                        return;
+                    }
+                    setChatMessages(previous => previous.map(message =>
+                        message.metadata?.practiceBatch?.rootTraceId !== watchedBatch
+                            || message.metadata.practiceBatch.completedCount === outcome.completedCount ? message : {
+                            ...message,
+                            metadata: { ...message.metadata, practiceBatch: { ...message.metadata.practiceBatch,
+                                completedCount: outcome.completedCount, expectedCount: outcome.expectedCount } }
+                        }));
+                } catch (error: any) {
+                    // Not a batch (404): stop. Anything else (network, 5xx): keep following.
+                    if (error?.response?.status === 404) return;
+                    console.warn('Batch progress error:', error);
+                }
+                await new Promise(resolve => setTimeout(resolve, BATCH_POLL_MS));
             }
         })();
-    }, [activeSessionId, chatMessages, chatLoading, isTutorLocked, token]);
+        return () => { stopped = true; };
+    }, [activeSessionId, token, watchedBatch, navigate]);
 
     // Confirm and Build Final Path -> Redirect to Workspace Page
     const handleConfirmPath = async () => {
@@ -805,7 +724,7 @@ const PersonalizedPath: React.FC = () => {
                         onRetrySettled={handleRetrySettled}
                         onBack={() => navigate('/dashboard')}
                         onNewChat={handleNewChat}
-                        loading={chatLoading}
+                        loading={chatLoading || batchGenerating}
                         currentAgentStep={currentAgentStep}
                         isTutorLocked={isTutorLocked}
                         lockMessage={tutorLockMessage}
