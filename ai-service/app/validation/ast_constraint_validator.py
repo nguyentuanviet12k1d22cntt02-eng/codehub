@@ -1,4 +1,7 @@
 import ast
+import io
+import re
+import tokenize
 from typing import Dict, Any, List, Tuple
 from app.contracts.specification import ExerciseSpecification
 
@@ -37,7 +40,7 @@ class AstConstraintValidator:
             starter_spec = spec.model_copy(update={"required_constructs": []})
             starter_errors: List[str] = []
             if lang == "python":
-                cls._validate_python_ast(starter, starter_spec, starter_errors)
+                cls._validate_python_starter(starter, starter_spec, starter_errors)
             elif lang == "javascript":
                 cls._validate_js_constructs(starter, starter_spec, starter_errors)
             elif lang == "cpp":
@@ -90,6 +93,33 @@ class AstConstraintValidator:
     def _has_sequence(tokens: List[str], *items: str) -> bool:
         return any(tokens[index:index + len(items)] == list(items)
                    for index in range(len(tokens) - len(items) + 1))
+
+    @classmethod
+    def _validate_python_starter(cls, starter: str, spec: ExerciseSpecification, errors: List[str]):
+        """Starter code may be incomplete on purpose (``items = `` for the learner to fill in).
+
+        A complete starter gets the full AST check. An incomplete one is not a
+        syntax error; only the forbidden techniques are looked for, by token.
+        """
+        try:
+            ast.parse(starter)
+        except SyntaxError:
+            keywords = {"for": "for", "while": "while", "lambda": "lambda", "global": "global",
+                        "class": "class", "def": "def"}
+            try:
+                names = {tok.string for tok in tokenize.generate_tokens(io.StringIO(starter).readline)
+                         if tok.type == tokenize.NAME}
+            except (tokenize.TokenError, IndentationError, SyntaxError):
+                names = set(re.findall(r"[A-Za-z_]\w*", re.sub(r"#.*", "", starter)))
+            for forb in spec.forbidden_constructs:
+                f = forb.lower().strip()
+                name = "def" if f == "function" else f
+                if name in keywords and name in names:
+                    errors.append(f"Mã khung dùng '{name}' mà đặc tả cấm.")
+                elif f in ("sum", "sorted", "sort") and f in names:
+                    errors.append(f"Mã khung dùng {f} mà đặc tả cấm.")
+            return
+        cls._validate_python_ast(starter, spec, errors)
 
     @classmethod
     def _validate_python_ast(cls, code: str, spec: ExerciseSpecification, errors: List[str]):
