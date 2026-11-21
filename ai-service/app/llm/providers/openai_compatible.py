@@ -3,11 +3,18 @@ import time
 import requests
 from typing import Optional
 
+from app.llm.pipeline.health import block_model, model_available, record_outcome
+
+# A model the account cannot use (404) stays skipped for this long.
+MODEL_NOT_FOUND_SECONDS = 6 * 3600
+
 
 class OpenAICompatibleProviderMixin:
 
     def _call_groq(self, key: str, prompt: str, system_prompt: str = None) -> Optional[str]:
-        models_to_try = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "qwen/qwen3.8-27b"]
+        # qwen is what the current Groq keys serve (the llama models answer 404).
+        models_to_try = [name for name in ("qwen/qwen3.8-27b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant")
+                         if model_available("GROQ", name)]
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
@@ -35,11 +42,16 @@ class OpenAICompatibleProviderMixin:
                     content = result["choices"][0]["message"]["content"]
                     print(f"\n[AI-POOL] [SUCCESS] GROQ ({model_name}) SUCCESS in {lat}ms!", flush=True)
                     self.log_call("GROQ", model_name, key, "SUCCESS", 200, lat, prompt, content)
+                    record_outcome("GROQ", True)
                     return content
                 elif res.status_code in (429, 403):
                     self.mark_key_exhausted(key, "GROQ", 60.0, f"HTTP {res.status_code} Quota/Rate Limit")
                     self.log_call("GROQ", model_name, key, "FAILED", res.status_code, lat, prompt, None, f"HTTP {res.status_code} Quota")
                     return None
+                elif res.status_code == 404:
+                    block_model("GROQ", model_name, MODEL_NOT_FOUND_SECONDS)
+                    self.log_call("GROQ", model_name, key, "FAILED", 404, lat, prompt, None, "model not available for this account")
+                    continue
                 else:
                     print(f"[Groq API Error] Model {model_name} Status {res.status_code}: {res.text[:100]}")
                     self.log_call("GROQ", model_name, key, "FAILED", res.status_code, lat, prompt, None, res.text[:100])

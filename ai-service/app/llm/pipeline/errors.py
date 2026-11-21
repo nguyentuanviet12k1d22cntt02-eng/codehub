@@ -47,6 +47,76 @@ def is_request_scoped_provider_failure(error_code):
     return error_code in {
         "PROVIDER_REQUEST_TOO_LARGE",
         "PROVIDER_REQUEST_REJECTED",
+        "PROVIDER_OUTPUT_TRUNCATED",
+    }
+
+MODEL_OVERLOAD_SECONDS = 120
+
+# Two rate-limited keys in a row within one stage: the provider's keys are being
+# drained together, so a healthy fallback provider is faster than a third key.
+RATE_LIMITED_KEYS_BEFORE_SWITCH = 2
+
+def parse_reset_seconds(value):
+    """Parse rate-limit reset values such as "7.66s", "1m2.5s", "250ms" or "2h1m"."""
+    import re
+    if value is None:
+        return None
+    text = str(value).strip().lower()
+    try:
+        return max(0.0, float(text))
+    except ValueError:
+        pass
+    total, matched = 0.0, False
+    for amount, unit in re.findall(r"(\d+(?:\.\d+)?)(ms|h|m|s)", text):
+        matched = True
+        total += float(amount) * {"ms": 0.001, "s": 1, "m": 60, "h": 3600}[unit]
+    return total if matched else None
+
+def rate_limit_cooldown(headers, used_tokens, floor_tokens=1500, cap_seconds=60):
+    """Seconds to rest a key that cannot serve another call of this size, else None.
+
+    Groq (and OpenAI-style APIs) report the remaining per-minute budget on every
+    successful reply; resting the key until its reset avoids the next 429.
+    """
+    if not headers:
+        return None
+    def number(name):
+        try:
+            return float(headers.get(name))
+        except (TypeError, ValueError):
+            return None
+    waits = []
+    tokens_left = number("x-ratelimit-remaining-tokens")
+    if tokens_left is not None and tokens_left < max(float(used_tokens or 0), float(floor_tokens)):
+        waits.append(parse_reset_seconds(headers.get("x-ratelimit-reset-tokens")))
+    requests_left = number("x-ratelimit-remaining-requests")
+    if requests_left is not None and requests_left < 1:
+        waits.append(parse_reset_seconds(headers.get("x-ratelimit-reset-requests")))
+    waits = [wait for wait in waits if wait is not None]
+    if not waits:
+        return None
+    return min(float(cap_seconds), max(1.0, max(waits)))
+_OVERLOAD_MARKERS = ("high demand", "overloaded", "\"unavailable\"", "status\": \"unavailable", "try again later")
+
+def is_model_overload(http_status, body_text):
+    """A 503 whose body says the model itself is overloaded (not one key).
+
+    Gemini answers "This model is currently experiencing high demand" with
+    status UNAVAILABLE for every key at once; trying sibling keys only repeats
+    the wait. A bare 503 without such a body keeps the key-scoped handling.
+    """
+    if http_status != 503 or not body_text:
+        return False
+    text = body_text.lower()
+    return any(marker in text for marker in _OVERLOAD_MARKERS)
+
+def is_slow_failure(error_code):
+    """Failures that consume a whole call window rather than failing fast."""
+    return error_code in {
+        "PROVIDER_TIMEOUT",
+        "PROVIDER_DEADLINE_EXCEEDED",
+        "PROVIDER_MODEL_OVERLOADED",
+        "PROVIDER_OUTPUT_TRUNCATED",
     }
 
 def retry_after_seconds(response, default=75):

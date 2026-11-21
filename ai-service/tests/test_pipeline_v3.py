@@ -378,7 +378,7 @@ class PipelineTests(unittest.TestCase):
             llm_client_module._provider_blocked_until.pop("GEMINI", None)
             llm_client_module._provider_blocked_until.pop("GROQ", None)
         client = PipelineLLMClient(timeout_seconds=30)
-        with patch.dict(os.environ, {"ADAPTIVE_PROVIDER": ""}, clear=False), \
+        with patch.dict(os.environ, {"ADAPTIVE_PROVIDER": "", "ADAPTIVE_PROVIDER_ORDER": "GEMINI,GROQ,OPENROUTER,INCEPTION,OPENAI"}, clear=False), \
              patch.object(llm_client_module, "key_pool", pool), \
              patch.object(client, "_model", side_effect=lambda provider, *args: "gemini-3.8-flash" if provider == "GEMINI" else "llama-3.3-70b-versatile"), \
              patch.object(llm_client_module.requests, "post", side_effect=post):
@@ -411,7 +411,7 @@ class PipelineTests(unittest.TestCase):
             llm_client_module._provider_blocked_until.pop("OPENROUTER", None)
         client = PipelineLLMClient(timeout_seconds=30)
         model = lambda provider, *args: "llama-3.3-70b-versatile" if provider == "GROQ" else "meta-llama/llama-3.3-70b-instruct"
-        with patch.dict(os.environ, {"ADAPTIVE_PROVIDER": ""}, clear=False), \
+        with patch.dict(os.environ, {"ADAPTIVE_PROVIDER": "", "ADAPTIVE_PROVIDER_ORDER": "GEMINI,GROQ,OPENROUTER,INCEPTION,OPENAI"}, clear=False), \
              patch.object(llm_client_module, "key_pool", pool), \
              patch.object(client, "_model", side_effect=model), \
              patch.object(llm_client_module.requests, "post", side_effect=post):
@@ -477,7 +477,7 @@ class PipelineTests(unittest.TestCase):
             with patch.dict(os.environ, {"ADAPTIVE_PROVIDER": "GEMINI"}, clear=False):
                 with self.assertRaises(PipelineError):
                     client.json("ExerciseGeneratorAgent", "generator", {"request": "for"})
-            with patch.dict(os.environ, {"ADAPTIVE_PROVIDER": ""}, clear=False):
+            with patch.dict(os.environ, {"ADAPTIVE_PROVIDER": "", "ADAPTIVE_PROVIDER_ORDER": "GEMINI,GROQ,OPENROUTER,INCEPTION,OPENAI"}, clear=False):
                 result = client.json("CriticEvaluatorAgent", "critic", {"request": "for"})
 
         self.assertEqual(result["topic"], "def")
@@ -513,7 +513,7 @@ class PipelineTests(unittest.TestCase):
             llm_client_module._provider_blocked_until.pop("GROQ", None)
         client = PipelineLLMClient(timeout_seconds=30)
         model = lambda provider, *args: "gemini-3.8-flash" if provider == "GEMINI" else "llama-3.3-70b-versatile"
-        with patch.dict(os.environ, {"ADAPTIVE_PROVIDER": ""}, clear=False), \
+        with patch.dict(os.environ, {"ADAPTIVE_PROVIDER": "", "ADAPTIVE_PROVIDER_ORDER": "GEMINI,GROQ,OPENROUTER,INCEPTION,OPENAI"}, clear=False), \
              patch.object(llm_client_module, "key_pool", pool), \
              patch.object(client, "_model", side_effect=model), \
              patch.object(llm_client_module.requests, "post", side_effect=post):

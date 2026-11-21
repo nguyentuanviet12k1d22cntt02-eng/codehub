@@ -9,11 +9,11 @@ import requests
 from app.pipeline.runtime import digest
 from app.llm.key_pool_manager import key_pool
 
-from .errors import key_cooldown_seconds, is_key_scoped_provider_failure, is_request_scoped_provider_failure, retry_after_seconds, PipelineError, classify_provider_error, parse_provider_json
+from .errors import key_cooldown_seconds, is_key_scoped_provider_failure, is_request_scoped_provider_failure, retry_after_seconds, PipelineError, classify_provider_error, parse_provider_json, is_model_overload, is_slow_failure, MODEL_OVERLOAD_SECONDS, RATE_LIMITED_KEYS_BEFORE_SWITCH, rate_limit_cooldown
 from .budget import stage_output_limit, stage_call_timeout, stage_budget_seconds, minimum_real_attempt_seconds, fair_attempt_timeout, provider_attempt_limit
-from .health import _provider_available, _block_provider
+from .health import _provider_available, _block_provider, block_model, record_outcome, ordered_providers, ALL_PROVIDERS
 from .catalog import ModelCatalogMixin
-from .transport import request_completion, read_completion
+from .transport import request_completion, read_completion, completion_truncated, response_text
 
 class PipelineLLMClient(ModelCatalogMixin):
     """Real provider calls only; budgets and provider receipts belong to one run."""
@@ -30,6 +30,8 @@ class PipelineLLMClient(ModelCatalogMixin):
         self._run_failed_keys = {}
         self._run_successful_keys = {}
         self._run_provider_outages = {}
+        # Provider that produced each stage's accepted output in this run.
+        self._stage_providers = {}
         self.per_call_timeout = stage_call_timeout("default")
 
     def remaining(self):
@@ -69,7 +71,7 @@ class PipelineLLMClient(ModelCatalogMixin):
     def _fallback_provider_count(self, providers, position):
         count = 0
         for provider in providers[position + 1:]:
-            if provider not in ("GEMINI", "GROQ", "OPENROUTER", "INCEPTION", "OPENAI"):
+            if provider not in ALL_PROVIDERS:
                 continue
             if provider in self._run_provider_outages or not _provider_available(provider):
                 continue
@@ -91,16 +93,33 @@ class PipelineLLMClient(ModelCatalogMixin):
             self.calls.append(receipt)
 
 
+    def _independent_reviewer_order(self, stage, providers):
+        """The Critic should not grade an exercise with the model that wrote it.
+
+        The author's provider moves to the end (still a last resort); off with
+        ADAPTIVE_INDEPENDENT_CRITIC=0 or when a single provider is configured.
+        """
+        if stage != "CriticEvaluatorAgent" or len(providers) < 2:
+            return providers
+        if os.getenv("ADAPTIVE_INDEPENDENT_CRITIC", "1").strip() in ("0", "false", "no"):
+            return providers
+        with self.lock:
+            author = self._stage_providers.get("ExerciseGeneratorAgent")
+        if author not in providers:
+            return providers
+        return [name for name in providers if name != author] + [author]
+
     def json(self, stage, system, data, *, validate_response=None):
         prompt = json.dumps(data, ensure_ascii=False, default=str)
         configured_provider = os.getenv("ADAPTIVE_PROVIDER", "").upper()
-        providers = [configured_provider] if configured_provider else ["GEMINI", "GROQ", "OPENROUTER", "INCEPTION", "OPENAI"]
+        providers = [configured_provider] if configured_provider else ordered_providers()
+        providers = self._independent_reviewer_order(stage, providers)
         last_error = "PROVIDER_UNAVAILABLE"
         attempted_any = False
         retry_after = None
         stage_deadline = min(time.monotonic() + stage_budget_seconds(stage), self.deadline)
         for provider_position, provider in enumerate(providers):
-            if provider not in ("GEMINI", "GROQ", "OPENROUTER", "INCEPTION", "OPENAI"):
+            if provider not in ALL_PROVIDERS:
                 continue
             if provider in self._run_provider_outages:
                 last_error = "PROVIDER_FULL_POOL_OUTAGE"
@@ -112,6 +131,7 @@ class PipelineLLMClient(ModelCatalogMixin):
             provider_failure_codes = []
             provider_exhausted = False
             provider_attempts = 0
+            rate_limited_keys = 0
             provider_deadline = None
             while _provider_available(provider):
                 if provider_deadline is not None and provider_deadline - time.monotonic() < minimum_real_attempt_seconds(stage):
@@ -177,6 +197,8 @@ class PipelineLLMClient(ModelCatalogMixin):
                     receipt["http_status"] = response.status_code
                     response.raise_for_status()
                     result = read_completion(response, call_deadline, self.remaining)
+                    if completion_truncated(provider, result):
+                        raise PipelineError("PROVIDER_OUTPUT_TRUNCATED", "Provider stopped at the output token limit")
                     if provider == "GEMINI":
                         raw = "".join(p.get("text", "") for p in result["candidates"][0]["content"]["parts"] if not p.get("thought"))
                         usage = result.get("usageMetadata", {})
@@ -188,6 +210,12 @@ class PipelineLLMClient(ModelCatalogMixin):
                         token_count = usage.get("total_tokens", 0)
                         receipt.update(response_id=result.get("id"), model=result.get("model", model))
                     receipt.update(usage=usage, response_hash=digest(raw))
+                    # Rest a key whose per-minute budget cannot serve another call of
+                    # this size, instead of learning it from the next 429.
+                    rest = rate_limit_cooldown(getattr(response, "headers", None), token_count)
+                    if rest:
+                        key_pool.cool_key_quietly(key, rest)
+                        receipt["key_rest_seconds"] = rest
                     with self.lock:
                         self.tokens += token_count
                     parsed = parse_provider_json(raw)
@@ -201,6 +229,9 @@ class PipelineLLMClient(ModelCatalogMixin):
                             raise PipelineError("PROVIDER_CONTRACT_INVALID", str(exc)[:500]) from exc
                     receipt.update(status="SUCCEEDED", output=parsed)
                     self._remember_successful_key(provider, key)
+                    record_outcome(provider, True)
+                    with self.lock:
+                        self._stage_providers[stage] = provider
                     key_pool.report_key_success(key)
                     return parsed
                 except Exception as exc:
@@ -209,6 +240,19 @@ class PipelineLLMClient(ModelCatalogMixin):
                     if isinstance(exc, requests.HTTPError) and exc.response is not None:
                         receipt["http_status"] = exc.response.status_code
                     receipt.update(error_code=last_error, error_type=type(exc).__name__, error_message=str(exc)[:500])
+                    if is_model_overload(receipt.get("http_status"), response_text(http_response)):
+                        # Model-wide overload (e.g. Gemini "high demand"): every key would wait
+                        # the same. Isolate the model for all keys and give the stage to the next
+                        # provider (Gemini picks another model on its next turn).
+                        last_error = "PROVIDER_MODEL_OVERLOADED"
+                        receipt["error_code"] = last_error
+                        block_model(provider, receipt.get("model"), MODEL_OVERLOAD_SECONDS)
+                        stop_provider_after_receipt = True
+                    elif last_error in ("PROVIDER_TIMEOUT", "PROVIDER_DEADLINE_EXCEEDED"):
+                        # A timeout already spent this provider's window; a sibling key of the
+                        # same model would most likely spend another one.
+                        stop_provider_after_receipt = True
+                    record_outcome(provider, False, slow_failure=is_slow_failure(last_error))
                     if last_error in ("PROVIDER_RESPONSE_INVALID", "PROVIDER_CONTRACT_INVALID") and raw is not None:
                         receipt["private_response_excerpt"] = raw[:1200]
                     if last_error == "PROVIDER_RATE_LIMITED":
@@ -217,6 +261,10 @@ class PipelineLLMClient(ModelCatalogMixin):
                         retry_after = max(retry_after or 0, seconds)
                         self._remember_failed_key(provider, key)
                         key_pool.mark_key_exhausted(key, provider, cooldown_seconds=seconds, error_msg="HTTP 429 from adaptive pipeline")
+                        rate_limited_keys += 1
+                        if (rate_limited_keys >= RATE_LIMITED_KEYS_BEFORE_SWITCH
+                                and self._fallback_provider_count(providers, provider_position) > 0):
+                            stop_provider_after_receipt = True
                     elif last_error == "PROVIDER_AUTH_FAILED":
                         self._remember_failed_key(provider, key)
                         key_pool.mark_key_exhausted(key, provider, cooldown_seconds=300, error_msg="authentication rejected by provider")

@@ -196,7 +196,8 @@ class BatchFailureRegressionTests(unittest.TestCase):
                 self.assertEqual(client.json("PracticeFeedbackAgent", "feedback", {}), {"ok": True})
         slow = [call for call in client.calls if call["provider"] == "GROQ" and call["status"] == "FAILED"]
         self.assertEqual(len(slow), 1, "Do not spend the entire 25s on two slow sibling keys")
-        self.assertTrue(any(call.get("error_code") == "PROVIDER_WINDOW_EXHAUSTED" for call in client.calls))
+        # A timeout ends that provider's turn at once (no sibling key waits the same window).
+        self.assertEqual(slow[0].get("error_code"), "PROVIDER_TIMEOUT")
         self.assertEqual(client.calls[-1]["provider"], "INCEPTION")
         self.assertLess(elapsed[0] - 1000, 25)
 

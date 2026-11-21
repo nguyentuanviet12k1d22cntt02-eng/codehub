@@ -26,7 +26,7 @@ class AIKeyPoolManager(KeyAdminClientMixin, GeminiProviderMixin, OpenAICompatibl
     - Hỗ trợ: Google Gemini, Groq Cloud, OpenRouter, OpenAI, Inception AI
     - Tự động phân loại và đồng bộ từ database backend
     - Xoay vòng round-robin thông minh theo từng provider
-    - Cơ chế Auto-Failover: Gemini -> Groq -> OpenRouter -> Inception -> OpenAI
+    - Cơ chế Auto-Failover theo ADAPTIVE_PROVIDER_ORDER (mặc định Groq -> Inception -> Gemini -> OpenRouter -> OpenAI)
     - Tự động cách ly tạm thời từng key bị lỗi quota hoặc lỗi provider có thể hồi phục
     """
 
@@ -99,6 +99,11 @@ class AIKeyPoolManager(KeyAdminClientMixin, GeminiProviderMixin, OpenAICompatibl
                 self._leases.pop(api_key, None)
 
 
+    def cool_key_quietly(self, api_key: str, cooldown_seconds: float):
+        """Rest a healthy key until its rate-limit window resets (not a failure; nothing is reported)."""
+        with self._lock:
+            self._cooldown_map[api_key] = max(self._cooldown_map.get(api_key, 0), time.time() + cooldown_seconds)
+
     def mark_key_exhausted(self, api_key: str, provider: str, cooldown_seconds: float = 60.0, error_msg: str = "429 Quota Exceeded"):
         """Compatibility alias for quota callers; all callers use key-scoped cooldowns."""
         self.mark_key_temporarily_unavailable(api_key, provider, cooldown_seconds, error_msg)
@@ -116,14 +121,12 @@ class AIKeyPoolManager(KeyAdminClientMixin, GeminiProviderMixin, OpenAICompatibl
     def call_multi_provider_pool(self, prompt: str, system_prompt: str = None) -> Optional[str]:
         """
         Gọi AI qua Hồ chứa Key Đa Nhà Cung Cấp.
-        Thứ tự ưu tiên:
-        1. Google Gemini (nhanh, phản hồi tiếng Việt tự nhiên)
-        2. Groq Cloud (siêu tốc với Llama 3.3 70B)
-        3. OpenRouter (tổng hợp nhiều model)
-        4. Inception AI (Mercury 2)
-        5. OpenAI (GPT-4o Mini)
+        Thứ tự ưu tiên: theo ADAPTIVE_PROVIDER_ORDER (mặc định Groq → Mercury →
+        Gemini → OpenRouter → OpenAI); provider đang lỗi chậm liên tục bị dời xuống cuối.
         """
-        providers_order = ["GEMINI", "GROQ", "OPENROUTER", "INCEPTION", "OPENAI"]
+        # Same health-aware order as the adaptive pipeline (ADAPTIVE_PROVIDER_ORDER).
+        from app.llm.pipeline.health import ordered_providers
+        providers_order = ordered_providers()
 
         for prov in providers_order:
             keys = self.get_available_keys_for_provider(prov)
