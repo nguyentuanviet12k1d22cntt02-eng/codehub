@@ -138,6 +138,17 @@ class AdaptiveExercisePlanner:
                 "Chuyển danh sách từ do input().split() tạo ra thành set để loại trùng, "
                 "rồi dùng ít nhất một phép giao (&), hợp (|) hoặc hiệu (-) trên hai tập hợp từ."
             ]
+        if cid == "PY-LIST-01" and {"for", "while"} <= set(forbidden):
+            # Without loops the list must arrive on one line; each batch
+            # position practises a different CRUD operation on it.
+            list_focus = {
+                1: "Đọc danh sách từ một dòng bằng input().split(), thêm phần tử bằng ít nhất một trong .append(), .insert(), .extend() (không bắt buộc dùng cả ba).",
+                2: "Đọc danh sách từ một dòng bằng input().split(), xóa phần tử bằng ít nhất một trong .pop(), .remove(), del (không bắt buộc dùng cả ba).",
+                3: "Đọc danh sách từ một dòng bằng input().split(), kiểm tra phần tử có tồn tại bằng toán tử in.",
+                4: "Đọc danh sách từ một dòng bằng input().split(), cập nhật phần tử theo chỉ số items[i] = giá trị và dùng len().",
+                5: "Đọc danh sách từ một dòng bằng input().split(), kết hợp thêm và xóa phần tử rồi in danh sách kết quả.",
+            }
+            sub_skills = [list_focus.get(ctx.get("batch_index"), list_focus[1])]
         if forced_override and readiness.get("prerequisite_gaps"):
             reasoning = (
                 f"Học viên xác nhận tiếp tục chủ đề yêu cầu dù mức sẵn sàng tiên quyết hiện tại là "

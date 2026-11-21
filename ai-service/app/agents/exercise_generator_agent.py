@@ -1,8 +1,29 @@
 import copy
+import os
 import re
 from app.pipeline.contracts import ExerciseDraft
 from app.pipeline.problem_statement import StatementSections, format_statement
 from app.agents.exercise_repair_agent import ExerciseRepairAgent, repair_strategy
+
+
+STATEMENT_LIMITS = ("Lần trước đề bị từ chối vì quá dài. Giới hạn cứng: tên bài ≤ 12 từ, không có dấu chấm; mô tả ≤ 85 từ (HARD/CHALLENGE ≤ 110); input ≤ 45 từ; output ≤ 45 từ; tổng tên+mô tả+input+output+constraints ≤ 130 từ (HARD/CHALLENGE ≤ 170). "
+                    "Viết ngắn hơn rõ rệt (khoảng 60–90 từ), không lặp ý, không giải thích lý thuyết.")
+
+
+def grounding_budget():
+    """How much learning material goes into the generator prompt.
+
+    The 2026-11-21 generator prompts were 13.6k characters (median) and a 20k
+    one was refused by Groq with 413; three 3000-character excerpts were the
+    largest part. Two shorter excerpts keep the concept wording and save
+    tokens from the per-minute budget too.
+    """
+    def setting(name, default, low, high):
+        try:
+            return max(low, min(high, int(os.getenv(name, default))))
+        except ValueError:
+            return default
+    return setting("ADAPTIVE_GROUNDING_SOURCES", 2, 1, 3), setting("ADAPTIVE_GROUNDING_EXCERPT_CHARS", 1800, 500, 3000)
 
 
 class ExerciseGeneratorAgent:
@@ -24,7 +45,7 @@ description_sentences là MẢNG đúng 2–4 câu nêu nhiệm vụ (mỗi ph�
 kết thúc bằng dấu chấm); input mô tả dữ liệu nhận; output nêu kết quả cần in/trả về.
 Không trả chuỗi Markdown cho trường này. Hệ thống tự dựng các mục Mô tả/Input/Output
 và Ví dụ từ test công khai đầu tiên để khớp tuyệt đối; Ràng buộc lấy từ constraints.
-Ưu tiên tổng đề khoảng 50–100 từ, trừ bài phức tạp. Tiếng Việt tự nhiên, súc tích;
+Giới hạn cứng (validator đếm từ): tên bài ≤ 12 từ, không có dấu chấm; mô tả ≤ 85 từ (HARD/CHALLENGE ≤ 110); input ≤ 45 từ; output ≤ 45 từ; tổng tên+mô tả+input+output+constraints ≤ 130 từ (HARD/CHALLENGE ≤ 170). Tiếng Việt tự nhiên, súc tích;
 không mở bài, giảng lý thuyết, lặp yêu cầu hoặc đưa cách giải trong đề. constraints
 chỉ gồm giới hạn dữ liệu/quy tắc bắt buộc thực sự cần, còn lại để mảng rỗng.
 execution.mode=function: định nghĩa solution. Mỗi test function dùng arguments là JSON ARRAY có kiểu dữ liệu thật
@@ -98,6 +119,24 @@ Nếu có previous_draft và feedback, sửa đúng lỗi trên bản đó, khô
                 "Python: list/set/dict comprehension cũng là vòng lặp for và sẽ bị AST từ chối. "
                 "Không dùng cú pháp 'for' ở bất kỳ vị trí nào trong reference_solution."
             )
+        no_loops = (spec.language == "python" and spec.execution.get("mode") == "stdio"
+                    and {"for", "while"} <= forbidden)
+        if no_loops and spec.target_concept != "PY-SET-01":
+            guidance.append(
+                "NGƯỜI HỌC CHƯA HỌC VÒNG LẶP: đề phải giải được hoàn toàn không cần for/while. "
+                "Đặt cả danh sách trên MỘT dòng, phân tách bằng dấu cách, đọc bằng input().split(). "
+                "Không dùng định dạng 'dòng đầu là n, sau đó n dòng' vì định dạng đó bắt buộc phải lặp. "
+                "Nếu cần số nguyên thì dùng list(map(int, input().split())). Xử lý bằng phương thức và "
+                "hàm dựng sẵn (len, min, max, in, chỉ số, slicing) thay cho vòng lặp; in danh sách chuỗi "
+                "bằng print(' '.join(items))."
+            )
+        if no_loops and spec.target_concept == "PY-LIST-01":
+            guidance.append(
+                "BÀI LIST CHO NGƯỜI CHƯA HỌC VÒNG LẶP: dòng 1 là các phần tử danh sách (input().split()), "
+                "các dòng sau là tham số của thao tác (vị trí, giá trị). Luyện đúng thao tác trong "
+                "target_sub_skills. Ví dụ khung: items = input().split(); pos = int(input()); "
+                "items.insert(pos, input()); print(' '.join(items)). Có test danh sách rỗng (dòng '\\n')."
+            )
         if spec.target_concept == "PY-SET-01" and spec.execution.get("mode") == "stdio" and {"for", "while"} <= forbidden:
             guidance.append(
                 "BÀI SET CHO NGƯỜI CHƯA HỌC VÒNG LẶP: Chọn dữ liệu là các từ được phân tách bằng dấu cách, "
@@ -125,8 +164,22 @@ Nếu có previous_draft và feedback, sửa đúng lỗi trên bản đó, khô
                 "không giữ lại nghiệm mẫu cũ. Lỗi cụ thể: "
                 + str(repair_instructions.get("exercise_feedback") or repair_instructions.get("feedback") or "")[:500])
         if any("vòng lặp for" in str(error) for error in errors):
-            guidance.append("Lần trước bị từ chối vì có for; hãy tạo đề mới dùng hai dòng từ và phép toán tập hợp, "
-                            "không bám theo bản nháp số nguyên cũ. Reference_solution không được có for/comprehension.")
+            if spec.target_concept == "PY-SET-01":
+                guidance.append("Lần trước bị từ chối vì có for; hãy tạo đề mới dùng hai dòng từ và phép toán tập hợp, "
+                                "không bám theo bản nháp số nguyên cũ. Reference_solution không được có for/comprehension.")
+            else:
+                guidance.append("Lần trước bị từ chối vì có for/comprehension; hãy thiết kế lại định dạng input để "
+                                "không cần vòng lặp (cả danh sách trên một dòng, đọc bằng input().split()), "
+                                "không bám theo bản nháp cũ. Reference_solution không được có for/comprehension.")
+        if any("đòi hỏi hàm" in str(error) for error in errors):
+            guidance.append("Lần trước bị từ chối vì dùng hàm (def/lambda/solution) khi học viên chưa học hàm. "
+                            "Viết chương trình tuần tự: đọc bằng input(), xử lý, in bằng print(); không def, không lambda, "
+                            "không return; đề và gợi ý cũng không nhắc tới hàm. Không bám theo bản nháp cũ.")
+        if any("quá dài" in str(error) or "còn dài" in str(error) or "Tên bài" in str(error) for error in errors):
+            guidance.append(STATEMENT_LIMITS)
+        if any("vòng lặp while" in str(error) for error in errors):
+            guidance.append("Lần trước bị từ chối vì có while; thiết kế lại input để không cần lặp, "
+                            "không bám theo bản nháp cũ.")
         if any("SyntaxError" in str(error) for error in errors):
             guidance.append("Lần trước bị SyntaxError: kiểm tra mọi dòng gán đều có tên biến và không có indent ngoài khối lệnh.")
         return guidance
@@ -141,12 +194,13 @@ Nếu có previous_draft và feedback, sửa đúng lỗi trên bản đó, khô
         if strategy != "GENERATE":
             return ExerciseRepairAgent(self.client).repair(previous_draft, spec, repair_instructions, strategy)
         sources = (grounding or {}).get("sources", [])
+        source_limit, excerpt_chars = grounding_budget()
         learning_materials = [{
             "id": source["id"],
             "lesson_id": source.get("lesson_id"),
-            "excerpt": (source.get("excerpt", "")[:3000] if isinstance(source.get("excerpt", ""), str)
+            "excerpt": (source.get("excerpt", "")[:excerpt_chars] if isinstance(source.get("excerpt", ""), str)
                         else source.get("excerpt")),
-        } for source in sources[:3] if isinstance(source, dict) and source.get("id")]
+        } for source in sources[:source_limit] if isinstance(source, dict) and source.get("id")]
         output_schema = ExerciseDraft.model_json_schema()
         output_schema["properties"]["problem_statement"] = StatementSections.model_json_schema()
         draft = self.client.json("ExerciseGeneratorAgent", self.SYSTEM_PROMPT, {

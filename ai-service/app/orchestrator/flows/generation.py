@@ -121,17 +121,18 @@ class GenerationFlowMixin:
                          "previous_theory": theory}, feedback), attempt)
             def make_exercise():
                 nonlocal current_repair_strategy
-                # A numeric Set draft that needs a forbidden comprehension
-                # is the wrong beginner task, not a typo to patch in place.
-                # Start a fresh word-set task so the prior draft cannot
-                # anchor the next generation to the same invalid pattern.
+                # A draft that uses a forbidden construct (e.g. a loop the
+                # learner has not studied) is the wrong task design, not a
+                # typo to patch in place. Start fresh so the prior draft
+                # cannot anchor the next generation to the same pattern.
                 repair_errors = feedback.get("errors", []) if isinstance(feedback, dict) else []
+                forbidden_violation = any("Đặc tả cấm" in str(error) or "đòi hỏi hàm" in str(error)
+                                          for error in repair_errors)
                 fresh_set_repair = (spec.target_concept == "PY-SET-01"
                     and {"for", "while"} <= set(spec.forbidden_constructs)
-                    and any("vòng lặp for" in str(error) or "SyntaxError" in str(error)
-                            for error in repair_errors))
+                    and any("SyntaxError" in str(error) for error in repair_errors))
                 content_rejection = isinstance(feedback, dict) and feedback.get("feedback_target") in ("EXERCISE", "BOTH")
-                previous_draft = None if fresh_set_repair or content_rejection else draft
+                previous_draft = None if forbidden_violation or fresh_set_repair or content_rejection else draft
                 current_repair_strategy = repair_strategy(previous_draft, feedback, spec)
                 return stage("ExerciseGeneratorAgent", "LLM",
                     {"specification": spec.model_dump(), "feedback": feedback, "previous_draft": previous_draft,
@@ -145,15 +146,21 @@ class GenerationFlowMixin:
                     passed, errors = SchemaValidator.validate(draft, spec)
                     return {"passed": passed, "errors": errors, "schema_version": "4.0"}
                 schema = stage("SchemaValidator", "PYDANTIC_AND_RULES", {"draft": draft, "specification": spec.model_dump()}, schema_check, attempt)
-                if not schema["passed"]:
-                    feedback, repair_target = rejected("SchemaValidator", schema), "EXERCISE"
-                    continue
-                def syntax_check():
-                    passed, errors = AstConstraintValidator.validate(draft, spec)
-                    return {"passed": passed, "errors": errors, "scope": "python_ast_or_language_tokens"}
-                syntax = stage("ConstraintValidator", "STATIC_ANALYSIS", {"reference_solution": draft["reference_solution"], "specification": spec.model_dump()}, syntax_check, attempt)
-                if not syntax["passed"]:
-                    feedback, repair_target = rejected("ConstraintValidator", syntax), "EXERCISE"
+                # Run both static checks before repairing, so one repair turn
+                # sees every known defect instead of fixing wording first and
+                # discovering a forbidden construct only on the next turn.
+                syntax = None
+                if isinstance(draft, dict) and isinstance(draft.get("reference_solution"), str):
+                    def syntax_check():
+                        passed, errors = AstConstraintValidator.validate(draft, spec)
+                        return {"passed": passed, "errors": errors, "scope": "python_ast_or_language_tokens"}
+                    syntax = stage("ConstraintValidator", "STATIC_ANALYSIS", {"reference_solution": draft["reference_solution"], "specification": spec.model_dump()}, syntax_check, attempt)
+                if not schema["passed"] or (syntax is not None and not syntax["passed"]):
+                    failed_stage = "SchemaValidator" if not schema["passed"] else "ConstraintValidator"
+                    combined = {**(syntax or {}), **schema} if failed_stage == "SchemaValidator" else dict(syntax)
+                    combined["passed"] = False
+                    combined["errors"] = list(schema["errors"]) + list((syntax or {}).get("errors", []))
+                    feedback, repair_target = rejected(failed_stage, combined), "EXERCISE"
                     continue
                 def run_tests():
                     # Preserve a useful execution window instead of sending a

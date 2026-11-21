@@ -135,6 +135,9 @@ QUY TẮC SƯ PHẠM VÀ CHẤT LƯỢNG NỘI DUNG BẮT BUỘC:
                 data = extract_json_from_llm(raw)
                 if "title" in data and "problem_statement" in data and "test_cases" in data:
                     data = sanitize_exercise_object(data)
+                    # Difficulty is the system's decision; the model only echoes it and
+                    # sometimes echoes it wrong (an "easier" request came back as 2 stars).
+                    data["difficulty_stars"] = 1 if is_easier_request else 2
                     data["test_cases"] = normalize_test_cases(data.get("test_cases"))
                     if len(data["test_cases"]) >= 1:
                         return data
