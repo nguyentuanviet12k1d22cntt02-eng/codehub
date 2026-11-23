@@ -1,3 +1,4 @@
+import { warmSkillGraphCache } from './infrastructure/data/skillGraphStore';
 import dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
 
@@ -96,6 +97,7 @@ const startServer = (port: number) => {
     });
 };
 
+void warmSkillGraphCache();
 startServer(PORT);
 
 process.on('SIGINT', () => {

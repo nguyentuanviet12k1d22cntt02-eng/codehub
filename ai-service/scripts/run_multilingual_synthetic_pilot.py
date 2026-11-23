@@ -27,7 +27,7 @@ from app.knowledge_tracing.benchmark.metrics import binary_metrics  # noqa: E402
 from app.knowledge_tracing.multilingual_pilot import (  # noqa: E402
     ACTIVE_RUN_PATH, DATA_ROOT, PAL_FEATURE_NAMES, RUNS_ROOT, SUPPORTED_LANGUAGES,
     MultiLanguagePALNet, build_pal_samples, graph_contract, history_path_for,
-    language_key, load_history, metadata_path_for, sha256_file, split_users,
+    graph_path_for, language_key, load_history, metadata_path_for, sha256_file, split_users,
 )
 from scripts.data_generation.generate_multilanguage_kt import generate  # noqa: E402
 
@@ -96,7 +96,7 @@ def run_language(language: str, seed: int, epochs: int) -> dict:
     model, best_epoch, validation, test = train(samples, split, adjacency, epochs, seed)
     train_labels = np.asarray([sample.label for sample in samples if sample.user_id in split["train"] and sample.step_index >= 2])
     baseline = float((train_labels.sum() + 1) / (len(train_labels) + 2))
-    dataset_sha256, graph_sha256 = sha256_file(csv_path), sha256_file(Path(SERVICE_ROOT / "data" / f"{key}SkillGraph.json"))
+    dataset_sha256, graph_sha256 = sha256_file(csv_path), sha256_file(graph_path_for(language))
     run_id = f"{language.lower()}_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}_{dataset_sha256[:8]}"
     run_root = RUNS_ROOT / language.lower() / run_id
     run_root.mkdir(parents=True, exist_ok=False)

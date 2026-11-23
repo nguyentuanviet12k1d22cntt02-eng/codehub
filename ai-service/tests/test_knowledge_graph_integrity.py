@@ -7,12 +7,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-GRAPH_PATHS = [
-    ROOT / "ai-service/data/pythonSkillGraph.json",
-    ROOT / "ai-service/data/skill_graph.json",
-    ROOT / "backend/src/infrastructure/data/pythonSkillGraph.json",
-    ROOT / "frontend/src/data/pythonSkillGraph.json",
-]
+GRAPH_PATHS = [ROOT / "backend/src/infrastructure/data/pythonSkillGraph.json"]
 
 
 class KnowledgeGraphIntegrityTests(unittest.TestCase):

@@ -1,4 +1,5 @@
 
+import { getStoredSkillGraph } from '../../infrastructure/data/skillGraphStore';
 import { Response, NextFunction } from 'express';
 import { prisma } from '../../infrastructure/database/prisma';
 import { AuthenticatedRequest } from '../../shared/middleware/auth';
@@ -20,37 +21,9 @@ interface RecommendItem {
     slug?: string;
 }
 
-// Multi-language Skill Graph resolution
+// Multi-language Skill Graph resolution (database-backed, bundled file as fallback)
 export function getSkillGraphData(language: string = 'PYTHON'): any {
-    const lang = (language || 'PYTHON').toUpperCase();
-    const filename = (lang === 'JAVASCRIPT' || lang === 'JS') ? 'javascriptSkillGraph.json'
-                   : (lang === 'CPP' || lang === 'C++') ? 'cppSkillGraph.json'
-                   : (lang === 'SQL') ? 'sqlSkillGraph.json'
-                   : 'pythonSkillGraph.json';
-
-    const candidates = [
-        path.resolve(__dirname, `../../infrastructure/data/${filename}`),
-        path.resolve(process.cwd(), `src/infrastructure/data/${filename}`),
-        path.resolve(process.cwd(), `../ai-service/data/${filename}`),
-        path.resolve(__dirname, `../../../../ai-service/data/${filename}`)
-    ];
-    if (filename === 'pythonSkillGraph.json') {
-        candidates.push(
-            path.resolve(process.cwd(), '../ai-service/data/skill_graph.json'),
-            path.resolve(__dirname, '../../../../ai-service/data/skill_graph.json')
-        );
-    }
-
-    for (const candidate of [...new Set(candidates)]) {
-        if (!fs.existsSync(candidate)) continue;
-        try {
-            return JSON.parse(fs.readFileSync(candidate, 'utf-8'));
-        } catch (e) {
-            console.error(`Error reading skill graph: ${candidate}`, e);
-        }
-    }
-
-    return null;
+    return getStoredSkillGraph(language)?.data ?? null;
 }
 
 export const getSkillGraph = async (
@@ -60,9 +33,9 @@ export const getSkillGraph = async (
 ): Promise<void> => {
     try {
         const language = (req.query.language as string || 'PYTHON');
-        const graph = getSkillGraphData(language);
-        if (graph) {
-            res.status(200).json({ success: true, data: graph });
+        const stored = getStoredSkillGraph(language);
+        if (stored) {
+            res.status(200).json({ success: true, data: stored.data, version: stored.version, sha256: stored.sha256 });
             return;
         }
         res.status(404).json({ success: false, error: `Skill graph file not found for language: ${language}` });

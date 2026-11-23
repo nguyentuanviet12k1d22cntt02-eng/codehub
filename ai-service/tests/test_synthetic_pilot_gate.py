@@ -34,7 +34,7 @@ from app.knowledge_tracing.pilot import (  # noqa: E402
 
 CSV = SERVICE_ROOT / "data" / "synthetic_pilot_learners.csv"
 META = SERVICE_ROOT / "data" / "synthetic_pilot_10_learners_metadata.json"
-GRAPH = SERVICE_ROOT / "data" / "skill_graph.json"
+GRAPH = SERVICE_ROOT.parent / "backend/src/infrastructure/data/pythonSkillGraph.json"
 
 
 class SyntheticPilotGateTest(unittest.TestCase):

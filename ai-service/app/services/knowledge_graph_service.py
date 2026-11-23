@@ -1,3 +1,4 @@
+from .skill_graph_source import load_skill_graph
 from .knowledge_graph.aliases import TOPIC_ALIASES, _fold_topic
 from .knowledge_graph.lesson_catalog import lesson_frontmatter_value, lesson_titles_from_content
 from .knowledge_graph.indexing import KnowledgeGraphIndexingMixin
@@ -35,6 +36,7 @@ class KnowledgeGraphService(KnowledgeGraphIndexingMixin, KnowledgeGraphQueriesMi
     def __init__(self, data_dir: Optional[str] = None):
         if getattr(self, "_initialized", False):
             return
+        self._custom_data_dir = data_dir is not None
         self.data_dir = data_dir or DATA_DIR
         self.graphs: Dict[str, Dict[str, Any]] = {}
         self.concept_index: Dict[str, Dict[str, Dict[str, Any]]] = {}
@@ -46,7 +48,8 @@ class KnowledgeGraphService(KnowledgeGraphIndexingMixin, KnowledgeGraphQueriesMi
         self.lesson_catalog_index: Dict[str, Dict[str, Dict[str, List[str]]]] = {}
 
         self._load_graphs()
-        self._initialized = True
+        # Stay uninitialised when no graph could be loaded so the next construction retries.
+        self._initialized = bool(self.graphs)
 
     def _normalize_lang(self, language: Optional[str]) -> str:
         if not language:
@@ -61,26 +64,23 @@ class KnowledgeGraphService(KnowledgeGraphIndexingMixin, KnowledgeGraphQueriesMi
         return "python"
 
     def _load_graphs(self):
-        files_map = {
-            "python": "pythonSkillGraph.json",
-            "cpp": "cppSkillGraph.json",
-            "javascript": "javascriptSkillGraph.json",
-            "sql": "sqlSkillGraph.json"
-        }
-
-        for lang, fname in files_map.items():
-            fpath = os.path.join(self.data_dir, fname)
-            if not os.path.exists(fpath):
-                # Fallback check
-                continue
+        languages = ["python", "cpp", "javascript", "sql"]
+        for lang in languages:
             try:
-                with open(fpath, "r", encoding="utf-8") as f:
-                    gdata = json.load(f)
-                    self.graphs[lang] = gdata
-                    self._build_indices(lang, gdata)
+                if self._custom_data_dir:
+                    fpath = os.path.join(self.data_dir, f"{lang}SkillGraph.json")
+                    if not os.path.exists(fpath):
+                        continue
+                    with open(fpath, "r", encoding="utf-8") as f:
+                        gdata = json.load(f)
+                else:
+                    gdata = load_skill_graph(lang)
+                    if not gdata:
+                        continue
+                self.graphs[lang] = gdata
+                self._build_indices(lang, gdata)
             except Exception as e:
-                print(f"[KnowledgeGraphService] Lỗi khi nạp {fname}: {e}")
-
+                print(f"[KnowledgeGraphService] Lỗi khi nạp đồ thị {lang}: {e}")
 
     @staticmethod
     def _lesson_titles_from_content(language: str) -> List[tuple[str, str]]:

@@ -27,7 +27,7 @@ function testCaseSignature(testCase: { input: string; expectedOutput: string; is
 }
 
 async function main(): Promise<void> {
-    const graph = JSON.parse(readFileSync(path.join(ROOT, 'curriculum/cppSkillGraph.json'), 'utf8')) as {
+    const graph = JSON.parse(readFileSync(path.join(ROOT, 'backend/src/infrastructure/data/cppSkillGraph.json'), 'utf8')) as {
         lesson_mappings: Record<string, string>;
     };
     const sourceLessons = new Map<string, { filePath: string; content: string; title: string; objective: string; difficulty: string; durationMinutes: number }>();

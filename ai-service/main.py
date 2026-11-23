@@ -9,6 +9,7 @@ from pathlib import Path
 from app.recommendation.serving_registry import checkpoint_metadata_matches, inspect_serving_model
 from app.knowledge_tracing.palnet import PALNet
 from app.api.palnet_runtime import router as palnet_runtime_router
+from app.services.skill_graph_source import load_skill_graph
 from app.recommendation.python70_runtime import runtime_status as python70_runtime_status
 from app.recommendation.module_practice_runtime import runtime_status as module_practice_runtime_status
 
@@ -25,7 +26,6 @@ app = FastAPI(
 )
 
 # Load configuration and models during startup
-SKILL_GRAPH_PATH = os.path.join(BASE_DIR, "data", "skill_graph.json")
 SERVING_REGISTRY_PATH = Path(BASE_DIR) / "models" / "serving" / "registry.json"
 
 # Global state
@@ -53,15 +53,14 @@ def startup_event():
     
     # 1. Load skill graph
     print("Loading skill graph config...")
-    if os.path.exists(SKILL_GRAPH_PATH):
-        with open(SKILL_GRAPH_PATH, "r", encoding="utf-8") as f:
-            skill_graph = json.load(f)
+    skill_graph = load_skill_graph("python") or {}
+    if skill_graph:
         skills_list = [s["id"] for s in skill_graph["skills"]]
         kc_to_idx = {kc: idx for idx, kc in enumerate(skills_list)}
         idx_to_kc = {idx: kc for idx, kc in enumerate(skills_list)}
         print(f"Loaded {len(skills_list)} Knowledge Components.")
     else:
-        print("Error: skill_graph.json not found!")
+        print("Error: Python skill graph not available (backend and seed file both unreachable)!")
     if not skills_list:
         palnet_readiness = "GRAPH_UNAVAILABLE"
         return

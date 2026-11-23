@@ -1,3 +1,4 @@
+import { useSkillGraph } from '../../adaptive-learning/useSkillGraph';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
@@ -28,10 +29,6 @@ import {
     XCircle,
 } from 'lucide-react';
 import { adminApi } from '../../../features/admin/services/adminApi';
-import pythonSkillGraph from '../../../data/pythonSkillGraph.json';
-import javascriptSkillGraph from '../../../data/javascriptSkillGraph.json';
-import cppSkillGraph from '../../../data/cppSkillGraph.json';
-import sqlSkillGraph from '../../../data/sqlSkillGraph.json';
 
 type SupportedLanguage = 'PYTHON' | 'JAVASCRIPT' | 'CPP' | 'SQL';
 type KnowledgeFilter = 'ALL' | 'MASTERED' | 'DEVELOPING' | 'NEEDS_SUPPORT' | 'UNOBSERVED';
@@ -159,13 +156,6 @@ interface SkillGraph {
     modules: ModuleDefinition[];
 }
 
-const graphByLanguage: Record<SupportedLanguage, SkillGraph> = {
-    PYTHON: pythonSkillGraph as SkillGraph,
-    JAVASCRIPT: javascriptSkillGraph as SkillGraph,
-    CPP: cppSkillGraph as SkillGraph,
-    SQL: sqlSkillGraph as SkillGraph,
-};
-
 const languageLabels: Record<SupportedLanguage, string> = {
     PYTHON: 'Python',
     JAVASCRIPT: 'JavaScript',
@@ -216,9 +206,11 @@ export default function UserDetail() {
         void loadUser();
     }, [loadUser]);
 
+    const graphQuery = useSkillGraph(selectedLanguage);
     const knowledgeData = useMemo(() => {
         if (!user) return null;
-        const graph = graphByLanguage[selectedLanguage];
+        const graph = graphQuery.data as SkillGraph | undefined;
+        if (!graph) return null;
         const evidence = user.masteryProfile?.evidence ?? {};
         const skills = graph.skills.map((skill) => {
             const skillEvidence = evidence[skill.id];
@@ -281,7 +273,7 @@ export default function UserDetail() {
             observedCount: observedSkills.length,
             averageConfidence,
         };
-    }, [knowledgeFilter, knowledgeSearch, selectedLanguage, selectedSkillId, user]);
+    }, [graphQuery.data, knowledgeFilter, knowledgeSearch, selectedSkillId, user]);
 
     const recentActivity = useMemo(() => {
         if (!user) return [];

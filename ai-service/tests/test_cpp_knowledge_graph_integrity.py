@@ -7,12 +7,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE_GRAPH = ROOT / "curriculum/cppSkillGraph.json"
-RUNTIME_GRAPHS = [
-    ROOT / "frontend/src/data/cppSkillGraph.json",
-    ROOT / "backend/src/infrastructure/data/cppSkillGraph.json",
-    ROOT / "ai-service/data/cppSkillGraph.json",
-]
+SOURCE_GRAPH = ROOT / "backend/src/infrastructure/data/cppSkillGraph.json"
+RUNTIME_GRAPHS = [SOURCE_GRAPH]
 CPP_CONTENT_ROOT = ROOT / "docs/Dữ liệu nội dung bài học/C++"
 
 

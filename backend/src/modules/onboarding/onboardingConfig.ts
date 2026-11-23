@@ -1,3 +1,4 @@
+import { getStoredSkillGraph } from '../../infrastructure/data/skillGraphStore';
 import fs from 'fs';
 import path from 'path';
 import { SupportedLanguage } from '../../shared/types/roadmapContracts';
@@ -205,14 +206,11 @@ export function getLanguageGraphConfig(language: string): LanguageGraphConfig {
     return cachedConfigs[upperLang]!;
   }
 
-  const fileName = GRAPH_FILENAMES[upperLang];
-  const filePath = path.join(__dirname, '../../infrastructure/data', fileName);
-
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`GRAPH_FILE_MISSING: Không tìm thấy tệp đồ thị kỹ năng cho ngôn ngữ '${upperLang}'.`);
+  const stored = getStoredSkillGraph(upperLang);
+  if (!stored) {
+    throw new Error(`GRAPH_FILE_MISSING: Không tìm thấy đồ thị kỹ năng cho ngôn ngữ '${upperLang}'.`);
   }
-
-  const raw = fs.readFileSync(filePath, 'utf-8');
+  const raw = stored.raw;
   let data: RawSkillGraph;
   try {
     data = JSON.parse(raw) as RawSkillGraph;

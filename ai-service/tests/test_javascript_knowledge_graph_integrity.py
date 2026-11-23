@@ -6,11 +6,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "ai-service/data/javascriptSkillGraph.json"
-COPIES = [
-    ROOT / "backend/src/infrastructure/data/javascriptSkillGraph.json",
-    ROOT / "frontend/src/data/javascriptSkillGraph.json",
-]
+SOURCE = ROOT / "backend/src/infrastructure/data/javascriptSkillGraph.json"
+COPIES = [SOURCE]
 
 
 class JavascriptKnowledgeGraphIntegrityTests(unittest.TestCase):

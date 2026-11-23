@@ -112,12 +112,7 @@ def main() -> None:
             exercise_count += 1
             test_count += run_exercise(lesson_id, exercise)
 
-    graph_paths = [
-        ROOT / "ai-service/data/skill_graph.json",
-        ROOT / "ai-service/data/pythonSkillGraph.json",
-        ROOT / "backend/src/infrastructure/data/pythonSkillGraph.json",
-        ROOT / "frontend/src/data/pythonSkillGraph.json",
-    ]
+    graph_paths = [ROOT / "backend/src/infrastructure/data/pythonSkillGraph.json"]
     graphs = [json.loads(path.read_text(encoding="utf-8-sig")) for path in graph_paths]
     for graph in graphs[1:]:
         assert_equal(graph, graphs[0], "Các bản sao skill graph không đồng bộ")

@@ -11,8 +11,8 @@ ROOT = Path(__file__).resolve().parents[2]
 REPORT = ROOT / "docs/bao_cao/Bao_Cao_Thực Tập.docx"
 SPECS = (
     ("python", "2.5", ROOT / "backend/src/infrastructure/data/pythonSkillGraph.json"),
-    ("javascript", "2.6", ROOT / "ai-service/data/javascriptSkillGraph.json"),
-    ("cpp", "2.7", ROOT / "curriculum/cppSkillGraph.json"),
+    ("javascript", "2.6", ROOT / "backend/src/infrastructure/data/javascriptSkillGraph.json"),
+    ("cpp", "2.7", ROOT / "backend/src/infrastructure/data/cppSkillGraph.json"),
 )
 
 

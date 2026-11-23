@@ -29,6 +29,8 @@ from app.knowledge_tracing.multilingual_pilot import (
 )
 
 
+from app.services.skill_graph_source import seed_path
+
 router = APIRouter(prefix="/local-pilot/module-practice", tags=["local-pilot"])
 SERVICE_ROOT = Path(__file__).resolve().parents[2]
 PILOT_RUNS_ROOT = SERVICE_ROOT / "outputs" / "synthetic_pilot"
@@ -95,9 +97,9 @@ def load_local_pilot():
             or checkpoint.get("skill_ids") != PILOT_SKILLS
             or checkpoint.get("feature_names") != PAL_FEATURE_NAMES
             or not _matches_expected_hash(SERVICE_ROOT / "data" / "synthetic_pilot_learners.csv", str(report.get("dataset_sha256")))
-            or not _matches_expected_hash(SERVICE_ROOT / "data" / "skill_graph.json", str(report.get("graph_sha256")))):
+            or not _matches_expected_hash(seed_path("python"), str(report.get("graph_sha256")))):
         raise ValueError("Pilot artifact, dataset, or curriculum graph mismatch")
-    adjacency, prerequisites = load_fixed_graph(SERVICE_ROOT / "data" / "skill_graph.json")
+    adjacency, prerequisites = load_fixed_graph(seed_path("python"))
     model = PilotPALNet(len(PILOT_SKILLS))
     model.load_state_dict(checkpoint["model_state_dict"], strict=True)
     model.eval()

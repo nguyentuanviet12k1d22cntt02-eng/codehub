@@ -9,8 +9,8 @@ const sharp = require("sharp");
 const root = path.resolve(__dirname, "..");
 const specs = [
   { language: "python", source: "backend/src/infrastructure/data/pythonSkillGraph.json" },
-  { language: "javascript", source: "ai-service/data/javascriptSkillGraph.json" },
-  { language: "cpp", source: "curriculum/cppSkillGraph.json" },
+  { language: "javascript", source: "backend/src/infrastructure/data/javascriptSkillGraph.json" },
+  { language: "cpp", source: "backend/src/infrastructure/data/cppSkillGraph.json" },
 ];
 
 function quote(value) {

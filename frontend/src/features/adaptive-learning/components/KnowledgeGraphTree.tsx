@@ -28,11 +28,9 @@ import {
     Cpu,
     Move
 } from 'lucide-react';
-import pythonSkillGraph from '../../../data/pythonSkillGraph.json';
-import javascriptSkillGraph from '../../../data/javascriptSkillGraph.json';
-import cppSkillGraph from '../../../data/cppSkillGraph.json';
-import sqlSkillGraph from '../../../data/sqlSkillGraph.json';
 import { MascotWavingBannerIllustration } from '../../ai-tutor/components/AITutorIllustrations';
+
+import { useSkillGraph, EMPTY_SKILL_GRAPH } from '../useSkillGraph';
 
 export type SupportedLanguage = 'PYTHON' | 'JAVASCRIPT' | 'CPP' | 'SQL';
 
@@ -1113,16 +1111,9 @@ export const KnowledgeGraphTree: React.FC<KnowledgeGraphTreeProps> = ({
 
     const currentLangConfig = LANGUAGE_CONFIGS[activeLanguage] || LANGUAGE_CONFIGS.PYTHON;
 
-    // Pick active skill graph according to chosen language
-    const graphData = useMemo(() => {
-        switch (activeLanguage) {
-            case 'JAVASCRIPT': return javascriptSkillGraph;
-            case 'CPP': return cppSkillGraph;
-            case 'SQL': return sqlSkillGraph;
-            case 'PYTHON':
-            default: return pythonSkillGraph;
-        }
-    }, [activeLanguage]);
+    // Active skill graph for the chosen language, served read-only by the backend
+    const { data: fetchedGraph } = useSkillGraph(activeLanguage);
+    const graphData = fetchedGraph ?? EMPTY_SKILL_GRAPH;
 
     const [selectedTopicPill, setSelectedTopicPill] = useState<string>('ALL');
     const [searchQuery, setSearchQuery] = useState<string>('');

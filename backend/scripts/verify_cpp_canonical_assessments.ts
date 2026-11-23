@@ -5,7 +5,7 @@ import * as path from 'path';
 import { cppCanonicalAssessments } from './lib/cppCanonicalAssessments';
 
 const root = path.resolve(__dirname, '../..');
-const graph = JSON.parse(readFileSync(path.join(root, 'curriculum/cppSkillGraph.json'), 'utf8')) as {
+const graph = JSON.parse(readFileSync(path.join(root, 'backend/src/infrastructure/data/cppSkillGraph.json'), 'utf8')) as {
     lesson_mappings: Record<string, string>;
 };
 

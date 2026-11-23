@@ -5,10 +5,7 @@ import re
 import subprocess
 import tempfile
 from typing import Dict, Any, List
-try:
-    from app.llm.omniroute_client import generate_json_content
-except ImportError:
-    from core.omniroute_client import generate_json_content
+from app.llm.omniroute_client import generate_json_content
 
 if hasattr(sys.stdout, 'reconfigure'):
     try:

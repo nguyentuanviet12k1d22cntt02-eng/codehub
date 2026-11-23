@@ -1,3 +1,4 @@
+import { getStoredSkillGraph } from '../../infrastructure/data/skillGraphStore';
 import { createHash, randomUUID } from 'crypto';
 import fs from 'fs';
 import path from 'path';
@@ -25,9 +26,8 @@ export async function getPalnetAdvice(userId: string, catalog: PilotCatalog): Pr
   const fallback = (reason: string) => noPalnetAdvice(reason,cutoff.toISOString());
   if ((process.env.PALNET_RUNTIME_ENABLED ?? 'true').toLowerCase() !== 'true') return fallback('MODEL_DISABLED');
   try {
-    const graphPath = path.join(__dirname,'../../infrastructure/data/pythonSkillGraph.json');
-    const graphRaw = fs.readFileSync(graphPath);
-    const graphSha = createHash('sha256').update(graphRaw).digest('hex');
+    const graphSha = getStoredSkillGraph('PYTHON')?.sha256;
+    if (!graphSha) return fallback('GRAPH_UNAVAILABLE');
     const exercises = await prisma.codingExercise.findMany({
       where:{lessonId:{in:catalog.lessons.map(l => l.contentId)}},include:{testCases:true},
     });

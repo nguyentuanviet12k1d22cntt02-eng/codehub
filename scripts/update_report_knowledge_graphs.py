@@ -20,11 +20,11 @@ SPECS = (
     },
     {
         "language": "JavaScript", "slug": "javascript", "figure": "2.6", "table": "2.3",
-        "graph": ROOT / "ai-service/data/javascriptSkillGraph.json",
+        "graph": ROOT / "backend/src/infrastructure/data/javascriptSkillGraph.json",
     },
     {
         "language": "C++", "slug": "cpp", "figure": "2.7", "table": "2.4",
-        "graph": ROOT / "curriculum/cppSkillGraph.json",
+        "graph": ROOT / "backend/src/infrastructure/data/cppSkillGraph.json",
     },
 )
 

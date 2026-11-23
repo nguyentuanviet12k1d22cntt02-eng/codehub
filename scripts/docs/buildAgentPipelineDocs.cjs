@@ -51,9 +51,8 @@ const groups = [
             'PracticeGuidanceCard.tsx', 'PracticeGuidanceCard.css', 'practiceGuidanceResult.ts', 'editorDiagnostics.ts']
             .map(file => 'frontend/src/features/adaptive-learning/components/' + file),
     ]],
-    ['Agent và client legacy / tương thích, không phải đường API adaptive hiện tại', [
-        'ai-service/core/adaptive_agent_orchestrator.py', 'ai-service/app/agents/adaptive_agent_orchestrator.py',
-        'ai-service/app/llm/omniroute_client.py', 'ai-service/core/omniroute_client.py',
+    ['Client legacy / tương thích, không phải đường API adaptive hiện tại', [
+        'ai-service/app/llm/omniroute_client.py',
     ]],
     ['Kiểm thử hồi quy liên quan, không tự chạy khi sinh tài liệu', [
         ...['test_missing_learning_topic.py', 'test_router_concept_consistency.py', 'test_llm_catalog_routing.py',

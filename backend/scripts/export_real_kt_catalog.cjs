@@ -11,8 +11,8 @@ const { Pool } = require('pg');
 require('dotenv').config({ quiet: true });
 
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-const GRAPH_ROOT = path.join(PROJECT_ROOT, 'ai-service', 'data');
-const OUTPUT_ROOT = path.join(GRAPH_ROOT, 'real_exercise_catalog');
+const GRAPH_ROOT = path.join(PROJECT_ROOT, 'backend', 'src', 'infrastructure', 'data');
+const OUTPUT_ROOT = path.join(PROJECT_ROOT, 'ai-service', 'data', 'real_exercise_catalog');
 const LANGUAGES = {
   python: { db: 'PYTHON', graph: 'pythonSkillGraph.json' },
   javascript: { db: 'JAVASCRIPT', graph: 'javascriptSkillGraph.json' },

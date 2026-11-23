@@ -12,10 +12,10 @@ from app.services.knowledge_graph_service import KnowledgeGraphService, TOPIC_AL
 
 ROOT = Path(__file__).resolve().parents[2]
 GRAPH_FILES = {
-    "python": ROOT / "ai-service/data/pythonSkillGraph.json",
-    "javascript": ROOT / "ai-service/data/javascriptSkillGraph.json",
-    "cpp": ROOT / "ai-service/data/cppSkillGraph.json",
-    "sql": ROOT / "ai-service/data/sqlSkillGraph.json",
+    "python": ROOT / "backend/src/infrastructure/data/pythonSkillGraph.json",
+    "javascript": ROOT / "backend/src/infrastructure/data/javascriptSkillGraph.json",
+    "cpp": ROOT / "backend/src/infrastructure/data/cppSkillGraph.json",
+    "sql": ROOT / "backend/src/infrastructure/data/sqlSkillGraph.json",
 }
 CONTENT_DIRS = {
     "python": ROOT / "docs/Dữ liệu nội dung bài học/Python",

@@ -62,6 +62,9 @@ class PALSample:
     label: int
 
 
+from app.services.skill_graph_source import seed_path
+
+
 def normalize_language(language: str) -> str:
     value = str(language or "").upper()
     if value == "JS":
@@ -76,7 +79,7 @@ def language_key(language: str) -> str:
 
 
 def graph_path_for(language: str) -> Path:
-    return SERVICE_ROOT / "data" / f"{language_key(language)}SkillGraph.json"
+    return seed_path(language_key(language))
 
 
 def history_path_for(language: str) -> Path:

@@ -985,3 +985,15 @@ model AdaptiveMasteryEvent {
   @@index([userId, createdAt, submissionId])
   @@map("adaptive_mastery_events")
 }
+
+model SkillGraph {
+  id        String              @id @default(uuid()) @db.Uuid
+  language  ProgrammingLanguage
+  version   String
+  sha256    String
+  content   String              @db.Text
+  createdAt DateTime            @default(now()) @map("created_at")
+
+  @@unique([language, version])
+  @@map("skill_graphs")
+}

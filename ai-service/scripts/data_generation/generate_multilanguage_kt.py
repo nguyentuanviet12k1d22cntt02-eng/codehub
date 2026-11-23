@@ -22,9 +22,9 @@ ROOT = Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / "data" / "synthetic_history_real_items"
 CATALOG_ROOT = ROOT / "data" / "real_exercise_catalog"
 GRAPHS = {
-    "python": ROOT / "data" / "pythonSkillGraph.json",
-    "javascript": ROOT / "data" / "javascriptSkillGraph.json",
-    "cpp": ROOT / "data" / "cppSkillGraph.json",
+    "python": ROOT.parent / "backend/src/infrastructure/data/pythonSkillGraph.json",
+    "javascript": ROOT.parent / "backend/src/infrastructure/data/javascriptSkillGraph.json",
+    "cpp": ROOT.parent / "backend/src/infrastructure/data/cppSkillGraph.json",
 }
 FIELDS = (
     "user_id", "persona_group", "step_index", "timestamp", "language",

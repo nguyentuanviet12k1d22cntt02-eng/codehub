@@ -142,7 +142,7 @@ def call_direct_gemini_api(prompt: str, system_prompt: str = None) -> str:
     return None
 
 
-from core.key_pool_manager import key_pool
+from app.llm.key_pool_manager import key_pool
 
 def generate_json_content(prompt: str, system_prompt: str = None) -> str:
     """Gọi trực tiếp AI qua Hồ Chứa Key Đa Nhà Cung Cấp (Gemini, Groq, OpenRouter, OpenAI)"""

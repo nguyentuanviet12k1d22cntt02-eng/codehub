@@ -39,7 +39,7 @@ from app.knowledge_tracing.pilot import (  # noqa: E402
 
 CSV_PATH = SERVICE_ROOT / "data" / "synthetic_pilot_learners.csv"
 META_PATH = SERVICE_ROOT / "data" / "synthetic_pilot_10_learners_metadata.json"
-GRAPH_PATH = SERVICE_ROOT / "data" / "skill_graph.json"
+GRAPH_PATH = SERVICE_ROOT.parent / "backend/src/infrastructure/data/pythonSkillGraph.json"
 ACTIVE_RUN_PATH = SERVICE_ROOT / "outputs" / "synthetic_pilot" / "active.json"
 
 
