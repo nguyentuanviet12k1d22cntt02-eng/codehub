@@ -10,7 +10,7 @@ const count = Math.max(1, Math.min(60, Number(process.argv[2]) || 30));
 const language = (process.argv[3] || 'PYTHON').toUpperCase();
 const programs = {
     PYTHON: 'n = int(input())\nprint(sum(i * i for i in range(n)))\n',
-    CPP: '#include <iostream>\nint main(){long long n,s=0;std::cin>>n;for(long long i=0;i<n;i++)s+=i*i;std::cout<<s<<"\n";}\n',
+    CPP: '#include <iostream>\nint main(){long long n,s=0;std::cin>>n;for(long long i=0;i<n;i++)s+=i*i;std::cout<<s<<std::endl;}\n',
 };
 if (!programs[language]) { console.error('Language must be PYTHON or CPP'); process.exit(2); }
 
