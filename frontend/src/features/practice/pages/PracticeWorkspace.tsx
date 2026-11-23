@@ -1,3 +1,4 @@
+import { submitWithPolling } from '../submitWithPolling';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
@@ -203,7 +204,7 @@ const PracticeWorkspace: React.FC = () => {
         setActiveTerminalTab('results');
 
         try {
-            const response = await axios.post(
+            const response = await submitWithPolling<any>(
                 `${API_BASE_URL}/api/auth/practice/problems/${problem?.id}/submit`,
                 {
                     code,

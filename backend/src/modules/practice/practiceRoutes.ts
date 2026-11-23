@@ -1,3 +1,4 @@
+import { getSubmissionJob, startSubmissionJob, wantsAsync } from "../submissions/asyncSubmissionJobs";
 import { Router } from "express";
 import {
     getPracticeProblems,
@@ -21,7 +22,9 @@ router.get('/practice/problems/:slug', getPracticeProblemBySlug);
 router.post('/practice/compiler/run', runPracticeCode);
 
 // Nộp bài tập luyện tập tự do
-router.post('/practice/problems/:id/submit', authenticateToken, submitPracticeCode);
+router.post('/practice/problems/:id/submit', authenticateToken, (req, res, next) => (
+    wantsAsync(req) ? void startSubmissionJob(req, res, submitPracticeCode) : submitPracticeCode(req, res, next)
+));
 
 // Lấy lịch sử nộp bài luyện tập
 router.get('/practice/problems/:id/submissions', authenticateToken, getPracticeSubmissions);

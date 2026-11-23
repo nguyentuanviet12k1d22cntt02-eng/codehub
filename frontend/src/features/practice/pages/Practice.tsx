@@ -1,3 +1,4 @@
+import { submitWithPolling } from '../submitWithPolling';
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
@@ -271,7 +272,7 @@ const Practice: React.FC = () => {
 
         try {
             const openedAt=interactionStartedAtRef.current||Date.now();
-            const response = await axios.post<SubmitGrade>(
+            const response = await submitWithPolling<SubmitGrade>(
                 `${API_BASE_URL}/api/auth/exercises/${exercise.id}/submit`,
                 {
                     code,
@@ -284,6 +285,9 @@ const Practice: React.FC = () => {
                 },
                 {
                     headers: { Authorization: `Bearer ${submitToken}` }, signal:submitController.signal
+                },
+                progress => {
+                    if(submitCurrent())setConsoleOutput(progress.state==='running'?'Đang chấm bài của bạn trên server...':`Đang xếp hàng chấm bài${progress.ahead>0?` (còn ${progress.ahead} bài trước bạn)`:''}...`);
                 }
             );
             if(!submitCurrent())return;
